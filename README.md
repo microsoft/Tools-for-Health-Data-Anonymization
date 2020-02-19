@@ -1,3 +1,88 @@
+# FHIR Anonymizer
+FHIR Anonymizer is an open-source project that helps anonymize healthcare FHIR data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The FHIR Anonymizer released to open source on Thursday March 5th, 2020.
+
+FHIR Anonymizer includes a command-line tool that can be used on-premises on a set of data using a configuration file that specifies the de-identification settings. The FHIR Anonymizer can also be integrated in Azure Data Factory flow to anonymize data in the cloud. 
+
+This repo contains a configuration file to de-identify 18 data elements as per HIPAA Safe Harbor method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs.  
+
+This open source project is fully backed by the Microsoft Healthcare team, but we know that this project will only get better with your feedback and contributions. We are leading the development of this code base, and test builds and deployments daily.
+
+## Features
+
+* Configuration of the data elements that need to be de-identified 
+* Configuration of the de-identification method for each data element (masking, redacting and Date Shifting) 
+* Running the tool on premise to de-identify a dataset locally 
+* Running the tool as part of Azure Data Factory to support de-identification of the data flows.  
+
+## How it works
+The FHIR Anonymizer uses a configuration file to specify de-identification methods for different data-elements and datatypes, and other parameters to anonymize the data. 
+
+FHIR Anonymizer comes with a default configuration file, which is based on the HIPAA safe harbor method. You can modify the configuration file as needed based on the information provided below.
+
+### The configuration file
+
+The configuration is specified in JSON format. It has three high-level sections. Two of these sections namely pathRules, and typeRules are meant to specify de-identification methods for data elements. De-identification configuration specified in the Path Rules section override the corresponding configurations in the Type Rules section. The third section named parameters affect global behavior.
+
+```json
+{
+  "pathRules": {
+    "Patient.address.state": "keep",
+    "Patient.address.country": "redact"
+  },
+  "typeRules": {
+    "date": "dateShift",
+    "Address": "redact"
+  },
+  "parameters": {
+    "dateShiftKey": "",
+    "enablePartialAgesForRedact": true
+}
+```
+
+#### Path Rules
+Path rules are key-value pairs that can be used to specify the de-identification methods for individual elements. Ex:
+
+```json
+"Patient.address.state": "keep"
+```
+The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax. The method can be one from the following table.
+
+|Method| Applicable to | Description
+| ----- | ----- | ----- |
+|keep|All elements| Retains the value as is. |
+|redact|All elements| Removes the element completely. |
+|dateShift|Elements of type date, dateTime, and instance | Shifts the value using the Date Shift algorithm described below.
+
+#### Type Rules
+Type rules are key-value pairs that can be used to specify the de-identification methods at the datatype level. Ex:
+
+```json
+"date": "dateShift"
+```
+The datatypes can be any of the [FHIR datatypes](https://www.hl7.org/fhir/datatypes.html). The method can be one from the following table.
+
+|Method| Applicable to | Description
+| ----- | ----- | ----- |
+|keep|All datatypes | Retains the value as is. |
+|redact|All datatypes| Removes the element completely. |
+|dateShift|date, dateTime, and instance datatypes | Shifts the value using the Date Shift algorithm described below.
+
+#### Parameters
+Parameters affect the global de-identification behavior as described below:
+
+|Parameter| Valid Values | Description
+| ----- | ----- | ----- |
+| dateShiftKey | true, false |  |
+| enablePartialAgesForRedact | true, false |  |
+| enablePartialDatesForRedact | true, false |  |
+| enablePartialZipCodesForRedact | true, false |  |
+| restrictedZipCodeTabulationAreas | <any string> |  |
+
+## FAQ
+### What FHIR versions are supported?
+Currently, the FHIR Anonymizer support FHIR data in STU3 or R4 format.  
+### How can we use FHIR Anonymizer to anonymize HL7 v2.x data
+You can build a pipeline to use [FHIR converter](https://github.com/microsoft/FHIR-Converter) to convert HL7 v2.x data to FHIR format, and subsequently use FHIR Anonymizer to anonymize your data. 
 
 # Contributing
 
