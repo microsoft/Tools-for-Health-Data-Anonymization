@@ -100,6 +100,17 @@ Why is FHIR Resource ID used in the date-shift algorithm?
 
 If we generate the offset amount only by the key, every date value in the dataset will be shifted with the same offset. However, if resource ID is involved, the offset will be different among different resources, bringing in more randomness. Besides, using Resource Id ensures that all the dates within the same resource have the same offset, which helps avoid the conflict between dates. For example, if the offset is different within the same resource, the start value may be later than the end value of a Period instance.
 
+## How to use it
+
+### Using it as a command-line tool
+
+FHIR Anonymizer can be used as a command-line tool to anonymize individual files containing FHIR bundle or a folder containing multiple such files. The Anonymzer expects the configuration file by the name **Configuration.json** in the current directory. 
+
+Example usage to anonymize single file: 
+```
+> .\Fhir.DeIdentification.Tool.exe -i myinput.json -o myoutput.json
+```
+
 ## FAQ
 ### What FHIR versions are supported?
 Currently, the FHIR Anonymizer support FHIR data in STU3 or R4 format.  
