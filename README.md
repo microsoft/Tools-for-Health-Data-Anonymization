@@ -1,7 +1,7 @@
 # FHIR Anonymizer
 FHIR Anonymizer is an open-source project that helps anonymize healthcare FHIR data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The FHIR Anonymizer released to open source on Thursday March 5th, 2020.
 
-FHIR Anonymizer includes a command-line tool that can be used on-premises on a set of data using a configuration file that specifies the de-identification settings. The FHIR Anonymizer can also be integrated in Azure Data Factory flow to anonymize data in the cloud. 
+The FHIR Anonymizer uses a configuration file specifying the de-identification settings to anonymize the data. It can be integrated in Azure Data Factory flow to anonymize data in the cloud. It also includes a command-line tool that can be used on-premises. 
 
 This repo contains a configuration file to de-identify 18 data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs.  
 
@@ -10,18 +10,20 @@ This open source project is fully backed by the Microsoft Healthcare team, but w
 ## Features
 
 * Configuration of the data elements that need to be de-identified 
-* Configuration of the de-identification method for each data element (masking, redacting and Date Shifting) 
-* Running the tool on premise to de-identify a dataset locally 
+* Configuration of the de-identification method for each data element (keeping, redacting, or Date-shifting) 
 * Running the tool as part of Azure Data Factory to support de-identification of the data flows.  
+* Running the tool on premise to de-identify a dataset locally 
 
 ## How it works
-The FHIR Anonymizer uses a configuration file to specify de-identification methods for different data-elements and datatypes, and other parameters to anonymize the data. 
+The FHIR Anonymizer uses a configuration file specifying different parameters as well as de-identification methods for different data-elements and datatypes. 
 
-FHIR Anonymizer comes with a default configuration file, which is based on the HIPAA safe harbor method. You can modify the configuration file as needed based on the information provided below.
+FHIR Anonymizer comes with a default configuration file, which is based on the [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method. You can modify the configuration file as needed based on the information provided below.
 
 ### The configuration file
 
-The configuration is specified in JSON format. It has three high-level sections. Two of these sections namely pathRules, and typeRules are meant to specify de-identification methods for data elements. De-identification configuration specified in the pathRules section override the corresponding configurations in the typeRules section. The third section named parameters affect global behavior.
+The configuration is specified in JSON format. It has three high-level sections. Two of these sections, namely _pathRules_, and _typeRules_ are meant to specify de-identification methods for data elements. De-identification configuration specified in the _pathRules_ section override the corresponding configurations in the _typeRules_ section. The third section named _parameters_ affect global behavior.
+
+Here is a sample configuration file:
 
 ```json
 {
@@ -70,13 +72,13 @@ The datatypes can be any of the [FHIR datatypes](https://www.hl7.org/fhir/dataty
 #### Parameters
 Parameters affect the global de-identification behavior as described below:
 
-|Parameter| Valid Values | Description
-| ----- | ----- | ----- |
-| dateShiftKey | true, false |  |
-| enablePartialAgesForRedact | true, false |  |
-| enablePartialDatesForRedact | true, false |  |
-| enablePartialZipCodesForRedact | true, false |  |
-| restrictedZipCodeTabulationAreas | \<any string\> |  |
+|Parameter| Valid Values | Default value | Description
+| ----- | ----- | ----- | ----- |
+| dateShiftKey | a base64 encoded string | random |This key in conjunction with the FHIR Resource Id is used as a seed in the Date Shift algorithm as described below |
+| enablePartialAgesForRedact | true, false | | |
+| enablePartialDatesForRedact | true, false | | Setting it to true will remove all parts of the dates except the year |
+| enablePartialZipCodesForRedact | true, false | | |
+| restrictedZipCodeTabulationAreas | a JSON array | empty list | A list of zip codes having population less than 20,000 people |
 
 ### Date-shift algorithm
 You can specify dateShift as a de-identification method in the configuration file. The following algorithm is used to shift the target dates:
@@ -96,8 +98,10 @@ You can specify dateShift as a de-identification method in the configuration fil
 4. Use the above integer as the offset to shift the date or dateTime value
 
 #### Note
-Why is FHIR Resource ID used in the date-shift algorithm?
 
+1. If the date or dateTime object does not contain exact day, like "yyyy", "yyyy-MM", there's no date that can be shifted and default redaction will be applied.
+2. If the age implied from date or dateTime object is over 89, all information of the object including year, month and date will be redacted according to HIPAA's requirements.
+3. Why is FHIR Resource ID used in the date-shift algorithm?
 If we generate the offset amount only by the key, every date value in the dataset will be shifted with the same offset. However, if resource ID is involved, the offset will be different among different resources, bringing in more randomness. Besides, using Resource Id ensures that all the dates within the same resource have the same offset, which helps avoid the conflict between dates. For example, if the offset is different within the same resource, the start value may be later than the end value of a Period instance.
 
 ## How to use it
