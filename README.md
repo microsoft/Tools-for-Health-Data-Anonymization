@@ -3,7 +3,7 @@ FHIR Anonymizer is an open-source project that helps anonymize healthcare FHIR d
 
 FHIR Anonymizer includes a command-line tool that can be used on-premises on a set of data using a configuration file that specifies the de-identification settings. The FHIR Anonymizer can also be integrated in Azure Data Factory flow to anonymize data in the cloud. 
 
-This repo contains a configuration file to de-identify 18 data elements as per HIPAA Safe Harbor method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs.  
+This repo contains a configuration file to de-identify 18 data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs.  
 
 This open source project is fully backed by the Microsoft Healthcare team, but we know that this project will only get better with your feedback and contributions. We are leading the development of this code base, and test builds and deployments daily.
 
@@ -21,7 +21,7 @@ FHIR Anonymizer comes with a default configuration file, which is based on the H
 
 ### The configuration file
 
-The configuration is specified in JSON format. It has three high-level sections. Two of these sections namely pathRules, and typeRules are meant to specify de-identification methods for data elements. De-identification configuration specified in the Path Rules section override the corresponding configurations in the Type Rules section. The third section named parameters affect global behavior.
+The configuration is specified in JSON format. It has three high-level sections. Two of these sections namely pathRules, and typeRules are meant to specify de-identification methods for data elements. De-identification configuration specified in the pathRules section override the corresponding configurations in the typeRules section. The third section named parameters affect global behavior.
 
 ```json
 {
@@ -76,7 +76,29 @@ Parameters affect the global de-identification behavior as described below:
 | enablePartialAgesForRedact | true, false |  |
 | enablePartialDatesForRedact | true, false |  |
 | enablePartialZipCodesForRedact | true, false |  |
-| restrictedZipCodeTabulationAreas | <any string> |  |
+| restrictedZipCodeTabulationAreas | \<any string\> |  |
+
+### Date-shift algorithm
+You can specify dateShift as a de-identification method in the configuration file. The following algorithm is used to shift the target dates:
+
+#### Input
+* A date or dateTime value (required)
+* FHIR resource id (required)
+* An encrypted base64-encoded key (optional)
+
+#### Output
+* A shifted date or datetime value
+
+#### Steps
+1. If the key is empty, generate a random string as key.
+2. Create a seed by combining the key and FHIR resource id.
+3. Use the above seed in BKDR hash function to get an integer between [-50, 50]. 
+4. Use the above integer as the offset to shift the date or dateTime value
+
+#### Note
+Why is FHIR Resource ID used in the date-shift algorithm?
+
+If we generate the offset amount only by the key, every date value in the dataset will be shifted with the same offset. However, if resource ID is involved, the offset will be different among different resources, bringing in more randomness. Besides, using Resource Id ensures that all the dates within the same resource have the same offset, which helps avoid the conflict between dates. For example, if the offset is different within the same resource, the start value may be later than the end value of a Period instance.
 
 ## FAQ
 ### What FHIR versions are supported?
