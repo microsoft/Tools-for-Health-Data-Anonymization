@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Core", "src\Fhir.Anonymizer.Core\Fhir.Anonymizer.Core.csproj", "{43E6C0A6-F03C-4ACD-B68B-55FCFA97C93E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Core.UnitTests", "src\Fhir.Anonymizer.Core.UnitTests\Fhir.Anonymizer.Core.UnitTests.csproj", "{08B785F3-48A8-4D46-AA6B-940D569F218C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.FunctionalTests", "src\Fhir.Anonymizer.FunctionalTests\Fhir.Anonymizer.FunctionalTests.csproj", "{3B599522-9110-4822-BF2C-6ED469412C0D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Tool", "src\Fhir.Anonymizer.Tool\Fhir.Anonymizer.Tool.csproj", "{63F80DFB-8828-45EF-B180-FBC6B9F47183}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.AzureDataFactoryPipeline\Fhir.Anonymizer.AzureDataFactoryPipeline.csproj", "{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{43E6C0A6-F03C-4ACD-B68B-55FCFA97C93E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43E6C0A6-F03C-4ACD-B68B-55FCFA97C93E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43E6C0A6-F03C-4ACD-B68B-55FCFA97C93E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43E6C0A6-F03C-4ACD-B68B-55FCFA97C93E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08B785F3-48A8-4D46-AA6B-940D569F218C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08B785F3-48A8-4D46-AA6B-940D569F218C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08B785F3-48A8-4D46-AA6B-940D569F218C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08B785F3-48A8-4D46-AA6B-940D569F218C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B599522-9110-4822-BF2C-6ED469412C0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B599522-9110-4822-BF2C-6ED469412C0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B599522-9110-4822-BF2C-6ED469412C0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B599522-9110-4822-BF2C-6ED469412C0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63F80DFB-8828-45EF-B180-FBC6B9F47183}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63F80DFB-8828-45EF-B180-FBC6B9F47183}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63F80DFB-8828-45EF-B180-FBC6B9F47183}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63F80DFB-8828-45EF-B180-FBC6B9F47183}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19A940B3-FA97-4729-AC91-EE68070BCFC1}
+	EndGlobalSection
+EndGlobal
