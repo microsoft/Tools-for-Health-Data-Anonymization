@@ -1,0 +1,28 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-references",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "http://example.org/fhir/Condition/123",
+      "resource": {
+        "resourceType": "Condition",
+        "contained": [
+          {
+            "resourceType": "Practitioner",
+            "id": "p1",
+            "name": [
+              {
+                "family": "",
+                "given": [ "" ]
+              }
+            ]
+          }
+        ],
+        "asserter": {
+          "reference": "#p1"
+        }
+      }
+    }
+  ]
+}

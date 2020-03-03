@@ -1,0 +1,26 @@
+﻿using System;
+using System.IO;
+using Fhir.Anonymizer.Core;
+using Newtonsoft.Json;
+using Xunit;
+
+namespace Fhir.Anonymizer.FunctionalTests
+{
+    public static class FunctionalTestUtility
+    {
+        public static void VerifySingleJsonResourceFromFile(AnonymizerEngine engine, string testFile, string targetFile)
+        {
+            Console.WriteLine($"VerifySingleJsonResourceFromFile. TestFile: {testFile}, TargetFile: {targetFile}");
+            string testContent = File.ReadAllText(testFile);
+            string targetContent = File.ReadAllText(targetFile);
+            string resultAfterAnonymize = engine.AnonymizeJson(testContent);
+
+            Assert.Equal(Standardize(targetContent), Standardize(resultAfterAnonymize));
+        } 
+
+        private static string Standardize(string jsonContent)
+        {
+            return JsonConvert.SerializeObject(JsonConvert.DeserializeObject(jsonContent));
+        }
+    }
+}
