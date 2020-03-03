@@ -56,7 +56,7 @@ See the [reference](#fhir-anonymizer-command-line-tool) section for usage detail
 
 ## Anonymize FHIR data using Azure Data Factory
 
-In this tutorial, you use the Azure Powershell to create a Data Factory and a pipeline to anonymize FHIR data. The pipeline reads from an Azure blob container, anonymizes it as per the configuration file, and writes the output to another blob container. If you're new to Azure Data Factory, see [Introduction to Azure Data Factory](https://docs.microsoft.com/en-us/azure/data-factory/introduction).
+In this tutorial, you use the Azure PowerShell to create a Data Factory and a pipeline to anonymize FHIR data. The pipeline reads from an Azure blob container, anonymizes it as per the configuration file, and writes the output to another blob container. If you're new to Azure Data Factory, see [Introduction to Azure Data Factory](https://docs.microsoft.com/en-us/azure/data-factory/introduction).
 
 Tutorial steps:
 
@@ -68,7 +68,7 @@ Tutorial steps:
 
 * **Azure subscription**: If you don't have an Azure subscription, create a [free account](https://azure.microsoft.com/free/) before you begin.
 * **Azure storage account**: Azure Blob storage is used as the _source_ & _destination_ data store. If you don't have an Azure storage account, see the instructions in [Create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal).
-* **Azure PowerShell**: Azure PowerShell is used for deploying azure resources. If you don't have Azure Powershell installed, see the instructions in [Install the Azure PowerShell module](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-3.4.0)
+* **Azure PowerShell**: Azure PowerShell is used for deploying azure resources. If you don't have Azure PowerShell installed, see the instructions in [Install the Azure PowerShell module](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-3.4.0)
 * **.Net Core 3.0**: Use .Net Core 3.0 sdk to build FHIR Anonymizer. If you don't have .Net Core 3.0 installed, see the instructions in  [.Net Core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0)
 
 #### Prepare azure storage resource container
@@ -217,7 +217,7 @@ FHIR Anonymizer can be used as a command-line tool to anonymize a folder contain
 | -c | configFile | Optional |configuration-sample.json | Anonymizer configuration file path. It reads the default file from the current directory. |
 | -b | bulkData | Optional| false | Resource file is in bulk data format (.ndjson). |
 | -r | recursive | Optional | false | Process resource files in input folder recursively. |
-| -v | verbose | Optional | false | Provide additional details durin processing. |
+| -v | verbose | Optional | false | Provide additional details during processing. |
 
 
 Example usage to anonymize FHIR resource files in a folder: 
