@@ -13,7 +13,6 @@
 &nbsp;&nbsp; [FHIR Anonymizer command line tool](#fhir-anonymizer-command-line-tool)  
 &nbsp;&nbsp; [Configuration file format](#configuration-file-format)  
 &nbsp;&nbsp; [Date-shift algorithm](#date-shift-algorithm)  
-&nbsp;&nbsp; [Safe harbor configuration file](#safe-harbor-configuration-file)  
 [Resources](#resources)  
 &nbsp;&nbsp; [FAQ](#faq)  
 [Contributing](#contributing)
@@ -307,34 +306,6 @@ You can specify dateShift as a de-identification method in the configuration fil
 1. If the input date/dateTime/instant value does not contain exact day, like "yyyy", "yyyy-MM", there's no date can be shifted and redaction will be applied.
 2. If the input date/dateTime/instant value is indicative of age over 89, it will be redacted (including year) according to HIPAA Safe Harbor Method.
 3. If the input dateTime/instant value contains time, time will be redacted. Time zone will keep unchanged.
-
-## Safe harbor configuration file
-[HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) guideline mentions that the following identifiers of the individual or of relatives, employers, or household members of the individual, be removed. 
-
-The following table describes the treatment of the guideline in our sample configuration file. 
-
-|Identifier| Redacted Fields | Remarks |
-| ----- | ----- | ----- |
-| (A) Names |||
-| (B) All geographic subdivisions smaller than a state, including street address, city, county, precinct, ZIP code, and their equivalent geocodes, except for the initial three digits of the ZIP code if, according to the current publicly available data from the Bureau of the Census: <br/> (1) The geographic unit formed by combining all ZIP codes with the same three initial digits contains more than 20,000 people; and <br/>(2) The initial three digits of a ZIP code for all such geographic units containing 20,000 or fewer people is changed to 000 |||
-| (C) All elements of dates (except year) for dates that are directly related to an individual, including birth date, admission date, discharge date, death date, and all ages over 89 and all elements of dates (including year) indicative of such age, except that such ages and elements may be aggregated into a single category of age 90 or older |||
-| (D) Telephone numbers |||
-| (E) Fax numbers |||
-| (F) Email addresses |||
-| (G) Social security numbers |||
-| (H) Medical record numbers |||
-| (I) Health plan beneficiary numbers |||
-| (J) Account numbers |||
-| (K) Certificate/license numbers |||
-| (L) Vehicle identifiers and serial numbers, including license plate numbers |||
-| (M) Device identifiers and serial numbers |||
-| (N) Web Universal Resource Locators (URLs) |||
-| (O) Internet Protocol (IP) addresses |||
-| (P) Biometric identifiers, including finger and voice prints |||
-| (Q) Full-face photographs and any comparable images |||
-| (R) Any other unique identifying number, characteristic, or code, except as permitted by paragraph (c) of this section; and |||
-
-
 
 # Resources
 
