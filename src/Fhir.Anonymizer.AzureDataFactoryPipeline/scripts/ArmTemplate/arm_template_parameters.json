@@ -1,45 +1,45 @@
 {
-  "$schema":  "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion":  "1.0.0.0",
-  "parameters":  {
-            "location":  {
-                "value":  ""
-            },
-            "factoryName":  {
-                "value":  ""
-            },
-            "sourceStorageLinkedService_connectionString":  {
-                "value":  ""
-            },
-            "sourceStorageActivityApplicationContainer": {
-                "value":  ""
-            },
-            "sourceStorageContainerName":  {
-                "value":  ""
-            },
-            "sourceContainerFolderPath": {
-                "value":  ""
-            },
-            "destinationStorageLinkedService_connectionString": {
-                "value": ""
-            },
-            "destinationStorageContainerName":  {
-                "value":  ""
-            },
-            "destinationContainerFolderPath": {
-                "value":  ""
-            },
-            "azureBatchLinkedService_accessKey":  {
-                "value":  ""
-            },
-            "azureBatchLinkedService_poolName":  {
-                "value":  ""
-            },
-            "azureBatchLinkedService_properties_typeProperties_accountName":  {
-                "value":  ""
-            },
-            "azureBatchLinkedService_properties_typeProperties_batchUri":  {
-                "value":  ""
-            }
-     }
+    "$schema":  "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion":  "1.0.0.0",
+    "parameters":  {
+                       "location":  {
+                                        "value":  "WestUS"
+                                    },
+                       "factoryName":  {
+                                           "value":  "ttestanonymizer"
+                                       },
+                       "sourceStorageLinkedService_connectionString":  {
+                                                                           "value":  "DefaultEndpointsProtocol=https;AccountName=adfeastus2;AccountKey=FPVSH/yeBa1vM+oYnkSbT6F98P4xkjuns2PQFESFO7GB/tIn+YzB4H62ZNBxHXbZ3cqJOZK4WlWJe0bsXJMruQ==;EndpointSuffix=core.windows.net"
+                                                                       },
+                       "sourceStorageActivityApplicationContainer":  {
+                                                                         "value":  "ttestanonymizer"
+                                                                     },
+                       "sourceStorageContainerName":  {
+                                                          "value":  "synthea"
+                                                      },
+                       "sourceContainerFolderPath":  {
+                                                         "value":  ""
+                                                     },
+                       "destinationStorageLinkedService_connectionString":  {
+                                                                                "value":  "DefaultEndpointsProtocol=https;AccountName=adfeastus2;AccountKey=FPVSH/yeBa1vM+oYnkSbT6F98P4xkjuns2PQFESFO7GB/tIn+YzB4H62ZNBxHXbZ3cqJOZK4WlWJe0bsXJMruQ==;EndpointSuffix=core.windows.net"
+                                                                            },
+                       "destinationStorageContainerName":  {
+                                                               "value":  "ttestanonymizer"
+                                                           },
+                       "destinationContainerFolderPath":  {
+                                                              "value":  ""
+                                                          },
+                       "azureBatchLinkedService_accessKey":  {
+                                                                 "value":  "oLtnJPwRWuQ647c8GG2EKpMouAqu0V0idfHzqou6vonNn1m5hq8D2hJdmIPhjKmtL+5WBmPxuOQSwHe/DKmwvw=="
+                                                             },
+                       "azureBatchLinkedService_poolName":  {
+                                                                "value":  "adfpool"
+                                                            },
+                       "azureBatchLinkedService_properties_typeProperties_accountName":  {
+                                                                                             "value":  "adfbatchanonymizeeu2"
+                                                                                         },
+                       "azureBatchLinkedService_properties_typeProperties_batchUri":  {
+                                                                                          "value":  "https://adfbatchanonymizeeu2.eastus2.batch.azure.com"
+                                                                                      }
+                   }
 }

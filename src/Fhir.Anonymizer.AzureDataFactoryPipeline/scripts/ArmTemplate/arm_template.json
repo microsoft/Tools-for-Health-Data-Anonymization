@@ -76,7 +76,7 @@
             "location": "WestUs",
             "tags": {
                 "FHIRAnonymizer": "[parameters('solutionName')]"
-            }
+            },
             "properties": {}
         },
         {
