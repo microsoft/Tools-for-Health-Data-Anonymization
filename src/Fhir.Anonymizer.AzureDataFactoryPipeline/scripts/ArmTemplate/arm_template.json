@@ -56,6 +56,13 @@
         "azureBatchLinkedService_properties_typeProperties_batchUri": {
             "type": "string",
             "metadata": "Azure Batch Uri"
+        },
+        "solutionName": {
+            "type": "string",
+            "defaultValue": "FHIRAnonymizer",
+            "metadata": {
+                "description": "The solution name for FHIR Anonymizer"
+            }
         }
     },
     "variables": {
@@ -67,6 +74,9 @@
             "apiVersion": "2018-06-01",
             "name": "[parameters('factoryName')]",
             "location": "WestUs",
+            "tags": {
+                "FHIRAnonymizer": "[parameters('solutionName')]"
+            }
             "properties": {}
         },
         {
