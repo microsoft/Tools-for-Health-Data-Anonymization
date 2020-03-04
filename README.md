@@ -342,7 +342,6 @@ The following table describes the treatment of the guideline in our sample confi
 ## FAQ
 ### How can we use FHIR Anonymizer to anonymize HL7 v2.x data
 You can build a pipeline to use [FHIR converter](https://github.com/microsoft/FHIR-Converter) to convert HL7 v2.x data to FHIR format, and subsequently use FHIR Anonymizer to anonymize your data. 
-### What other de-identification methods will be supported?
 
 ### Can we use custom de-identification methods?
 Currently you can use the prebuilt de-identification methods and control their behavior by passing parameters. We are planning to support custom de-identification methods in future.
