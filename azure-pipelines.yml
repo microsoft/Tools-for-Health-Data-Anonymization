@@ -19,12 +19,14 @@ steps:
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: Run All Tests
   inputs:
     command: test
     projects: '$(testProjects)'
     arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
 
 - task: DotNetCoreCLI@2
+  displayName: Publish Artifact
   inputs:
     command: 'publish'
     projects: '$(publishProject)'
@@ -33,6 +35,7 @@ steps:
     zipAfterPublish: True
     
 - task: PublishBuildArtifacts@1
+  displayName: Upload Artifact
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
     artifactName: 'FhirAnonymizerBuild'
