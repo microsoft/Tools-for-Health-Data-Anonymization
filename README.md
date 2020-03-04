@@ -1,5 +1,7 @@
 # FHIR Anonymizer
 
+[![Build Status](https://microsofthealthoss.visualstudio.com/FhirAnonymizer/_apis/build/status/CI%20Build?branchName=master)](https://microsofthealthoss.visualstudio.com/FhirAnonymizer/_build/latest?definitionId=19&branchName=master)
+
 ## TOC
 [Overview](#overview)  
 [Quickstarts](#quickstarts)  
