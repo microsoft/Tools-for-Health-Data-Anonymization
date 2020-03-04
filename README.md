@@ -22,9 +22,9 @@
 
 FHIR Anonymizer is an open-source project that helps anonymize healthcare [FHIR](https://www.hl7.org/fhir/) data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The FHIR Anonymizer released to open source on Thursday, March 5th, 2020.
 
-The FHIR Anonymizer uses a [configuration file](#configuration-file-format) specifying the de-identification settings to anonymize the data. The anonymizer includes a [command-line tool](#fhir-anonymizer-command-line-tool) that can be used on-premises or in the cloud to anonymize data. It also comes with a [tutorial](#anonymize-fhir-data-using-azure-data-factory)  and script to create an ADF pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
+The FHIR Anonymizer uses a [configuration file](#configuration-file-format) specifying the de-identification settings to anonymize the data. The anonymizer includes a [command-line tool](#fhir-anonymizer-command-line-tool) that can be used on-premises or in the cloud to anonymize data. It also comes with a [tutorial](#anonymize-fhir-data-using-azure-data-factory) and script to create an ADF pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
 
-This repo contains a [safe harbor configuration file](#tbd-link-to-config-file) to help de-identify 17 data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
+This repo contains a [safe harbor configuration file](samples/configs/safe-harbor-config.json) to help de-identify 17 data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
 
 This open source project is fully backed by the Microsoft Healthcare team, but we know that this project will only get better with your feedback and contributions. We are leading the development of this code base, and test builds and deployments daily.
 
@@ -41,7 +41,7 @@ This open source project is fully backed by the Microsoft Healthcare team, but w
 Use .Net Core 3.0 sdk to build FHIR Anonymizer. If you don't have .Net Core 3.0 installed, see the instructions in [.Net Core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0)
 
 ## Get sample FHIR files
-This repo contains few [sample](#tbd-sample-files) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
+This repo contains few [sample](samples/fhir-r4-files) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
 
 You can also export FHIR resource from your FHIR server using [Bulk Export](https://github.com/microsoft/fhir-server/blob/master/docs/BulkExport.md).
 
@@ -76,9 +76,6 @@ Tutorial steps:
 Create a source and a destination container on your blob store. Upload your FHIR files to the source blob container. The pipeline will read the files from the source container and upload the anonymized files to the destination container.
 
 You can also export FHIR resources from a FHIR server using [Bulk Export](https://github.com/microsoft/fhir-server/blob/master/docs/BulkExport.md) and put the data to the source blob container.
-
-#### Download Sample code
-Sample code can be downloaded (?? What file is this?) from [link](#tbd_?)
 
 #### Log in to Azure using PowerShell
 1. Launch **PowerShell** on your machine. Keep PowerShell open until the end of this tutorial. If you close and reopen, you need to run these commands again.
@@ -193,9 +190,9 @@ You may want to cleanup resources after running the tutorial.
 # Samples
 
 ## Sample configuration file for HIPAA Safe Harbor method
-FHIR Anonymizer comes with a [safe harbor configuration file](#tbd) to help meet the requirements of HIPAA Safe Harbor Method.
+FHIR Anonymizer comes with a [safe harbor configuration file](samples/configs/safe-harbor-config.json) to help meet the requirements of HIPAA Safe Harbor Method.
 
-We strongly recommend that you review the HIPAA guidelines and verify the implementation before using this configuration file for your requirements. You can find more about our treatment of the HIPAA guideline in the [reference](#safe-harbor-configuration-file) section.
+We **strongly** recommend that you review the HIPAA guidelines and verify the implementation before using this configuration file for your requirements. You can find more about our treatment of the HIPAA guideline in the [reference](#safe-harbor-configuration-file) section.
 
 # Concepts
 
