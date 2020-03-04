@@ -60,9 +60,9 @@ In this tutorial, you use the Azure PowerShell to create a Data Factory and a pi
 
 Tutorial steps:
 
-> * Use the Anonymizer tool to create a data factory pipeline.
-> * Trigger on-demand pipeline run.
-> * Monitor the pipeline and activity runs.
+* Use the Anonymizer tool to create a data factory pipeline.
+* Trigger on-demand pipeline run.
+* Monitor the pipeline and activity runs.
 
 ### Prerequisites
 
