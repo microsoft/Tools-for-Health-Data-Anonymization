@@ -30,6 +30,7 @@ This open source project is fully backed by the Microsoft Healthcare team, but w
 
 ## Features
 
+* Support anonymization of FHIR R4 data in json as well as ndjson format.
 * Configuration of the data elements that need to be de-identified 
 * Configuration of the de-identification method for each data element (keeping, redacting, or Date-shifting) 
 * Running the tool as part of Azure Data Factory to support de-identification of the data flows.  
@@ -185,7 +186,9 @@ You can trigger the pipeline by clicking on the *Add Trigger* button in the pipe
 
 ### Clean up resources
 
-You may want to cleanup resources after running the tutorial. 
+The PowerShell script implicitly creates a resource group by appending 'resourcegroup' to the Data Factory name provided by you in _AzureDataFactorySettings.json_. 
+
+If you want to cleanup resources, delete that resource group in addition to any other resources you may have explicitly created as part of this tutorial.
 
 # Samples
 
