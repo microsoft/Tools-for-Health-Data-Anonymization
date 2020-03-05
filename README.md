@@ -29,6 +29,8 @@ This repo contains a [safe harbor configuration file](samples/configs/safe-harbo
 
 This open source project is fully backed by the Microsoft Healthcare team, but we know that this project will only get better with your feedback and contributions. We are leading the development of this code base, and test builds and deployments daily.
 
+FHIR® is the registered trademark of HL7 and is used with the permission of HL7. Use of the FHIR trademark does not constitute endorsement of this product by HL7.
+
 ## Features
 
 * Support anonymization of FHIR R4 data in json as well as ndjson format.
@@ -40,15 +42,15 @@ This open source project is fully backed by the Microsoft Healthcare team, but w
 # Quickstarts
 
 ## Building the solution
-Use .Net Core 3.0 sdk to build FHIR Anonymizer. If you don't have .Net Core 3.0 installed, see the instructions in [.Net Core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0)
+Use the .Net Core 3.1 SDK to build FHIR Anonymizer. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet-core/3.1).
 
 ## Get sample FHIR files
-This repo contains few [sample](samples/fhir-r4-files) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
+This repo contains a few [sample](samples/fhir-r4-files) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
 
 You can also export FHIR resource from your FHIR server using [Bulk Export](https://github.com/microsoft/fhir-server/blob/master/docs/BulkExport.md).
 
 ## Anonymize FHIR data using command line tool
-Once you have built the command line tool, you can use it to anonymize FHIR resource files in a folder: 
+Once you have built the command line tool, you will find the Fhir.Anonymizer.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.Tool\bin\Debug\netcoreapp3.1 folder. You can use this exe to anonymize FHIR resource files in a folder.   
 ```
 > .\Fhir.Anonymizer.Tool.exe -i myInputFolder -o myOutputFolder
 ```
@@ -69,9 +71,12 @@ Tutorial steps:
 ### Prerequisites
 
 * **Azure subscription**: If you don't have an Azure subscription, create a [free account](https://azure.microsoft.com/free/) before you begin.
-* **Azure storage account**: Azure Blob storage is used as the _source_ & _destination_ data store. If you don't have an Azure storage account, see the instructions in [Create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal).
+* **Azure storage account**: Azure Blob storage is used as the _source_ & _destination_ data store. If you don't have an Azure storage account, see the instructions in [Create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal). 
 * **Azure PowerShell**: Azure PowerShell is used for deploying azure resources. If you don't have Azure PowerShell installed, see the instructions in [Install the Azure PowerShell module](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-3.4.0)
-* **.Net Core 3.0**: Use .Net Core 3.0 sdk to build FHIR Anonymizer. If you don't have .Net Core 3.0 installed, see the instructions in  [.Net Core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0)
+* **.Net Core 3.1**: Use .Net Core 3.1 sdk to build FHIR Anonymizer. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet-core/3.1).
+
+> **[!NOTE]**
+> Ensure that your source and destination blob store, Azure Data Factory, and the Azure batch account created as part of this tutorial are all in the same region.
 
 #### Prepare azure storage resource container
 
@@ -196,7 +201,7 @@ If you want to cleanup resources, delete that resource group in addition to any 
 ## Sample configuration file for HIPAA Safe Harbor method
 FHIR Anonymizer comes with a [safe harbor configuration file](samples/configs/safe-harbor-config.json) to help meet the requirements of HIPAA Safe Harbor Method.
 
-We **strongly** recommend that you review the HIPAA guidelines and verify the implementation before using this configuration file for your requirements. You can find more about our treatment of the HIPAA guideline in the [reference](#safe-harbor-configuration-file) section.
+We **strongly** recommend that you review the HIPAA guidelines and verify the implementation before using this configuration file for your requirements. 
 
 # Concepts
 
@@ -282,7 +287,7 @@ Parameters affect the de-identification methods specified in the type rules and 
 |Method| Parameter | Affected fields | Valid values | Default value | Description
 | ----- | ----- | ----- | ----- | ----- | ----- |
 | dateShift |dateShiftKey|date, dateTime, instant fields| string|A randomly generated string|This key in conjunction with the FHIR resource id is used in the [Date-shift algorithm](#date-shift-algorithm). 
-| redact | enablePartialAgesForRedact |Age fields | boolean | false | If the value is set to **true**, only age over 89 will be redacted. |
+| redact | enablePartialAgesForRedact |Age fields | boolean | false | If the value is set to **true**, only age values over 89 will be redacted. |
 | redact | enablePartialDatesForRedact  | date, dateTime, instant fields | boolean | false | If the value is set to **true**, date, dateTime, instant will keep year if indicative age is not over 89. |
 | redact | enablePartialZipCodesForRedact  | Zip Code fields | boolean | false | If the value is set to **true**, Zip Code will be redacted as per the HIPAA Safe Harbor rule. |
 | redact | restrictedZipCodeTabulationAreas  | Zip Code fields | a JSON array | empty array | This configuration is used only if enablePartialZipCodesForRedact is set to **true**. This field contains the list of zip codes for which the first 3 digits will be converted to 0. As per the HIPAA Safe Harbor, this list will have the Zip Codes  having population less than 20,000 people. |
@@ -305,7 +310,7 @@ You can specify dateShift as a de-identification method in the configuration fil
 
 ### Note
 
-1. If the input date/dateTime/instant value does not contain exact day, like "yyyy", "yyyy-MM", there's no date can be shifted and redaction will be applied.
+1. If the input date/dateTime/instance value does not contain an exact day, for example dates with only a year ("yyyy") or only a year and month ("yyyy-MM"), the date cannot be shifted and redaction will be applied.
 2. If the input date/dateTime/instant value is indicative of age over 89, it will be redacted (including year) according to HIPAA Safe Harbor Method.
 3. If the input dateTime/instant value contains time, time will be redacted. Time zone will keep unchanged.
 
@@ -314,6 +319,7 @@ You can specify dateShift as a de-identification method in the configuration fil
 ## Current limitations
 1. We only support FHIR data in R4, JSON format. Support for XML and STU 3 is planned.
 2. Date-shift algorithm shifts the dates within a resource by the same random amount. We are working on the ability to shift the dates by the same random amount across resources. 
+3. The source and the destination blob store, the ADF pipeline, and the Azure batch account must all be in the same region for the ADF pipeline to work reliably.
 
 ## FAQ
 ### How can we use FHIR Anonymizer to anonymize HL7 v2.x data
