@@ -1,4 +1,4 @@
-# FHIR Anonymizer
+# FHIR Tools for Anonymization
 
 [![Build Status](https://microsofthealthoss.visualstudio.com/FhirAnonymizer/_apis/build/status/CI%20Build?branchName=master)](https://microsofthealthoss.visualstudio.com/FhirAnonymizer/_build/latest?definitionId=19&branchName=master)
 
@@ -10,9 +10,9 @@
 [Samples](#samples)  
 &nbsp;&nbsp; [Sample configuration file for HIPAA Safe Harbor method](#sample-configuration-file-for-hipaa-safe-harbor-method)  
 [Concepts](#concepts)  
-&nbsp;&nbsp; [How FHIR Anonymizer works](#how-fhir-anonymizer-works)  
+&nbsp;&nbsp; [How anonymization engine works](#how-anonymization-engine-works)  
 [Reference](#reference)  
-&nbsp;&nbsp; [FHIR Anonymizer command line tool](#fhir-anonymizer-command-line-tool)  
+&nbsp;&nbsp; [The command line tool](#the-command-line-tool)  
 &nbsp;&nbsp; [Configuration file format](#configuration-file-format)  
 &nbsp;&nbsp; [Date-shift algorithm](#date-shift-algorithm)  
 [Resources](#resources)  
@@ -21,11 +21,11 @@
 
 # Overview
 
-FHIR Anonymizer is an open-source project that helps anonymize healthcare [FHIR](https://www.hl7.org/fhir/) data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The FHIR Anonymizer released to open source on Thursday, March 5th, 2020.
+FHIR Tools for Anonymization is an open-source project that helps anonymize healthcare [FHIR](https://www.hl7.org/fhir/) data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The project released to open source on Thursday, March 6th, 2020.
 
-The FHIR Anonymizer uses a [configuration file](#configuration-file-format) specifying the de-identification settings to anonymize the data. The anonymizer includes a [command-line tool](#fhir-anonymizer-command-line-tool) that can be used on-premises or in the cloud to anonymize data. It also comes with a [tutorial](#anonymize-fhir-data-using-azure-data-factory) and script to create an ADF pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
+The core anonymization engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings to anonymize the data. The project includes a [command-line tool](#fhir-anonymizer-command-line-tool) that can be used on-premises or in the cloud to anonymize data. It also comes with a [tutorial](#anonymize-fhir-data-using-azure-data-factory) and script to create an ADF pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
 
-This repo contains a [safe harbor configuration file](samples/configs/safe-harbor-config.json) to help de-identify 17 data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
+This repo contains a [safe harbor configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method) to help de-identify 17 data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
 
 This open source project is fully backed by the Microsoft Healthcare team, but we know that this project will only get better with your feedback and contributions. We are leading the development of this code base, and test builds and deployments daily.
 
@@ -36,25 +36,25 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 * Support anonymization of FHIR R4 data in json as well as ndjson format.
 * Configuration of the data elements that need to be de-identified 
 * Configuration of the de-identification method for each data element (keeping, redacting, or Date-shifting) 
-* Running the tool as part of Azure Data Factory to support de-identification of the data flows.  
-* Running the tool on premise to de-identify a dataset locally 
+* Ability to create Azure Data Factory to support de-identification of the data flows.  
+* Ability to run the tool on premise to de-identify a dataset locally 
 
 # Quickstarts
 
 ## Building the solution
-Use the .Net Core 3.1 SDK to build FHIR Anonymizer. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet-core/3.1).
+Use the .Net Core 3.1 SDK to build FHIR Tools for Anonymization. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet-core/3.1).
 
 ## Get sample FHIR files
 This repo contains a few [sample](samples/fhir-r4-files) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
 
 You can also export FHIR resource from your FHIR server using [Bulk Export](https://github.com/microsoft/fhir-server/blob/master/docs/BulkExport.md).
 
-## Anonymize FHIR data using command line tool
+## Anonymize FHIR data using the command line tool
 Once you have built the command line tool, you will find the Fhir.Anonymizer.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.Tool\bin\Debug|Release\netcoreapp3.1 folder. You can use this exe to anonymize FHIR resource files in a folder.   
 ```
 > .\Fhir.Anonymizer.Tool.exe -i myInputFolder -o myOutputFolder
 ```
-See the [reference](#fhir-anonymizer-command-line-tool) section for usage details of the command line tool.
+See the [reference](#the-command-line-tool) section for usage details of the command line tool.
 
 # Tutorials
 
@@ -64,7 +64,7 @@ In this tutorial, you use the Azure PowerShell to create a Data Factory and a pi
 
 Tutorial steps:
 
-* Use the Anonymizer tool to create a data factory pipeline.
+* Use a PowerShell script to create a data factory pipeline.
 * Trigger on-demand pipeline run.
 * Monitor the pipeline and activity runs.
 
@@ -73,7 +73,7 @@ Tutorial steps:
 * **Azure subscription**: If you don't have an Azure subscription, create a [free account](https://azure.microsoft.com/free/) before you begin.
 * **Azure storage account**: Azure Blob storage is used as the _source_ & _destination_ data store. If you don't have an Azure storage account, see the instructions in [Create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal). 
 * **Azure PowerShell**: Azure PowerShell is used for deploying azure resources. If you don't have Azure PowerShell installed, see the instructions in [Install the Azure PowerShell module](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-3.4.0)
-* **.Net Core 3.1**: Use .Net Core 3.1 sdk to build FHIR Anonymizer. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet-core/3.1).
+* **.Net Core 3.1**: Use .Net Core 3.1 sdk to build FHIR Tools for Anonymization. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet-core/3.1).
 
 > **[!NOTE]**
 > Ensure that your source and destination blob store, Azure Data Factory, and the Azure batch account created as part of this tutorial are all in the same region.
@@ -199,22 +199,26 @@ If you want to cleanup resources, delete that resource group in addition to any 
 # Samples
 
 ## Sample configuration file for HIPAA Safe Harbor method
-FHIR Anonymizer comes with a [safe harbor configuration file](samples/configs/safe-harbor-config.json) to help meet the requirements of HIPAA Safe Harbor Method.
+FHIR Tools for Anonymization comes with a safe harbor configuration file to help meet the requirements of HIPAA Safe Harbor Method (2)(i). HIPAA Safe Harbor Method (2)(ii) talks about "actual knowledge", which is out of scope for this project.
 
-We **strongly** recommend that you review the HIPAA guidelines and verify the implementation before using this configuration file for your requirements. 
+Out of the 18 identifier types mentioned in HIPAA Safe Harbor method (2)(i), this configuration file deals with the first 17 identifier types (A-Q). The 18th type, (R), is unspecific and hence not considered in this configuration file. 
+
+This configuration file is provided in a best-effort manner. We **strongly** recommend that you review the HIPAA guidelines as well as the implementation of this project before using it for you anonymization requirements. 
+
+The safe harbor configuration file can be accessed [here](samples/configs/safe-harbor-config.json).
 
 # Concepts
 
-## How FHIR Anonymizer works
-The FHIR Anonymizer uses a configuration file specifying different parameters as well as de-identification methods for different data-elements and datatypes. 
+## How anonymization engine works
+The anonymization engine uses a configuration file specifying different parameters as well as de-identification methods for different data-elements and datatypes. 
 
-FHIR Anonymizer comes with a default configuration file, which is based on the [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method. You can modify the configuration file as needed based on the information provided below.
+The repo contains a default configuration file, which is based on the [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method. You can modify the configuration file as needed based on the information provided below.
 
 # Reference
 
-## FHIR Anonymizer command line tool
+## The command line tool
 
-FHIR Anonymizer can be used as a command-line tool to anonymize a folder containing FHIR resource files. Here are the parameters that the tool accepts:
+The command-line tool can be used to anonymize a folder containing FHIR resource files. Here are the parameters that the tool accepts:
 
 | Option | Name | Optionality | Default | Description |
 | ----- | ----- | ----- |----- |----- |
@@ -322,8 +326,8 @@ You can specify dateShift as a de-identification method in the configuration fil
 3. The source and the destination blob store, the ADF pipeline, and the Azure batch account must all be in the same region for the ADF pipeline to work reliably.
 
 ## FAQ
-### How can we use FHIR Anonymizer to anonymize HL7 v2.x data
-You can build a pipeline to use [FHIR converter](https://github.com/microsoft/FHIR-Converter) to convert HL7 v2.x data to FHIR format, and subsequently use FHIR Anonymizer to anonymize your data. 
+### How can we use FHIR Tools for Anonymization to anonymize HL7 v2.x data
+You can build a pipeline to use [FHIR converter](https://github.com/microsoft/FHIR-Converter) to convert HL7 v2.x data to FHIR format, and subsequently use FHIR Tools for Anonymization to anonymize your data. 
 
 ### Can we use custom de-identification methods?
 Currently you can use the prebuilt de-identification methods and control their behavior by passing parameters. We are planning to support custom de-identification methods in future.
