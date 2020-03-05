@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests
 {
-    public class FhirPartitionedExecutorTests
+    public class FhirPartitionedExecutionTests
     {
         [Fact] 
         public async Task GivenAPartitionedExecutor_WhenExecute_ResultShouldBeReturnedInOrder()
@@ -54,6 +54,11 @@ namespace Fhir.Anonymizer.Core.UnitTests
                 Assert.Equal(CurrentOffset++.ToString(), content);
             }
         }
+
+        public async Task CompleteAsync()
+        {
+            Assert.Equal(ItemCount, CurrentOffset);
+        }
     }
 
     internal class TestFhirDataReader : IFhirDataReader
@@ -68,13 +73,13 @@ namespace Fhir.Anonymizer.Core.UnitTests
             CurrentOffset = 0;
         }
 
-        public bool HasNext()
+        public async Task<string> NextAsync()
         {
-            return ItemCount > CurrentOffset;
-        }
+            if (CurrentOffset == ItemCount)
+            {
+                return null;
+            }
 
-        public string Next()
-        {
             return (CurrentOffset++).ToString();
         }
     }

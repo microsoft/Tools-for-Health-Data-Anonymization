@@ -7,8 +7,6 @@ namespace Fhir.Anonymizer.Core
 {
     public interface IFhirDataReader
     {
-        string Next();
-
-        bool HasNext();
+        Task<string> NextAsync();
     }
 }
