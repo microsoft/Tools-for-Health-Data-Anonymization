@@ -50,7 +50,7 @@ This repo contains a few [sample](samples/fhir-r4-files) FHIR files that you can
 You can also export FHIR resource from your FHIR server using [Bulk Export](https://github.com/microsoft/fhir-server/blob/master/docs/BulkExport.md).
 
 ## Anonymize FHIR data using command line tool
-Once you have built the command line tool, you will find the Fhir.Anonymizer.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.Tool\bin\Debug\netcoreapp3.1 folder. You can use this exe to anonymize FHIR resource files in a folder.   
+Once you have built the command line tool, you will find the Fhir.Anonymizer.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.Tool\bin\Debug|Release\netcoreapp3.1 folder. You can use this exe to anonymize FHIR resource files in a folder.   
 ```
 > .\Fhir.Anonymizer.Tool.exe -i myInputFolder -o myOutputFolder
 ```
@@ -310,7 +310,7 @@ You can specify dateShift as a de-identification method in the configuration fil
 
 ### Note
 
-1. If the input date/dateTime/instance value does not contain an exact day, for example dates with only a year ("yyyy") or only a year and month ("yyyy-MM"), the date cannot be shifted and redaction will be applied.
+1. If the input date/dateTime/instant value does not contain an exact day, for example dates with only a year ("yyyy") or only a year and month ("yyyy-MM"), the date cannot be shifted and redaction will be applied.
 2. If the input date/dateTime/instant value is indicative of age over 89, it will be redacted (including year) according to HIPAA Safe Harbor Method.
 3. If the input dateTime/instant value contains time, time will be redacted. Time zone will keep unchanged.
 
