@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -14,15 +15,13 @@ namespace Fhir.Anonymizer.Core.UnitTests
         {
             int itemCount = 9873;
             var testConsumer = new TestFhirDataConsumer(itemCount);
-            FhirPartitionedExecutor executor = new FhirPartitionedExecutor()
+            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(new TestFhirDataReader(itemCount), testConsumer, (content) => content)
             {
-                AnonymizedDataConsumer = testConsumer,
-                RawDataReader = new TestFhirDataReader(itemCount),
-                AnonymizerFunction = (content) => content,
-                BatchSize = 100
+                BatchSize = 100,
+                PartitionCount = 19
             };
 
-            await executor.ExecuteAsync();
+            await executor.ExecuteAsync(CancellationToken.None);
 
             Assert.Equal(itemCount, testConsumer.CurrentOffset);
             Assert.Equal(99, testConsumer.BatchCount);

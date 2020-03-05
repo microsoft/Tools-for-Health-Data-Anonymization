@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fhir.Anonymizer.Core.PartitionedExecution;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -18,7 +19,14 @@ namespace Fhir.Anonymizer.Core
 
         public int BatchSize { set; get; } = Constants.DefaultPartitionedExecutionBatchSize;
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public FhirPartitionedExecutor(IFhirDataReader rawDataReader, IFhirDataConsumer anonymizedDataConsumer, Func<string, string> anonymizerFunction)
+        {
+            RawDataReader = rawDataReader;
+            AnonymizedDataConsumer = anonymizedDataConsumer;
+            AnonymizerFunction = anonymizerFunction;
+        }
+
+        public async Task ExecuteAsync(CancellationToken cancellationToken, bool breakOnAnonymizationException = false, IProgress<BatchAnonymizeResult> progress = null)
         {
             Queue<Task<IEnumerable<string>>> executionTasks = new Queue<Task<IEnumerable<string>>>();
             List<string> batchData = new List<string>();
@@ -37,7 +45,7 @@ namespace Fhir.Anonymizer.Core
                     continue;
                 }
 
-                executionTasks.Enqueue(AnonymizeAsync(batchData, cancellationToken));
+                executionTasks.Enqueue(AnonymizeAsync(batchData, breakOnAnonymizationException, progress, cancellationToken));
                 batchData = new List<string>();
                 if (executionTasks.Count < PartitionCount)
                 {
@@ -49,7 +57,7 @@ namespace Fhir.Anonymizer.Core
 
             if (batchData.Count > 0)
             {
-                executionTasks.Enqueue(AnonymizeAsync(batchData, cancellationToken));
+                executionTasks.Enqueue(AnonymizeAsync(batchData, breakOnAnonymizationException, progress, cancellationToken));
             }
 
             while (executionTasks.Count > 0)
@@ -60,20 +68,38 @@ namespace Fhir.Anonymizer.Core
             await AnonymizedDataConsumer.CompleteAsync().ConfigureAwait(false);
         }
 
-        private async Task<IEnumerable<string>> AnonymizeAsync(List<string> batchData, CancellationToken cancellationToken)
+        private async Task<IEnumerable<string>> AnonymizeAsync(List<string> batchData, bool breakOnAnonymizationException, IProgress<BatchAnonymizeResult> progress, CancellationToken cancellationToken)
         {
             return await Task.Run(() =>
             {
                 List<string> result = new List<string>();
+
+                BatchAnonymizeResult batchResult = new BatchAnonymizeResult();
                 foreach (string content in batchData)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
                         throw new OperationCanceledException();
                     }
-                    result.Add(AnonymizerFunction(content));
+
+                    try
+                    {
+                        string anonymizedResult = AnonymizerFunction(content);
+                        result.Add(anonymizedResult);
+                        batchResult.Complete++;
+                    }
+                    catch (Exception)
+                    {
+                        if (breakOnAnonymizationException)
+                        {
+                            throw;
+                        }
+
+                        batchResult.Failed++;
+                    }                    
                 }
 
+                progress?.Report(batchResult);
                 return result;
             }).ConfigureAwait(false);
         }

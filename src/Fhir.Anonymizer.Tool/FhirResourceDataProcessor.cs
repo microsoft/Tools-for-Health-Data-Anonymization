@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Fhir.Anonymizer.Core;
+using Fhir.Anonymizer.Core.PartitionedExecution;
 
 namespace Fhir.Anonymizer.Tool
 {
@@ -74,33 +77,31 @@ namespace Fhir.Anonymizer.Tool
                     Directory.CreateDirectory(resourceOutputFolder);
                 }
 
-                var processedCount = 0;
-                var processedErrorCount = 0;
+                int completedCount = 0;
+                int failedCount = 0;
                 using (FileStream inputStream = new FileStream(bulkResourceFileName, FileMode.Open))
                 using (FileStream outputStream = new FileStream(bulkResourceOutputFileName, FileMode.Create))
                 {
-                    using StreamReader reader = new StreamReader(inputStream);
-                    using StreamWriter writer = new StreamWriter(outputStream);
+                    using FhirStreamReader reader = new FhirStreamReader(inputStream);
+                    using FhirStreamConsumer consumer = new FhirStreamConsumer(outputStream);
+                    Func<string, string> anonymizeFunction = (content) => _engine.AnonymizeJson(content);
 
-                    string resourceLine;
-                    string resultLine;
-                    while ((resourceLine = reader.ReadLine()) != null)
+                    Stopwatch stopWatch = new Stopwatch();
+                    stopWatch.Start();
+
+                    FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, consumer, anonymizeFunction);
+                    Progress<BatchAnonymizeResult> progress = new Progress<BatchAnonymizeResult>();
+                    progress.ProgressChanged += (obj, args) =>
                     {
-                        try
-                        {
-                            resultLine = _engine.AnonymizeJson(resourceLine);
-                            writer.WriteLine(resultLine);
-                            processedCount += 1;
-                        }
-                        catch (Exception innerException)
-                        {
-                            processedErrorCount += 1;
-                            Console.Error.WriteLine($"Error #{processedErrorCount}\nResource: {resourceLine}\nErrorMessage: {innerException.ToString()}");
-                        }
-                    }
+                        Interlocked.Add(ref completedCount, args.Complete);
+                        Interlocked.Add(ref failedCount, args.Failed);
+                        Console.WriteLine($"[{stopWatch.Elapsed.ToString()}]: {completedCount} Completed. {failedCount} Failed.");
+                    };
+
+                    executor.ExecuteAsync(CancellationToken.None, false, progress).Wait();
                 }
                 
-                Console.WriteLine($"Finished processing '{bulkResourceFileName}'! Succeeded in {processedCount} resources, failed in {processedErrorCount} resources in total.");
+                Console.WriteLine($"Finished processing '{bulkResourceFileName}'!");
             }
         }
 
