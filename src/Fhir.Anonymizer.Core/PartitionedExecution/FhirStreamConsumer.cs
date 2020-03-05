@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Fhir.Anonymizer.Core.PartitionedExecution
@@ -18,7 +17,6 @@ namespace Fhir.Anonymizer.Core.PartitionedExecution
         public async Task CompleteAsync()
         {
             _writer.Flush();
-            _writer.Close();
         }
 
         public async Task ConsumeAsync(IEnumerable<string> data)

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fhir.Anonymizer.Core.PartitionedExecution
+﻿namespace Fhir.Anonymizer.Core.PartitionedExecution
 {
     public class BatchAnonymizeResult
     {

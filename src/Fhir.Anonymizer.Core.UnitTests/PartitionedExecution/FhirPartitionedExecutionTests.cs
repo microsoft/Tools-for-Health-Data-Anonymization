@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests
+namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
 {
     public class FhirPartitionedExecutionTests
     {
@@ -67,7 +67,6 @@ namespace Fhir.Anonymizer.Core.UnitTests
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await executor.ExecuteAsync(CancellationToken.None, true));
         }
-
     }
 
     internal class TestFhirDataConsumer : IFhirDataConsumer

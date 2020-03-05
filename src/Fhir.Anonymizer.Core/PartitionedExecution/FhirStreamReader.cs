@@ -1,8 +1,5 @@
-﻿using Hl7.Fhir.Model;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Fhir.Anonymizer.Core
@@ -40,6 +37,7 @@ namespace Fhir.Anonymizer.Core
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }
