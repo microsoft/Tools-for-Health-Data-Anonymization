@@ -71,9 +71,12 @@ Tutorial steps:
 ### Prerequisites
 
 * **Azure subscription**: If you don't have an Azure subscription, create a [free account](https://azure.microsoft.com/free/) before you begin.
-* **Azure storage account**: Azure Blob storage is used as the _source_ & _destination_ data store. If you don't have an Azure storage account, see the instructions in [Create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal). Make sure that the source and the destination store are in the same region.
+* **Azure storage account**: Azure Blob storage is used as the _source_ & _destination_ data store. If you don't have an Azure storage account, see the instructions in [Create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal). 
 * **Azure PowerShell**: Azure PowerShell is used for deploying azure resources. If you don't have Azure PowerShell installed, see the instructions in [Install the Azure PowerShell module](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-3.4.0)
-* **.Net Core 3.1**: Use .Net Core 3.1 sdk to build FHIR Anonymizer. If you don't have .Net Core 3.1 installed, see the instructions in  [.Net Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+* **.Net Core 3.1**: Use .Net Core 3.1 sdk to build FHIR Anonymizer. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet-core/3.1).
+
+> **[!NOTE]**
+> Ensure that your source and destination blob store, Azure Data Factory, and the Azure batch account created as part of this tutorial are all in the same region.
 
 #### Prepare azure storage resource container
 
@@ -316,7 +319,7 @@ You can specify dateShift as a de-identification method in the configuration fil
 ## Current limitations
 1. We only support FHIR data in R4, JSON format. Support for XML and STU 3 is planned.
 2. Date-shift algorithm shifts the dates within a resource by the same random amount. We are working on the ability to shift the dates by the same random amount across resources. 
-3. The source and the destination blob storage locations must be in the same region for the ADF pipeline to work reliably.
+3. The source and the destination blob store, the ADF pipeline, and the Azure batch account must all be in the same region for the ADF pipeline to work reliably.
 
 ## FAQ
 ### How can we use FHIR Anonymizer to anonymize HL7 v2.x data
