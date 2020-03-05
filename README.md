@@ -10,7 +10,7 @@
 [Samples](#samples)  
 &nbsp;&nbsp; [Sample configuration file for HIPAA Safe Harbor method](#sample-configuration-file-for-hipaa-safe-harbor-method)  
 [Concepts](#concepts)  
-&nbsp;&nbsp; [How anonymization engine works](#how-anonymization-engine-works)  
+&nbsp;&nbsp; [How the engine works](#how-the-engine-works)  
 [Reference](#reference)  
 &nbsp;&nbsp; [The command line tool](#the-command-line-tool)  
 &nbsp;&nbsp; [Configuration file format](#configuration-file-format)  
@@ -21,9 +21,9 @@
 
 # Overview
 
-FHIR Tools for Anonymization is an open-source project that helps anonymize healthcare [FHIR](https://www.hl7.org/fhir/) data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The project released to open source on Thursday, March 6th, 2020.
+FHIR Tools for Anonymization is an open-source project that helps anonymize healthcare [FHIR](https://www.hl7.org/fhir/) data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The project released to open source on Friday, March 6th, 2020.
 
-The core anonymization engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings to anonymize the data. The project includes a [command-line tool](#fhir-anonymizer-command-line-tool) that can be used on-premises or in the cloud to anonymize data. It also comes with a [tutorial](#anonymize-fhir-data-using-azure-data-factory) and script to create an ADF pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
+The core engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings to anonymize the data. The project includes a [command-line tool](#fhir-anonymizer-command-line-tool) that can be used on-premises or in the cloud to anonymize data. It also comes with a [tutorial](#anonymize-fhir-data-using-azure-data-factory) and script to create an ADF pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
 
 This repo contains a [safe harbor configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method) to help de-identify 17 data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
 
@@ -47,7 +47,7 @@ Use the .Net Core 3.1 SDK to build FHIR Tools for Anonymization. If you don't ha
 ## Get sample FHIR files
 This repo contains a few [sample](samples/fhir-r4-files) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
 
-You can also export FHIR resource from your FHIR server using [Bulk Export](https://github.com/microsoft/fhir-server/blob/master/docs/BulkExport.md).
+You can also export FHIR resource from your FHIR server using [Bulk Export](https://docs.microsoft.com/en-us/azure/healthcare-apis/configure-export-data).
 
 ## Anonymize FHIR data using the command line tool
 Once you have built the command line tool, you will find the Fhir.Anonymizer.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.Tool\bin\Debug|Release\netcoreapp3.1 folder. You can use this exe to anonymize FHIR resource files in a folder.   
@@ -199,7 +199,7 @@ If you want to cleanup resources, delete that resource group in addition to any 
 # Samples
 
 ## Sample configuration file for HIPAA Safe Harbor method
-FHIR Tools for Anonymization comes with a safe harbor configuration file to help meet the requirements of HIPAA Safe Harbor Method (2)(i). HIPAA Safe Harbor Method (2)(ii) talks about "actual knowledge", which is out of scope for this project.
+FHIR Tools for Anonymization comes with a sample configuration file to help meet the requirements of HIPAA Safe Harbor Method (2)(i). HIPAA Safe Harbor Method (2)(ii) talks about "actual knowledge", which is out of scope for this project.
 
 Out of the 18 identifier types mentioned in HIPAA Safe Harbor method (2)(i), this configuration file deals with the first 17 identifier types (A-Q). The 18th type, (R), is unspecific and hence not considered in this configuration file. 
 
@@ -209,10 +209,10 @@ The safe harbor configuration file can be accessed [here](samples/configs/safe-h
 
 # Concepts
 
-## How anonymization engine works
+## How the engine works
 The anonymization engine uses a configuration file specifying different parameters as well as de-identification methods for different data-elements and datatypes. 
 
-The repo contains a default configuration file, which is based on the [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method. You can modify the configuration file as needed based on the information provided below.
+The repo contains a [sample configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method), which is based on the [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method. You can modify the configuration file as needed based on the information provided below.
 
 # Reference
 
