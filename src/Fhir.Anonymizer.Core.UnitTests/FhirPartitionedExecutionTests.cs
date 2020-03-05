@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fhir.Anonymizer.Core.PartitionedExecution;
+using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
@@ -18,14 +19,55 @@ namespace Fhir.Anonymizer.Core.UnitTests
             FhirPartitionedExecutor executor = new FhirPartitionedExecutor(new TestFhirDataReader(itemCount), testConsumer, (content) => content)
             {
                 BatchSize = 100,
-                PartitionCount = 19
+                PartitionCount = 10
             };
 
-            await executor.ExecuteAsync(CancellationToken.None);
+            int totalCount = 0;
+            Progress<BatchAnonymizeResult> progress = new Progress<BatchAnonymizeResult>();
+            progress.ProgressChanged += (obj, args) =>
+            {
+                Interlocked.Add(ref totalCount, args.Complete);
+            };
+            await executor.ExecuteAsync(CancellationToken.None, progress: progress);
 
+            Assert.Equal(itemCount, totalCount);
             Assert.Equal(itemCount, testConsumer.CurrentOffset);
             Assert.Equal(99, testConsumer.BatchCount);
         }
+
+        [Fact]
+        public async Task GivenAPartitionedExecutor_WhenCancelled_OperationCancelledExceptionShouldBeThrow()
+        {
+            int itemCount = 9873;
+            var testConsumer = new TestFhirDataConsumer(itemCount);
+            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(new TestFhirDataReader(itemCount), testConsumer, (content) => content);
+
+            executor.AnonymizerFunction = (content) =>
+            {
+                Thread.Sleep(10);
+                return content;
+            };
+
+            CancellationTokenSource source = new CancellationTokenSource();
+            source.CancelAfter(1000);
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await executor.ExecuteAsync(source.Token));
+        }
+
+        [Fact]
+        public async Task GivenAPartitionedExecutorBreakOnExceptionEnabled_WhenExceptionThrow_ExecutionShouldStop()
+        {
+            int itemCount = 9873;
+            var testConsumer = new TestFhirDataConsumer(itemCount);
+            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(new TestFhirDataReader(itemCount), testConsumer, (content) => content);
+
+            executor.AnonymizerFunction = (content) =>
+            {
+                throw new InvalidOperationException();
+            };
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await executor.ExecuteAsync(CancellationToken.None, true));
+        }
+
     }
 
     internal class TestFhirDataConsumer : IFhirDataConsumer

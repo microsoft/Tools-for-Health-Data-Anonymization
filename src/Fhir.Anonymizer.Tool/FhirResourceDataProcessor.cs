@@ -90,6 +90,7 @@ namespace Fhir.Anonymizer.Tool
                     stopWatch.Start();
 
                     FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, consumer, anonymizeFunction);
+                    executor.PartitionCount = Environment.ProcessorCount;
                     Progress<BatchAnonymizeResult> progress = new Progress<BatchAnonymizeResult>();
                     progress.ProgressChanged += (obj, args) =>
                     {
