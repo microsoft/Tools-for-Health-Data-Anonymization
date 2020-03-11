@@ -11,14 +11,6 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
 {
     public class FhirBlobDataStream : Stream
     {
-        private const int KB = 1024;
-        private const int MB = KB * 1024;
-        private const int BlockBufferSize = 4 * MB;
-        private const int DefaultConcurrentCount = 3;
-        private const int DefaultBlockDownloadTimeoutInSeconds = 5 * 60;
-        private const int DefaultBlockDownloadTimeoutRetryCount = 3;
-        
-
         private BlobClient _blobClient;
         private Lazy<long> _blobLength;
         private Queue<Task<BlobDownloadInfo>> _downloadTasks;
@@ -37,19 +29,19 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
         {
             get;
             set;
-        } = DefaultConcurrentCount;
+        } = FhirAzureConstants.DefaultConcurrentCount;
 
         public int BlockDownloadTimeoutInSeconds
         {
             get;
             set;
-        } = DefaultBlockDownloadTimeoutInSeconds;
+        } = FhirAzureConstants.DefaultBlockDownloadTimeoutInSeconds;
 
         public int BlockDownloadTimeoutRetryCount
         {
             get;
             set;
-        } = DefaultBlockDownloadTimeoutRetryCount;
+        } = FhirAzureConstants.DefaultBlockDownloadTimeoutRetryCount;
 
         public Func<BlobClient, HttpRange, Task<BlobDownloadInfo>> DownloadDataFunc =
             async (client, range) =>
@@ -65,7 +57,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
 
             while (count > 0)
             {
-                StartNewDownloadTask();
+                TryStartNewDownloadTask();
 
                 if (_downloadTasks.Count > 0)
                 {
@@ -93,7 +85,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
             return totalBytesRead;
         }
 
-        private int StartNewDownloadTask()
+        private int TryStartNewDownloadTask()
         {
             int newTasksStarted = 0;
             while (_downloadTasks.Count < ConcurrentCount)
@@ -117,7 +109,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
             return await ExecutionWithTimeoutRetry.InvokeAsync<BlobDownloadInfo>(async () =>
             {
                 return await DownloadDataFunc(_blobClient, range).ConfigureAwait(false);
-            }, timeout: TimeSpan.FromSeconds(BlockDownloadTimeoutInSeconds), BlockDownloadTimeoutRetryCount);
+            }, timeout: TimeSpan.FromSeconds(BlockDownloadTimeoutInSeconds), BlockDownloadTimeoutRetryCount).ConfigureAwait(false);
         }
 
         private HttpRange NextRange()
@@ -126,7 +118,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
             long? length = null;
             if (totalLength > _position)
             {
-                length = Math.Min(totalLength - _position, BlockBufferSize);
+                length = Math.Min(totalLength - _position, FhirAzureConstants.BlockBufferSize);
             }
 
             return new HttpRange(_position, length);
