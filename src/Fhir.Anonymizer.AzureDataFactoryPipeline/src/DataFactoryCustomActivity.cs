@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
+using Fhir.Anonymizer.AzureDataFactoryPipeline.src;
 using Fhir.Anonymizer.Core;
+using Fhir.Anonymizer.Core.PartitionedExecution;
 using Newtonsoft.Json;
 
 namespace Fhir.Anonymizer.DataFactoryTool
@@ -63,7 +68,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 Console.WriteLine($"[{blob.Name}]：Processing... output to container '{outputContainerName}'");
 
                 var inputBlobClient = inputContainer.GetBlobClient(blob.Name);
-                var outputBlobClient = outputContainer.GetBlobClient(outputBlobName);
+                var outputBlobClient = new BlockBlobClient(inputData.SourceStorageConnectionString, outputContainerName, outputBlobName);
 
                 var isOutputExist = await outputBlobClient.ExistsAsync();
                 if (!force && isOutputExist)
@@ -95,7 +100,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
             }
         }
 
-        private async Task AnonymizeBlobInJsonFormatAsync(BlobClient inputBlobClient, BlobClient outputBlobClient, string blobName)
+        private async Task AnonymizeBlobInJsonFormatAsync(BlobClient inputBlobClient, BlockBlobClient outputBlobClient, string blobName)
         {
             try
             {
@@ -120,43 +125,40 @@ namespace Fhir.Anonymizer.DataFactoryTool
             }
         }
 
-        private async Task AnonymizeBlobInNdJsonFormatAsync(BlobClient inputBlobClient, BlobClient outputBlobClient, string blobName)
+        private async Task AnonymizeBlobInNdJsonFormatAsync(BlobClient inputBlobClient, BlockBlobClient outputBlobClient, string blobName)
         {
-            var inputDownloadInfo = await inputBlobClient.DownloadAsync();
-            var outputTempFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{Guid.NewGuid().ToString()}");
-
             var processedCount = 0;
             var processedErrorCount = 0;
-            using (FileStream destinationStream = File.Create(outputTempFileName))
-            {
-                using var reader = new StreamReader(inputDownloadInfo.Value.Content);
-                using var writer = new StreamWriter(destinationStream, reader.CurrentEncoding);
-                string resourceLine;
-                string resultLine;
 
-                while ((resourceLine = reader.ReadLine()) != null)
+            using FhirBlobDataStream inputStream = new FhirBlobDataStream(inputBlobClient);
+            FhirStreamReader reader = new FhirStreamReader(inputStream);
+            FhirBlobConsumer consumer = new FhirBlobConsumer(outputBlobClient);
+            Func<string, string> anonymizerFunction = (item) =>
+            {
+                try
                 {
-                    try
-                    {
-                        resultLine = _engine.AnonymizeJson(resourceLine);
-                        writer.WriteLine(resultLine);
-                        processedCount += 1;
-                    }
-                    catch (Exception innerException)
-                    {
-                        processedErrorCount += 1;
-                        Console.WriteLine($"[{blobName}]: Anonymize partial failed, you can find detail error message in stderr.txt.");
-                        Console.Error.WriteLine($"[{blobName}]: Error #{processedErrorCount}\nResource: {resourceLine}\nErrorMessage: {innerException.Message}\n Details: {innerException.ToString()}\nStackTrace: {innerException.StackTrace}");
-                    }
+                    return _engine.AnonymizeJson(item);
                 }
-                writer.Flush();
-            }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[{blobName}]: Anonymize partial failed, you can find detail error message in stderr.txt.");
+                    Console.Error.WriteLine($"[{blobName}]: Resource: {item}\nErrorMessage: {ex.Message}\n Details: {ex.ToString()}\nStackTrace: {ex.StackTrace}");
+                    throw;
+                }
+            };
 
-            using (FileStream uploadFileStream = new FileStream(outputTempFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose))
+            Stopwatch stopWatch = Stopwatch.StartNew();
+            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, consumer, anonymizerFunction);
+            executor.PartitionCount = Environment.ProcessorCount;
+            Progress<BatchAnonymizeResult> progress = new Progress<BatchAnonymizeResult>();
+            progress.ProgressChanged += (obj, args) =>
             {
-                await outputBlobClient.UploadAsync(uploadFileStream);
-                Console.WriteLine($"[{blobName}]: Succeeded in {processedCount} resources, failed in {processedErrorCount} resources in total.");
-            }
+                Interlocked.Add(ref processedCount, args.Complete);
+                Interlocked.Add(ref processedErrorCount, args.Failed);
+                Console.WriteLine($"[{stopWatch.Elapsed.ToString()}]: {processedCount} Completed. {processedErrorCount} Failed.");
+            };
+
+            await executor.ExecuteAsync(CancellationToken.None, false, progress).ConfigureAwait(false);
         }
 
         private string GetBlobPrefixFromFolderPath(string folderPath)
