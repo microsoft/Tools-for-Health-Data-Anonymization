@@ -1,9 +1,7 @@
-﻿using Fhir.Anonymizer.Core.PartitionedExecution;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
+using Fhir.Anonymizer.Core.PartitionedExecution;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
