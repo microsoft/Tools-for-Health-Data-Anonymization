@@ -103,7 +103,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 using (var reader = new StreamReader(inputDownloadInfo.Value.Content))
                 {
                     string input = await reader.ReadToEndAsync();
-                    string output = _engine.AnonymizeJson(input);
+                    string output = _engine.AnonymizeJson(input, isPrettyOutput: true);
 
                     using (MemoryStream outputStream = new MemoryStream(reader.CurrentEncoding.GetBytes(output)))
                     {
