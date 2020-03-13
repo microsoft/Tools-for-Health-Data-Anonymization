@@ -16,14 +16,14 @@ namespace Fhir.Anonymizer.Core.PartitionedExecution
 
         public async Task CompleteAsync()
         {
-            _writer.Flush();
+            await _writer.FlushAsync().ConfigureAwait(false);
         }
 
         public async Task ConsumeAsync(IEnumerable<string> data)
         {
             foreach (string content in data)
             {
-                await _writer.WriteLineAsync(content);
+                await _writer.WriteLineAsync(content).ConfigureAwait(false);
             }
         }
 
@@ -36,6 +36,7 @@ namespace Fhir.Anonymizer.Core.PartitionedExecution
             {
                 if (disposing)
                 {
+                    _writer?.Dispose();
                 }
 
                 disposedValue = true;

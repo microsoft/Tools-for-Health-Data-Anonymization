@@ -1,10 +1,8 @@
-﻿using Fhir.Anonymizer.Core.PartitionedExecution;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Fhir.Anonymizer.Core.PartitionedExecution;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
@@ -23,10 +21,10 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             };
 
             int totalCount = 0;
-            Progress<BatchAnonymizeResult> progress = new Progress<BatchAnonymizeResult>();
+            Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
             progress.ProgressChanged += (obj, args) =>
             {
-                Interlocked.Add(ref totalCount, args.Complete);
+                Interlocked.Add(ref totalCount, args.Completed);
             };
             await executor.ExecuteAsync(CancellationToken.None, progress: progress);
 
@@ -36,7 +34,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
         }
 
         [Fact]
-        public async Task GivenAPartitionedExecutor_WhenCancelled_OperationCancelledExceptionShouldBeThrow()
+        public async Task GivenAPartitionedExecutor_WhenCancelled_OperationCancelledExceptionShouldBeThrown()
         {
             int itemCount = 9873;
             var testConsumer = new TestFhirDataConsumer(itemCount);
@@ -91,7 +89,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             BatchCount++;
             foreach (string content in data)
             {
-                Assert.Equal(CurrentOffset++.ToString(), content);
+                Assert.Equal((CurrentOffset++).ToString(), content);
             }
         }
 

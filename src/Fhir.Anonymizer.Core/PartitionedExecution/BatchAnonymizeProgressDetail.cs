@@ -1,8 +1,8 @@
 ﻿namespace Fhir.Anonymizer.Core.PartitionedExecution
 {
-    public class BatchAnonymizeResult
+    public class BatchAnonymizeProgressDetail
     {
-        public int Complete { get; set; }
+        public int Completed { get; set; }
 
         public int Failed { get; set; }
     }
