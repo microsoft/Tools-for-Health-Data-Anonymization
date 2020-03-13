@@ -12,7 +12,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
     {
         private BlobClient _blobClient;
         private Lazy<long> _blobLength;
-        private Queue<Task<BlobDownloadInfo>> _downloadTasks;
+        private Queue<Task<Stream>> _downloadTasks;
         private long _position;
 
         public FhirBlobDataStream(BlobClient blobClient)
@@ -20,7 +20,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
             _blobClient = blobClient;
 
             _blobLength = new Lazy<long>(() =>  _blobClient.GetProperties().Value.ContentLength);
-            _downloadTasks = new Queue<Task<BlobDownloadInfo>>();
+            _downloadTasks = new Queue<Task<Stream>>();
             _position = 0;
         }
 
@@ -42,10 +42,14 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
             set;
         } = FhirAzureConstants.DefaultBlockDownloadTimeoutRetryCount;
 
-        public Func<BlobClient, HttpRange, Task<BlobDownloadInfo>> DownloadDataFunc =
+        public Func<BlobClient, HttpRange, Task<Stream>> DownloadDataFunc =
             async (client, range) =>
             {
-                return await client.DownloadAsync(range).ConfigureAwait(false);
+                using BlobDownloadInfo blobDownloadInfo = await client.DownloadAsync(range).ConfigureAwait(false);
+                MemoryStream stream = new MemoryStream();
+                await blobDownloadInfo.Content.CopyToAsync(stream).ConfigureAwait(false);
+                stream.Position = 0;
+                return stream;
             };
 
         public override bool CanRead => true;
@@ -60,10 +64,10 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
 
                 if (_downloadTasks.Count > 0)
                 {
-                    Task<BlobDownloadInfo> downloadTask = _downloadTasks.Peek();
+                    Task<Stream> downloadTask = _downloadTasks.Peek();
                     downloadTask.Wait();
 
-                    Stream contentStream = downloadTask.Result.Content;
+                    Stream contentStream = downloadTask.Result;
                     int bytesRead = contentStream.Read(buffer, offset, count);
                     if (bytesRead == 0)
                     {
@@ -103,9 +107,9 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
             return newTasksStarted;
         }
 
-        private async Task<BlobDownloadInfo> DownloadBlobAsync(HttpRange range)
+        private async Task<Stream> DownloadBlobAsync(HttpRange range)
         {
-            return await ExecutionWithTimeoutRetry.InvokeAsync<BlobDownloadInfo>(async () =>
+            return await ExecutionWithTimeoutRetry.InvokeAsync<Stream>(async () =>
             {
                 return await DownloadDataFunc(_blobClient, range).ConfigureAwait(false);
             }, timeout: TimeSpan.FromSeconds(BlockDownloadTimeoutInSeconds), BlockDownloadTimeoutRetryCount).ConfigureAwait(false);

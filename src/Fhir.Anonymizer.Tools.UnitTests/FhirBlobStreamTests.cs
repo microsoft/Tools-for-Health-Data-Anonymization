@@ -15,7 +15,7 @@ namespace Fhir.Anonymizer.Tools.UnitTests
 {
     public class FhirBlobStreamTests
     {
-        [Fact(Skip = "StorageEmulatorSupportOnly")]
+        [Fact]
         public async Task GivenAFhirBlobStream_WhenDownloadData_AllDataShouldbeReturned()
         {
             string containerName = Guid.NewGuid().ToString("N");
@@ -43,7 +43,7 @@ namespace Fhir.Anonymizer.Tools.UnitTests
             }
         }
 
-        [Fact(Skip = "StorageEmulatorSupportOnly")]
+        [Fact]
         public async Task GivenAFhirBlobStream_WhenDownloadDataTimeout_OperationShouldBeRetried()
         {
             string containerName = Guid.NewGuid().ToString("N");
@@ -73,7 +73,8 @@ namespace Fhir.Anonymizer.Tools.UnitTests
                         Thread.Sleep(TimeSpan.FromSeconds(10));
                     }
 
-                    return await client.DownloadAsync(range).ConfigureAwait(false);
+                    var downloadInfo = await client.DownloadAsync(range).ConfigureAwait(false);
+                    return downloadInfo.Value.Content;
                 };
 
                 StreamReader reader = new StreamReader(stream);

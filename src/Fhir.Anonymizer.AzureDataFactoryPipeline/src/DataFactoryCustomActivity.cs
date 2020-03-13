@@ -9,6 +9,7 @@ using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Fhir.Anonymizer.AzureDataFactoryPipeline.src;
 using Fhir.Anonymizer.Core;
+using Fhir.Anonymizer.Core.PartitionedExecution;
 using Newtonsoft.Json;
 
 namespace Fhir.Anonymizer.DataFactoryTool
@@ -44,7 +45,8 @@ namespace Fhir.Anonymizer.DataFactoryTool
 
         public async Task AnonymizeDataset(ActivityInputData inputData, bool force)
         {
-            var inputContainer = new BlobContainerClient(inputData.SourceStorageConnectionString, inputData.SourceContainerName.ToLower());
+            string inputContainerName = inputData.SourceContainerName.ToLower();
+            var inputContainer = new BlobContainerClient(inputData.SourceStorageConnectionString, inputContainerName);
             if (!await inputContainer.ExistsAsync())
             {
                 throw new Exception($"Error: The specified container {inputData.SourceContainerName} does not exist.");
@@ -65,8 +67,8 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 string outputBlobName = GetOutputBlobName(blob.Name, inputBlobPrefix, outputBlobPrefix);
                 Console.WriteLine($"[{blob.Name}]：Processing... output to container '{outputContainerName}'");
 
-                var inputBlobClient = inputContainer.GetBlobClient(blob.Name);
-                var outputBlobClient = new BlockBlobClient(inputData.SourceStorageConnectionString, outputContainerName, outputBlobName);
+                var inputBlobClient = new BlobClient(inputData.SourceStorageConnectionString, inputContainerName, blob.Name, GetBlobClientOptions());
+                var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainerName, outputBlobName, options);
 
                 var isOutputExist = await outputBlobClient.ExistsAsync();
                 if (!force && isOutputExist)
@@ -148,10 +150,10 @@ namespace Fhir.Anonymizer.DataFactoryTool
             Stopwatch stopWatch = Stopwatch.StartNew();
             FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, consumer, anonymizerFunction);
             executor.PartitionCount = Environment.ProcessorCount;
-            Progress<BatchAnonymizeResult> progress = new Progress<BatchAnonymizeResult>();
+            Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
             progress.ProgressChanged += (obj, args) =>
             {
-                Interlocked.Add(ref processedCount, args.Complete);
+                Interlocked.Add(ref processedCount, args.Completed);
                 Interlocked.Add(ref processedErrorCount, args.Failed);
                 Console.WriteLine($"[{stopWatch.Elapsed.ToString()}]: {processedCount} Completed. {processedErrorCount} Failed.");
             };
@@ -179,12 +181,23 @@ namespace Fhir.Anonymizer.DataFactoryTool
             return ".json".Equals(Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public void Run(bool force = false)
+        private BlobClientOptions GetBlobClientOptions()
+        {
+            BlobClientOptions options = new BlobClientOptions();
+            options.Retry.Delay = TimeSpan.FromSeconds(30);
+            options.Retry.Mode = Azure.Core.RetryMode.Exponential;
+            options.Retry.MaxDelay = TimeSpan.FromSeconds(100);
+            options.Retry.MaxRetries = 3;
+
+            return options;
+        }
+
+        public async Task Run(bool force = false)
         {
             _engine = new AnonymizerEngine("./configuration-sample.json");
 
             var input = LoadActivityInput();
-            AnonymizeDataset(input, force).Wait();
+            await AnonymizeDataset(input, force).ConfigureAwait(false);
         }
     }
 }
