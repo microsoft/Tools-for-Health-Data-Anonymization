@@ -21,10 +21,10 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             };
 
             int totalCount = 0;
-            Progress<BatchAnonymizeResult> progress = new Progress<BatchAnonymizeResult>();
+            Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
             progress.ProgressChanged += (obj, args) =>
             {
-                Interlocked.Add(ref totalCount, args.Complete);
+                Interlocked.Add(ref totalCount, args.Completed);
             };
             await executor.ExecuteAsync(CancellationToken.None, progress: progress);
 

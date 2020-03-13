@@ -25,7 +25,7 @@ namespace Fhir.Anonymizer.Core
             AnonymizerFunction = anonymizerFunction;
         }
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken, bool breakOnAnonymizationException = false, IProgress<BatchAnonymizeResult> progress = null)
+        public async Task ExecuteAsync(CancellationToken cancellationToken, bool breakOnAnonymizationException = false, IProgress<BatchAnonymizeProgressDetail> progress = null)
         {
             Queue<Task<IEnumerable<string>>> executionTasks = new Queue<Task<IEnumerable<string>>>();
             List<string> batchData = new List<string>();
@@ -67,13 +67,13 @@ namespace Fhir.Anonymizer.Core
             await AnonymizedDataConsumer.CompleteAsync().ConfigureAwait(false);
         }
 
-        private async Task<IEnumerable<string>> AnonymizeAsync(List<string> batchData, bool breakOnAnonymizationException, IProgress<BatchAnonymizeResult> progress, CancellationToken cancellationToken)
+        private async Task<IEnumerable<string>> AnonymizeAsync(List<string> batchData, bool breakOnAnonymizationException, IProgress<BatchAnonymizeProgressDetail> progress, CancellationToken cancellationToken)
         {
             return await Task.Run(() =>
             {
                 List<string> result = new List<string>();
 
-                BatchAnonymizeResult batchResult = new BatchAnonymizeResult();
+                BatchAnonymizeProgressDetail batchAnonymizeProgressDetail = new BatchAnonymizeProgressDetail();
                 foreach (string content in batchData)
                 {
                     if (cancellationToken.IsCancellationRequested)
@@ -85,7 +85,7 @@ namespace Fhir.Anonymizer.Core
                     {
                         string anonymizedResult = AnonymizerFunction(content);
                         result.Add(anonymizedResult);
-                        batchResult.Complete++;
+                        batchAnonymizeProgressDetail.Completed++;
                     }
                     catch (Exception)
                     {
@@ -94,11 +94,11 @@ namespace Fhir.Anonymizer.Core
                             throw;
                         }
 
-                        batchResult.Failed++;
+                        batchAnonymizeProgressDetail.Failed++;
                     }                    
                 }
 
-                progress?.Report(batchResult);
+                progress?.Report(batchAnonymizeProgressDetail);
                 return result;
             }).ConfigureAwait(false);
         }
