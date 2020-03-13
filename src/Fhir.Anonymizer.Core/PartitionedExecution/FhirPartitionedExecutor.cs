@@ -105,7 +105,7 @@ namespace Fhir.Anonymizer.Core
 
         private async Task ConsumeExecutionResultTask(Queue<Task<IEnumerable<string>>> executionTasks)
         {
-            IEnumerable<string> resultContents = await executionTasks.Dequeue();
+            IEnumerable<string> resultContents = await executionTasks.Dequeue().ConfigureAwait(false);
 
             await AnonymizedDataConsumer.ConsumeAsync(resultContents).ConfigureAwait(false);
         }
