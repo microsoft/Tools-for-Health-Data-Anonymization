@@ -36,6 +36,7 @@ namespace Fhir.Anonymizer.Core.PartitionedExecution
             {
                 if (disposing)
                 {
+                    _writer?.Dispose();
                 }
 
                 disposedValue = true;
