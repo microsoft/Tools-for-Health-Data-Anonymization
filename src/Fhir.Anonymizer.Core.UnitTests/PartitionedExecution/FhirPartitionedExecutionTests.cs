@@ -34,7 +34,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
         }
 
         [Fact]
-        public async Task GivenAPartitionedExecutor_WhenCancelled_OperationCancelledExceptionShouldBeThrow()
+        public async Task GivenAPartitionedExecutor_WhenCancelled_OperationCancelledExceptionShouldBeThrown()
         {
             int itemCount = 9873;
             var testConsumer = new TestFhirDataConsumer(itemCount);
@@ -89,7 +89,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             BatchCount++;
             foreach (string content in data)
             {
-                Assert.Equal(CurrentOffset++.ToString(), content);
+                Assert.Equal((CurrentOffset++).ToString(), content);
             }
         }
 
