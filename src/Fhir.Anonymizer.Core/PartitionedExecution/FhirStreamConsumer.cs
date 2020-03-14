@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Fhir.Anonymizer.Core.PartitionedExecution
@@ -21,10 +22,13 @@ namespace Fhir.Anonymizer.Core.PartitionedExecution
 
         public async Task ConsumeAsync(IEnumerable<string> data)
         {
+            StringBuilder builder = new StringBuilder();
             foreach (string content in data)
             {
-                await _writer.WriteLineAsync(content).ConfigureAwait(false);
+                builder.AppendLine(content);
             }
+
+            await _writer.WriteAsync(builder.ToString()).ConfigureAwait(false);
         }
 
         #region IDisposable Support
