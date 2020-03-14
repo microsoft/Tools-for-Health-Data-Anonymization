@@ -23,14 +23,11 @@ namespace Fhir.Anonymizer.Core.PartitionedExecution
         public async Task<int> ConsumeAsync(IEnumerable<string> data)
         {
             int result = 0;
-            StringBuilder builder = new StringBuilder();
             foreach (string content in data)
             {
-                builder.AppendLine(content);
+                _writer.WriteLine(content);
                 result++;
             }
-
-            await _writer.WriteAsync(builder.ToString()).ConfigureAwait(false);
 
             return result;
         }
