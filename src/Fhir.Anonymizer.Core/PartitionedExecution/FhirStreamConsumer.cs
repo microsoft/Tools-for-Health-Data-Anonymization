@@ -20,15 +20,19 @@ namespace Fhir.Anonymizer.Core.PartitionedExecution
             await _writer.FlushAsync().ConfigureAwait(false);
         }
 
-        public async Task ConsumeAsync(IEnumerable<string> data)
+        public async Task<int> ConsumeAsync(IEnumerable<string> data)
         {
+            int result = 0;
             StringBuilder builder = new StringBuilder();
             foreach (string content in data)
             {
                 builder.AppendLine(content);
+                result++;
             }
 
             await _writer.WriteAsync(builder.ToString()).ConfigureAwait(false);
+
+            return result;
         }
 
         #region IDisposable Support

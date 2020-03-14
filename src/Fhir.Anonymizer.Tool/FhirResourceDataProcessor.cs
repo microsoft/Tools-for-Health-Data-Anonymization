@@ -79,6 +79,7 @@ namespace Fhir.Anonymizer.Tool
 
                 int completedCount = 0;
                 int failedCount = 0;
+                int consumeCompletedCount = 0;
                 using (FileStream inputStream = new FileStream(bulkResourceFileName, FileMode.Open))
                 using (FileStream outputStream = new FileStream(bulkResourceOutputFileName, FileMode.Create))
                 {
@@ -94,9 +95,10 @@ namespace Fhir.Anonymizer.Tool
                     Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
                     progress.ProgressChanged += (obj, args) =>
                     {
-                        Interlocked.Add(ref completedCount, args.Completed);
-                        Interlocked.Add(ref failedCount, args.Failed);
-                        Console.WriteLine($"[{stopWatch.Elapsed.ToString()}]: {completedCount} Completed. {failedCount} Failed.");
+                        Interlocked.Add(ref completedCount, args.ProcessCompleted);
+                        Interlocked.Add(ref failedCount, args.ProcessFailed);
+                        Interlocked.Add(ref consumeCompletedCount, args.ConsumeCompleted);
+                        Console.WriteLine($"[{stopWatch.Elapsed.ToString()}]: {completedCount} Process completed. {failedCount} Process failed. {consumeCompletedCount} Consume completed.");
                     };
 
                     executor.ExecuteAsync(CancellationToken.None, false, progress).Wait();

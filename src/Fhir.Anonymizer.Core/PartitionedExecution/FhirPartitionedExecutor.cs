@@ -51,7 +51,7 @@ namespace Fhir.Anonymizer.Core
                     continue;
                 }
 
-                await ConsumeExecutionResultTask(executionTasks).ConfigureAwait(false);
+                await ConsumeExecutionResultTask(executionTasks, progress).ConfigureAwait(false);
             }
 
             if (batchData.Count > 0)
@@ -61,7 +61,7 @@ namespace Fhir.Anonymizer.Core
 
             while (executionTasks.Count > 0)
             {
-                await ConsumeExecutionResultTask(executionTasks).ConfigureAwait(false);
+                await ConsumeExecutionResultTask(executionTasks, progress).ConfigureAwait(false);
             }
 
             await AnonymizedDataConsumer.CompleteAsync().ConfigureAwait(false);
@@ -85,7 +85,7 @@ namespace Fhir.Anonymizer.Core
                     {
                         string anonymizedResult = AnonymizerFunction(content);
                         result.Add(anonymizedResult);
-                        batchAnonymizeProgressDetail.Completed++;
+                        batchAnonymizeProgressDetail.ProcessCompleted++;
                     }
                     catch (Exception)
                     {
@@ -94,7 +94,7 @@ namespace Fhir.Anonymizer.Core
                             throw;
                         }
 
-                        batchAnonymizeProgressDetail.Failed++;
+                        batchAnonymizeProgressDetail.ProcessFailed++;
                     }                    
                 }
 
@@ -103,11 +103,12 @@ namespace Fhir.Anonymizer.Core
             }).ConfigureAwait(false);
         }
 
-        private async Task ConsumeExecutionResultTask(Queue<Task<IEnumerable<string>>> executionTasks)
+        private async Task ConsumeExecutionResultTask(Queue<Task<IEnumerable<string>>> executionTasks, IProgress<BatchAnonymizeProgressDetail> progress)
         {
             IEnumerable<string> resultContents = await executionTasks.Dequeue().ConfigureAwait(false);
 
-            await AnonymizedDataConsumer.ConsumeAsync(resultContents).ConfigureAwait(false);
+            int consumeCount = await AnonymizedDataConsumer.ConsumeAsync(resultContents).ConfigureAwait(false);
+            progress?.Report(new BatchAnonymizeProgressDetail() { ConsumeCompleted = consumeCount });
         }
     }
 }

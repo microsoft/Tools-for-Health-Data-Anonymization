@@ -5,7 +5,7 @@ namespace Fhir.Anonymizer.Core
 {
     public interface IFhirDataConsumer
     {
-        Task ConsumeAsync(IEnumerable<string> data);
+        Task<int> ConsumeAsync(IEnumerable<string> data);
 
         Task CompleteAsync();
     }

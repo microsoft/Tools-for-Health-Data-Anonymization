@@ -2,8 +2,10 @@
 {
     public class BatchAnonymizeProgressDetail
     {
-        public int Completed { get; set; }
+        public int ProcessCompleted { get; set; }
 
-        public int Failed { get; set; }
+        public int ProcessFailed { get; set; }
+
+        public int ConsumeCompleted { get; set; }
     }
 }
