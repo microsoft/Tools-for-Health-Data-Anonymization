@@ -68,7 +68,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 Console.WriteLine($"[{blob.Name}]：Processing... output to container '{outputContainerName}'");
 
                 var inputBlobClient = new BlobClient(inputData.SourceStorageConnectionString, inputContainerName, blob.Name, GetBlobClientOptions());
-                var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainerName, outputBlobName, options);
+                var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainerName, outputBlobName, GetBlobClientOptions());
 
                 var isOutputExist = await outputBlobClient.ExistsAsync();
                 if (!force && isOutputExist)
@@ -129,6 +129,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
         {
             var processedCount = 0;
             var processedErrorCount = 0;
+            var consumedCount = 0;
 
             using FhirBlobDataStream inputStream = new FhirBlobDataStream(inputBlobClient);
             FhirStreamReader reader = new FhirStreamReader(inputStream);
@@ -153,9 +154,11 @@ namespace Fhir.Anonymizer.DataFactoryTool
             Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
             progress.ProgressChanged += (obj, args) =>
             {
-                Interlocked.Add(ref processedCount, args.Completed);
-                Interlocked.Add(ref processedErrorCount, args.Failed);
-                Console.WriteLine($"[{stopWatch.Elapsed.ToString()}]: {processedCount} Completed. {processedErrorCount} Failed.");
+                Interlocked.Add(ref processedCount, args.ProcessCompleted);
+                Interlocked.Add(ref processedErrorCount, args.ProcessFailed);
+                Interlocked.Add(ref consumedCount, args.ConsumeCompleted);
+
+                Console.WriteLine($"[{stopWatch.Elapsed.ToString()}]: {processedCount} Completed. {processedErrorCount} Failed. {consumedCount} consume completed.");
             };
 
             await executor.ExecuteAsync(CancellationToken.None, false, progress).ConfigureAwait(false);
