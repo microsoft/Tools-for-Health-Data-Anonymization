@@ -94,7 +94,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             node = ElementNode.FromElement(new FhirString("54321").ToTypedElement());
             node.Name = "postalCode";
             processor.Process(node);
-            Assert.Equal("00000", node.Value.ToString());
+            Assert.Equal(string.Empty, node.Value.ToString());
         }
 
         [Fact]
