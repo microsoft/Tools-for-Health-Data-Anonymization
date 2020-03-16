@@ -21,16 +21,19 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             };
 
             int totalCount = 0;
+            int consumeCount = 0;
             Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
             progress.ProgressChanged += (obj, args) =>
             {
-                Interlocked.Add(ref totalCount, args.Completed);
+                Interlocked.Add(ref totalCount, args.ProcessCompleted);
+                Interlocked.Add(ref consumeCount, args.ConsumeCompleted);
             };
             await executor.ExecuteAsync(CancellationToken.None, progress: progress);
 
             Assert.Equal(itemCount, totalCount);
             Assert.Equal(itemCount, testConsumer.CurrentOffset);
             Assert.Equal(99, testConsumer.BatchCount);
+            Assert.Equal(9873, consumeCount);
         }
 
         [Fact]
@@ -84,13 +87,17 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             BatchCount = 0;
         }
 
-        public async Task ConsumeAsync(IEnumerable<string> data)
+        public async Task<int> ConsumeAsync(IEnumerable<string> data)
         {
             BatchCount++;
+            int result = 0;
             foreach (string content in data)
             {
                 Assert.Equal((CurrentOffset++).ToString(), content);
+                result++;
             }
+
+            return result;
         }
 
         public async Task CompleteAsync()
