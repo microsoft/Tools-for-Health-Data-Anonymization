@@ -42,7 +42,7 @@ namespace Fhir.Anonymizer.Tool
                     var resourceJson = reader.ReadToEnd();
                     try
                     {
-                        var resourceResult = _engine.AnonymizeJson(resourceJson);
+                        var resourceResult = _engine.AnonymizeJson(resourceJson, isPrettyOutput: true);
                         writer.Write(resourceResult);
                         processedCount += 1;
                     }
