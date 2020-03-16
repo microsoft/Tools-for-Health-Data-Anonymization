@@ -66,8 +66,9 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 
         private List<string> GetInvalidTypes(AnonymizerConfiguration config)
         {
+            // ToDo: overwrite validation
             var invalidTypes = new List<string>();
-            if (config.TypeRules != null)
+            if (config.TypeRules == null)
             {
                 foreach (var type in config.TypeRules.Keys)
                 {
@@ -77,7 +78,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                     }
                 }
             }
-
+            
             return invalidTypes;
         }
 
