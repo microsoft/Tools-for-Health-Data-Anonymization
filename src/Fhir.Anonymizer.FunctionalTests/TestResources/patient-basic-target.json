@@ -1,165 +1,73 @@
 {
-	"resourceType": "Patient",
-	"id": "example",
-	"text": {
-		"status": "",
-		"div": ""
-	},
-	"identifier": [
-		{
-			"use": "",
-			"type": {
-				"coding": [
-					{
-						"system": "",
-						"code": ""
-					}
-				]
-			},
-			"system": "",
-			"value": "",
-			"period": {
-				"start": "2001-02-11"
-			},
-			"assigner": {
-				"display": ""
-			}
-		}
-	],
-	"active": true,
-	"name": [
-		{
-			"use": "",
-			"family": "",
-			"given": [
-				"",
-				""
-			]
-		},
-		{
-			"use": "",
-			"given": [
-				""
-			]
-		},
-		{
-			"use": "",
-			"family": "",
-			"given": [
-				"",
-				""
-			],
-			"period": {
-				"end": "2002"
-			}
-		}
-	],
-	"telecom": [
-		{
-			"use": ""
-		},
-		{
-			"system": "",
-			"value": "",
-			"use": "",
-			"rank": ""
-		},
-		{
-			"system": "",
-			"value": "",
-			"use": "",
-			"rank": ""
-		},
-		{
-			"system": "",
-			"value": "",
-			"use": "",
-			"period": {
-				"end": "2014"
-			}
-		}
-	],
-	"gender": "male",
-	"birthDate": "2000-02-11",
-	"_birthDate": {
-		"extension": [
-			{
-				"url": "",
-				"valueDateTime": "2000-02-11T00:00:00-01:00"
-			}
-		]
-	},
-	"deceasedBoolean": false,
-	"address": [
-		{
-			"use": "",
-			"type": "",
-			"text": "",
-			"line": [
-				""
-			],
-			"city": "",
-			"district": "",
-			"state": "TestState",
-			"postalCode": "12300",
-			"period": {
-				"start": "2000-02-11"
-			}
-		}
-	],
-	"contact": [
-		{
-			"relationship": [
-				{
-					"coding": [
-						{
-							"system": "http://terminology.hl7.org/CodeSystem/v2-0131",
-							"code": "N"
-						}
-					]
-				}
-			],
-			"name": {
-				"family": "",
-				"_family": {
-					"extension": [
-						{
-							"url": "",
-							"valueString": ""
-						}
-					]
-				},
-				"given": [
-					""
-				]
-			},
-			"telecom": [
-				{
-					"system": "",
-					"value": ""
-				}
-			],
-			"address": {
-				"use": "",
-				"type": "",
-				"line": [
-					""
-				],
-				"city": "",
-				"district": "",
-				"state": "TestState",
-				"postalCode": "54300",
-				"period": {
-					"start": "2001-02-11"
-				}
-			},
-			"gender": "female",
-			"period": {
-				"start": "2005"
-			}
-		}
-	],
-	"managingOrganization": {
-		"reference": "Organization/1"
-	}
+  "resourceType": "Patient",
+  "id": "example",
+  "identifier": [
+    {
+      "period": {
+        "start": "2001-02-11"
+      }
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "period": {
+        "end": "2002"
+      }
+    }
+  ],
+  "telecom": [
+    {
+      "period": {
+        "end": "2014"
+      }
+    }
+  ],
+  "gender": "male",
+  "birthDate": "2000-02-11",
+  "_birthDate": {
+    "extension": [
+      {
+        "valueDateTime": "2000-02-11T00:00:00-01:00"
+      }
+    ]
+  },
+  "deceasedBoolean": false,
+  "address": [
+    {
+      "state": "TestState",
+      "postalCode": "12300",
+      "period": {
+        "start": "2000-02-11"
+      }
+    }
+  ],
+  "contact": [
+    {
+      "relationship": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+              "code": "N"
+            }
+          ]
+        }
+      ],
+      "address": {
+        "state": "TestState",
+        "postalCode": "54300",
+        "period": {
+          "start": "2001-02-11"
+        }
+      },
+      "gender": "female",
+      "period": {
+        "start": "2005"
+      }
+    }
+  ],
+  "managingOrganization": {
+    "reference": "Organization/1"
+  }
 }

@@ -15,7 +15,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             yield return new object[] { new Date("2015"), new Date("2015") };
             yield return new object[] { new Date("2015-02"), new Date("2015") };
             yield return new object[] { new Date("2015-02-07"), new Date("2015") };
-            yield return new object[] { new Date("1925-02-07"), new Date("") };
+            yield return new object[] { new Date("1925-02-07"), null };
         }
 
         public static IEnumerable<object[]> GetDateDataForRedact()
@@ -37,7 +37,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public static IEnumerable<object[]> GetDateDataForDateShiftButShouldBeRedacted()
         {
             yield return new object[] { new Date("2015-02"), new Date("2015") };
-            yield return new object[] { new Date("1925-02-07"), new Date("") };
+            yield return new object[] { new Date("1925-02-07"), null };
         }
 
         public static IEnumerable<object[]> GetDateTimeDataForRedact()
@@ -46,7 +46,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             yield return new object[] { new FhirDateTime("2015-02"), new FhirDateTime("2015") };
             yield return new object[] { new FhirDateTime("2015-02-07"), new FhirDateTime("2015") };
             yield return new object[] { new FhirDateTime("2015-02-07T13:28:17-05:00"), new FhirDateTime("2015") };
-            yield return new object[] { new FhirDateTime("1925-02-07T13:28:17-05:00"), new FhirDateTime("") };
+            yield return new object[] { new FhirDateTime("1925-02-07T13:28:17-05:00"), null };
         }
 
         public static IEnumerable<object[]> GetDateTimeDataForDateShift()
@@ -69,7 +69,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public static IEnumerable<object[]> GetDateTimeDataForDateShiftButShouldBeRedacted()
         {
             yield return new object[] { new FhirDateTime("2015-02"), new FhirDateTime("2015") };
-            yield return new object[] { new FhirDateTime("1925-02-07T13:28:17-05:00"), new FhirDateTime("") };
+            yield return new object[] { new FhirDateTime("1925-02-07T13:28:17-05:00"), null };
         }
 
         public static IEnumerable<object[]> GetAgeDataForPartialRedact()
@@ -91,7 +91,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var node = ElementNode.FromElement(date.ToTypedElement());
             DateTimeUtility.RedactDateNode(node, true);
 
-            Assert.Equal(expectedDate.ToString(), node.Value);
+            Assert.Equal(expectedDate?.ToString() ?? null, node.Value);
         }
 
         [Theory]
@@ -101,7 +101,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var node = ElementNode.FromElement(date.ToTypedElement());
             DateTimeUtility.RedactDateNode(node, false);
 
-            Assert.Empty(node.Value.ToString());
+            Assert.Null(node.Value);
         }
 
         [Theory]
@@ -122,7 +122,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var node = ElementNode.FromElement(date.ToTypedElement());
             DateTimeUtility.ShiftDateNode(node, string.Empty, true);
 
-            Assert.Equal(expectedDate.ToString(), node.Value);
+            Assert.Equal(expectedDate?.ToString() ?? null, node.Value);
         }
 
         [Theory]
@@ -132,7 +132,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
             DateTimeUtility.RedactDateTimeAndInstantNode(node, true);
 
-            Assert.Equal(expectedDateTime.ToString(), node.Value);
+            Assert.Equal(expectedDateTime?.ToString() ?? null, node.Value);
         }
 
         [Theory]
@@ -162,7 +162,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
             DateTimeUtility.ShiftDateTimeAndInstantNode(node, string.Empty, true);
 
-            Assert.Equal(expectedDateTime.ToString(), node.Value);
+            Assert.Equal(expectedDateTime?.ToString() ?? null, node.Value);
         }
 
         [Theory]
@@ -172,7 +172,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
             DateTimeUtility.RedactAgeDecimalNode(node, true);
 
-            Assert.Equal(int.Parse(age.Value.ToString()) > 89 ? string.Empty : age.Value.ToString(), node.Value.ToString());
+            Assert.Equal(int.Parse(age.Value.ToString()) > 89 ? null : age.Value.ToString(), node.Value?.ToString() ?? null);
         }
 
         [Theory]
@@ -182,7 +182,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
             DateTimeUtility.RedactAgeDecimalNode(node, false);
 
-            Assert.Empty(node.Value.ToString());
+            Assert.Null(node.Value);
         }
     }
 }
