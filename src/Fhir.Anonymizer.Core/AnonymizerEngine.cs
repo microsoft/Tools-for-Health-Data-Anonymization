@@ -6,6 +6,7 @@ using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Processors;
 using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Specification;
 using Hl7.FhirPath;
@@ -72,20 +73,12 @@ namespace Fhir.Anonymizer.Core
 
             var resourceContext = ResourceAnonymizerContext.Create(root, _configurationManger);
             var resourceId = root.GetNodeId();
-            foreach (var rule in resourceContext.RuleList)
+
+            foreach (var node in root.Children().Cast<ElementNode>())
             {
-                var matchedNodes = root.Select(rule.Path).Cast<ElementNode>();
-
-                _logger.LogDebug(rule.Type == AnonymizerRuleType.PathRule ?
-                    $"Path {rule.Source} matches {matchedNodes.Count()} nodes in resource ID {resourceId}." :
-                    $"Type {rule.Source} matches {matchedNodes.Count()} nodes with path {rule.Path} in resource ID {resourceId}.");
-
-                foreach (var node in matchedNodes)
-                {
-                    AnonymizeChildNode(node, rule, resourceContext.PathSet, resourceId);
-                }
+                AnonymizeChildNode(node, resourceContext);
             }
-
+  
             return root;
         }
 
@@ -98,23 +91,39 @@ namespace Fhir.Anonymizer.Core
             }
         }
 
-        private void AnonymizeChildNode(ElementNode node, AnonymizerRule rule, HashSet<string> rulePathSet, string resourceId)
+        private void AnonymizeChildNode(ElementNode node, ResourceAnonymizerContext context, AnonymizerRule rule = null)
         {
-            var method = rule.Method.ToUpperInvariant();
-
-            if (node.Value != null && _processors.ContainsKey(method))
+            var pathRule = context.GetNodePathRule(node);
+            if (pathRule != null)
             {
-                _processors[method].Process(node);
-                _logger.LogDebug($"{node.GetFhirPath()} in resource ID {resourceId} is applied {method} due to rule \"{rule.Source}:{rule.Method}\"");
+                rule = pathRule;
+                _logger.LogDebug($"Path {rule.Source} matches node {node.GetFhirPath()} in resource ID {context.GetResourceId()}.");
+            }
+            else
+            {
+                var typeRule = context.GetNodeTypeRule(node);
+                if(typeRule != null)
+                {
+                    rule = typeRule;
+                    _logger.LogDebug($"Type {rule.Source} matches node {node.GetFhirPath()} in resource ID {context.GetResourceId()}.");
+                }
+            }
+
+            if (rule != null)
+            {
+                var method = rule.Method.ToUpperInvariant();
+
+                if (node.Value != null && _processors.ContainsKey(method))
+                {
+                    _processors[method].Process(node);
+                    _logger.LogDebug($"{node.GetFhirPath()} in resource ID {context.GetResourceId()} is applied {method} due to rule \"{rule.Source}:{rule.Method}\"");
+                }
             }
 
             var children = node.Children().Cast<ElementNode>();
             foreach (var child in children)
             {
-                if (!rulePathSet.Contains(child.GetFhirPath()))
-                {
-                    AnonymizeChildNode(child, rule, rulePathSet, resourceId);
-                }
+                AnonymizeChildNode(child, context, rule);
             }
         }
 

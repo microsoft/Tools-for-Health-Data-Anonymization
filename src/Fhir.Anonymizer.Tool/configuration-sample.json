@@ -226,7 +226,7 @@
     "Address": "redact",
     "Address.state": "keep",
     "Address.coungtry": "keep",
-    "Reference.dispaly": "keep",
+    "Reference.display": "redact",
     "Annotation": "redact",
     "Attachment": "redact",
     "Age": "redact",

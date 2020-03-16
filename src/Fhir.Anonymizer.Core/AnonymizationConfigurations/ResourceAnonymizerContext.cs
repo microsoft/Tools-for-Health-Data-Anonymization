@@ -1,34 +1,70 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model;
+using Hl7.FhirPath;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class ResourceAnonymizerContext
     {
-        public IEnumerable<AnonymizerRule> RuleList { get; set; }
+        private string _resourceId;
+        private Dictionary<string, AnonymizerRule> _pathRuleMap;
+        private Dictionary<string, AnonymizerRule> _typeRuleMap;
 
-        public HashSet<string> PathSet { get; set; }
-
-        public ResourceAnonymizerContext(IEnumerable<AnonymizerRule> ruleList)
+        public ResourceAnonymizerContext(string resourceId, IEnumerable<AnonymizerRule> pathRuleList, IEnumerable<AnonymizerRule> typeRuleList)
         {
-            RuleList = ruleList;
-            PathSet = ruleList.Select(rule => rule.Path).ToHashSet();
+            _resourceId = resourceId;
+            _pathRuleMap = pathRuleList.ToDictionary(rule => rule.Path, rule => rule);
+            _typeRuleMap = typeRuleList.ToDictionary(rule => rule.Path, rule => rule);
         }
 
         public static ResourceAnonymizerContext Create(ElementNode root, AnonymizerConfigurationManager configurationManager)
         {
-            var rules = new List<AnonymizerRule>(configurationManager.GetPathRulesByResourceType(root.InstanceType));
-
+            var pathRules = ResolveGenericFhirPathToBasicFhirPath(root, configurationManager.GetPathRulesByResourceType(root.InstanceType));
             var typeRules = configurationManager.GetTypeRules();
-            if (typeRules != null && typeRules.Any())
+            return new ResourceAnonymizerContext(root.GetNodeId(), pathRules, typeRules);
+        }
+
+        public string GetResourceId()
+        {
+            return _resourceId;
+        }
+
+        public AnonymizerRule GetNodePathRule(ElementNode node)
+        {
+            return _pathRuleMap.GetValueOrDefault(node.GetFhirPath(), null);
+        }
+
+        public AnonymizerRule GetNodeTypeRule(ElementNode node)
+        {
+            AnonymizerRule rule = null;
+            var currentNode = node;
+            var typePath = string.Empty;
+            do
             {
-                var rulePaths = rules.Select(rule => rule.Path).ToHashSet();
-                TransformTypeRulesToPathRules(root, typeRules, rules, rulePaths);
+                var path = string.IsNullOrEmpty(typePath) ? currentNode.InstanceType : $"{currentNode.InstanceType}.{typePath}";
+                rule = _typeRuleMap.GetValueOrDefault(path, rule);
+
+                typePath = string.IsNullOrEmpty(typePath) ? currentNode.Name : $"{currentNode.Name}.{typePath}";
+                currentNode = currentNode.Parent;
+            } while (currentNode != null);
+            
+            return rule;
+        }
+
+        private static IEnumerable<AnonymizerRule> ResolveGenericFhirPathToBasicFhirPath(ElementNode root, IEnumerable<AnonymizerRule> genericFhirPathRules)
+        {
+            var basicRules = new List<AnonymizerRule>();
+            foreach(var rule in genericFhirPathRules)
+            {
+                var matchedNodes = root.Select(rule.Path).Cast<ElementNode>();
+                basicRules.AddRange(matchedNodes.Select(node => new AnonymizerRule(node.GetFhirPath(), rule.Method, rule.Type, rule.Source)));
             }
 
-            return new ResourceAnonymizerContext(rules);
+            return basicRules;
         }
 
         private static void TransformTypeRulesToPathRules(ElementNode node, Dictionary<string, string> typeRules, List<AnonymizerRule> rules, HashSet<string> rulePaths)
