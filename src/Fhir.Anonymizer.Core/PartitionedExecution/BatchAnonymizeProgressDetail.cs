@@ -2,6 +2,8 @@
 {
     public class BatchAnonymizeProgressDetail
     {
+        public int CurrentThreadId { get; set; }
+
         public int ProcessCompleted { get; set; }
 
         public int ProcessFailed { get; set; }

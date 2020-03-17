@@ -74,6 +74,7 @@ namespace Fhir.Anonymizer.Core
                 List<string> result = new List<string>();
 
                 BatchAnonymizeProgressDetail batchAnonymizeProgressDetail = new BatchAnonymizeProgressDetail();
+                batchAnonymizeProgressDetail.CurrentThreadId = Thread.CurrentThread.ManagedThreadId;
                 foreach (string content in batchData)
                 {
                     if (cancellationToken.IsCancellationRequested)
@@ -108,7 +109,7 @@ namespace Fhir.Anonymizer.Core
             IEnumerable<string> resultContents = await executionTasks.Dequeue().ConfigureAwait(false);
 
             int consumeCount = await AnonymizedDataConsumer.ConsumeAsync(resultContents).ConfigureAwait(false);
-            progress?.Report(new BatchAnonymizeProgressDetail() { ConsumeCompleted = consumeCount });
+            progress?.Report(new BatchAnonymizeProgressDetail() { ConsumeCompleted = consumeCount, CurrentThreadId = Thread.CurrentThread.ManagedThreadId });
         }
     }
 }
