@@ -25,7 +25,7 @@ namespace Fhir.Anonymizer.Core.PartitionedExecution
             int result = 0;
             foreach (string content in data)
             {
-                _writer.WriteLine(content);
+                await _writer.WriteLineAsync(content).ConfigureAwait(false);
                 result++;
             }
 
