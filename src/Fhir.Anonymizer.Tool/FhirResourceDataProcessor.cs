@@ -45,7 +45,7 @@ namespace Fhir.Anonymizer.Tool
                     var resourceJson = reader.ReadToEnd();
                     try
                     {
-                        var resourceResult = _engine.AnonymizeJson(resourceJson);
+                        var resourceResult = _engine.AnonymizeJson(resourceJson, isPrettyOutput: true);
                         writer.Write(resourceResult);
                         processedCount += 1;
                     }
@@ -91,14 +91,16 @@ namespace Fhir.Anonymizer.Tool
                     stopWatch.Start();
 
                     FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, consumer, anonymizeFunction);
-                    executor.PartitionCount = Environment.ProcessorCount;
+                    executor.PartitionCount = Environment.ProcessorCount * 2;
+
                     Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
                     progress.ProgressChanged += (obj, args) =>
                     {
                         Interlocked.Add(ref completedCount, args.ProcessCompleted);
                         Interlocked.Add(ref failedCount, args.ProcessFailed);
                         Interlocked.Add(ref consumeCompletedCount, args.ConsumeCompleted);
-                        Console.WriteLine($"[{stopWatch.Elapsed.ToString()}]: {completedCount} Process completed. {failedCount} Process failed. {consumeCompletedCount} Consume completed.");
+                        
+                        Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {failedCount} Process failed. {consumeCompletedCount} Consume completed.");
                     };
 
                     executor.ExecuteAsync(CancellationToken.None, false, progress).Wait();

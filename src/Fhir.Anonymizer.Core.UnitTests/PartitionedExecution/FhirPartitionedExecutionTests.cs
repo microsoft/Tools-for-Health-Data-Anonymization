@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Fhir.Anonymizer.Core.PartitionedExecution;
@@ -68,6 +69,34 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await executor.ExecuteAsync(CancellationToken.None, true));
         }
+
+        [Fact]
+        public async Task GivenAPartitionedExecutor_WhenIOExceptionThrowFromReader_ExecutionShouldStop()
+        {
+            int itemCount = 91873;
+            var testConsumer = new TestFhirDataConsumer(itemCount);
+            var reader = new TestFhirDataReader(itemCount)
+            {
+                BreakOnOffset = 7431
+            };
+            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, testConsumer, (content) => content);
+
+            await Assert.ThrowsAsync<IOException>(async () => await executor.ExecuteAsync(CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task GivenAPartitionedExecutor_WhenIOExceptionThrowFromConsumer_ExecutionShouldStop()
+        {
+            int itemCount = 91873;
+            var testConsumer = new TestFhirDataConsumer(itemCount)
+            {
+                BreakOnOffset = 2342
+            };
+            var reader = new TestFhirDataReader(itemCount);
+            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, testConsumer, (content) => content);
+
+            await Assert.ThrowsAsync<IOException>(async () => await executor.ExecuteAsync(CancellationToken.None));
+        }
     }
 
     internal class TestFhirDataConsumer : IFhirDataConsumer
@@ -79,6 +108,8 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
         public int CurrentOffset { set; get; } = 0;
 
         public int BatchCount { set; get; } = 0;
+
+        public int BreakOnOffset { set; get; } = -1;
 
         public TestFhirDataConsumer(int itemCount)
         {
@@ -95,6 +126,10 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             {
                 Assert.Equal((CurrentOffset++).ToString(), content);
                 result++;
+                if (CurrentOffset == BreakOnOffset)
+                {
+                    throw new IOException();
+                }
             }
 
             return result;
@@ -112,6 +147,8 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
 
         private int CurrentOffset { set; get; }
 
+        public int BreakOnOffset { set; get; } = -1;
+
         public TestFhirDataReader(int itemCount)
         {
             ItemCount = itemCount;
@@ -123,6 +160,11 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             if (CurrentOffset == ItemCount)
             {
                 return null;
+            }
+
+            if (CurrentOffset == BreakOnOffset)
+            {
+                throw new IOException();
             }
 
             return (CurrentOffset++).ToString();

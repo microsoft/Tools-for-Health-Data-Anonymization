@@ -11,6 +11,8 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
 {
     public class FhirBlobConsumer : IFhirDataConsumer
     {
+        private static byte[] _newLine = Encoding.UTF8.GetBytes("\r\n");
+
         private BlockBlobClient _blobClient;
         private List<Task> _runningTasks;
         private List<string> _blockIds;
@@ -55,19 +57,23 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
             set;
         } = FhirAzureConstants.DefaultBlockUploadTimeoutRetryCount;
 
-        public async Task ConsumeAsync(IEnumerable<string> data)
+        public async Task<int> ConsumeAsync(IEnumerable<string> data)
         {
+            int result = 0;
             foreach (string item in data)
             {
-                byte[] newLine = Encoding.UTF8.GetBytes("\r\n");
                 byte[] byteData = Encoding.UTF8.GetBytes(item);
                 await _currentStream.WriteAsync(byteData, 0, byteData.Length).ConfigureAwait(false);
-                await _currentStream.WriteAsync(newLine, 0, newLine.Length).ConfigureAwait(false);
+                await _currentStream.WriteAsync(_newLine, 0, _newLine.Length).ConfigureAwait(false);
                 if (_currentStream.Length >= UploadBlockThreshold)
                 {
                     await AddCurrentStreamToUploadTaskListAsync().ConfigureAwait(false);
                 }
+
+                result++;
             }
+
+            return result;
         }
 
         public async Task CompleteAsync()
