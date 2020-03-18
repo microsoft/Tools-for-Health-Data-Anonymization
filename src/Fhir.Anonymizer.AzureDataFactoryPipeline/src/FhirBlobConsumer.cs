@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Fhir.Anonymizer.Core;
@@ -12,10 +11,6 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
 {
     public class FhirBlobConsumer : IFhirDataConsumer
     {
-        private const int KB = 1024;
-        private const int MB = KB * 1024;
-        
-
         private BlockBlobClient _blobClient;
         private List<Task> _runningTasks;
         private List<string> _blockIds;

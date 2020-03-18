@@ -1,10 +1,8 @@
-﻿using Fhir.Anonymizer.Core.PartitionedExecution;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Fhir.Anonymizer.Core.PartitionedExecution;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
@@ -23,20 +21,23 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             };
 
             int totalCount = 0;
-            Progress<BatchAnonymizeResult> progress = new Progress<BatchAnonymizeResult>();
+            int consumeCount = 0;
+            Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
             progress.ProgressChanged += (obj, args) =>
             {
-                Interlocked.Add(ref totalCount, args.Complete);
+                Interlocked.Add(ref totalCount, args.ProcessCompleted);
+                Interlocked.Add(ref consumeCount, args.ConsumeCompleted);
             };
             await executor.ExecuteAsync(CancellationToken.None, progress: progress);
 
             Assert.Equal(itemCount, totalCount);
             Assert.Equal(itemCount, testConsumer.CurrentOffset);
             Assert.Equal(99, testConsumer.BatchCount);
+            Assert.Equal(9873, consumeCount);
         }
 
         [Fact]
-        public async Task GivenAPartitionedExecutor_WhenCancelled_OperationCancelledExceptionShouldBeThrow()
+        public async Task GivenAPartitionedExecutor_WhenCancelled_OperationCancelledExceptionShouldBeThrown()
         {
             int itemCount = 9873;
             var testConsumer = new TestFhirDataConsumer(itemCount);
@@ -86,13 +87,17 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             BatchCount = 0;
         }
 
-        public async Task ConsumeAsync(IEnumerable<string> data)
+        public async Task<int> ConsumeAsync(IEnumerable<string> data)
         {
             BatchCount++;
+            int result = 0;
             foreach (string content in data)
             {
-                Assert.Equal(CurrentOffset++.ToString(), content);
+                Assert.Equal((CurrentOffset++).ToString(), content);
+                result++;
             }
+
+            return result;
         }
 
         public async Task CompleteAsync()

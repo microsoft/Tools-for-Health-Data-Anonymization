@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
+﻿namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
 {
     public static class FhirAzureConstants
     {

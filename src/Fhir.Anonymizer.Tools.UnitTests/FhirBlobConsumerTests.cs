@@ -13,7 +13,7 @@ namespace Fhir.Anonymizer.Tools.UnitTests
 {
     public class FhirBlobConsumerTests
     {
-        [Fact]
+        [Fact(Skip = "StorageEmulatorSupportOnly")]
         public async Task GivenAFhirBlobConsumer_WhenConsumeData_AllDataShouldbeUploaded()
         {
             string containerName = Guid.NewGuid().ToString("N");

@@ -1,9 +1,7 @@
-﻿using Fhir.Anonymizer.Core.PartitionedExecution;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
+using Fhir.Anonymizer.Core.PartitionedExecution;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
@@ -16,7 +14,9 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             using MemoryStream outputStream = new MemoryStream();
             using FhirStreamConsumer consumer = new FhirStreamConsumer(outputStream);
 
-            await consumer.ConsumeAsync(new List<string>() { "abc", "bcd", ""});
+            int count = await consumer.ConsumeAsync(new List<string>() { "abc", "bcd", ""});
+            Assert.Equal(3, count);
+            
             await consumer.CompleteAsync();
 
             outputStream.Position = 0;
