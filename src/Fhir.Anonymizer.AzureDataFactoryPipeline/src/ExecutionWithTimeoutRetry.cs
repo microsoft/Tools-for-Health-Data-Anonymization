@@ -5,7 +5,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
 {
     public static class ExecutionWithTimeoutRetry
     {
-        public async static Task<T> InvokeAsync<T>(Func<Task<T>> func, TimeSpan timeout, int rertyCount)
+        public async static Task<T> InvokeAsync<T>(Func<Task<T>> func, TimeSpan timeout, int rertyCount, int delayInSec = FhirAzureConstants.StorageOperationRetryDelayInSeconds)
         {
             while (true)
             {
@@ -28,6 +28,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
                 {
                     if (rertyCount-- > 0)
                     {
+                        await Task.Delay(TimeSpan.FromSeconds(delayInSec)).ConfigureAwait(false);
                         continue;
                     }
 

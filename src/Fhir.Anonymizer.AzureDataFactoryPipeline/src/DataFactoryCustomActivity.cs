@@ -150,7 +150,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
 
             Stopwatch stopWatch = Stopwatch.StartNew();
             FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, consumer, anonymizerFunction);
-            executor.PartitionCount = Environment.ProcessorCount;
+            executor.PartitionCount = Environment.ProcessorCount * 2;
             Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
             progress.ProgressChanged += (obj, args) =>
             {
@@ -158,7 +158,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 Interlocked.Add(ref processedErrorCount, args.ProcessFailed);
                 Interlocked.Add(ref consumedCount, args.ConsumeCompleted);
 
-                Console.WriteLine($"[{stopWatch.Elapsed.ToString()}]: {processedCount} Completed. {processedErrorCount} Failed. {consumedCount} consume completed.");
+                Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {processedCount} Completed. {processedErrorCount} Failed. {consumedCount} consume completed.");
             };
 
             await executor.ExecuteAsync(CancellationToken.None, false, progress).ConfigureAwait(false);
