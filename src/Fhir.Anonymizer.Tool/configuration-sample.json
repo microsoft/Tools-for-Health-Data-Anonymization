@@ -1,5 +1,11 @@
 ﻿{
   "pathRules": {
+    "name.where(use = 'official')": "keep",
+    "telecom.where(system != 'phone')": "keep",
+    "name": "redact",
+    "telecom": "keep",
+    "name.family": "redact",
+
     "PractitionerRole.notAvailable.description": "redact",
     "PractitionerRole.availabilityExceptions": "redact",
 
@@ -16,7 +22,7 @@
     "Endpoint.name": "redact",
     "Endpoint.address": "redact",
 
-    "Location.name": "redact",
+    "Location.where(status = 'active').name": "redact",
     "Location.alias": "redact",
     "Location.description": "redact",
     "Location.position": "redact",
@@ -53,7 +59,7 @@
 
     "AdverseEvent.suspectEntity.causality.productRelatedness": "redact",
 
-    "Condition.onset": "redact",
+    "Condition.onset as string": "redact",
     "Condition.abatement": "redact",
 
     "Procedure.performed": "redact",
@@ -86,10 +92,6 @@
     "ImagingStudy.description": "redact",
     "ImagingStudy.series.description": "redact",
     "ImagingStudy.series.instance.title": "redact",
-
-    "QuestionnaireResponse.item.text": "redact",
-    "QuestionnaireResponse.item.answer": "redact",
-    "QuestionnaireResponse.item.item": "redact",
 
     "MedicationAdministration.dosage.text": "redact",
 
@@ -220,24 +222,33 @@
     "InsurancePlan.plan.generalCost.comment": "redact"
   },
   "typeRules": {
+    "base64Binary": "redact",
     "date": "dateShift",
     "dateTime": "dateShift",
     "instant": "dateShift",
     "Address": "redact",
-    "Address.state": "keep",
     "Address.coungtry": "keep",
-    "Reference.display": "redact",
-    "Annotation": "redact",
-    "Attachment": "redact",
+    "Address.state": "keep",
     "Age": "redact",
-    "base64Binary": "redact",
-    "ContactDetail": "redact",
-    "ContactPoint": "redact",
+    "Annotation": "redact",
+    "Attachment.title": "redact",
+    "Attachment.url": "redact",
+    "BackboneElement.answer.value": "redact",
+    "BackboneElement.text": "redact",
+    "BackboneElement.title": "redact",
+    "BackboneElement.description": "redact",
+    "BackboneElement.textEquivalent": "redact",
+    "CodeableConcept.text": "redact",
+    "Coding.display": "redact",
+    "Coding.code": "redact",
+    "ContactDetail.name": "redact",
+    "ContactPoint.value": "redact",
     "Extension": "redact",
     "HumanName": "redact",
-    "Identifier": "redact",
-    "Narrative": "redact",
-    "Signature": "redact"
+    "HumanName.use": "keep",
+    "Identifier.value": "redact",
+    "Narrative.div": "redact",
+    "Reference.display": "redact"
   },
   "parameters": {
     "dateShiftKey": "",

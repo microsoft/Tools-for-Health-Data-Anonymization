@@ -99,7 +99,7 @@ namespace Fhir.Anonymizer.Core
                 rule = pathRule;
                 _logger.LogDebug($"Path {rule.Source} matches node {node.GetFhirPath()} in resource ID {context.GetResourceId()}.");
             }
-            else
+            else if(rule?.Type != AnonymizerRuleType.PathRule)
             {
                 var typeRule = context.GetNodeTypeRule(node);
                 if(typeRule != null)

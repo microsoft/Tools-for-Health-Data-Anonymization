@@ -56,7 +56,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                 {
                     if (!s_fhirPathRegex.IsMatch(path))
                     {
-                        invalidPaths.Add(path);
+                        //invalidPaths.Add(path);
                     }
                 }
             }

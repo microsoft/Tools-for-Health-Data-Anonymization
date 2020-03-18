@@ -24,6 +24,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         public static ResourceAnonymizerContext Create(ElementNode root, AnonymizerConfigurationManager configurationManager)
         {
             var pathRules = ResolveGenericFhirPathToBasicFhirPath(root, configurationManager.GetPathRulesByResourceType(root.InstanceType));
+           
             var typeRules = configurationManager.GetTypeRules();
             return new ResourceAnonymizerContext(root.GetNodeId(), pathRules, typeRules);
         }

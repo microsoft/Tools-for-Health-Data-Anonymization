@@ -76,7 +76,7 @@ namespace Fhir.Anonymizer.Core
             var allPathRules = new List<AnonymizerRule>(_genericPathRules);
             if (!string.IsNullOrEmpty(resourceType) && _resourcePathRules.ContainsKey(resourceType))
             {
-                allPathRules.Concat(_resourcePathRules[resourceType]);
+                allPathRules.AddRange(_resourcePathRules[resourceType]);
             }
 
             return allPathRules;
