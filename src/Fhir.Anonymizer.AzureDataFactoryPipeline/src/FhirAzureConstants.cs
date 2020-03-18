@@ -11,5 +11,8 @@
         public const int DefaultUploadBlockThreshold = 32 * MB;
         public const int DefaultBlockUploadTimeoutInSeconds = 10 * 60;
         public const int DefaultBlockUploadTimeoutRetryCount = 3;
+        public const int StorageOperationRetryDelayInSeconds = 30;
+        public const int StorageOperationRetryMaxDelayInSeconds = 120;
+        public const int StorageOperationRetryCount = 3;
     }
 }

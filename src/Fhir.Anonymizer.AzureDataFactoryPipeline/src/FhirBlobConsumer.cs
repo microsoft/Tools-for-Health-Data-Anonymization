@@ -122,7 +122,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
             await ExecutionWithTimeoutRetry.InvokeAsync<BlockInfo>(
                 async () =>
                 {
-                    MemoryStream uploadStream = new MemoryStream();
+                    using MemoryStream uploadStream = new MemoryStream();
                     stream.Position = 0;
                     await stream.CopyToAsync(uploadStream).ConfigureAwait(false);
                     uploadStream.Position = 0;

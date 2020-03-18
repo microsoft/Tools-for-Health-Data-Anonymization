@@ -187,10 +187,10 @@ namespace Fhir.Anonymizer.DataFactoryTool
         private BlobClientOptions GetBlobClientOptions()
         {
             BlobClientOptions options = new BlobClientOptions();
-            options.Retry.Delay = TimeSpan.FromSeconds(30);
+            options.Retry.Delay = TimeSpan.FromSeconds(FhirAzureConstants.StorageOperationRetryDelayInSeconds);
             options.Retry.Mode = Azure.Core.RetryMode.Exponential;
-            options.Retry.MaxDelay = TimeSpan.FromSeconds(100);
-            options.Retry.MaxRetries = 3;
+            options.Retry.MaxDelay = TimeSpan.FromSeconds(FhirAzureConstants.StorageOperationRetryMaxDelayInSeconds);
+            options.Retry.MaxRetries = FhirAzureConstants.StorageOperationRetryCount;
 
             return options;
         }

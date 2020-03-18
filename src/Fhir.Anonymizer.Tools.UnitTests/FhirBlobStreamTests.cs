@@ -15,7 +15,7 @@ namespace Fhir.Anonymizer.Tools.UnitTests
 {
     public class FhirBlobStreamTests
     {
-        [Fact]
+        [Fact(Skip = "StorageEmulatorSupportOnly")]
         public async Task GivenAFhirBlobStream_WhenDownloadData_AllDataShouldbeReturned()
         {
             string containerName = Guid.NewGuid().ToString("N");
@@ -43,7 +43,7 @@ namespace Fhir.Anonymizer.Tools.UnitTests
             }
         }
 
-        [Fact]
+        [Fact(Skip = "StorageEmulatorSupportOnly")]
         public async Task GivenAFhirBlobStream_WhenDownloadDataTimeout_OperationShouldBeRetried()
         {
             string containerName = Guid.NewGuid().ToString("N");
