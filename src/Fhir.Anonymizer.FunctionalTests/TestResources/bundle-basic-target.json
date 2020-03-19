@@ -7,27 +7,13 @@
       "fullUrl": "http://example.org/fhir/Patient/23",
       "resource": {
         "resourceType": "Patient",
-        "id": "23",
-        "text": {
-          "status": "",
-          "div": ""
-        },
-        "identifier": [
-          {
-            "system": "",
-            "value": ""
-          }
-        ]
+        "id": "23"
       }
     },
     {
       "fullUrl": "urn:uuid:04121321-4af5-424c-a0e1-ed3aab1c349d",
       "resource": {
-        "resourceType": "Patient",
-        "text": {
-          "status": "",
-          "div": ""
-        }
+        "resourceType": "Patient"
       }
     },
     {
@@ -35,10 +21,6 @@
       "resource": {
         "resourceType": "Observation",
         "id": "123",
-        "text": {
-          "status": "",
-          "div": ""
-        },
         "status": "final",
         "code": {
           "coding": [
@@ -49,7 +31,9 @@
             }
           ]
         },
-        "subject": { "reference": "Patient/23" }
+        "subject": {
+          "reference": "Patient/23"
+        }
       }
     }
   ]

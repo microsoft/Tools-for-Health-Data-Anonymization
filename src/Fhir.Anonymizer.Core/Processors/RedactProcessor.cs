@@ -51,7 +51,7 @@ namespace Fhir.Anonymizer.Core.Processors
             }
             else
             {
-                node.Value = string.Empty;
+                node.Value = null;
             }
         }
     }

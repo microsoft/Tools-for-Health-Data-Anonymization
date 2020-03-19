@@ -45,19 +45,9 @@ namespace Fhir.Anonymizer.Core.UnitTests
         private const string PrettyOutputTarget =
 @"{
   ""resourceType"": ""Patient"",
-  ""id"": ""example"",
-  ""name"": [
-    {
-      ""use"": """",
-      ""family"": """",
-      ""given"": [
-        """",
-        """"
-      ]
-    }
-  ]
+  ""id"": ""example""
 }";
 
-        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"example\",\"name\":[{\"use\":\"\",\"family\":\"\",\"given\":[\"\",\"\"]}]}";
+        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"example\"}";
     }
 }

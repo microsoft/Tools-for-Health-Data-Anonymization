@@ -10,9 +10,9 @@ namespace Fhir.Anonymizer.Core.UnitTests
     {
         public static IEnumerable<object[]> GetPostalCodeDataForRedact()
         {
-            yield return new object[] { "98052", "00000" };
-            yield return new object[] { "10104", "00000" };
-            yield return new object[] { "00000", "00000" };
+            yield return new object[] { "98052" };
+            yield return new object[] { "10104" };
+            yield return new object[] { "00000" };
         }
 
         public static IEnumerable<object[]> GetPostalCodeDataForPartialRedact()
@@ -25,13 +25,13 @@ namespace Fhir.Anonymizer.Core.UnitTests
 
         [Theory]
         [MemberData(nameof(GetPostalCodeDataForRedact))]
-        public void GivenAPostalCode_WhenRedact_ThenDigitsShouldBeRedacted(string postalCode, string expectedPostalCode)
+        public void GivenAPostalCode_WhenRedact_ThenDigitsShouldBeRedacted(string postalCode)
         {
             var node = ElementNode.FromElement(new FhirString(postalCode).ToTypedElement());
             node.Name = "postalCode";
             PostalCodeUtility.RedactPostalCode(node, false, null);
 
-            Assert.Equal(expectedPostalCode.ToString(), node.Value);
+            Assert.Null(node.Value);
         }
 
         [Theory]
