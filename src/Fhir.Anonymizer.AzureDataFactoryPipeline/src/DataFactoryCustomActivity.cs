@@ -104,15 +104,26 @@ namespace Fhir.Anonymizer.DataFactoryTool
         {
             try
             {
-                var inputDownloadInfo = await inputBlobClient.DownloadAsync();
-                using (var reader = new StreamReader(inputDownloadInfo.Value.Content))
+                using Stream contentStream = await ExecutionWithTimeoutRetry.InvokeAsync<Stream>(async () =>
+                {
+                    Stream contentStream = new MemoryStream();
+                    await inputBlobClient.DownloadToAsync(contentStream).ConfigureAwait(false);
+                    contentStream.Position = 0;
+
+                    return contentStream;
+                }, TimeSpan.FromSeconds(FhirAzureConstants.DefaultBlockDownloadTimeoutInSeconds), FhirAzureConstants.DefaultBlockDownloadTimeoutRetryCount).ConfigureAwait(false);
+                
+                using (var reader = new StreamReader(contentStream))
                 {
                     string input = await reader.ReadToEndAsync();
                     string output = _engine.AnonymizeJson(input, isPrettyOutput: true);
 
                     using (MemoryStream outputStream = new MemoryStream(reader.CurrentEncoding.GetBytes(output)))
                     {
-                        await outputBlobClient.UploadAsync(outputStream);
+                        await ExecutionWithTimeoutRetry.InvokeAsync(async () =>
+                        {
+                            return await outputBlobClient.UploadAsync(outputStream).ConfigureAwait(false);
+                        }, TimeSpan.FromSeconds(FhirAzureConstants.DefaultBlockUploadTimeoutInSeconds), FhirAzureConstants.DefaultBlockUploadTimeoutRetryCount).ConfigureAwait(false);
                     }
 
                     Console.WriteLine($"[{blobName}]: Anonymize completed.");
