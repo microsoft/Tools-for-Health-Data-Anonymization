@@ -84,7 +84,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
             }
 
             await Task.WhenAll(_runningTasks).ConfigureAwait(false);
-            foreach (var task in _runningTasks.FindAll(t => t.IsCompleted))
+            foreach (var task in _runningTasks)
             {
                 // If there's any error throw exception here.
                 await task.ConfigureAwait(false);
