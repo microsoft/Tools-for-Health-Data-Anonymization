@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
 using Fhir.Anonymizer.AzureDataFactoryPipeline.src;
+using Fhir.Anonymizer.Core;
+using Fhir.Anonymizer.DataFactoryTool;
 using Xunit;
 
 namespace Fhir.Anonymizer.Tools.UnitTests
@@ -57,6 +59,43 @@ namespace Fhir.Anonymizer.Tools.UnitTests
             {
                 await containerClient.DeleteIfExistsAsync();
             }
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDataForDataTransferTest))]
+        public async Task GivenABlobFile_WhenExecutorWithoutAnonymize_DataShouldBeSame(string connectionString, string containerName, string blobName)
+        {
+            string targetContainerName = Guid.NewGuid().ToString("N");
+            string targetBlobName = Guid.NewGuid().ToString("N");
+
+            BlobContainerClient containerClient = new BlobContainerClient(connectionString, targetContainerName);
+            await containerClient.CreateIfNotExistsAsync();
+            
+            try
+            {
+                BlobClient sourceBlobClient = new BlobClient(connectionString, containerName, blobName, DataFactoryCustomActivity.BlobClientOptions.Value);
+                BlockBlobClient targetBlobClient = new BlockBlobClient(connectionString, targetContainerName, targetBlobName, DataFactoryCustomActivity.BlobClientOptions.Value);
+
+                using FhirBlobDataStream stream = new FhirBlobDataStream(sourceBlobClient);
+                using FhirStreamReader reader = new FhirStreamReader(stream);
+                FhirBlobConsumer consumer = new FhirBlobConsumer(targetBlobClient);
+
+                var executor = new FhirPartitionedExecutor(reader, consumer, content => content);
+                await executor.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+
+                Assert.Equal(sourceBlobClient.GetProperties().Value.ContentLength, targetBlobClient.GetProperties().Value.ContentLength);
+            }
+            finally
+            {
+                await containerClient.DeleteIfExistsAsync().ConfigureAwait(false);
+            }
+        }
+
+        // Test file should be UTF8 encoding
+        public static IEnumerable<object[]> TestDataForDataTransferTest()
+        {
+            yield return new object[] { "UseDevelopmentStorage=true", "testcontainer", "testfile" };
+            // More test resources here.
         }
 
         private static IEnumerable<List<string>> GenerateTestData(int batchCount, int itemCountInBatch, int seed)

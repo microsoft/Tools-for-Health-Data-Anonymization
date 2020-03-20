@@ -20,6 +20,17 @@ namespace Fhir.Anonymizer.DataFactoryTool
         private readonly string _activityConfigurationFile = "activity.json";
         private readonly string _datasetsConfigurationFile = "datasets.json";
 
+        public static Lazy<BlobClientOptions> BlobClientOptions = new Lazy<BlobClientOptions>( () =>
+        {
+            BlobClientOptions options = new BlobClientOptions();
+            options.Retry.Delay = TimeSpan.FromSeconds(FhirAzureConstants.StorageOperationRetryDelayInSeconds);
+            options.Retry.Mode = Azure.Core.RetryMode.Exponential;
+            options.Retry.MaxDelay = TimeSpan.FromSeconds(FhirAzureConstants.StorageOperationRetryMaxDelayInSeconds);
+            options.Retry.MaxRetries = FhirAzureConstants.StorageOperationRetryCount;
+
+            return options;
+        });
+
         public ActivityInputData LoadActivityInput()
         {
             dynamic datasets = JsonConvert.DeserializeObject(File.ReadAllText(_datasetsConfigurationFile));
@@ -67,8 +78,8 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 string outputBlobName = GetOutputBlobName(blob.Name, inputBlobPrefix, outputBlobPrefix);
                 Console.WriteLine($"[{blob.Name}]：Processing... output to container '{outputContainerName}'");
 
-                var inputBlobClient = new BlobClient(inputData.SourceStorageConnectionString, inputContainerName, blob.Name, GetBlobClientOptions());
-                var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainerName, outputBlobName, GetBlobClientOptions());
+                var inputBlobClient = new BlobClient(inputData.SourceStorageConnectionString, inputContainerName, blob.Name, BlobClientOptions.Value);
+                var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainerName, outputBlobName, BlobClientOptions.Value);
 
                 var isOutputExist = await outputBlobClient.ExistsAsync();
                 if (!force && isOutputExist)
@@ -193,17 +204,6 @@ namespace Fhir.Anonymizer.DataFactoryTool
         private bool IsInputFileInJsonFormat(string fileName)
         {
             return ".json".Equals(Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        private BlobClientOptions GetBlobClientOptions()
-        {
-            BlobClientOptions options = new BlobClientOptions();
-            options.Retry.Delay = TimeSpan.FromSeconds(FhirAzureConstants.StorageOperationRetryDelayInSeconds);
-            options.Retry.Mode = Azure.Core.RetryMode.Exponential;
-            options.Retry.MaxDelay = TimeSpan.FromSeconds(FhirAzureConstants.StorageOperationRetryMaxDelayInSeconds);
-            options.Retry.MaxRetries = FhirAzureConstants.StorageOperationRetryCount;
-
-            return options;
         }
 
         public async Task Run(bool force = false)
