@@ -61,7 +61,7 @@ namespace Fhir.Anonymizer.Tools.UnitTests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "StorageEmulatorSupportOnly")]
         [MemberData(nameof(TestDataForDataTransferTest))]
         public async Task GivenABlobFile_WhenExecutorWithoutAnonymize_DataShouldBeSame(string connectionString, string containerName, string blobName)
         {
