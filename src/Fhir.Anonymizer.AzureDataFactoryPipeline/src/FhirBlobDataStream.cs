@@ -71,6 +71,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
                     int bytesRead = contentStream.Read(buffer, offset, count);
                     if (bytesRead == 0)
                     {
+                        contentStream.Dispose();
                         _downloadTasks.Dequeue().Dispose();
                         continue;
                     }
