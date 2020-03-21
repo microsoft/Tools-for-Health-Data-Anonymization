@@ -110,10 +110,13 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
 
         private async Task<Stream> DownloadBlobAsync(HttpRange range)
         {
-            return await ExecutionWithTimeoutRetry.InvokeAsync<Stream>(async () =>
+            return await OperationExecutionHelper.InvokeWithTimeoutRetryAsync<Stream>(async () =>
             {
                 return await DownloadDataFunc(_blobClient, range).ConfigureAwait(false);
-            }, timeout: TimeSpan.FromSeconds(BlockDownloadTimeoutInSeconds), BlockDownloadTimeoutRetryCount).ConfigureAwait(false);
+            }, 
+            timeout: TimeSpan.FromSeconds(BlockDownloadTimeoutInSeconds), 
+            BlockDownloadTimeoutRetryCount,
+            isRetrableException: OperationExecutionHelper.IsRetrableException).ConfigureAwait(false);
         }
 
         private HttpRange NextRange()

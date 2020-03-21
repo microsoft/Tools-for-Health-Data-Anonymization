@@ -115,14 +115,17 @@ namespace Fhir.Anonymizer.DataFactoryTool
         {
             try
             {
-                using Stream contentStream = await ExecutionWithTimeoutRetry.InvokeAsync<Stream>(async () =>
+                using Stream contentStream = await OperationExecutionHelper.InvokeWithTimeoutRetryAsync<Stream>(async () =>
                 {
                     Stream contentStream = new MemoryStream();
                     await inputBlobClient.DownloadToAsync(contentStream).ConfigureAwait(false);
                     contentStream.Position = 0;
 
                     return contentStream;
-                }, TimeSpan.FromSeconds(FhirAzureConstants.DefaultBlockDownloadTimeoutInSeconds), FhirAzureConstants.DefaultBlockDownloadTimeoutRetryCount).ConfigureAwait(false);
+                }, 
+                TimeSpan.FromSeconds(FhirAzureConstants.DefaultBlockDownloadTimeoutInSeconds), 
+                FhirAzureConstants.DefaultBlockDownloadTimeoutRetryCount,
+                isRetrableException: OperationExecutionHelper.IsRetrableException).ConfigureAwait(false);
                 
                 using (var reader = new StreamReader(contentStream))
                 {
@@ -131,10 +134,18 @@ namespace Fhir.Anonymizer.DataFactoryTool
 
                     using (MemoryStream outputStream = new MemoryStream(reader.CurrentEncoding.GetBytes(output)))
                     {
-                        await ExecutionWithTimeoutRetry.InvokeAsync(async () =>
+                        await OperationExecutionHelper.InvokeWithTimeoutRetryAsync(async () =>
                         {
-                            return await outputBlobClient.UploadAsync(outputStream).ConfigureAwait(false);
-                        }, TimeSpan.FromSeconds(FhirAzureConstants.DefaultBlockUploadTimeoutInSeconds), FhirAzureConstants.DefaultBlockUploadTimeoutRetryCount).ConfigureAwait(false);
+                            outputStream.Position = 0;
+                            using MemoryStream stream = new MemoryStream();
+                            await outputStream.CopyToAsync(stream).ConfigureAwait(false);
+                            stream.Position = 0;
+
+                            return await outputBlobClient.UploadAsync(stream).ConfigureAwait(false);
+                        }, 
+                        TimeSpan.FromSeconds(FhirAzureConstants.DefaultBlockUploadTimeoutInSeconds), 
+                        FhirAzureConstants.DefaultBlockUploadTimeoutRetryCount,
+                        isRetrableException: OperationExecutionHelper.IsRetrableException).ConfigureAwait(false);
                     }
 
                     Console.WriteLine($"[{blobName}]: Anonymize completed.");
@@ -208,6 +219,9 @@ namespace Fhir.Anonymizer.DataFactoryTool
 
         public async Task Run(bool force = false)
         {
+            // Increase connection limit of single endpoint: 2 => 128
+            System.Net.ServicePointManager.DefaultConnectionLimit = 128;
+
             _engine = new AnonymizerEngine("./configuration-sample.json");
 
             var input = LoadActivityInput();

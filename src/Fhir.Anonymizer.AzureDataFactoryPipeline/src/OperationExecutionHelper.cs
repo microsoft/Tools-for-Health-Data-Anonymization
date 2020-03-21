@@ -1,11 +1,24 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
 {
-    public static class ExecutionWithTimeoutRetry
+    public static class OperationExecutionHelper
     {
-        public async static Task<T> InvokeAsync<T>(Func<Task<T>> func, TimeSpan timeout, int rertyCount, int delayInSec = FhirAzureConstants.StorageOperationRetryDelayInSeconds)
+        public static readonly Predicate<Exception> IsRetrableException = (ex) =>
+        {
+            bool result = false;
+
+            if (ex is IOException)
+            {
+                result = true;
+            }
+
+            return result;
+        };
+
+        public async static Task<T> InvokeWithTimeoutRetryAsync<T>(Func<Task<T>> func, TimeSpan timeout, int rertyCount, int delayInSec = FhirAzureConstants.StorageOperationRetryDelayInSeconds, Predicate<Exception> isRetrableException = null)
         {
             while (true)
             {
@@ -27,6 +40,16 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
                 catch (TimeoutException)
                 {
                     if (rertyCount-- > 0)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(delayInSec)).ConfigureAwait(false);
+                        continue;
+                    }
+
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    if (isRetrableException?.Invoke(ex) ?? false && rertyCount-- > 0)
                     {
                         await Task.Delay(TimeSpan.FromSeconds(delayInSec)).ConfigureAwait(false);
                         continue;

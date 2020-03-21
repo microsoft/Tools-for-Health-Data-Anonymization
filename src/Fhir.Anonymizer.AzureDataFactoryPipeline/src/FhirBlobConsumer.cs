@@ -119,7 +119,7 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
             string blockId,
             MemoryStream stream)
         {
-            await ExecutionWithTimeoutRetry.InvokeAsync<BlockInfo>(
+            await OperationExecutionHelper.InvokeWithTimeoutRetryAsync<BlockInfo>(
                 async () =>
                 {
                     using MemoryStream uploadStream = new MemoryStream();
@@ -128,7 +128,10 @@ namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
                     uploadStream.Position = 0;
 
                     return await _blobClient.StageBlockAsync(blockId, uploadStream).ConfigureAwait(false);
-                }, TimeSpan.FromSeconds(BlockUploadTimeoutInSeconds), BlockUploadTimeoutRetryCount).ConfigureAwait(false);
+                }, 
+                TimeSpan.FromSeconds(BlockUploadTimeoutInSeconds), 
+                BlockUploadTimeoutRetryCount,
+                isRetrableException: OperationExecutionHelper.IsRetrableException).ConfigureAwait(false);
 
             ProgressHandler?.Report(stream.Length);
             await stream.DisposeAsync().ConfigureAwait(false);
