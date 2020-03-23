@@ -147,7 +147,7 @@ You can also export FHIR resources from a FHIR server using [Bulk Export](https:
 Once a Data Factory pipeline is created, use the following command to trigger pipeline run from PowerShell:
 
 ```powershell
-> .\DeployAzureDataFactoryPipeline.ps1 -RunPipelineOnly -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -BatchComputeNodeSize $BatchComputeNodeSize
+> .\DeployAzureDataFactoryPipeline.ps1 -RunPipelineOnly -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -BatchComputeNodeSize $BatchComputeNodeSize -ResourceGroupName $ResourceGroupName
 ```
 
 Pipeline run result will be shown in console. You will also find stdout and stderr resource links in the result.
