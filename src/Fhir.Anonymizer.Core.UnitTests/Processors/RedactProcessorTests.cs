@@ -22,7 +22,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             processor = new RedactProcessor(enablePartialDatesForRedact: false, true, true, new List<string>());
             node = ElementNode.FromElement(testDate.ToTypedElement());
             processor.Process(node);
-            Assert.Equal("", node.Value.ToString());
+            Assert.Null(node.Value);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             processor = new RedactProcessor(enablePartialDatesForRedact: false, true, true, new List<string>());
             node = ElementNode.FromElement(testDateTime.ToTypedElement());
             processor.Process(node);
-            Assert.Equal("", node.Value.ToString());
+            Assert.Null(node.Value);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             processor = new RedactProcessor(enablePartialDatesForRedact: false, true, true, new List<string>());
             node = ElementNode.FromElement(testInstant.ToTypedElement());
             processor.Process(node);
-            Assert.Equal("", node.Value.ToString());
+            Assert.Null(node.Value);
         }
 
         [Fact]
@@ -62,12 +62,12 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             var age = new Age() { Value = 91 };
             var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
             processor.Process(node);
-            Assert.Equal("", node.Value.ToString());
+            Assert.Null(node.Value);
 
             processor = new RedactProcessor(true, enablePartialAgesForRedact: false, true, new List<string>());
             node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
             processor.Process(node);
-            Assert.Equal("", node.Value.ToString());
+            Assert.Null(node.Value);
 
             processor = new RedactProcessor(true, enablePartialAgesForRedact: true, true, new List<string>());
             age = new Age() { Value = 89 };
@@ -94,7 +94,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             node = ElementNode.FromElement(new FhirString("54321").ToTypedElement());
             node.Name = "postalCode";
             processor.Process(node);
-            Assert.Equal("00000", node.Value.ToString());
+            Assert.Null(node.Value);
         }
 
         [Fact]
@@ -104,7 +104,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             var node = ElementNode.FromElement(new FhirString("TestString").ToTypedElement());
             node.Name = "dummy";
             processor.Process(node);
-            Assert.Equal("", node.Value.ToString());
+            Assert.Null(node.Value);
         }
     }
 }

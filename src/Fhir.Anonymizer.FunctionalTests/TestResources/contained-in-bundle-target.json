@@ -10,13 +10,7 @@
         "contained": [
           {
             "resourceType": "Practitioner",
-            "id": "p1",
-            "name": [
-              {
-                "family": "",
-                "given": [ "" ]
-              }
-            ]
+            "id": "p1"
           }
         ],
         "asserter": {
