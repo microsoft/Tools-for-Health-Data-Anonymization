@@ -75,6 +75,7 @@ namespace Fhir.Anonymizer.Core
 
                 BatchAnonymizeProgressDetail batchAnonymizeProgressDetail = new BatchAnonymizeProgressDetail();
                 batchAnonymizeProgressDetail.CurrentThreadId = Thread.CurrentThread.ManagedThreadId;
+              
                 foreach (string content in batchData)
                 {
                     if (cancellationToken.IsCancellationRequested)

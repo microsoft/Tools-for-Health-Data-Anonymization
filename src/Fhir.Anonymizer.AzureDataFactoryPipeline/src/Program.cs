@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using CommandLine;
 
 namespace Fhir.Anonymizer.DataFactoryTool
@@ -8,12 +9,13 @@ namespace Fhir.Anonymizer.DataFactoryTool
         [Option('f', "force", Required = false, HelpText = "Force overwrite the exist blob files in the output container.")]
         public bool Force { get; set; }
     }
+
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Parser.Default.ParseArguments<Options>(args)
-               .WithParsed<Options>(option => new DataFactoryCustomActivity().Run(option.Force));
+            await Parser.Default.ParseArguments<Options>(args)
+               .MapResult(async option => await new DataFactoryCustomActivity().Run(option.Force).ConfigureAwait(false), _ => Task.FromResult(1)).ConfigureAwait(false);
         }
     }
 }
