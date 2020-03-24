@@ -31,10 +31,14 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             };
             await executor.ExecuteAsync(CancellationToken.None, progress: progress);
 
-            Assert.Equal(itemCount, totalCount);
             Assert.Equal(itemCount, testConsumer.CurrentOffset);
             Assert.Equal(99, testConsumer.BatchCount);
-            Assert.Equal(9873, consumeCount);
+
+            // Progress report is triggered by event, wait 1 second here in case progress not report.
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+            Assert.Equal(itemCount, totalCount);
+            Assert.Equal(itemCount, consumeCount);
         }
 
         [Fact]

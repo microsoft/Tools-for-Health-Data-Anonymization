@@ -25,7 +25,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             processor = new DateShiftProcessor(dateShiftKey: "dummy", enablePartialDatesForRedact: false);
             node = ElementNode.FromElement(testDate.ToTypedElement());
             processor.Process(node);
-            Assert.Equal("", node.Value.ToString());
+            Assert.Null(node.Value);
         }
 
         [Fact]

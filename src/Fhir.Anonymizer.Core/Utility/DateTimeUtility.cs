@@ -39,12 +39,12 @@ namespace Fhir.Anonymizer.Core.Utility
                 if (matchedGroups[s_yearIndex].Captures.Any())
                 {
                     string yearOfDate = matchedGroups[s_yearIndex].Value;
-                    node.Value = IndicateAgeOverThreshold(matchedGroups) ? string.Empty : yearOfDate;
+                    node.Value = IndicateAgeOverThreshold(matchedGroups) ? null : yearOfDate;
                 }
             }
             else
             {
-                node.Value = string.Empty;
+                node.Value = null;
             }
         }
 
@@ -61,12 +61,12 @@ namespace Fhir.Anonymizer.Core.Utility
                 if (matchedGroups[s_yearIndex].Captures.Any())
                 {
                     string yearOfDateTime = matchedGroups[s_yearIndex].Value;
-                    node.Value = IndicateAgeOverThreshold(matchedGroups) ? string.Empty : yearOfDateTime;
+                    node.Value = IndicateAgeOverThreshold(matchedGroups) ? null : yearOfDateTime;
                 }
             }
             else
             {
-                node.Value = string.Empty;
+                node.Value = null;
             }
         }
 
@@ -81,12 +81,12 @@ namespace Fhir.Anonymizer.Core.Utility
             {
                 if (int.Parse(node.Value.ToString()) > s_ageThreshold)
                 {
-                    node.Value = string.Empty;
+                    node.Value = null;
                 }
             }
             else
             {
-                node.Value = string.Empty;
+                node.Value = null;
             }
         }
 
