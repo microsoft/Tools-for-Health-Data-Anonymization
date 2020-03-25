@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Deploy Azure Data Factory Pipeline
 .DESCRIPTION
@@ -44,6 +44,7 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$BatchAccountPoolName,
     [string]$SubscriptionId,
+    [string]$ResourceGroupName,
     [switch]$RunPipelineOnly = $false,
     [string]$BatchComputeNodeSize = "Standard_d1",
     [string]$BatchComputeNodeRuntimeId = "win10-x64"
@@ -262,7 +263,24 @@ if ($BatchAccountName -ne "" -And $BatchAccountPoolName -eq "")
 
 # Load user Config
 $userConfig = Get-Content -Raw -Path $ConfigFile | ConvertFrom-Json
-$resourceGroupName = "$($userConfig.dataFactoryName)resourcegroup"
+
+if ($ResourceGroupName -eq "") 
+{
+    # generate default resource group name if customer not specified.
+    $ResourceGroupName = "$($userConfig.dataFactoryName)resourcegroup"
+}
+
+Write-Host "Use resource group: $ResourceGroupName"
+Get-AzResourceGroup -Name $ResourceGroupName -ErrorVariable notPresent -ErrorAction SilentlyContinue
+if ($notPresent)
+{
+    Write-Host "Resource Group $ResourceGroupName not exist. Creating."
+    New-AzResourceGroup -Name $ResourceGroupName -Location $userConfig.resourceLocation -ErrorAction Stop
+}
+else 
+{
+    Write-Host "Resource Group $ResourceGroupName already exist."
+}
 
 $appFolder = "AdfApplication"
 $appName = "Fhir.Anonymizer.AzureDataFactoryPipeline"
@@ -276,14 +294,11 @@ if ($SubscriptionId)
 
 if (!$RunPipelineOnly) 
 {
-    # Create Azure Resource Group
-    New-AzResourceGroup -Name $resourceGroupName -Location $userConfig.resourceLocation -ErrorAction Stop
-
     BuildToolAndUploadToBlobContainer $userConfig.destinationStorageAccountName $userConfig.destinationStorageAccountKey $userConfig.activityContainerName.ToLower() $appFolder $appName $BatchComputeNodeRuntimeId
 
-    CheckAndCreateAzureBatchLinkedServiceAndComputeEnvrionment $resourceGroupName $userConfig.resourceLocation $BatchAccountName $BatchAccountPoolName $BatchComputeNodeSize
+    CheckAndCreateAzureBatchLinkedServiceAndComputeEnvrionment $ResourceGroupName $userConfig.resourceLocation $BatchAccountName $BatchAccountPoolName $BatchComputeNodeSize
     
-    CreateAzureDataFactoryAndPipeline $resourceGroupName $userConfig $BatchAccountName $BatchAccountPoolName
+    CreateAzureDataFactoryAndPipeline $ResourceGroupName $userConfig $BatchAccountName $BatchAccountPoolName
 }
 
-RunAzureDataFactoryPipeline $resourceGroupName $userConfig.dataFactoryName $adfPipelineName
+RunAzureDataFactoryPipeline $ResourceGroupName $userConfig.dataFactoryName $adfPipelineName
