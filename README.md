@@ -133,7 +133,7 @@ You can also export FHIR resources from a FHIR server using [Bulk Export](https:
 > $BatchAccountName = "BatchAccountName. New batch account would be created if account name is null or empty."
 > $BatchAccountPoolName = "BatchAccountPoolName"
 > $BatchComputeNodeSize = "Node size for batch node. Default value is 'Standard_d1'"
-> $ResourceGroupName = "Resource group name for Data Factory. Default value is 'data_factory_name+resourcegroup'"
+> $ResourceGroupName = "Resource group name for Data Factory. Default value is $dataFactoryName + 'resourcegroup'"
 ```
 
 3. Run powershell scripts to create data factory pipeline
