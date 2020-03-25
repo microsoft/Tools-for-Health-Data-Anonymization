@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Tool", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.AzureDataFactoryPipeline\Fhir.Anonymizer.AzureDataFactoryPipeline.csproj", "{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Tools.UnitTests", "src\Fhir.Anonymizer.Tools.UnitTests\Fhir.Anonymizer.Tools.UnitTests.csproj", "{778BB8FF-5AB5-4E93-81E2-23729865FD1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{778BB8FF-5AB5-4E93-81E2-23729865FD1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{778BB8FF-5AB5-4E93-81E2-23729865FD1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{778BB8FF-5AB5-4E93-81E2-23729865FD1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{778BB8FF-5AB5-4E93-81E2-23729865FD1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -74,9 +74,7 @@ namespace Fhir.Anonymizer.Core
             var resourceId = root.GetNodeId();
             foreach (var rule in resourceContext.RuleList)
             {
-                var pathCompileExpression = new FhirPathCompiler().Compile($"{rule.Path}");
-                var matchedNodes = pathCompileExpression(root, EvaluationContext.CreateDefault())
-                    .Cast<ElementNode>();
+                var matchedNodes = root.Select(rule.Path).Cast<ElementNode>();
 
                 _logger.LogDebug(rule.Type == AnonymizerRuleType.PathRule ?
                     $"Path {rule.Source} matches {matchedNodes.Count()} nodes in resource ID {resourceId}." :
