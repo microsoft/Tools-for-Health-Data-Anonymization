@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Fhir.Anonymizer.Core.PartitionedExecution
 {
-    public class FhirStreamConsumer : IFhirDataConsumer, IDisposable
+    public class FhirStreamConsumer : IFhirDataConsumer<string>, IDisposable
     {
         private StreamWriter _writer;
 

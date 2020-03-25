@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Fhir.Anonymizer.Core;
 using Fhir.Anonymizer.Core.PartitionedExecution;
 
@@ -17,50 +18,15 @@ namespace Fhir.Anonymizer.Tool
             _engine = new AnonymizerEngine(configFilePath);
         }
 
-        public void AnonymizeFolder(string inputFolder, string outputFolder, bool isRecursive)
+        public async Task AnonymizeFolder(string inputFolder, string outputFolder, bool isRecursive)
         {
-            var directorySearchOption = isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-            var resourceFileList = Directory.EnumerateFiles(inputFolder, "*.json", directorySearchOption).ToList();
-            Console.WriteLine($"Find {resourceFileList.Count()} json resource files in '{inputFolder}'.");
-
-            var processedCount = 0;
-            var processedErrorCount = 0;
-
-            foreach (var resourceFileName in resourceFileList)
-            {
-                Console.WriteLine($"Processing {resourceFileName}");
-
-                var resourceOutputFileName = GetResourceOutputFileName(resourceFileName, inputFolder, outputFolder);
-                if (isRecursive)
-                {
-                    var resourceOutputFolder = Path.GetDirectoryName(resourceOutputFileName);
-                    Directory.CreateDirectory(resourceOutputFolder);
-                }
-
-                using (FileStream inputStream = new FileStream(resourceFileName, FileMode.Open))
-                using (FileStream outputStream = new FileStream(resourceOutputFileName, FileMode.Create))
-                {
-                    using StreamReader reader = new StreamReader(inputStream);
-                    using StreamWriter writer = new StreamWriter(outputStream);
-                    var resourceJson = reader.ReadToEnd();
-                    try
-                    {
-                        var resourceResult = _engine.AnonymizeJson(resourceJson, isPrettyOutput: true);
-                        writer.Write(resourceResult);
-                        processedCount += 1;
-                    }
-                    catch (Exception innerException)
-                    {
-                        processedErrorCount += 1;
-                        Console.Error.WriteLine($"Error #{processedErrorCount}\nResource: {resourceJson}\nErrorMessage: {innerException.ToString()}");
-                    }
-                }
-            }
-
-            Console.WriteLine($"Finished processing '{inputFolder}'! Succeeded in {processedCount} resources, failed in {processedErrorCount} resources in total.");
+            var anonymizer = new FilesAnonymizerForJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive);
+            await anonymizer.Anonymize().ConfigureAwait(false);
+            
+            Console.WriteLine($"Finished processing '{inputFolder}'! ");
         }
 
-        public void AnonymizeBulkDataFolder(string inputFolder, string outputFolder, bool isRecursive)
+        public async Task AnonymizeBulkDataFolder(string inputFolder, string outputFolder, bool isRecursive)
         {
             var directorySearchOption = isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
             var bulkResourceFileList = Directory.EnumerateFiles(inputFolder, "*.ndjson", directorySearchOption).ToList();
@@ -90,7 +56,7 @@ namespace Fhir.Anonymizer.Tool
                     Stopwatch stopWatch = new Stopwatch();
                     stopWatch.Start();
 
-                    FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, consumer, anonymizeFunction);
+                    FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(reader, consumer, anonymizeFunction);
                     executor.PartitionCount = Environment.ProcessorCount * 2;
 
                     Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
@@ -103,7 +69,7 @@ namespace Fhir.Anonymizer.Tool
                         Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {failedCount} Process failed. {consumeCompletedCount} Consume completed.");
                     };
 
-                    executor.ExecuteAsync(CancellationToken.None, false, progress).Wait();
+                    await executor.ExecuteAsync(CancellationToken.None, false, progress).ConfigureAwait(false);
                 }
                 
                 Console.WriteLine($"Finished processing '{bulkResourceFileName}'!");

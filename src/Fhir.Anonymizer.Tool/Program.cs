@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using CommandLine;
 using Fhir.Anonymizer.Core;
 using Microsoft.Extensions.Logging;
@@ -24,13 +25,13 @@ namespace Fhir.Anonymizer.Tool
             public bool IsVerbose { get; set; }
         }
 
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
-            CommandLine.Parser.Default.ParseArguments<Options>(args)
-              .WithParsed(options => RunAnonymization(options));
+            await CommandLine.Parser.Default.ParseArguments<Options>(args)
+               .MapResult(async options => await RunAnonymization(options).ConfigureAwait(false), _ => Task.FromResult(1)).ConfigureAwait(false);
         }
 
-        private static void RunAnonymization(Options options)
+        private async static Task RunAnonymization(Options options)
         {
             InitializeAnonymizerLogging(options.IsVerbose);
 
@@ -44,11 +45,11 @@ namespace Fhir.Anonymizer.Tool
 
             if (options.IsBulkData)
             {
-                dataProcessor.AnonymizeBulkDataFolder(options.InputFolder, options.OutputFolder, options.IsRecursive);
+                await dataProcessor.AnonymizeBulkDataFolder(options.InputFolder, options.OutputFolder, options.IsRecursive).ConfigureAwait(false);
             }
             else
             {
-                dataProcessor.AnonymizeFolder(options.InputFolder, options.OutputFolder, options.IsRecursive);
+                await dataProcessor.AnonymizeFolder(options.InputFolder, options.OutputFolder, options.IsRecursive).ConfigureAwait(false);
             }
         }
 

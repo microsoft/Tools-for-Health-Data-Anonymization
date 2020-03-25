@@ -9,7 +9,7 @@ using Fhir.Anonymizer.Core;
 
 namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
 {
-    public class FhirBlobConsumer : IFhirDataConsumer
+    public class FhirBlobConsumer : IFhirDataConsumer<string>
     {
         private static byte[] _newLine = Encoding.UTF8.GetBytes("\r\n");
 

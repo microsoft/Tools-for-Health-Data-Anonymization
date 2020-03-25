@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace Fhir.Anonymizer.Core
 {
-    public interface IFhirDataConsumer
+    public interface IFhirDataConsumer<T>
     {
-        Task<int> ConsumeAsync(IEnumerable<string> data);
+        Task<int> ConsumeAsync(IEnumerable<T> data);
 
         Task CompleteAsync();
     }

@@ -182,7 +182,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
             };
 
             Stopwatch stopWatch = Stopwatch.StartNew();
-            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, consumer, anonymizerFunction);
+            FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(reader, consumer, anonymizerFunction);
             executor.PartitionCount = Environment.ProcessorCount * 2;
             Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
             progress.ProgressChanged += (obj, args) =>
