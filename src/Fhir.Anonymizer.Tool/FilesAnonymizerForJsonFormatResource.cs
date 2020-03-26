@@ -41,9 +41,17 @@ namespace Fhir.Anonymizer.Tool
                 PartitionCount = Environment.ProcessorCount * 2
             };
 
-            executor.AnonymizerFunctionAsync = async content =>
+            executor.AnonymizerFunctionAsync = async file =>
             {
-                return await FileAnonymize(content).ConfigureAwait(false);
+                try
+                {
+                    return await FileAnonymize(file).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"Error:\nResource: {file}\nErrorMessage: {ex.ToString()}");
+                    throw;
+                }
             };
 
             Stopwatch stopWatch = new Stopwatch();
