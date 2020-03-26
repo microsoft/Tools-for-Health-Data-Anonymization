@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
@@ -70,48 +71,56 @@ namespace Fhir.Anonymizer.DataFactoryTool
             string inputBlobPrefix = GetBlobPrefixFromFolderPath(inputData.SourceFolderPath); ;
             string outputBlobPrefix = GetBlobPrefixFromFolderPath(inputData.DestinationFolderPath); ;
 
-            var skippedBlobCount = 0;
-            var skippedBlobList = new List<string>();
+            await AnonymizeBlobsInJsonFormat(inputData, inputContainer, outputContainer, inputBlobPrefix, outputBlobPrefix).ConfigureAwait(false);
+            await AnonymizeBlobsInNdJsonFormat(inputData, inputContainer, outputContainer, inputBlobPrefix, outputBlobPrefix).ConfigureAwait(false);
+        }
 
-            await foreach (BlobItem blob in inputContainer.GetBlobsAsync(BlobTraits.None, BlobStates.None, inputBlobPrefix, default))
+        private async Task AnonymizeBlobsInJsonFormat(ActivityInputData inputData, BlobContainerClient inputContainer, BlobContainerClient outputContainer, string inputBlobPrefix, string outputBlobPrefix)
+        {
+            IEnumerable<BlobItem> blobsInJsonFormat = inputContainer.GetBlobs(BlobTraits.None, BlobStates.None, inputBlobPrefix, default).Where(blob => IsInputFileInJsonFormat(blob.Name));
+            FhirEnumerableReader<BlobItem> reader = new FhirEnumerableReader<BlobItem>(blobsInJsonFormat);
+            Func<BlobItem, Task<string>> anonymizeBlobFunc = async (blob) =>
             {
                 string outputBlobName = GetOutputBlobName(blob.Name, inputBlobPrefix, outputBlobPrefix);
-                Console.WriteLine($"[{blob.Name}]：Processing... output to container '{outputContainerName}'");
+                Console.WriteLine($"[{blob.Name}]：Processing... output to container '{outputContainer.Name}'");
 
-                var inputBlobClient = new BlobClient(inputData.SourceStorageConnectionString, inputContainerName, blob.Name, BlobClientOptions.Value);
-                var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainerName, outputBlobName, BlobClientOptions.Value);
+                var inputBlobClient = new BlobClient(inputData.SourceStorageConnectionString, inputContainer.Name, blob.Name, BlobClientOptions.Value);
+                var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainer.Name, outputBlobName, BlobClientOptions.Value);
+                await outputBlobClient.DeleteIfExistsAsync().ConfigureAwait(false);
 
-                var isOutputExist = await outputBlobClient.ExistsAsync();
-                if (!force && isOutputExist)
-                {
-                    Console.WriteLine($"Blob file {blob.Name} already exists in {inputData.DestinationContainerName}, skipping..");
-                    skippedBlobCount += 1;
-                    skippedBlobList.Add(blob.Name);
-                    continue;
-                }
-                else if (force && isOutputExist)
-                {
-                    await outputBlobClient.DeleteAsync();
-                }
+                await AnonymizeSingleBlobInJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name).ConfigureAwait(false);
 
+                return string.Empty;
+            };
+
+            FhirPartitionedExecutor<BlobItem, string> executor = new FhirPartitionedExecutor<BlobItem, string>(reader, null, anonymizeBlobFunc);
+            executor.PartitionCount = Environment.ProcessorCount * 2;
+            executor.BatchSize = 1;
+
+            await executor.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+        }
+
+        private async Task AnonymizeBlobsInNdJsonFormat(ActivityInputData inputData, BlobContainerClient inputContainer, BlobContainerClient outputContainer, string inputBlobPrefix, string outputBlobPrefix)
+        {
+            await foreach (BlobItem blob in inputContainer.GetBlobsAsync(BlobTraits.None, BlobStates.None, inputBlobPrefix, default))
+            {
                 if (IsInputFileInJsonFormat(blob.Name))
                 {
-                    await AnonymizeBlobInJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name);
+                    continue;
                 }
-                else
-                {
-                    await AnonymizeBlobInNdJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name);
-                }
-            }
+                
+                string outputBlobName = GetOutputBlobName(blob.Name, inputBlobPrefix, outputBlobPrefix);
+                Console.WriteLine($"[{blob.Name}]：Processing... output to container '{outputContainer.Name}'");
 
-            if (skippedBlobCount > 0)
-            {
-                Console.WriteLine($"Skipped {skippedBlobCount} files already exists in destination container: {skippedBlobList.ToString()}");
-                Console.WriteLine($"If you want to overwrite existing blob in {inputData.DestinationContainerName} container, please use the -f or --force flag");
+                var inputBlobClient = new BlobClient(inputData.SourceStorageConnectionString, inputContainer.Name, blob.Name, BlobClientOptions.Value);
+                var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainer.Name, outputBlobName, BlobClientOptions.Value);
+                await outputBlobClient.DeleteIfExistsAsync().ConfigureAwait(false);
+
+                await AnonymizeSingleBlobInNdJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name);
             }
         }
 
-        private async Task AnonymizeBlobInJsonFormatAsync(BlobClient inputBlobClient, BlockBlobClient outputBlobClient, string blobName)
+        private async Task AnonymizeSingleBlobInJsonFormatAsync(BlobClient inputBlobClient, BlockBlobClient outputBlobClient, string blobName)
         {
             try
             {
@@ -158,7 +167,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
             }
         }
 
-        private async Task AnonymizeBlobInNdJsonFormatAsync(BlobClient inputBlobClient, BlockBlobClient outputBlobClient, string blobName)
+        private async Task AnonymizeSingleBlobInNdJsonFormatAsync(BlobClient inputBlobClient, BlockBlobClient outputBlobClient, string blobName)
         {
             var processedCount = 0;
             var processedErrorCount = 0;

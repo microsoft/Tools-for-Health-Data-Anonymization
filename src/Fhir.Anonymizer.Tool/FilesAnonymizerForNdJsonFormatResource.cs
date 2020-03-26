@@ -59,7 +59,7 @@ namespace Fhir.Anonymizer.Tool
                         }
                         catch (Exception ex)
                         {
-
+                            Console.Error.WriteLine($"Error:\nResource: {content}\nErrorMessage: {ex.ToString()}");
                             throw;
                         }
                     };

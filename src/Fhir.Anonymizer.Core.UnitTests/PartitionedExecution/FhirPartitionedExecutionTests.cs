@@ -49,7 +49,18 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             {
                 CheckOrder = false
             };
-            FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(new TestFhirDataReader(itemCount), testConsumer, (content) => content)
+
+            Random random = new Random();
+            Func<string, Task<string>> anonymizeFunc = async content =>
+            {
+                if (random.Next() % 100 == 0)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(200));
+                }
+
+                return await Task.FromResult(content);
+            };
+            FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(new TestFhirDataReader(itemCount), testConsumer, anonymizeFunc)
             {
                 BatchSize = 100,
                 PartitionCount = 12,
