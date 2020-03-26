@@ -133,12 +133,13 @@ You can also export FHIR resources from a FHIR server using [Bulk Export](https:
 > $BatchAccountName = "BatchAccountName. New batch account would be created if account name is null or empty."
 > $BatchAccountPoolName = "BatchAccountPoolName"
 > $BatchComputeNodeSize = "Node size for batch node. Default value is 'Standard_d1'"
+> $ResourceGroupName = "Resource group name for Data Factory. Default value is $dataFactoryName + 'resourcegroup'"
 ```
 
 3. Run powershell scripts to create data factory pipeline
 
 ```powershell
-> .\DeployAzureDataFactoryPipeline.ps1 -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -BatchComputeNodeSize $BatchComputeNodeSize
+> .\DeployAzureDataFactoryPipeline.ps1 -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -BatchComputeNodeSize $BatchComputeNodeSize -ResourceGroupName $ResourceGroupName
 ```
 
 ### Trigger and monitor pipeline run from PowerShell
@@ -146,7 +147,7 @@ You can also export FHIR resources from a FHIR server using [Bulk Export](https:
 Once a Data Factory pipeline is created, use the following command to trigger pipeline run from PowerShell:
 
 ```powershell
-> .\DeployAzureDataFactoryPipeline.ps1 -RunPipelineOnly -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -BatchComputeNodeSize $BatchComputeNodeSize
+> .\DeployAzureDataFactoryPipeline.ps1 -RunPipelineOnly -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -BatchComputeNodeSize $BatchComputeNodeSize -ResourceGroupName $ResourceGroupName
 ```
 
 Pipeline run result will be shown in console. You will also find stdout and stderr resource links in the result.

@@ -25,13 +25,13 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
             if (typeRules != null && typeRules.Any())
             {
                 var rulePaths = rules.Select(rule => rule.Path).ToHashSet();
-                TransformTypeRulesToPathRules(root, typeRules, rules, rulePaths);
+                TransformTypeRulesToPathRules(root, typeRules, rules, rulePaths, new HashSet<string>());
             }
 
             return new ResourceAnonymizerContext(rules);
         }
 
-        private static void TransformTypeRulesToPathRules(ElementNode node, Dictionary<string, string> typeRules, List<AnonymizerRule> rules, HashSet<string> rulePaths)
+        private static void TransformTypeRulesToPathRules(ElementNode node, Dictionary<string, string> typeRules, List<AnonymizerRule> rules, HashSet<string> rulePaths, HashSet<string> generatedTypePaths)
         {
             if (node.IsContainedNode() || node.IsEntryNode())
             {
@@ -44,18 +44,17 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                 return;
             }
 
-            if (typeRules.ContainsKey(node.InstanceType))
+            if (!generatedTypePaths.Contains(path) && typeRules.ContainsKey(node.InstanceType))
             {
                 var rule = new AnonymizerRule(path, typeRules[node.InstanceType], AnonymizerRuleType.TypeRule, node.InstanceType);
-   
                 rules.Add(rule);
-                rulePaths.Add(rule.Path);
+                generatedTypePaths.Add(rule.Path);
             }
 
             var children = node.Children().Cast<ElementNode>();
             foreach (var child in children)
             {
-                TransformTypeRulesToPathRules(child, typeRules, rules, rulePaths);
+                TransformTypeRulesToPathRules(child, typeRules, rules, rulePaths, generatedTypePaths);
             }
         }
     }

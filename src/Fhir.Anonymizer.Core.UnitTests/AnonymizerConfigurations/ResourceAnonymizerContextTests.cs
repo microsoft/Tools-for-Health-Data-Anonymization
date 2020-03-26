@@ -29,6 +29,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
 
             Assert.Contains("Patient.address", context.PathSet);
             Assert.Contains("Patient.name", context.PathSet);
+            Assert.Contains("Patient.name.period.start", context.PathSet);
             Assert.Contains("Patient.address.period.start", context.PathSet);
             Assert.Contains("Patient.identifier.period.start", context.PathSet);
         }
@@ -115,7 +116,14 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
         ""Peter"",
         ""James""
       ]
-    }
+    },
+     {
+      ""use"": ""nickname"",
+      ""text"": ""Nick"",
+      ""period"": {
+        ""start"":""2017-01-01""
+      }
+    },
   ],
   ""address"": [
     {
