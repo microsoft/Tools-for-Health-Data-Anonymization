@@ -27,18 +27,23 @@ namespace Fhir.Anonymizer.Tool
             _engine = engine;
         }
 
-        public async Task Anonymize()
+        public async Task AnonymizeAsync()
         {
             var directorySearchOption = _isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
             var resourceFileList = Directory.EnumerateFiles(_inputFolder, "*.json", directorySearchOption).ToList();
             Console.WriteLine($"Find {resourceFileList.Count()} json resource files in '{_inputFolder}'.");
 
             FhirEnumerableReader<string> reader = new FhirEnumerableReader<string>(resourceFileList);
-            FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(reader, null, FileAnonymize)
+            FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(reader, null)
             {
                 KeepOrder = false,
                 BatchSize = 1,
-                PartitionCount = Environment.ProcessorCount
+                PartitionCount = Environment.ProcessorCount * 2
+            };
+
+            executor.AnonymizerFunctionAsync = async content =>
+            {
+                return await FileAnonymize(content).ConfigureAwait(false);
             };
 
             Stopwatch stopWatch = new Stopwatch();
@@ -58,7 +63,7 @@ namespace Fhir.Anonymizer.Tool
             await executor.ExecuteAsync(cancellationToken: CancellationToken.None, false, progress).ConfigureAwait(false);
         }
 
-        public string FileAnonymize(string fileName)
+        public async Task<string> FileAnonymize(string fileName)
         {
             var resourceOutputFileName = GetResourceOutputFileName(fileName, _inputFolder, _outputFolder);
             if (_isRecursive)
@@ -67,17 +72,15 @@ namespace Fhir.Anonymizer.Tool
                 Directory.CreateDirectory(resourceOutputFolder);
             }
 
-            using (FileStream inputStream = new FileStream(fileName, FileMode.Open))
+            string resourceJson = await File.ReadAllTextAsync(fileName).ConfigureAwait(false);
             using (FileStream outputStream = new FileStream(resourceOutputFileName, FileMode.Create))
             {
-                using StreamReader reader = new StreamReader(inputStream);
                 using StreamWriter writer = new StreamWriter(outputStream);
-                var resourceJson = reader.ReadToEnd();
                 try
                 {
                     var resourceResult = _engine.AnonymizeJson(resourceJson, isPrettyOutput: true);
-                    writer.Write(resourceResult);
-                    writer.Flush();
+                    await writer.WriteAsync(resourceResult).ConfigureAwait(false);
+                    await writer.FlushAsync().ConfigureAwait(false);
                 }
                 catch (Exception innerException)
                 {

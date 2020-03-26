@@ -13,7 +13,7 @@ namespace Fhir.Anonymizer.Core
 
         public IFhirDataConsumer<TResult> AnonymizedDataConsumer { set; get; }
 
-        public Func<TSource, TResult> AnonymizerFunction { set; get; }
+        public Func<TSource, Task<TResult>> AnonymizerFunctionAsync { set; get; }
 
         public int PartitionCount { set; get; } = Constants.DefaultPartitionedExecutionCount;
 
@@ -21,11 +21,32 @@ namespace Fhir.Anonymizer.Core
 
         public bool KeepOrder { set; get; } = true;
 
+        public FhirPartitionedExecutor(IFhirDataReader<TSource> rawDataReader, IFhirDataConsumer<TResult> anonymizedDataConsumer)
+        {
+            RawDataReader = rawDataReader;
+            AnonymizedDataConsumer = anonymizedDataConsumer;
+            AnonymizerFunctionAsync = async content =>
+            {
+                return await Task.FromResult<TResult>(default(TResult)).ConfigureAwait(false);
+            };
+        }
+
         public FhirPartitionedExecutor(IFhirDataReader<TSource> rawDataReader, IFhirDataConsumer<TResult> anonymizedDataConsumer, Func<TSource, TResult> anonymizerFunction)
         {
             RawDataReader = rawDataReader;
             AnonymizedDataConsumer = anonymizedDataConsumer;
-            AnonymizerFunction = anonymizerFunction;
+            AnonymizerFunctionAsync = async content =>
+            {
+                TResult result = anonymizerFunction(content);
+                return await Task.FromResult<TResult>(result).ConfigureAwait(false);
+            };
+        }
+
+        public FhirPartitionedExecutor(IFhirDataReader<TSource> rawDataReader, IFhirDataConsumer<TResult> anonymizedDataConsumer, Func<TSource, Task<TResult>> anonymizerFunctionAsync)
+        {
+            RawDataReader = rawDataReader;
+            AnonymizedDataConsumer = anonymizedDataConsumer;
+            AnonymizerFunctionAsync = anonymizerFunctionAsync;
         }
 
         public async Task ExecuteAsync(CancellationToken cancellationToken, bool breakOnAnonymizationException = false, IProgress<BatchAnonymizeProgressDetail> progress = null)
@@ -67,12 +88,15 @@ namespace Fhir.Anonymizer.Core
                 await ConsumeExecutionResultTask(executionTasks, progress).ConfigureAwait(false);
             }
 
-            await AnonymizedDataConsumer.CompleteAsync().ConfigureAwait(false);
+            if (AnonymizedDataConsumer != null)
+            {
+                await AnonymizedDataConsumer.CompleteAsync().ConfigureAwait(false);
+            }
         }
 
         private async Task<IEnumerable<TResult>> AnonymizeAsync(List<TSource> batchData, bool breakOnAnonymizationException, IProgress<BatchAnonymizeProgressDetail> progress, CancellationToken cancellationToken)
         {
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
                 List<TResult> result = new List<TResult>();
 
@@ -88,7 +112,7 @@ namespace Fhir.Anonymizer.Core
 
                     try
                     {
-                        TResult anonymizedResult = AnonymizerFunction(content);
+                        TResult anonymizedResult = await AnonymizerFunctionAsync(content);
                         result.Add(anonymizedResult);
                         batchAnonymizeProgressDetail.ProcessCompleted++;
                     }

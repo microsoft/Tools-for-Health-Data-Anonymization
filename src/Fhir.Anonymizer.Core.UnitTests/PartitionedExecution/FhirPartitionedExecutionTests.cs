@@ -81,13 +81,14 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
         {
             int itemCount = 9873;
             var testConsumer = new TestFhirDataConsumer(itemCount);
-            FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(new TestFhirDataReader(itemCount), testConsumer, (content) => content);
-
-            executor.AnonymizerFunction = (content) =>
-            {
-                Thread.Sleep(10);
-                return content;
-            };
+            var executor = new FhirPartitionedExecutor<string, string>(
+                new TestFhirDataReader(itemCount), 
+                testConsumer, 
+                (content) =>
+                {
+                    Thread.Sleep(10);
+                    return content;
+                });
 
             CancellationTokenSource source = new CancellationTokenSource();
             source.CancelAfter(1000);
@@ -99,12 +100,14 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
         {
             int itemCount = 9873;
             var testConsumer = new TestFhirDataConsumer(itemCount);
-            FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(new TestFhirDataReader(itemCount), testConsumer, (content) => content);
-
-            executor.AnonymizerFunction = (content) =>
+            Func<string, string> invalidOperationFunc = (content) =>
             {
                 throw new InvalidOperationException();
             };
+            var executor = new FhirPartitionedExecutor<string, string>(
+                new TestFhirDataReader(itemCount), 
+                testConsumer,
+                invalidOperationFunc);
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await executor.ExecuteAsync(CancellationToken.None, true));
         }
