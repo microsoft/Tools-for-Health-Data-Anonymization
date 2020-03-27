@@ -30,7 +30,7 @@ namespace Fhir.Anonymizer.Core.Utility
             }
             else
             {
-                node.Value = new string(s_replacementDigit, node.Value.ToString().Length);
+                node.Value = null;
             }
         }
     }
