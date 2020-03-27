@@ -90,7 +90,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations.Validation
             Assert.Contains("Bundle", resources);
 
             var types = _fhirSchemaProvider.GetFhirDataTypes();
-            Assert.Equal(535, types.Count);
+            Assert.Equal(534, types.Count);
             Assert.Contains("HumanName", types); 
             Assert.Contains("Address", types);
             Assert.Contains("date", types);
@@ -101,7 +101,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations.Validation
             Assert.DoesNotContain("Resource", types);
 
             var schema = _fhirSchemaProvider.GetFhirSchema();
-            Assert.Equal(683, schema.Count);
+            Assert.Equal(682, schema.Count);
         }
 
         [Theory]

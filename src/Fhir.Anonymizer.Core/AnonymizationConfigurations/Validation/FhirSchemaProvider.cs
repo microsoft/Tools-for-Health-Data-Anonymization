@@ -278,10 +278,16 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
                 currentType = type.GetGenericArguments().First();
             }
 
-            var typeAttribute = currentType.GetCustomAttribute<FhirTypeAttribute>();         
+            var typeAttribute = currentType.GetCustomAttribute<FhirTypeAttribute>(); 
+            var typeName = typeAttribute.Name;
+            if (string.Equals(typeName, "codeOfT")) 
+            {
+                typeName = "code";
+            }
+            
             if (!typeAttribute.NamedBackboneElement)
             {
-                return typeAttribute.Name;
+                return typeName;
             }
             else
             {
@@ -290,13 +296,13 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
                 {
                     var resourceAttribute = resourceType.GetCustomAttribute<FhirTypeAttribute>();
                     // Resolve fieldName for NamedBackboneElement Type, i.e. ItemComponent => "item"
-                    if (typeAttribute.Name.Length > NamedBackBoneElementSuffix.Length)
+                    if (typeName.Length > NamedBackBoneElementSuffix.Length)
                     {
-                        var fieldName = typeAttribute.Name.Substring(0, typeAttribute.Name.Length - NamedBackBoneElementSuffix.Length).ToLower();
+                        var fieldName = typeAttribute.Name.Substring(0, typeName.Length - NamedBackBoneElementSuffix.Length).ToLower();
                         return $"{resourceAttribute.Name}*{fieldName}";
                     }
                 }
-                return typeAttribute.Name;
+                return typeName;
             }
         }
 
