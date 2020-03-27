@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
+using Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation;
 using Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Model;
 using Hl7.FhirPath;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
@@ -13,7 +13,6 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         private string _resourceId;
         private Dictionary<string, AnonymizerRule> _pathRuleMap;
         private Dictionary<string, AnonymizerRule> _typeRuleMap;
-
         public ResourceAnonymizerContext(string resourceId, IEnumerable<AnonymizerRule> pathRuleList, IEnumerable<AnonymizerRule> typeRuleList)
         {
             _resourceId = resourceId;
@@ -23,8 +22,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 
         public static ResourceAnonymizerContext Create(ElementNode root, AnonymizerConfigurationManager configurationManager)
         {
-            var pathRules = ResolveGenericFhirPathToBasicFhirPath(root, configurationManager.GetPathRulesByResourceType(root.InstanceType));
-           
+            var pathRules = configurationManager.GetPathRulesByResourceType(root.InstanceType); 
             var typeRules = configurationManager.GetTypeRules();
             return new ResourceAnonymizerContext(root.GetNodeId(), pathRules, typeRules);
         }
@@ -42,58 +40,26 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         public AnonymizerRule GetNodeTypeRule(ElementNode node)
         {
             AnonymizerRule rule = null;
+            var maxPriority = int.MaxValue;
+
             var currentNode = node;
             var typePath = string.Empty;
             do
             {
                 var path = string.IsNullOrEmpty(typePath) ? currentNode.InstanceType : $"{currentNode.InstanceType}.{typePath}";
-                rule = _typeRuleMap.GetValueOrDefault(path, rule);
+                var ruleForPath = _typeRuleMap.GetValueOrDefault(path, null);
+
+                if (ruleForPath != null && ruleForPath.Priority < maxPriority) 
+                {
+                    rule = ruleForPath;
+                    maxPriority = rule.Priority;
+                }
 
                 typePath = string.IsNullOrEmpty(typePath) ? currentNode.Name : $"{currentNode.Name}.{typePath}";
                 currentNode = currentNode.Parent;
             } while (currentNode != null);
             
             return rule;
-        }
-
-        private static IEnumerable<AnonymizerRule> ResolveGenericFhirPathToBasicFhirPath(ElementNode root, IEnumerable<AnonymizerRule> genericFhirPathRules)
-        {
-            var basicRules = new List<AnonymizerRule>();
-            foreach(var rule in genericFhirPathRules)
-            {
-                var matchedNodes = root.Select(rule.Path).Cast<ElementNode>();
-                basicRules.AddRange(matchedNodes.Select(node => new AnonymizerRule(node.GetFhirPath(), rule.Method, rule.Type, rule.Source)));
-            }
-
-            return basicRules;
-        }
-
-        private static void TransformTypeRulesToPathRules(ElementNode node, Dictionary<string, string> typeRules, List<AnonymizerRule> rules, HashSet<string> rulePaths)
-        {
-            if (node.IsContainedNode() || node.IsEntryNode())
-            {
-                return;
-            }
-
-            string path = node.GetFhirPath();
-            if (rulePaths.Contains(path))
-            {
-                return;
-            }
-
-            if (typeRules.ContainsKey(node.InstanceType))
-            {
-                var rule = new AnonymizerRule(path, typeRules[node.InstanceType], AnonymizerRuleType.TypeRule, node.InstanceType);
-   
-                rules.Add(rule);
-                rulePaths.Add(rule.Path);
-            }
-
-            var children = node.Children().Cast<ElementNode>();
-            foreach (var child in children)
-            {
-                TransformTypeRulesToPathRules(child, typeRules, rules, rulePaths);
-            }
         }
     }
 }

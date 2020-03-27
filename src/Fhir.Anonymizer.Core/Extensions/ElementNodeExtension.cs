@@ -22,6 +22,8 @@ namespace Fhir.Anonymizer.Core.Extensions
         private static readonly string s_entryNodeName = "entry";
         private static readonly string s_resourceNodeName = "resource";
 
+        private static readonly string s_locationToFhirPathRegex = @"\[.*?\]";
+
         public static bool IsDateNode(this ElementNode node)
         {
             return node != null && string.Equals(node.InstanceType, s_dateTypeName, StringComparison.InvariantCultureIgnoreCase);
@@ -34,7 +36,7 @@ namespace Fhir.Anonymizer.Core.Extensions
 
         public static bool IsAgeDecimalNode(this ElementNode node)
         {
-            return node != null && 
+            return node != null &&
                 node.Parent.IsAgeNode() &&
                 string.Equals(node.InstanceType, s_decimalTypeName, StringComparison.InvariantCultureIgnoreCase);
         }
@@ -90,7 +92,7 @@ namespace Fhir.Anonymizer.Core.Extensions
 
         public static string GetFhirPath(this ElementNode node)
         {
-            return node == null ? string.Empty : node.Location;
+            return node == null ? string.Empty : Regex.Replace(node.Location, s_locationToFhirPathRegex, string.Empty);
         }
 
         public static string GetNodeId(this ElementNode node)

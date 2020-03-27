@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations

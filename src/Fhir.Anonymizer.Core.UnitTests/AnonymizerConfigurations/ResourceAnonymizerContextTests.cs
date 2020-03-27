@@ -3,6 +3,7 @@ using System.Linq;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Serialization;
+using Hl7.FhirPath;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
@@ -10,54 +11,28 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
     public class ResourceAnonymizerContextTests
     {
         [Fact]
-        public void GivenATypeRule_WhenParseRule_TransformedPathRuleShouldBeReturned()
-        {
-            AnonymizerConfiguration configuration = new AnonymizerConfiguration()
-            {
-                PathRules = new Dictionary<string, string>(),
-                ParameterConfiguration = new ParameterConfiguration(),
-                TypeRules = new Dictionary<string, string>()
-                {
-                    { "Address", "redact"},
-                    { "HumanName", "redact" },
-                    { "dateTime", "dateShift"}
-                }
-            };
-
-            AnonymizerConfigurationManager configurationManager = new AnonymizerConfigurationManager(configuration);
-            var context = ResourceAnonymizerContext.Create(TestPatientElementNode(), configurationManager);
-
-            Assert.Contains("Patient.address", context.PathSet);
-            Assert.Contains("Patient.name", context.PathSet);
-            Assert.Contains("Patient.address.period.start", context.PathSet);
-            Assert.Contains("Patient.identifier.period.start", context.PathSet);
-        }
-
-        [Fact]
-        public void GivenConflictTypeRuleAndPathRule_WhenParseRule_TypeRuleShouldBeIgnored()
+        public void GivenConfiguration_WhenGetPathRuleForNode_CorrentPathRuleShouldBeReturned()
         {
             AnonymizerConfiguration configuration = new AnonymizerConfiguration()
             {
                 PathRules = new Dictionary<string, string>()
                 {
-                    { "Patient.address", "keep"}
+                    { "Patient.name.family", "redact"},
                 },
                 ParameterConfiguration = new ParameterConfiguration(),
                 TypeRules = new Dictionary<string, string>()
-                {
-                    { "Address", "redact"}
-                }
             };
 
             AnonymizerConfigurationManager configurationManager = new AnonymizerConfigurationManager(configuration);
-            var context = ResourceAnonymizerContext.Create(TestPatientElementNode(), configurationManager);
-
-            Assert.Contains("Patient.address", context.PathSet);
-            Assert.Equal("keep", context.RuleList.First().Method);
+            var root = TestPatientElementNode();
+            var context = ResourceAnonymizerContext.Create(root, configurationManager);
+            var node = root.Select("Patient.name.family").Cast<ElementNode>().First();
+            var rule = context.GetNodePathRule(node);
+            Assert.Equal("redact", rule.Method);
         }
 
         [Fact]
-        public void GivenATypeRuleContainsAnother_WhenParseRule_NestedOneShouldOverwriteInheritedOne()
+        public void GivenATypeRuleEqualsToAnother_WhenGetTypeRuleForNode_FirstOneShouldOverwriteLaterOnes()
         {
             AnonymizerConfiguration configuration = new AnonymizerConfiguration()
             {
@@ -65,18 +40,23 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
                 ParameterConfiguration = new ParameterConfiguration(),
                 TypeRules = new Dictionary<string, string>()
                 {
-                    { "Address", "redact"},
-                    { "dateTime", "keep"}
+                    { "Address.period.start", "redact"},
+                    { "dateTime", "keep"},
+                    { "Identifier.period.start", "redact"},
+                    { "Period.start", "dateshift"}
                 }
             };
 
             AnonymizerConfigurationManager configurationManager = new AnonymizerConfigurationManager(configuration);
-            var context = ResourceAnonymizerContext.Create(TestPatientElementNode(), configurationManager);
-
-            Assert.Contains("Patient.address", context.PathSet);
-            Assert.Contains("Patient.address.period.start", context.PathSet);
-            Assert.Equal("keep", context.RuleList.First(r => r.Path.Equals("Patient.address.period.start")).Method);
-            Assert.Equal("redact", context.RuleList.First(r => r.Path.Equals("Patient.address")).Method);
+            var root = TestPatientElementNode();
+            var context = ResourceAnonymizerContext.Create(root, configurationManager);
+            var node1 = root.Select("Patient.address.period.start").Cast<ElementNode>().First();
+            var rule1 = context.GetNodeTypeRule(node1);
+            Assert.Equal("redact", rule1.Method);
+            
+            var node2 = root.Select("Patient.identifier.period.start").Cast<ElementNode>().First();
+            var rule2 = context.GetNodeTypeRule(node2);
+            Assert.Equal("keep", rule2.Method);
         }
 
         private static ElementNode TestPatientElementNode()

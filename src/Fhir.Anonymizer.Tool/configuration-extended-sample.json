@@ -1,0 +1,269 @@
+﻿{
+  "pathRules": {
+    "PractitionerRole.notAvailable.description": "redact",
+    "PractitionerRole.availabilityExceptions": "redact",
+
+    "Group.name": "redact",
+    "Group.characteristic.value": "redact",
+
+    "Organization.identifier": "keep",
+    "Organization.telecom": "keep",
+    "Organization.address": "keep",
+
+    "OrganizationAffiliation.identifier": "keep",
+    "OrganizationAffiliation.telecom": "keep",
+
+    "Endpoint.name": "redact",
+    "Endpoint.address": "redact",
+
+    "Location.name": "redact",
+    "Location.alias": "redact",
+    "Location.description": "redact",
+    "Location.position": "redact",
+
+    "Device.udiCarrier": "redact",
+    "Device.distinctIdentifier": "redact",
+    "Device.serialNumber": "redact",
+    "Device.deviceName": "redact",
+
+    "Task.description": "redact",
+    "Task.input.value": "redact",
+    "Task.output.value": "redact",
+
+    "Appointment.description": "redact",
+    "Appointment.comment": "redact",
+    "Appointment.patientInstruction": "redact",
+
+    "AppointmentResponse.comment": "redact",
+
+    "Schedule.comment": "redact",
+
+    "Slot.comment": "redact",
+
+    "VerificationResult.attestation.sourceIdentityCertificate": "redact",
+    "VerificationResult.attestation.proxyIdentityCertificate": "redact",
+
+    "List.title": "redact",
+
+    "Library.publisher": "redact",
+    "Library.usage": "redact",
+
+    "AllergyIntolerance.onset": "redact",
+    "AllergyIntolerance.reaction.description": "redact",
+
+    "AdverseEvent.suspectEntity.causality.productRelatedness": "redact",
+
+    "Condition.onset as string": "redact",
+    "Condition.abatement": "redact",
+
+    "Procedure.performed": "redact",
+
+    "FamilyMemberHistory.name": "redact",
+    "FamilyMemberHistory.born": "redact",
+    "FamilyMemberHistory.age": "redact",
+    "FamilyMemberHistory.deceased": "redact",
+    "FamilyMemberHistory.condition.onset": "redact",
+
+    "ClinicalImpression.summary": "redact",
+    "ClinicalImpression.finding.basis": "redact",
+
+    "DetectedIssue.detail": "redact",
+
+    "Observation.value": "redact",
+    "Observation.referenceRange": "redact",
+    "Observation.component.value": "redact",
+
+    "Media.deviceName": "redact",
+
+    "DiagnosticReport.media.comment": "redact",
+    "DiagnosticReport.conclusion": "redact",
+
+    "Specimen.processing.description": "redact",
+    "Specimen.container.description": "redact",
+
+    "BodyStructure.description": "redact",
+
+    "ImagingStudy.description": "redact",
+    "ImagingStudy.series.description": "redact",
+    "ImagingStudy.series.instance.title": "redact",
+
+    "MedicationAdministration.dosage.text": "redact",
+
+    "Immunization.occurrence": "redact",
+
+    "ImmunizationEvaluation.description": "redact",
+
+    "ImmunizationRecommendation.recommendation.description": "redact",
+
+    "CarePlan.title": "redact",
+    "CarePlan.description": "redact",
+    "CarePlan.activity.detail.description": "redact",
+    "CarePlan.activity.detail.scheduled": "redact",
+
+    "CareTeam.name": "redact",
+
+    "Goal.description": "redact",
+    "Goal.start": "redact",
+    "Goal.statusReason": "redact",
+    "Goal.target.detail": "redact",
+    "Goal.expressedBy.detail": "redact",
+
+    "ServiceRequest.patientInstruction": "redact",
+
+    "NutritionOrder.oralDiet.instruction": "redact",
+    "NutritionOrder.supplement.instruction": "redact",
+    "NutritionOrder.enteralFormula.administrationInstruction": "redact",
+
+    "RiskAssessment.prediction.rationale": "redact",
+    "RiskAssessment.mitigation": "redact",
+
+    "RequestGroup.action.prefix": "redact",
+    "RequestGroup.action.title": "redact",
+    "RequestGroup.action.description": "redact",
+    "RequestGroup.action.textEquivalent": "redact",
+    "RequestGroup.action.timing": "redact",
+    "RequestGroup.action.action": "redact",
+
+    "Communication.topic": "redact",
+    "Communication.payload": "redact",
+
+    "CommunicationRequest.payload": "redact",
+
+    "Coverage.subscriberId": "redact",
+    "Coverage.dependent": "redact",
+    "Coverage.class.value": "redact",
+    "Coverage.class.name": "redact",
+    "Coverage.network": "redact",
+
+    "CoverageEligibilityRequest.insurance.businessArrangement": "redact",
+
+    "CoverageEligibilityResponse.disposition": "redact",
+    "CoverageEligibilityResponse.insurance.item.name": "redact",
+    "CoverageEligibilityResponse.insurance.item.description": "redact",
+    "CoverageEligibilityResponse.insurance.item.benefit.allowed": "redact",
+    "CoverageEligibilityResponse.insurance.item.benefit.used": "redact",
+    "CoverageEligibilityResponse.preAuthRef": "redact",
+
+    "EnrollmentResponse.disposition": "redact",
+
+    "Claim.supportingInfo.value": "redact",
+    "Claim.insurance.businessArrangement": "redact",
+    "Claim.insurance.preAuthRef": "redact",
+
+    "ClaimResponse.disposition": "redact",
+    "ClaimResponse.preAuthRef": "redact",
+    "ClaimResponse.processNote.text": "redact",
+    "ClaimResponse.insurance.businessArrangement": "redact",
+
+    "Invoice.cancelledReason": "redact",
+
+    "PaymentReconciliation.disposition": "redact",
+    "PaymentReconciliation.processNote.text": "redact",
+
+    "Account.name": "redact",
+    "Account.description": "redact",
+
+    "ChargeItem.overrideReason": "redact",
+
+    "ChargeItemDefinition.title": "redact",
+    "ChargeItemDefinition.publisher": "redact",
+    "ChargeItemDefinition.applicability": "redact",
+    "ChargeItemDefinition.propertyGroup.applicability": "redact",
+
+    "Contract.name": "redact",
+    "Contract.title": "redact",
+    "Contract.subtitle": "redact",
+    "Contract.alias": "redact",
+    "Contract.topic": "redact",
+    "Contract.term.topic": "redact",
+    "Contract.term.text": "redact",
+    "Contract.term.offer.answer.value": "redact",
+    "Contract.term.offer.text": "redact",
+    "Contract.term.offer.linkId": "redact",
+    "Contract.term.asset.context.text": "redact",
+    "Contract.term.asset.condition": "redact",
+    "Contract.term.asset.text": "redact",
+    "Contract.term.asset.linkId": "redact",
+    "Contract.term.asset.answer": "redact",
+    "Contract.term.asset.valuedItem.entity": "redact",
+    "Contract.term.asset.valuedItem.payment": "redact",
+    "Contract.term.asset.valuedItem.linkId": "redact",
+    "Contract.term.action.linkId": "redact",
+    "Contract.term.action.contextLinkId": "redact",
+    "Contract.term.action.requesterLinkId": "redact",
+    "Contract.term.action.performerLinkId": "redact",
+    "Contract.term.action.reason": "redact",
+    "Contract.term.action.reasonLinkId": "redact",
+    "Contract.term.group": "redact",
+
+    "ExplanationOfBenefit.disposition": "redact",
+    "ExplanationOfBenefit.preAuthRef": "redact",
+    "ExplanationOfBenefit.supportingInfo.value": "redact",
+    "ExplanationOfBenefit.insurance.preAuthRef": "redact",
+    "ExplanationOfBenefit.accident.location": "redact",
+    "ExplanationOfBenefit.item.location": "redact",
+    "ExplanationOfBenefit.addItem.location": "redact",
+    "ExplanationOfBenefit.processNote.text": "redact",
+    "ExplanationOfBenefit.benefitBalance.name": "redact",
+    "ExplanationOfBenefit.benefitBalance.description": "redact",
+    "ExplanationOfBenefit.benefitBalance.financial.allowed": "redact",
+
+    "InsurancePlan.name": "redact",
+    "InsurancePlan.alias": "redact",
+    "InsurancePlan.contact.address.state": "keep",
+    "InsurancePlan.contact.address.country": "keep",
+    "InsurancePlan.coverage.benefit.requirement": "redact",
+    "InsurancePlan.plan.generalCost.comment": "redact"
+  },
+  "typeRules": {
+    "base64Binary": "redact",
+    "date": "dateShift",
+    "dateTime": "dateShift",
+    "instant": "dateShift",
+    "Address": "redact",
+    "Address.coungtry": "keep",
+    "Address.state": "keep",
+    "Age": "redact",
+    "Annotation": "redact",
+    "Attachment.title": "redact",
+    "Attachment.url": "redact",
+    "QuestionaireResponse*item.answer.value": "redact",
+    "QuestionaireResponse*item.text": "redact",
+    "RequestGroup*action.title": "redact",
+    "RequestGroup*action.description": "redact",
+    "RequestGroup*action.textEquivalent": "redact",
+    "CodeableConcept.text": "redact",
+    "Coding.display": "redact",
+    "Coding.code": "redact",
+    "ContactDetail.name": "redact",
+    "ContactPoint.value": "redact",
+    "Extension": "redact",
+    "HumanName": "redact",
+    "HumanName.use": "keep",
+    "Identifier.value": "redact",
+    "Narrative.div": "redact",
+    "Reference.display": "redact"
+  },
+  "parameters": {
+    "dateShiftKey": "",
+    "enablePartialAgesForRedact": true,
+    "enablePartialDatesForRedact": true,
+    "enablePartialZipCodesForRedact": true,
+    "restrictedZipCodeTabulationAreas": [
+      "036",
+      "059",
+      "102",
+      "203",
+      "205",
+      "369",
+      "556",
+      "692",
+      "821",
+      "823",
+      "878",
+      "879",
+      "884",
+      "893"
+    ]
+  }
+}

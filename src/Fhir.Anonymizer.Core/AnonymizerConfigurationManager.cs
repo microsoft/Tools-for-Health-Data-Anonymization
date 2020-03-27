@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Hl7.Fhir.ElementModel;
+using Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -13,7 +13,6 @@ namespace Fhir.Anonymizer.Core
         private readonly AnonymizerConfigurationValidator _validator = new AnonymizerConfigurationValidator();
         private readonly AnonymizerConfiguration _configuration;
         private readonly Dictionary<string, IEnumerable<AnonymizerRule>> _resourcePathRules;
-        private readonly IEnumerable<AnonymizerRule> _genericPathRules;
         private readonly IEnumerable<AnonymizerRule> _typeRules;
 
         public AnonymizerConfigurationManager(AnonymizerConfiguration configuration)
@@ -24,21 +23,17 @@ namespace Fhir.Anonymizer.Core
 
             if (_configuration.PathRules != null)
             {
-                _resourcePathRules = _configuration.PathRules.Where(entry => IsResourcePathRule(entry.Key))
-                    .GroupBy(entry => ExtractResourceTypeFromPath(entry.Key))
-                    .ToDictionary(group => group.Key, group => group.Select(item => new AnonymizerRule(item.Key, item.Value, AnonymizerRuleType.PathRule, item.Key)));
-                _genericPathRules = _configuration.PathRules.Where(entry => !string.IsNullOrEmpty(entry.Key) && !IsResourcePathRule(entry.Key))
-                    .Select(entry => new AnonymizerRule(entry.Key, entry.Value, AnonymizerRuleType.PathRule, entry.Key));
+                _resourcePathRules = _configuration.PathRules.GroupBy(entry => ExtractResourceTypeFromPath(entry.Key))
+                    .ToDictionary(group => group.Key, group => group.Select((item, index) => new AnonymizerRule(item.Key, item.Value, AnonymizerRuleType.PathRule, item.Key, index)));
             }
             else
             {
                 _resourcePathRules = new Dictionary<string, IEnumerable<AnonymizerRule>>();
-                _genericPathRules = new List<AnonymizerRule>();
             }
 
             if (_configuration.TypeRules != null)
             {
-                _typeRules = _configuration.TypeRules.Select(entry => new AnonymizerRule(entry.Key, entry.Value, AnonymizerRuleType.TypeRule, entry.Key));
+                _typeRules = _configuration.TypeRules.Keys.Select((key, index) => new AnonymizerRule(key, _configuration.TypeRules[key], AnonymizerRuleType.TypeRule, key, index));
             }
             else
             {
@@ -73,7 +68,7 @@ namespace Fhir.Anonymizer.Core
 
         public IEnumerable<AnonymizerRule> GetPathRulesByResourceType(string resourceType)
         {
-            var allPathRules = new List<AnonymizerRule>(_genericPathRules);
+            var allPathRules = new List<AnonymizerRule>();
             if (!string.IsNullOrEmpty(resourceType) && _resourcePathRules.ContainsKey(resourceType))
             {
                 allPathRules.AddRange(_resourcePathRules[resourceType]);
