@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Reflection;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Hl7.Fhir.Introspection;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Validation;
-using Hl7.FhirPath.Expressions;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
 {

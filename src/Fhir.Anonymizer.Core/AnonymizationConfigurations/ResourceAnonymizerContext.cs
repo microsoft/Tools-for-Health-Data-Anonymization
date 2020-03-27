@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation;
 using Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
-using Hl7.FhirPath;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 {

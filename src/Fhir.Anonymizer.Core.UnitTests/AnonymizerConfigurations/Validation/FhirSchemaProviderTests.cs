@@ -34,7 +34,6 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations.Validation
         public static IEnumerable<object[]> GetValidPathRules()
         {
             yield return new object[] { "Resource.id", "redact", "id" };
-            yield return new object[] { "Patient.contained", "keep", "Resource" };
             yield return new object[] { "Patient.name.family", "redact", "string" };
             yield return new object[] { "Patient.address.country", "keep", "string" };
             yield return new object[] { "Patient.birthDate", "dateshift", "date" };
