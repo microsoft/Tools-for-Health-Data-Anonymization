@@ -53,7 +53,7 @@
 
     "AdverseEvent.suspectEntity.causality.productRelatedness": "redact",
 
-    "Condition.onset as string": "redact",
+    "Condition.onset": "redact",
     "Condition.abatement": "redact",
 
     "Procedure.performed": "redact",
@@ -106,7 +106,7 @@
     "Goal.start": "redact",
     "Goal.statusReason": "redact",
     "Goal.target.detail": "redact",
-    "Goal.expressedBy.detail": "redact",
+    "Goal.expressedBy.display": "redact",
 
     "ServiceRequest.patientInstruction": "redact",
 
@@ -210,8 +210,6 @@
 
     "InsurancePlan.name": "redact",
     "InsurancePlan.alias": "redact",
-    "InsurancePlan.contact.address.state": "keep",
-    "InsurancePlan.contact.address.country": "keep",
     "InsurancePlan.coverage.benefit.requirement": "redact",
     "InsurancePlan.plan.generalCost.comment": "redact"
   },
@@ -221,14 +219,14 @@
     "dateTime": "dateShift",
     "instant": "dateShift",
     "Address": "redact",
-    "Address.coungtry": "keep",
+    "Address.country": "keep",
     "Address.state": "keep",
     "Age": "redact",
     "Annotation": "redact",
     "Attachment.title": "redact",
     "Attachment.url": "redact",
-    "QuestionaireResponse*item.answer.value": "redact",
-    "QuestionaireResponse*item.text": "redact",
+    "QuestionnaireResponse*item.answer.value": "redact",
+    "QuestionnaireResponse*item.text": "redact",
     "RequestGroup*action.title": "redact",
     "RequestGroup*action.description": "redact",
     "RequestGroup*action.textEquivalent": "redact",

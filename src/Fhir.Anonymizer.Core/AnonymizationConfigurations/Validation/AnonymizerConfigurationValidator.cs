@@ -27,7 +27,6 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
             }
         }
 
-
         public void Validate(AnonymizerConfiguration config)
         {
             if (config.TypeRules == null && config.PathRules == null)

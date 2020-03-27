@@ -42,7 +42,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
                     IsResource = typeAttribute.IsResource,
                 };
                 var childrens = new Dictionary<string, IEnumerable<FhirTypeNode>>();
-
+                
                 if (!IsPrimitiveType(type))
                 {
                     var properties = type.GetProperties();
@@ -57,17 +57,14 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
                                 var allowedTypeAttribute = property.GetCustomAttributes<AllowedTypesAttribute>().FirstOrDefault();
                                 fieldTypes.AddRange(allowedTypeAttribute.Types);
                             }
+                            else if (elementAttribute.TypeRedirect != null) 
+                            {
+                                fieldTypes.Add(elementAttribute.TypeRedirect);
+                            }
                             else
                             {
-                                var propertyType = property.PropertyType;
-                                // Get actual Type from generic field
-                                if (propertyType.IsGenericType)
-                                {
-                                    propertyType = property.PropertyType.GetGenericArguments().First();
-                                }
-                                fieldTypes.Add(propertyType);
+                                fieldTypes.Add(property.PropertyType);
                             }
-
                             var nodes = fieldTypes.Select(type =>
                                 new FhirTypeNode
                                 {
@@ -243,27 +240,10 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
 
         private bool IsPrimitiveType(Type type)
         {
-            // either this type is subclass of Primitive or in System namespace
-            if (typeof(Primitive).IsAssignableFrom(type) || IsEnumType(type))
+            if (typeof(Primitive).IsAssignableFrom(type) || string.Equals(type.Namespace, "System"))
             {
                 return true;
             }
-            return false;
-        }
-
-        private bool IsEnumType(Type type) 
-        {
-            Type currentType = type;
-            while (currentType != null)
-            {
-                if (currentType.IsEnum)
-                {
-                    return true;
-                }
-
-                currentType = currentType.BaseType;
-            }
-
             return false;
         }
 
@@ -291,20 +271,21 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
         /// <returns></returns>
         private string GetTypeNameKey(Type type)
         {
-            var typeAttribute = type.GetCustomAttribute<FhirTypeAttribute>();
-            // Enum data type members => string
-            if (typeAttribute == null && IsPrimitiveType(type))
+            var currentType = type;
+            // Unwrap actual type from List<T>
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             {
-                return "code";
+                currentType = type.GetGenericArguments().First();
             }
 
+            var typeAttribute = currentType.GetCustomAttribute<FhirTypeAttribute>();         
             if (!typeAttribute.NamedBackboneElement)
             {
                 return typeAttribute.Name;
             }
             else
             {
-                var resourceType = type.DeclaringType;
+                var resourceType = currentType.DeclaringType;
                 if (resourceType != null)
                 {
                     var resourceAttribute = resourceType.GetCustomAttribute<FhirTypeAttribute>();
