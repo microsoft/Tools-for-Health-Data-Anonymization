@@ -37,11 +37,15 @@
     "OrganizationAffiliation.identifier": "keep",
     "OrganizationAffiliation.telecom": "keep",
 
+    "Endpoint.name": "redact",
+    "Endpoint.address": "redact",
+
     "Location.name": "redact",
     "Location.alias": "redact",
     "Location.description": "redact",
     "Location.address.state": "keep",
     "Location.address.country": "keep",
+    "Location.position": "redact",
     "Location.partOf.display": "redact",
 
     "BiologicallyDerivedProduct.collection.collector.display": "redact",
@@ -50,6 +54,7 @@
     "Device.udiCarrier": "redact",
     "Device.distinctIdentifier": "redact",
     "Device.serialNumber": "redact",
+    "Device.deviceName": "redact",
     "Device.patient.display": "redact",
     "Device.location.display": "redact",
 
@@ -57,6 +62,7 @@
     "Task.description": "redact",
     "Task.focus.display": "redact",
     "Task.for.display": "redact",
+    "Task.encounter.display": "redact",
     "Task.requester.display": "redact",
     "Task.owner.display": "redact",
     "Task.reasonReference.display": "redact",
@@ -99,10 +105,12 @@
     "EpisodeOfCare.account.display": "redact",
 
     "Flag.subject.display": "redact",
+    "Flag.encounter.display": "redact",
     "Flag.author.display": "redact",
 
     "List.title": "redact",
     "List.subject.display": "redact",
+    "List.encounter.display": "redact",
     "List.source.display": "redact",
     "List.entry.item.display": "redact",
 
@@ -112,11 +120,13 @@
     "AllergyIntolerance.patient.display": "redact",
     "AllergyIntolerance.recorder.display": "redact",
     "AllergyIntolerance.asserter.display": "redact",
+    "AllergyIntolerance.encounter.display": "redact",
     "AllergyIntolerance.onset": "redact",
     "AllergyIntolerance.reaction.description": "redact",
 
     "AdverseEvent.subject.display": "redact",
     "AdverseEvent.recorder.display": "redact",
+    "AdverseEvent.encounter.display": "redact",
     "AdverseEvent.contributor.display": "redact",
     "AdverseEvent.location.display": "redact",
     "AdverseEvent.suspectEntity.causality.productRelatedness": "redact",
@@ -124,6 +134,7 @@
 
     "Condition.subject.display": "redact",
     "Condition.recorder.display": "redact",
+    "Condition.encounter.display": "redact",
     "Condition.asserter.display": "redact",
     "Condition.evidence.detail.display": "redact",
     "Condition.onset": "redact",
@@ -131,6 +142,7 @@
 
     "Procedure.subject.display": "redact",
     "Procedure.recorder.display": "redact",
+    "Procedure.encounter.display": "redact",
     "Procedure.asserter.display": "redact",
     "Procedure.location.display": "redact",
     "Procedure.performer.actor.display": "redact",
@@ -145,6 +157,7 @@
 
     "ClinicalImpression.subject.display": "redact",
     "ClinicalImpression.assessor.display": "redact",
+    "ClinicalImpression.encounter.display": "redact",
     "ClinicalImpression.summary": "redact",
     "ClinicalImpression.finding.basis": "redact",
     "ClinicalImpression.supportingInfo.display": "redact",
@@ -158,6 +171,7 @@
 
     "Observation.subject.display": "redact",
     "Observation.performer.display": "redact",
+    "Observation.encounter.display": "redact",
     "Observation.focus.display": "redact",
     "Observation.value": "redact",
     "Observation.referenceRange": "redact",
@@ -165,10 +179,12 @@
 
     "Media.subject.display": "redact",
     "Media.operator.display": "redact",
+    "Media.encounter.display": "redact",
     "Media.deviceName": "redact",
 
     "DiagnosticReport.subject.display": "redact",
     "DiagnosticReport.performer.display": "redact",
+    "DiagnosticReport.encounter.display": "redact",
     "DiagnosticReport.resultsInterpreter.display": "redact",
     "DiagnosticReport.media.comment": "redact",
     "DiagnosticReport.conclusion": "redact",
@@ -182,6 +198,8 @@
     "BodyStructure.description": "redact",
 
     "ImagingStudy.subject.display": "redact",
+    "ImagingStudy.encounter.display": "redact",
+    "ImagingStudy.basedOn.display": "redact",
     "ImagingStudy.referrer.display": "redact",
     "ImagingStudy.interpreter.display": "redact",
     "ImagingStudy.location.display": "redact",
@@ -191,6 +209,7 @@
     "ImagingStudy.series.instance.title": "redact",
 
     "QuestionnaireResponse.subject.display": "redact",
+    "QuestionnaireResponse.encounter.display": "redact",
     "QuestionnaireResponse.author.display": "redact",
     "QuestionnaireResponse.source.display": "redact",
     "QuestionnaireResponse.item.text": "redact",
@@ -201,6 +220,7 @@
     "MolecularSequence.performer.display": "redact",
 
     "MedicationRequest.subject.display": "redact",
+    "MedicationRequest.encounter.display": "redact",
     "MedicationRequest.performer.display": "redact",
     "MedicationRequest.requester.display": "redact",
     "MedicationRequest.recorder.display": "redact",
@@ -208,11 +228,13 @@
     "MedicationRequest.supportingInformation.display": "redact",
 
     "MedicationAdministration.subject.display": "redact",
+    "MedicationAdministration.context.display": "redact",
     "MedicationAdministration.performer.actor.display": "redact",
     "MedicationAdministration.supportingInformation.display": "redact",
     "MedicationAdministration.dosage.text": "redact",
 
     "MedicationDispense.subject.display": "redact",
+    "MedicationDispense.context.display": "redact",
     "MedicationDispense.performer.actor.display": "redact",
     "MedicationDispense.location.display": "redact",
     "MedicationDispense.supportingInformation.display": "redact",
@@ -221,10 +243,12 @@
     "MedicationDispense.substitution.responsibleParty.display": "redact",
 
     "MedicationStatement.subject.display": "redact",
+    "MedicationStatement.context.display": "redact",
     "MedicationStatement.informationSource.display": "redact",
     "MedicationStatement.derivedFrom.display": "redact",
 
     "Immunization.patient.display": "redact",
+    "Immunization.encounter.display": "redact",
     "Immunization.location.display": "redact",
     "Immunization.occurrence": "redact",
     "Immunization.performer.actor.display": "redact",
@@ -239,9 +263,12 @@
     "CarePlan.title": "redact",
     "CarePlan.description": "redact",
     "CarePlan.subject.display": "redact",
+    "CarePlan.encounter.display": "redact",
     "CarePlan.contributor.display": "redact",
     "CarePlan.author.display": "redact",
     "CarePlan.supportingInfo.display": "redact",
+    "CarePlan.activity.outcomeReference.display": "redact",
+    "CarePlan.activity.reference.display": "redact",
     "CarePlan.activity.detail.performer.display": "redact",
     "CarePlan.activity.detail.location.display": "redact",
     "CarePlan.activity.detail.description": "redact",
@@ -249,6 +276,7 @@
 
     "CareTeam.name": "redact",
     "CareTeam.subject.display": "redact",
+    "CareTeam.encounter.display": "redact",
     "CareTeam.participant.member.display": "redact",
 
     "Goal.subject.display": "redact",
@@ -259,6 +287,7 @@
     "Goal.expressedBy.display": "redact",
 
     "ServiceRequest.subject.display": "redact",
+    "ServiceRequest.encounter.display": "redact",
     "ServiceRequest.performer.display": "redact",
     "ServiceRequest.requester.display": "redact",
     "ServiceRequest.supportingInfo.display": "redact",
@@ -266,21 +295,25 @@
     "ServiceRequest.patientInstruction": "redact",
 
     "NutritionOrder.patient.display": "redact",
+    "NutritionOrder.encounter.display": "redact",
     "NutritionOrder.orderer.display": "redact",
     "NutritionOrder.oralDiet.instruction": "redact",
     "NutritionOrder.supplement.instruction": "redact",
     "NutritionOrder.enteralFormula.administrationInstruction": "redact",
 
     "VisionPrescription.patient.display": "redact",
+    "VisionPrescription.encounter.display": "redact",
     "VisionPrescription.prescriber.display": "redact",
 
     "RiskAssessment.subject.display": "redact",
+    "RiskAssessment.encounter.display": "redact",
     "RiskAssessment.performer.display": "redact",
     "RiskAssessment.basis.display": "redact",
     "RiskAssessment.prediction.rationale": "redact",
     "RiskAssessment.mitigation": "redact",
 
     "RequestGroup.subject.display": "redact",
+    "RequestGroup.encounter.display": "redact",
     "RequestGroup.author.display": "redact",
     "RequestGroup.action.participant.display": "redact",
     "RequestGroup.action.prefix": "redact",
@@ -291,6 +324,7 @@
     "RequestGroup.action.action": "redact",
 
     "Communication.subject.display": "redact",
+    "Communication.encounter.display": "redact",
     "Communication.sender.display": "redact",
     "Communication.recipient.display": "redact",
     "Communication.topic": "redact",
@@ -298,6 +332,7 @@
     "Communication.payload": "redact",
 
     "CommunicationRequest.subject.display": "redact",
+    "CommunicationRequest.encounter.display": "redact",
     "CommunicationRequest.sender.display": "redact",
     "CommunicationRequest.recipient.display": "redact",
     "CommunicationRequest.requester.display": "redact",
@@ -305,6 +340,7 @@
     "CommunicationRequest.payload": "redact",
 
     "DeviceRequest.subject.display": "redact",
+    "DeviceRequest.encounter.display": "redact",
     "DeviceRequest.performer.display": "redact",
     "DeviceRequest.requester.display": "redact",
     "DeviceRequest.supportingInfo.display": "redact",
@@ -313,6 +349,7 @@
     "DeviceUseStatement.source.display": "redact",
 
     "GuidanceResponse.subject.display": "redact",
+    "GuidanceResponse.encounter.display": "redact",
 
     "SupplyRequest.requester.display": "redact",
     "SupplyRequest.deliverTo.display": "redact",
@@ -369,6 +406,7 @@
     "Claim.insurance.preAuthRef": "redact",
     "Claim.accident.location": "redact",
     "Claim.item.location": "redact",
+    "Claim.item.encounter.display": "redact",
 
     "ClaimResponse.patient.display": "redact",
     "ClaimResponse.requestor.display": "redact",
@@ -406,6 +444,7 @@
     "Account.partOf.display": "redact",
 
     "ChargeItem.subject.display": "redact",
+    "ChargeItem.context.display": "redact",
     "ChargeItem.performer.actor.display": "redact",
     "ChargeItem.overrideReason": "redact",
     "ChargeItem.enterer.display": "redact",
@@ -415,6 +454,7 @@
     "ChargeItemDefinition.title": "redact",
     "ChargeItemDefinition.publisher": "redact",
     "ChargeItemDefinition.applicability": "redact",
+    "ChargeItemDefinition.propertyGroup.applicability": "redact",
 
     "Contract.subject.display": "redact",
     "Contract.domain.display": "redact",
@@ -439,6 +479,7 @@
     "Contract.term.asset.condition": "redact",
     "Contract.term.asset.text": "redact",
     "Contract.term.asset.linkId": "redact",
+    "Contract.term.asset.answer": "redact",
     "Contract.term.asset.valuedItem.entity": "redact",
     "Contract.term.asset.valuedItem.payment": "redact",
     "Contract.term.asset.valuedItem.responsible.display": "redact",
@@ -446,6 +487,7 @@
     "Contract.term.asset.valuedItem.linkId": "redact",
     "Contract.term.action.subject.reference.display": "redact",
     "Contract.term.action.linkId": "redact",
+    "Contract.term.action.context.display": "redact",
     "Contract.term.action.contextLinkId": "redact",
     "Contract.term.action.requester.display": "redact",
     "Contract.term.action.requesterLinkId": "redact",
@@ -453,6 +495,7 @@
     "Contract.term.action.performerLinkId": "redact",
     "Contract.term.action.reason": "redact",
     "Contract.term.action.reasonLinkId": "redact",
+    "Contract.term.group": "redact",
     "Contract.supportingInfo.display": "redact",
     "Contract.signer.party.display": "redact",
 
@@ -468,6 +511,7 @@
     "ExplanationOfBenefit.insurance.preAuthRef": "redact",
     "ExplanationOfBenefit.accident.location": "redact",
     "ExplanationOfBenefit.item.location": "redact",
+    "ExplanationOfBenefit.item.encounter.display": "redact",
     "ExplanationOfBenefit.addItem.provider.display": "redact",
     "ExplanationOfBenefit.addItem.location": "redact",
     "ExplanationOfBenefit.processNote.text": "redact",
