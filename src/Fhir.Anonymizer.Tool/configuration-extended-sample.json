@@ -87,6 +87,10 @@
     "ImagingStudy.series.description": "redact",
     "ImagingStudy.series.instance.title": "redact",
 
+    "QuestionnaireResponse.item.text": "redact",
+    "QuestionnaireResponse.item.answer": "redact",
+    "QuestionnaireResponse.item.item": "redact",
+
     "MedicationAdministration.dosage.text": "redact",
 
     "Immunization.occurrence": "redact",
@@ -225,11 +229,6 @@
     "Annotation": "redact",
     "Attachment.title": "redact",
     "Attachment.url": "redact",
-    "QuestionnaireResponse*item.answer.value": "redact",
-    "QuestionnaireResponse*item.text": "redact",
-    "RequestGroup*action.title": "redact",
-    "RequestGroup*action.description": "redact",
-    "RequestGroup*action.textEquivalent": "redact",
     "CodeableConcept.text": "redact",
     "Coding.display": "redact",
     "Coding.code": "redact",

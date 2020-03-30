@@ -195,6 +195,7 @@
     "QuestionnaireResponse.source.display": "redact",
     "QuestionnaireResponse.item.text": "redact",
     "QuestionnaireResponse.item.answer": "redact",
+    "QuestionnaireResponse.item.item": "redact",
 
     "MolecularSequence.patient.display": "redact",
     "MolecularSequence.performer.display": "redact",
@@ -287,6 +288,7 @@
     "RequestGroup.action.description": "redact",
     "RequestGroup.action.textEquivalent": "redact",
     "RequestGroup.action.timing": "redact",
+    "RequestGroup.action.action": "redact",
 
     "Communication.subject.display": "redact",
     "Communication.sender.display": "redact",

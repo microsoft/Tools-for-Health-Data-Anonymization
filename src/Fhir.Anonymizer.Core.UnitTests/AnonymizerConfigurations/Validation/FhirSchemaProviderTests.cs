@@ -64,8 +64,6 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations.Validation
             yield return new object[] { "instant", "dateshift", "instant" };
             yield return new object[] { "CodeableConcept.text", "redact", "string" };
             yield return new object[] { "Reference.display", "redact", "string" };
-            //return first data type for choice element
-            yield return new object[] { "QuestionnaireResponse*item.answer.value", "redact", "boolean" }; 
         }
 
         public static IEnumerable<object[]> GetInvalidTypeRules()
@@ -90,13 +88,11 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations.Validation
             Assert.Contains("Bundle", resources);
 
             var types = _fhirSchemaProvider.GetFhirDataTypes();
-            Assert.Equal(534, types.Count);
+            Assert.Equal(61, types.Count);
             Assert.Contains("HumanName", types); 
             Assert.Contains("Address", types);
             Assert.Contains("date", types);
             Assert.Contains("CodeableConcept", types);
-            Assert.Contains("Patient*contact", types);
-            Assert.Contains("QuestionnaireResponse*item", types);
             Assert.Contains("BackboneElement", types);
             Assert.DoesNotContain("Resource", types);
 

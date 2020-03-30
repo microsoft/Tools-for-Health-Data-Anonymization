@@ -13,6 +13,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
         private const string NamedBackBoneElementSuffix = "Component";
         private HashSet<string> _resourceNameSet = new HashSet<string>();
         private HashSet<string> _typeNameSet = new HashSet<string>();
+        private HashSet<string> _namedBackboneElementSet = new HashSet<string>();
         private Dictionary<string, FhirTypeNode> _fhirSchema = new Dictionary<string, FhirTypeNode>();
         public FhirSchemaProvider()
         {
@@ -30,9 +31,14 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
                 {
                     _resourceNameSet.Add(typeNameKey);
                 }
-                else
+                // Ignore backbone element in data type set
+                else if(!typeAttribute.NamedBackboneElement)
                 {
                     _typeNameSet.Add(typeNameKey);
+                }
+                else
+                {
+                    _namedBackboneElementSet.Add(typeNameKey);
                 }
 
                 var typeNode = new FhirTypeNode
@@ -43,6 +49,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
                 };
                 var childrens = new Dictionary<string, IEnumerable<FhirTypeNode>>();
                 
+                // Resolve properties for non-Primitive types
                 if (!IsPrimitiveType(type))
                 {
                     var properties = type.GetProperties();
@@ -52,11 +59,13 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
                         if (elementAttribute != null)
                         {
                             var fieldTypes = new List<Type>();
+                            // Add all allowed types for Choice Element property
                             if (elementAttribute.Choice != ChoiceType.None)
                             {
                                 var allowedTypeAttribute = property.GetCustomAttributes<AllowedTypesAttribute>().FirstOrDefault();
                                 fieldTypes.AddRange(allowedTypeAttribute.Types);
                             }
+                            // Some elements (e.g. Extension.url) have ImplementingType = string, but FhirType = FhirUri, etc.
                             else if (elementAttribute.TypeRedirect != null) 
                             {
                                 fieldTypes.Add(elementAttribute.TypeRedirect);
@@ -65,6 +74,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
                             {
                                 fieldTypes.Add(property.PropertyType);
                             }
+
                             var nodes = fieldTypes.Select(type =>
                                 new FhirTypeNode
                                 {
@@ -95,8 +105,8 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
             }
 
             var currentTypeName = pathComponents.First();
-
-            if (type == AnonymizerRuleType.TypeRule) // Type rules start with data type
+            // Type rules start with data type
+            if (type == AnonymizerRuleType.TypeRule) 
             {
                 if (!_typeNameSet.Contains(currentTypeName))
                 {
@@ -179,7 +189,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
 
         public HashSet<string> GetFhirAllTypes()
         {
-            return _resourceNameSet.Union(_typeNameSet).ToHashSet();
+            return _resourceNameSet.Union(_typeNameSet).Union(_namedBackboneElementSet).ToHashSet();
         }
 
         public Dictionary<string, FhirTypeNode> GetFhirSchema()
@@ -240,10 +250,11 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
 
         private bool IsPrimitiveType(Type type)
         {
-            if (typeof(Primitive).IsAssignableFrom(type) || string.Equals(type.Namespace, "System"))
+            if (typeof(Primitive).IsAssignableFrom(type))
             {
                 return true;
             }
+
             return false;
         }
 
@@ -272,19 +283,25 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
         private string GetTypeNameKey(Type type)
         {
             var currentType = type;
+
+            // Transform "CodeOfT" to "code"
+            if  (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Code<>))
+            {
+                return "code";
+            }
             // Unwrap actual type from List<T>
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             {
                 currentType = type.GetGenericArguments().First();
             }
 
-            var typeAttribute = currentType.GetCustomAttribute<FhirTypeAttribute>(); 
+            var typeAttribute = currentType.GetCustomAttribute<FhirTypeAttribute>();
             var typeName = typeAttribute.Name;
-            if (string.Equals(typeName, "codeOfT")) 
+            if (string.Equals(typeName, "codeOfT"))
             {
                 typeName = "code";
             }
-            
+
             if (!typeAttribute.NamedBackboneElement)
             {
                 return typeName;
@@ -299,7 +316,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations.Validation
                     if (typeName.Length > NamedBackBoneElementSuffix.Length)
                     {
                         var fieldName = typeAttribute.Name.Substring(0, typeName.Length - NamedBackBoneElementSuffix.Length).ToLower();
-                        return $"{resourceAttribute.Name}*{fieldName}";
+                        return $"{resourceAttribute.Name}_{fieldName}";
                     }
                 }
                 return typeName;
