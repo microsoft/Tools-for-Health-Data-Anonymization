@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Fhir.Anonymizer.Core
 {
-    public class FhirStreamReader : IFhirDataReader, IDisposable
+    public class FhirStreamReader : IFhirDataReader<string>, IDisposable
     {
         private StreamReader _reader;
 

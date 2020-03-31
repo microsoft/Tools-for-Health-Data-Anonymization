@@ -15,7 +15,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
         {
             int itemCount = 9873;
             var testConsumer = new TestFhirDataConsumer(itemCount);
-            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(new TestFhirDataReader(itemCount), testConsumer, (content) => content)
+            FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(new TestFhirDataReader(itemCount), testConsumer, (content) => content)
             {
                 BatchSize = 100,
                 PartitionCount = 10
@@ -42,17 +42,64 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
         }
 
         [Fact]
+        public async Task GivenAPartitionedExecutorNotKeepOrder_WhenExecute_AllResultShouldBeReturned()
+        {
+            int itemCount = 29873;
+            var testConsumer = new TestFhirDataConsumer(itemCount)
+            {
+                CheckOrder = false
+            };
+
+            Random random = new Random();
+            Func<string, Task<string>> anonymizeFunc = async content =>
+            {
+                if (random.Next() % 100 == 0)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(200));
+                }
+
+                return await Task.FromResult(content);
+            };
+            FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(new TestFhirDataReader(itemCount), testConsumer, anonymizeFunc)
+            {
+                BatchSize = 100,
+                PartitionCount = 12,
+                KeepOrder = false
+            };
+
+            int totalCount = 0;
+            int consumeCount = 0;
+            Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
+            progress.ProgressChanged += (obj, args) =>
+            {
+                Interlocked.Add(ref totalCount, args.ProcessCompleted);
+                Interlocked.Add(ref consumeCount, args.ConsumeCompleted);
+            };
+            await executor.ExecuteAsync(CancellationToken.None, progress: progress);
+
+            Assert.Equal(itemCount, testConsumer.CurrentOffset);
+            Assert.Equal(299, testConsumer.BatchCount);
+
+            // Progress report is triggered by event, wait 1 second here in case progress not report.
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+            Assert.Equal(itemCount, totalCount);
+            Assert.Equal(itemCount, consumeCount);
+        }
+
+        [Fact]
         public async Task GivenAPartitionedExecutor_WhenCancelled_OperationCancelledExceptionShouldBeThrown()
         {
             int itemCount = 9873;
             var testConsumer = new TestFhirDataConsumer(itemCount);
-            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(new TestFhirDataReader(itemCount), testConsumer, (content) => content);
-
-            executor.AnonymizerFunction = (content) =>
-            {
-                Thread.Sleep(10);
-                return content;
-            };
+            var executor = new FhirPartitionedExecutor<string, string>(
+                new TestFhirDataReader(itemCount), 
+                testConsumer, 
+                (content) =>
+                {
+                    Thread.Sleep(10);
+                    return content;
+                });
 
             CancellationTokenSource source = new CancellationTokenSource();
             source.CancelAfter(1000);
@@ -64,12 +111,14 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
         {
             int itemCount = 9873;
             var testConsumer = new TestFhirDataConsumer(itemCount);
-            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(new TestFhirDataReader(itemCount), testConsumer, (content) => content);
-
-            executor.AnonymizerFunction = (content) =>
+            Func<string, string> invalidOperationFunc = (content) =>
             {
                 throw new InvalidOperationException();
             };
+            var executor = new FhirPartitionedExecutor<string, string>(
+                new TestFhirDataReader(itemCount), 
+                testConsumer,
+                invalidOperationFunc);
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await executor.ExecuteAsync(CancellationToken.None, true));
         }
@@ -83,7 +132,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             {
                 BreakOnOffset = 7431
             };
-            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, testConsumer, (content) => content);
+            FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(reader, testConsumer, (content) => content);
 
             await Assert.ThrowsAsync<IOException>(async () => await executor.ExecuteAsync(CancellationToken.None));
         }
@@ -97,13 +146,13 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
                 BreakOnOffset = 2342
             };
             var reader = new TestFhirDataReader(itemCount);
-            FhirPartitionedExecutor executor = new FhirPartitionedExecutor(reader, testConsumer, (content) => content);
+            FhirPartitionedExecutor<string, string> executor = new FhirPartitionedExecutor<string, string>(reader, testConsumer, (content) => content);
 
             await Assert.ThrowsAsync<IOException>(async () => await executor.ExecuteAsync(CancellationToken.None));
         }
     }
 
-    internal class TestFhirDataConsumer : IFhirDataConsumer
+    internal class TestFhirDataConsumer : IFhirDataConsumer<string>
     {
         public int ItemCount { set; get; }
 
@@ -114,6 +163,8 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
         public int BatchCount { set; get; } = 0;
 
         public int BreakOnOffset { set; get; } = -1;
+
+        public bool CheckOrder { set; get; } = true;
 
         public TestFhirDataConsumer(int itemCount)
         {
@@ -128,7 +179,12 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             int result = 0;
             foreach (string content in data)
             {
-                Assert.Equal((CurrentOffset++).ToString(), content);
+                if (CheckOrder)
+                {
+                    Assert.Equal(CurrentOffset.ToString(), content);
+                }
+
+                CurrentOffset++;
                 result++;
                 if (CurrentOffset == BreakOnOffset)
                 {
@@ -145,7 +201,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
         }
     }
 
-    internal class TestFhirDataReader : IFhirDataReader
+    internal class TestFhirDataReader : IFhirDataReader<string>
     {
         public int ItemCount { set; get; }
 

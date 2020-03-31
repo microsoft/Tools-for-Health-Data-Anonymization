@@ -1,36 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Fhir.Anonymizer.Core.PartitionedExecution;
 
 namespace Fhir.Anonymizer.Core
 {
-    public class FhirPartitionedExecutor
+    public class FhirPartitionedExecutor<TSource, TResult>
     {
-        public IFhirDataReader RawDataReader { set; get; }
+        public IFhirDataReader<TSource> RawDataReader { set; get; }
 
-        public IFhirDataConsumer AnonymizedDataConsumer { set; get; }
+        public IFhirDataConsumer<TResult> AnonymizedDataConsumer { set; get; }
 
-        public Func<string, string> AnonymizerFunction { set; get; }
+        public Func<TSource, Task<TResult>> AnonymizerFunctionAsync { set; get; }
 
         public int PartitionCount { set; get; } = Constants.DefaultPartitionedExecutionCount;
 
         public int BatchSize { set; get; } = Constants.DefaultPartitionedExecutionBatchSize;
 
-        public FhirPartitionedExecutor(IFhirDataReader rawDataReader, IFhirDataConsumer anonymizedDataConsumer, Func<string, string> anonymizerFunction)
+        public bool KeepOrder { set; get; } = true;
+
+        public FhirPartitionedExecutor(IFhirDataReader<TSource> rawDataReader, IFhirDataConsumer<TResult> anonymizedDataConsumer)
         {
             RawDataReader = rawDataReader;
             AnonymizedDataConsumer = anonymizedDataConsumer;
-            AnonymizerFunction = anonymizerFunction;
+            AnonymizerFunctionAsync = async content =>
+            {
+                return await Task.FromResult<TResult>(default(TResult)).ConfigureAwait(false);
+            };
+        }
+
+        public FhirPartitionedExecutor(IFhirDataReader<TSource> rawDataReader, IFhirDataConsumer<TResult> anonymizedDataConsumer, Func<TSource, TResult> anonymizerFunction)
+        {
+            RawDataReader = rawDataReader;
+            AnonymizedDataConsumer = anonymizedDataConsumer;
+            AnonymizerFunctionAsync = async content =>
+            {
+                TResult result = anonymizerFunction(content);
+                return await Task.FromResult<TResult>(result).ConfigureAwait(false);
+            };
+        }
+
+        public FhirPartitionedExecutor(IFhirDataReader<TSource> rawDataReader, IFhirDataConsumer<TResult> anonymizedDataConsumer, Func<TSource, Task<TResult>> anonymizerFunctionAsync)
+        {
+            RawDataReader = rawDataReader;
+            AnonymizedDataConsumer = anonymizedDataConsumer;
+            AnonymizerFunctionAsync = anonymizerFunctionAsync;
         }
 
         public async Task ExecuteAsync(CancellationToken cancellationToken, bool breakOnAnonymizationException = false, IProgress<BatchAnonymizeProgressDetail> progress = null)
         {
-            Queue<Task<IEnumerable<string>>> executionTasks = new Queue<Task<IEnumerable<string>>>();
-            List<string> batchData = new List<string>();
+            List<Task<IEnumerable<TResult>>> executionTasks = new List<Task<IEnumerable<TResult>>>();
+            List<TSource> batchData = new List<TSource>();
 
-            string content;
+            TSource content;
             while ((content = await RawDataReader.NextAsync().ConfigureAwait(false)) != null)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -44,8 +68,8 @@ namespace Fhir.Anonymizer.Core
                     continue;
                 }
 
-                executionTasks.Enqueue(AnonymizeAsync(batchData, breakOnAnonymizationException, progress, cancellationToken));
-                batchData = new List<string>();
+                executionTasks.Add(AnonymizeAsync(batchData, breakOnAnonymizationException, progress, cancellationToken));
+                batchData = new List<TSource>();
                 if (executionTasks.Count < PartitionCount)
                 {
                     continue;
@@ -56,7 +80,7 @@ namespace Fhir.Anonymizer.Core
 
             if (batchData.Count > 0)
             {
-                executionTasks.Enqueue(AnonymizeAsync(batchData, breakOnAnonymizationException, progress, cancellationToken));
+                executionTasks.Add(AnonymizeAsync(batchData, breakOnAnonymizationException, progress, cancellationToken));
             }
 
             while (executionTasks.Count > 0)
@@ -64,19 +88,22 @@ namespace Fhir.Anonymizer.Core
                 await ConsumeExecutionResultTask(executionTasks, progress).ConfigureAwait(false);
             }
 
-            await AnonymizedDataConsumer.CompleteAsync().ConfigureAwait(false);
+            if (AnonymizedDataConsumer != null)
+            {
+                await AnonymizedDataConsumer.CompleteAsync().ConfigureAwait(false);
+            }
         }
 
-        private async Task<IEnumerable<string>> AnonymizeAsync(List<string> batchData, bool breakOnAnonymizationException, IProgress<BatchAnonymizeProgressDetail> progress, CancellationToken cancellationToken)
+        private async Task<IEnumerable<TResult>> AnonymizeAsync(List<TSource> batchData, bool breakOnAnonymizationException, IProgress<BatchAnonymizeProgressDetail> progress, CancellationToken cancellationToken)
         {
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
-                List<string> result = new List<string>();
+                List<TResult> result = new List<TResult>();
 
                 BatchAnonymizeProgressDetail batchAnonymizeProgressDetail = new BatchAnonymizeProgressDetail();
                 batchAnonymizeProgressDetail.CurrentThreadId = Thread.CurrentThread.ManagedThreadId;
               
-                foreach (string content in batchData)
+                foreach (TSource content in batchData)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -85,7 +112,7 @@ namespace Fhir.Anonymizer.Core
 
                     try
                     {
-                        string anonymizedResult = AnonymizerFunction(content);
+                        TResult anonymizedResult = await AnonymizerFunctionAsync(content);
                         result.Add(anonymizedResult);
                         batchAnonymizeProgressDetail.ProcessCompleted++;
                     }
@@ -105,12 +132,40 @@ namespace Fhir.Anonymizer.Core
             }).ConfigureAwait(false);
         }
 
-        private async Task ConsumeExecutionResultTask(Queue<Task<IEnumerable<string>>> executionTasks, IProgress<BatchAnonymizeProgressDetail> progress)
+        private async Task ConsumeExecutionResultTask(List<Task<IEnumerable<TResult>>> executionTasks, IProgress<BatchAnonymizeProgressDetail> progress)
         {
-            IEnumerable<string> resultContents = await executionTasks.Dequeue().ConfigureAwait(false);
+            if (KeepOrder)
+            {
+                IEnumerable<TResult> resultContents = await executionTasks.First().ConfigureAwait(false);
+                executionTasks.RemoveAt(0);
 
-            int consumeCount = await AnonymizedDataConsumer.ConsumeAsync(resultContents).ConfigureAwait(false);
-            progress?.Report(new BatchAnonymizeProgressDetail() { ConsumeCompleted = consumeCount, CurrentThreadId = Thread.CurrentThread.ManagedThreadId });
+                if (AnonymizedDataConsumer != null)
+                {
+                    int consumeCount = await AnonymizedDataConsumer.ConsumeAsync(resultContents).ConfigureAwait(false);
+                    progress?.Report(new BatchAnonymizeProgressDetail() { ConsumeCompleted = consumeCount, CurrentThreadId = Thread.CurrentThread.ManagedThreadId });
+                }
+            }
+            else
+            {
+                await Task.WhenAny(executionTasks).ConfigureAwait(false);
+
+                for (int index = 0; index < executionTasks.Count; ++index)
+                {
+                    if (executionTasks[index].IsCompleted)
+                    {
+                        IEnumerable<TResult> resultContents = await executionTasks[index].ConfigureAwait(false);
+                        executionTasks.RemoveAt(index);
+
+                        if (AnonymizedDataConsumer != null)
+                        {
+                            int consumeCount = await AnonymizedDataConsumer.ConsumeAsync(resultContents).ConfigureAwait(false);
+                            progress?.Report(new BatchAnonymizeProgressDetail() { ConsumeCompleted = consumeCount, CurrentThreadId = Thread.CurrentThread.ManagedThreadId });
+                        }
+                        
+                        break; // Only consume 1 result from completed task
+                    }
+                }
+            }
         }
     }
 }

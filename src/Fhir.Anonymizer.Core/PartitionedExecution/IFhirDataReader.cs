@@ -2,8 +2,8 @@
 
 namespace Fhir.Anonymizer.Core
 {
-    public interface IFhirDataReader
+    public interface IFhirDataReader<T>
     {
-        Task<string> NextAsync();
+        Task<T> NextAsync();
     }
 }

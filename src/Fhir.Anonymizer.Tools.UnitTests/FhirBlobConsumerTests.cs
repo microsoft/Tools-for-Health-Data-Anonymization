@@ -80,7 +80,7 @@ namespace Fhir.Anonymizer.Tools.UnitTests
                 using FhirStreamReader reader = new FhirStreamReader(stream);
                 FhirBlobConsumer consumer = new FhirBlobConsumer(targetBlobClient);
 
-                var executor = new FhirPartitionedExecutor(reader, consumer, content => content);
+                var executor = new FhirPartitionedExecutor<string, string>(reader, consumer, content => content);
                 await executor.ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
                 Assert.Equal(sourceBlobClient.GetProperties().Value.ContentLength, targetBlobClient.GetProperties().Value.ContentLength);
