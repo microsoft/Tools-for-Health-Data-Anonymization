@@ -9,20 +9,20 @@ namespace Fhir.Anonymizer.Core.Extensions
     public static class ElementNodeExtension
     {
         // InstanceType constants
-        private static readonly string s_dateTypeName = "date";
-        private static readonly string s_dateTimeTypeName = "dateTime";
-        private static readonly string s_decimalTypeName = "decimal";
-        private static readonly string s_instantTypeName = "instant";
-        private static readonly string s_ageTypeName = "Age";
-        private static readonly string s_bundleTypeName = "Bundle";
+        internal static readonly string s_dateTypeName = "date";
+        internal static readonly string s_dateTimeTypeName = "dateTime";
+        internal static readonly string s_decimalTypeName = "decimal";
+        internal static readonly string s_instantTypeName = "instant";
+        internal static readonly string s_ageTypeName = "Age";
+        internal static readonly string s_bundleTypeName = "Bundle";
 
         // NodeName constants
-        private static readonly string s_postalCodeNodeName = "postalCode";
-        private static readonly string s_containedNodeName = "contained";
-        private static readonly string s_entryNodeName = "entry";
-        private static readonly string s_resourceNodeName = "resource";
+        internal static readonly string s_postalCodeNodeName = "postalCode";
+        internal static readonly string s_containedNodeName = "contained";
+        internal static readonly string s_entryNodeName = "entry";
+        internal static readonly string s_resourceNodeName = "resource";
 
-        private static readonly string s_locationToFhirPathRegex = @"\[.*?\]";
+        internal static readonly string s_locationToFhirPathRegex = @"\[.*?\]";
 
         public static bool IsDateNode(this ElementNode node)
         {
