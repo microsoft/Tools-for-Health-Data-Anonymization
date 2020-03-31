@@ -75,9 +75,6 @@ Tutorial steps:
 * **Azure PowerShell**: Azure PowerShell is used for deploying azure resources. If you don't have Azure PowerShell installed, see the instructions in [Install the Azure PowerShell module](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-3.4.0)
 * **.Net Core 3.1**: Use .Net Core 3.1 sdk to build FHIR Tools for Anonymization. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet-core/3.1).
 
-> **[!NOTE]**
-> Ensure that your source and destination blob store, Azure Data Factory, and the Azure batch account created as part of this tutorial are all in the same region.
-
 #### Prepare azure storage resource container
 
 Create a source and a destination container on your blob store. Upload your FHIR files to the source blob container. The pipeline will read the files from the source container and upload the anonymized files to the destination container.
@@ -324,7 +321,6 @@ You can specify dateShift as a de-identification method in the configuration fil
 ## Current limitations
 1. We only support FHIR data in R4, JSON format. Support for XML and STU 3 is planned.
 2. Date-shift algorithm shifts the dates within a resource by the same random amount. We are working on the ability to shift the dates by the same random amount across resources. 
-3. The source and the destination blob store, the ADF pipeline, and the Azure batch account must all be in the same region for the ADF pipeline to work reliably.
 
 ## FAQ
 ### How can we use FHIR Tools for Anonymization to anonymize HL7 v2.x data
