@@ -17,13 +17,23 @@ namespace Fhir.Anonymizer.Tool
         private string _inputFolder;
         private string _outputFolder;
         private bool _isRecursive;
+        private bool _validateInput;
+        private bool _validateOutput;
         private AnonymizerEngine _engine;
 
-        public FilesAnonymizerForJsonFormatResource(AnonymizerEngine engine, string inputFolder, string outputFolder, bool isRecursive)
+        public FilesAnonymizerForJsonFormatResource(
+            AnonymizerEngine engine,
+            string inputFolder,
+            string outputFolder,
+            bool isRecursive,
+            bool validateInput,
+            bool validateOutput)
         {
             _inputFolder = inputFolder;
             _outputFolder = outputFolder;
             _isRecursive = isRecursive;
+            _validateInput = validateInput;
+            _validateOutput = validateOutput;
             _engine = engine;
         }
 
@@ -86,7 +96,7 @@ namespace Fhir.Anonymizer.Tool
                 using StreamWriter writer = new StreamWriter(outputStream);
                 try
                 {
-                    var resourceResult = _engine.AnonymizeJson(resourceJson, isPrettyOutput: true);
+                    var resourceResult = _engine.AnonymizeJson(resourceJson, isPrettyOutput: true, _validateInput, _validateOutput);
                     await writer.WriteAsync(resourceResult).ConfigureAwait(false);
                     await writer.FlushAsync().ConfigureAwait(false);
                 }

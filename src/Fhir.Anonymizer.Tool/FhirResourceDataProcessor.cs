@@ -18,17 +18,17 @@ namespace Fhir.Anonymizer.Tool
             _engine = new AnonymizerEngine(configFilePath);
         }
 
-        public async Task AnonymizeFolder(string inputFolder, string outputFolder, bool isRecursive)
+        public async Task AnonymizeFolder(string inputFolder, string outputFolder, bool isRecursive, bool validateInput, bool validateOutput)
         {
-            var anonymizer = new FilesAnonymizerForJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive);
+            var anonymizer = new FilesAnonymizerForJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive, validateInput, validateOutput);
             await anonymizer.AnonymizeAsync().ConfigureAwait(false);
             
             Console.WriteLine($"Finished processing '{inputFolder}'! ");
         }
 
-        public async Task AnonymizeBulkDataFolder(string inputFolder, string outputFolder, bool isRecursive)
+        public async Task AnonymizeBulkDataFolder(string inputFolder, string outputFolder, bool isRecursive, bool validateInput, bool validateOutput)
         {
-            var anonymizer = new FilesAnonymizerForNdJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive);
+            var anonymizer = new FilesAnonymizerForNdJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive, validateInput, validateOutput);
             await anonymizer.AnonymizeAsync().ConfigureAwait(false);
 
             Console.WriteLine($"Finished processing '{inputFolder}'!");

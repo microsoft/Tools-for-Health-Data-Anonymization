@@ -16,13 +16,23 @@ namespace Fhir.Anonymizer.Tool
         private string _inputFolder;
         private string _outputFolder;
         private bool _isRecursive;
+        private bool _validateInput;
+        private bool _validateOutput;
         private AnonymizerEngine _engine;
 
-        public FilesAnonymizerForNdJsonFormatResource(AnonymizerEngine engine, string inputFolder, string outputFolder, bool isRecursive)
+        public FilesAnonymizerForNdJsonFormatResource(
+            AnonymizerEngine engine,
+            string inputFolder,
+            string outputFolder,
+            bool isRecursive,
+            bool validateInput,
+            bool validateOutput)
         {
             _inputFolder = inputFolder;
             _outputFolder = outputFolder;
             _isRecursive = isRecursive;
+            _validateInput = validateInput;
+            _validateOutput = validateOutput;
             _engine = engine;
         }
 
@@ -55,7 +65,7 @@ namespace Fhir.Anonymizer.Tool
                     {
                         try
                         {
-                            return _engine.AnonymizeJson(content);
+                            return _engine.AnonymizeJson(content, isPrettyOutput: false, _validateInput, _validateOutput);
                         }
                         catch (Exception ex)
                         {

@@ -23,6 +23,10 @@ namespace Fhir.Anonymizer.Tool
             public bool IsRecursive { get; set; }
             [Option('v', "verbose", Required = false, Default = false, HelpText = "Provide additional details in processing.")]
             public bool IsVerbose { get; set; }
+            [Option("validateInput", Required = false, Default = false, HelpText = "Validate input resources in verbose log.")]
+            public bool ValidateInput { get; set; }
+            [Option("validateOutput", Required = false, Default = false, HelpText = "Validate anonymized resources in verbose log.")]
+            public bool ValidateOutput { get; set; }
         }
 
         public async static Task Main(string[] args)
@@ -45,12 +49,14 @@ namespace Fhir.Anonymizer.Tool
 
             if (options.IsBulkData)
             {
-                await dataProcessor.AnonymizeBulkDataFolder(options.InputFolder, options.OutputFolder, options.IsRecursive).ConfigureAwait(false);
+                await dataProcessor.AnonymizeBulkDataFolder(options.InputFolder, options.OutputFolder, options.IsRecursive, options.ValidateInput, options.ValidateOutput).ConfigureAwait(false);
             }
             else
             {
-                await dataProcessor.AnonymizeFolder(options.InputFolder, options.OutputFolder, options.IsRecursive).ConfigureAwait(false);
+                await dataProcessor.AnonymizeFolder(options.InputFolder, options.OutputFolder, options.IsRecursive, options.ValidateInput, options.ValidateOutput).ConfigureAwait(false);
             }
+
+            DisposeAnonymizerLogging();
         }
 
         private static void InitializeAnonymizerLogging(bool isVerboseMode)
@@ -61,6 +67,11 @@ namespace Fhir.Anonymizer.Tool
                        .AddFilter("Fhir.Anonymizer", isVerboseMode ? LogLevel.Trace : LogLevel.Information)
                        .AddConsole();
             });
+        }
+
+        private static void DisposeAnonymizerLogging()
+        {
+            AnonymizerLogging.LoggerFactory.Dispose();
         }
     }
 }
