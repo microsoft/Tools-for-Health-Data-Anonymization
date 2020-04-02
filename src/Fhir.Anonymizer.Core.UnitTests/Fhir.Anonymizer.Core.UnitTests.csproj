@@ -20,6 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Resource\id-mapping-sample.dat">
+      <Generator></Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestConfigurations\configuration-miss-rules.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

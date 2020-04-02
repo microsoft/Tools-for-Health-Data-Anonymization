@@ -10,7 +10,13 @@ namespace Fhir.Anonymizer.Core.UnitTests
 {
     public class AnonymizerEngineTests
     {
+        private const string ResourceIdMappingSampleFile = "Resource/id-mapping-sample.dat";
         private readonly AnonymizerEngine _engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-test-sample.json"));
+
+        public AnonymizerEngineTests()
+        {
+            _engine.LoadResourceIdMappingFile(ResourceIdMappingSampleFile);
+        }
 
         [Fact]
         public void GivenIsPrettyOutputSetTrue_WhenAnonymizeJson_PrettyJsonOutputShouldBeReturned()
@@ -45,9 +51,9 @@ namespace Fhir.Anonymizer.Core.UnitTests
         private const string PrettyOutputTarget =
 @"{
   ""resourceType"": ""Patient"",
-  ""id"": ""example""
+  ""id"": ""557eac9c-8e80-4229-8164-ffc4bf5b7b3a""
 }";
 
-        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"example\"}";
+        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"557eac9c-8e80-4229-8164-ffc4bf5b7b3a\"}";
     }
 }

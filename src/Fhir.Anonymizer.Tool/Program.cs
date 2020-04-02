@@ -17,6 +17,8 @@ namespace Fhir.Anonymizer.Tool
             public string OutputFolder { get; set; }
             [Option('c', "configFile", Required = false, Default = "configuration-sample.json", HelpText = "Anonymizer configuration file path.")]
             public string ConfigurationFilePath { get; set; }
+            [Option('m', "mappingFile", Required = false, Default = "mapping-ids.dat", HelpText = "Resource Id mapping file path.")]
+            public string MappingFilePath { get; set; }
             [Option('b', "bulkData", Required = false, Default = false, HelpText = "Resource file is in bulk data format (.ndjson).")]
             public bool IsBulkData { get; set; }
             [Option('r', "recursive", Required = false, Default = false, HelpText = "Process resource files in input folder recursively.")]
@@ -51,6 +53,8 @@ namespace Fhir.Anonymizer.Tool
             {
                 await dataProcessor.AnonymizeFolder(options.InputFolder, options.OutputFolder, options.IsRecursive).ConfigureAwait(false);
             }
+
+            dataProcessor.FinishProcessing(options.MappingFilePath);
         }
 
         private static void InitializeAnonymizerLogging(bool isVerboseMode)

@@ -5,6 +5,7 @@ using EnsureThat;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Processors;
+using Fhir.Anonymizer.Core.Resource;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Specification;
@@ -19,6 +20,7 @@ namespace Fhir.Anonymizer.Core
         private readonly PocoStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly AnonymizerConfigurationManager _configurationManger;
+        private readonly ResourceIdTransformer _resourceIdTransformer = new ResourceIdTransformer();
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
 
         public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath)) 
@@ -47,17 +49,20 @@ namespace Fhir.Anonymizer.Core
                 throw new Exception("Failed to parse json resource, please check the json content.", innerException);
             }
 
+            var anonymizedNode = AnonymizeResourceNode(root);
+            _resourceIdTransformer.Transform(anonymizedNode);
+
             FhirJsonSerializationSettings settings = new FhirJsonSerializationSettings
             {
                 Pretty = isPrettyOutput
             };
-            return AnonymizeResourceNode(root).ToJson(settings);
+            return anonymizedNode.ToJson(settings);
         }
 
         public ElementNode AnonymizeResourceNode(ElementNode root)
         {
             EnsureArg.IsNotNull(root, nameof(root));
-
+            
             if (root.IsBundleNode())
             {
                 var entryResources = root.GetEntryResourceChildren();
@@ -116,6 +121,16 @@ namespace Fhir.Anonymizer.Core
                     AnonymizeChildNode(child, rule, rulePathSet, resourceId);
                 }
             }
+        }
+
+        public void SaveResourceIdMappingFile(string mappingFile)
+        {
+            _resourceIdTransformer.SaveMappingFile(mappingFile);
+        }
+
+        public void LoadResourceIdMappingFile(string mappingFile)
+        {
+            _resourceIdTransformer.LoadMappingFile(mappingFile);
         }
 
         private ElementNode GetResourceRoot(ElementNode node)

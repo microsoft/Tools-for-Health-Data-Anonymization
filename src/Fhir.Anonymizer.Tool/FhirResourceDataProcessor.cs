@@ -43,5 +43,11 @@ namespace Fhir.Anonymizer.Tool
 
             return string.Equals(inputFolderPath, outputFolderPath, StringComparison.InvariantCultureIgnoreCase);
         }
+
+        public void FinishProcessing(string mappingFile)
+        {
+            _engine.SaveResourceIdMappingFile(mappingFile);
+        }
+
     }
 }
