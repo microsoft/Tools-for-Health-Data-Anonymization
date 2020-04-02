@@ -20,7 +20,6 @@ namespace Fhir.Anonymizer.Core
         private readonly PocoStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly AnonymizerConfigurationManager _configurationManger;
-        private readonly ResourceIdTransformer _resourceIdTransformer = new ResourceIdTransformer();
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
 
         public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath)) 
@@ -50,7 +49,7 @@ namespace Fhir.Anonymizer.Core
             }
 
             var anonymizedNode = AnonymizeResourceNode(root);
-            _resourceIdTransformer.Transform(anonymizedNode);
+            ResourceIdTransformer.Transform(anonymizedNode);
 
             FhirJsonSerializationSettings settings = new FhirJsonSerializationSettings
             {
@@ -121,16 +120,6 @@ namespace Fhir.Anonymizer.Core
                     AnonymizeChildNode(child, rule, rulePathSet, resourceId);
                 }
             }
-        }
-
-        public void SaveResourceIdMappingFile(string mappingFile)
-        {
-            _resourceIdTransformer.SaveMappingFile(mappingFile);
-        }
-
-        public void LoadResourceIdMappingFile(string mappingFile)
-        {
-            _resourceIdTransformer.LoadMappingFile(mappingFile);
         }
 
         private ElementNode GetResourceRoot(ElementNode node)

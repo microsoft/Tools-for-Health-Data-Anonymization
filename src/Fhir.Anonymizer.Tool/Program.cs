@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CommandLine;
 using Fhir.Anonymizer.Core;
+using Fhir.Anonymizer.Core.Resource;
 using Microsoft.Extensions.Logging;
 
 namespace Fhir.Anonymizer.Tool    
@@ -54,7 +55,7 @@ namespace Fhir.Anonymizer.Tool
                 await dataProcessor.AnonymizeFolder(options.InputFolder, options.OutputFolder, options.IsRecursive).ConfigureAwait(false);
             }
 
-            dataProcessor.FinishProcessing(options.MappingFilePath);
+            ResourceIdTransformer.SaveMappingFile(options.MappingFilePath);
         }
 
         private static void InitializeAnonymizerLogging(bool isVerboseMode)

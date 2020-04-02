@@ -1,21 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Serialization;
+using Fhir.Anonymizer.Core.Resource;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests
 {
     public class AnonymizerEngineTests
     {
-        private const string ResourceIdMappingSampleFile = "Resource/id-mapping-sample.dat";
         private readonly AnonymizerEngine _engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-test-sample.json"));
 
         public AnonymizerEngineTests()
         {
-            _engine.LoadResourceIdMappingFile(ResourceIdMappingSampleFile);
+            ResourceIdTransformer.LoadExistingMapping(new Dictionary<string, string> { {"example", "example-abc" } });
         }
 
         [Fact]
@@ -51,9 +47,9 @@ namespace Fhir.Anonymizer.Core.UnitTests
         private const string PrettyOutputTarget =
 @"{
   ""resourceType"": ""Patient"",
-  ""id"": ""557eac9c-8e80-4229-8164-ffc4bf5b7b3a""
+  ""id"": ""example-abc""
 }";
 
-        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"557eac9c-8e80-4229-8164-ffc4bf5b7b3a\"}";
+        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"example-abc\"}";
     }
 }

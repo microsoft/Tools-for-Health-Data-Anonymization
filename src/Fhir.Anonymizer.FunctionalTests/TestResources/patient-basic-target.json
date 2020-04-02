@@ -1,6 +1,6 @@
 {
   "resourceType": "Patient",
-  "id": "example",
+  "id": "example-abc",
   "identifier": [
     {
       "period": {
@@ -68,6 +68,6 @@
     }
   ],
   "managingOrganization": {
-    "reference": "Organization/1"
+    "reference": "Organization/1-abc"
   }
 }

@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Fhir.Anonymizer.Core;
+using Fhir.Anonymizer.Core.Resource;
 using Xunit;
 
 namespace Fhir.Anonymizer.FunctionalTests
@@ -10,6 +12,15 @@ namespace Fhir.Anonymizer.FunctionalTests
         public CollectionResourceTests()
         {
             engine = new AnonymizerEngine(Path.Combine("Configurations", "common-config.json"));
+            ResourceIdTransformer.LoadExistingMapping(new Dictionary<string, string> 
+            {
+                { "1", "1-abc" },
+                { "23", "23-abc" },
+                { "123", "123-abc" },
+                { "bundle-references", "bundle-references-abc" },
+                { "p1", "p1-abc" },
+                { "example", "example-abc" },
+            });
         }
 
         [Fact]

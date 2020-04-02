@@ -17,17 +17,17 @@ namespace Fhir.Anonymizer.Core.Resource
         private const string OidPrefix = "urn:oid:";
         private const string UuidPrefix = "urn:uuid:";
         // literal reference can be absolute or relative url, oid, or uuid.
-        private readonly List<Regex> _literalReferenceRegexes = new List<Regex>
+        private static readonly List<Regex> _literalReferenceRegexes = new List<Regex>
         {
             new Regex(@"(Account|ActivityDefinition|AdverseEvent|AllergyIntolerance|Appointment|AppointmentResponse|AuditEvent|Basic|Binary|BiologicallyDerivedProduct|BodyStructure|Bundle|CapabilityStatement|CarePlan|CareTeam|CatalogEntry|ChargeItem|ChargeItemDefinition|Claim|ClaimResponse|ClinicalImpression|CodeSystem|Communication|CommunicationRequest|CompartmentDefinition|Composition|ConceptMap|Condition|Consent|Contract|Coverage|CoverageEligibilityRequest|CoverageEligibilityResponse|DetectedIssue|Device|DeviceDefinition|DeviceMetric|DeviceRequest|DeviceUseStatement|DiagnosticReport|DocumentManifest|DocumentReference|EffectEvidenceSynthesis|Encounter|Endpoint|EnrollmentRequest|EnrollmentResponse|EpisodeOfCare|EventDefinition|Evidence|EvidenceVariable|ExampleScenario|ExplanationOfBenefit|FamilyMemberHistory|Flag|Goal|GraphDefinition|Group|GuidanceResponse|HealthcareService|ImagingStudy|Immunization|ImmunizationEvaluation|ImmunizationRecommendation|ImplementationGuide|InsurancePlan|Invoice|Library|Linkage|List|Location|Measure|MeasureReport|Media|Medication|MedicationAdministration|MedicationDispense|MedicationKnowledge|MedicationRequest|MedicationStatement|MedicinalProduct|MedicinalProductAuthorization|MedicinalProductContraindication|MedicinalProductIndication|MedicinalProductIngredient|MedicinalProductInteraction|MedicinalProductManufactured|MedicinalProductPackaged|MedicinalProductPharmaceutical|MedicinalProductUndesirableEffect|MessageDefinition|MessageHeader|MolecularSequence|NamingSystem|NutritionOrder|Observation|ObservationDefinition|OperationDefinition|OperationOutcome|Organization|OrganizationAffiliation|Patient|PaymentNotice|PaymentReconciliation|Person|PlanDefinition|Practitioner|PractitionerRole|Procedure|Provenance|Questionnaire|QuestionnaireResponse|RelatedPerson|RequestGroup|ResearchDefinition|ResearchElementDefinition|ResearchStudy|ResearchSubject|RiskAssessment|RiskEvidenceSynthesis|Schedule|SearchParameter|ServiceRequest|Slot|Specimen|SpecimenDefinition|StructureDefinition|StructureMap|Subscription|Substance|SubstanceNucleicAcid|SubstancePolymer|SubstanceProtein|SubstanceReferenceInformation|SubstanceSourceMaterial|SubstanceSpecification|SupplyDelivery|SupplyRequest|Task|TerminologyCapabilities|TestReport|TestScript|ValueSet|VerificationResult|VisionPrescription)\/(?<id>[A-Za-z0-9\-\.]{1,64})"),
             new Regex(@"urn:oid:(?<id>[0-2](\.(0|[1-9][0-9]*))+)"),
             new Regex(@"urn:uuid:(?<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
         };
 
-        private readonly ConcurrentDictionary<string, string> _resourceIdMap = new ConcurrentDictionary<string, string>();
-        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
+        private static readonly ConcurrentDictionary<string, string> _resourceIdMap = new ConcurrentDictionary<string, string>();
+        private static readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
 
-        public void Transform(ElementNode node)
+        public static void Transform(ElementNode node)
         {
             if (ModelInfo.IsKnownResource(node.InstanceType))
             {
@@ -55,7 +55,7 @@ namespace Fhir.Anonymizer.Core.Resource
             }
         }
 
-        public void SaveMappingFile(string mappingFile)
+        public static void SaveMappingFile(string mappingFile)
         {
             using var fileStream = new FileStream(mappingFile, FileMode.Create);
             using var writer = new StreamWriter(fileStream);
@@ -65,7 +65,7 @@ namespace Fhir.Anonymizer.Core.Resource
             }
         }
 
-        public void LoadMappingFile(string mappingFile)
+        public static void LoadMappingFile(string mappingFile)
         {
             using var fileStream = new FileStream(mappingFile, FileMode.Open);
             using var reader = new StreamReader(fileStream);
@@ -82,12 +82,20 @@ namespace Fhir.Anonymizer.Core.Resource
             }
         }
 
-        public string TransformId(string id)
+        public static void LoadExistingMapping(Dictionary<string, string> mapping)
+        {
+            foreach(var entry in mapping)
+            {
+                _resourceIdMap.TryAdd(entry.Key, entry.Value);
+            }
+        }
+
+        public static string TransformId(string id)
         {
             return string.IsNullOrEmpty(id) ? id : _resourceIdMap.GetOrAdd(id, Guid.NewGuid().ToString());
         }
 
-        public string TransformIdFromReference(string reference)
+        public static string TransformIdFromReference(string reference)
         {
             if (string.IsNullOrEmpty(reference))
             {

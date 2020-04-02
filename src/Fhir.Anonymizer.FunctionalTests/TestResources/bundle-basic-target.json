@@ -1,13 +1,13 @@
 {
   "resourceType": "Bundle",
-  "id": "bundle-references",
+  "id": "bundle-references-abc",
   "type": "collection",
   "entry": [
     {
       "fullUrl": "http://example.org/fhir/Patient/23",
       "resource": {
         "resourceType": "Patient",
-        "id": "23"
+        "id": "23-abc"
       }
     },
     {
@@ -20,7 +20,7 @@
       "fullUrl": "http://example.org/fhir/Observation/123",
       "resource": {
         "resourceType": "Observation",
-        "id": "123",
+        "id": "123-abc",
         "status": "final",
         "code": {
           "coding": [
@@ -32,7 +32,7 @@
           ]
         },
         "subject": {
-          "reference": "Patient/23"
+          "reference": "Patient/23-abc"
         }
       }
     }

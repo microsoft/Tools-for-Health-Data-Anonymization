@@ -1,6 +1,6 @@
 {
   "resourceType": "Bundle",
-  "id": "bundle-references",
+  "id": "bundle-references-abc",
   "type": "collection",
   "entry": [
     {
@@ -10,11 +10,11 @@
         "contained": [
           {
             "resourceType": "Practitioner",
-            "id": "p1"
+            "id": "p1-abc"
           }
         ],
         "asserter": {
-          "reference": "#p1"
+          "reference": "#p1-abc"
         }
       }
     }
