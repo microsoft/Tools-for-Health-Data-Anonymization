@@ -36,7 +36,7 @@ namespace Fhir.Anonymizer.Core
             _logger.LogDebug("AnonymizerEngine initialized successfully");
         }
 
-        public string AnonymizeJson(string json, bool isPrettyOutput = false, bool validateInput = false, bool validateOutput = false)
+        public string AnonymizeJson(string json, AnonymizerSettings settings = null)
         {
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));
 
@@ -52,22 +52,22 @@ namespace Fhir.Anonymizer.Core
                 throw new Exception("Failed to parse json resource, please check the json content.", innerException);
             }
 
-            if (validateInput)
+            if (settings != null && settings.ValidateInput)
             {
                 _validator.ValidateInput(resource);
             }
             var anonymizedNode = AnonymizeResourceNode(root);
-            if (validateOutput)
+            if (settings != null && settings.ValidateOutput)
             {
                 anonymizedNode.RemoveNullChildren();
                 _validator.ValidateOutput(anonymizedNode.ToPoco<Resource>());
             }
 
-            FhirJsonSerializationSettings settings = new FhirJsonSerializationSettings
+            FhirJsonSerializationSettings serializationSettings = new FhirJsonSerializationSettings
             {
-                Pretty = isPrettyOutput
+                Pretty = settings != null && settings.IsPrettyOutput
             };
-            return anonymizedNode.ToJson(settings);
+            return anonymizedNode.ToJson(serializationSettings);
         }
 
         public ElementNode AnonymizeResourceNode(ElementNode root)

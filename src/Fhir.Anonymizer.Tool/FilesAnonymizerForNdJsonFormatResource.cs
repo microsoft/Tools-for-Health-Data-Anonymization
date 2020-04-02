@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Fhir.Anonymizer.Core;
+using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.PartitionedExecution;
 
 namespace Fhir.Anonymizer.Tool
@@ -65,7 +66,13 @@ namespace Fhir.Anonymizer.Tool
                     {
                         try
                         {
-                            return _engine.AnonymizeJson(content, isPrettyOutput: false, _validateInput, _validateOutput);
+                            var settings = new AnonymizerSettings()
+                            {
+                                IsPrettyOutput = false,
+                                ValidateInput = _validateInput,
+                                ValidateOutput = _validateOutput
+                            };
+                            return _engine.AnonymizeJson(content, settings);
                         }
                         catch (Exception ex)
                         {

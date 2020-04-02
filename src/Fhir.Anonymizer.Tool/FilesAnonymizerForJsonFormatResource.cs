@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Fhir.Anonymizer.Core;
+using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.PartitionedExecution;
 using Hl7.FhirPath.Sprache;
 
@@ -96,7 +97,13 @@ namespace Fhir.Anonymizer.Tool
                 using StreamWriter writer = new StreamWriter(outputStream);
                 try
                 {
-                    var resourceResult = _engine.AnonymizeJson(resourceJson, isPrettyOutput: true, _validateInput, _validateOutput);
+                    var settings = new AnonymizerSettings()
+                    {
+                        IsPrettyOutput = true,
+                        ValidateInput = _validateInput,
+                        ValidateOutput = _validateOutput
+                    };
+                    var resourceResult = _engine.AnonymizeJson(resourceJson, settings);
                     await writer.WriteAsync(resourceResult).ConfigureAwait(false);
                     await writer.FlushAsync().ConfigureAwait(false);
                 }

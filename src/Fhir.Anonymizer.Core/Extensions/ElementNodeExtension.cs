@@ -117,7 +117,7 @@ namespace Fhir.Anonymizer.Core.Extensions
 
             if (!node.Children().Any() && node.Value == null && !Enum.TryParse<ResourceType>(node.InstanceType, true, out _))
             {
-                node.Parent?.Remove(node);
+                node.Parent.Remove(node);
                 return;
             }
         }

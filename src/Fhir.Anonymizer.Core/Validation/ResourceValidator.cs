@@ -26,7 +26,7 @@ namespace Fhir.Anonymizer.Core.Validation
             var result = _validator.Validate(resource);
             foreach (var error in result)
             {
-                var path = string.IsNullOrEmpty(error.MemberNames?.FirstOrDefault()) ? string.Empty : error.MemberNames?.FirstOrDefault();
+                var path = error.MemberNames?.FirstOrDefault() ?? string.Empty;
                 _logger.LogDebug(string.IsNullOrEmpty(resource?.Id) ?
                     $"The output is non-conformant with FHIR specification: {error.ErrorMessage} for {path} in {resource.TypeName}." :
                     $"The output of resource ID {resource.Id} is non-conformant with FHIR specification: {error.ErrorMessage} for {path} in {resource.TypeName}.");
