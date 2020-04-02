@@ -12,7 +12,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 
         public void Validate(AnonymizerConfiguration config)
         {
-            if (config.TypeRules == null && config.PathRules == null)
+            if (config.TypeRules == null && config.PathRules == null && config.FhirPathRules == null)
             {
                 throw new AnonymizerConfigurationErrorsException("The configuration is invalid, please specify any pathRules or typeRules");
             }

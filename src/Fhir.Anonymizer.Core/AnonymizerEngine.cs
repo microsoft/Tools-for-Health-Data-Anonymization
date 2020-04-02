@@ -20,6 +20,7 @@ namespace Fhir.Anonymizer.Core
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly AnonymizerConfigurationManager _configurationManger;
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
+        private readonly InternalAnonymizeLogic anonymizeLogic = null;
 
         public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath)) 
         { 
@@ -30,6 +31,13 @@ namespace Fhir.Anonymizer.Core
             _configurationManger = configurationManager;
             _processors = new Dictionary<string, IAnonymizerProcessor>();
             InitializeProcessors(_configurationManger);
+
+            if (_configurationManger.FhirPathRules != null)
+            {
+                FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
+                anonymizeLogic = new InternalAnonymizeLogic(_configurationManger.FhirPathRules, _processors);
+            }
+
             _logger.LogDebug("AnonymizerEngine initialized successfully");
         }
 
@@ -51,7 +59,15 @@ namespace Fhir.Anonymizer.Core
             {
                 Pretty = isPrettyOutput
             };
-            return AnonymizeResourceNode(root).ToJson(settings);
+
+            if (anonymizeLogic != null)
+            {
+                return anonymizeLogic.Anonymize(root).ToJson(settings);
+            }
+            else
+            {
+                return AnonymizeResourceNode(root).ToJson(settings);
+            }
         }
 
         public ElementNode AnonymizeResourceNode(ElementNode root)

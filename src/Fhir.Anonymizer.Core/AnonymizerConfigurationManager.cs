@@ -13,21 +13,33 @@ namespace Fhir.Anonymizer.Core
         private readonly AnonymizerConfiguration _configuration;
         private readonly Dictionary<string, IEnumerable<AnonymizerRule>> _resourcePathRules;
 
+        public AnonymizerRule[] FhirPathRules { get; private set; } = null;
+
         public AnonymizerConfigurationManager(AnonymizerConfiguration configuration)
         {
             _validator.Validate(configuration);
             configuration.GenerateDefaultParametersIfNotConfigured();
 
             _configuration = configuration;
-            if (_configuration.PathRules != null)
+
+            if (configuration.FhirPathRules!= null)
             {
-                _resourcePathRules = _configuration.PathRules.Where(entry => IsResourcePathRule(entry.Key))
-                    .GroupBy(entry => ExtractResourceTypeFromPath(entry.Key))
-                    .ToDictionary(group => group.Key, group => group.Select(item => new AnonymizerRule(item.Key, item.Value, AnonymizerRuleType.PathRule, item.Key)));
+                //TODO add capability check here.
+
+                FhirPathRules = _configuration.FhirPathRules.Select(entry => new AnonymizerRule(entry.Key, entry.Value, AnonymizerRuleType.FhirPathRule, entry.Key)).ToArray();
             }
             else
             {
-                _resourcePathRules = new Dictionary<string, IEnumerable<AnonymizerRule>>();
+                if (_configuration.PathRules != null)
+                {
+                    _resourcePathRules = _configuration.PathRules.Where(entry => IsResourcePathRule(entry.Key))
+                        .GroupBy(entry => ExtractResourceTypeFromPath(entry.Key))
+                        .ToDictionary(group => group.Key, group => group.Select(item => new AnonymizerRule(item.Key, item.Value, AnonymizerRuleType.PathRule, item.Key)));
+                }
+                else
+                {
+                    _resourcePathRules = new Dictionary<string, IEnumerable<AnonymizerRule>>();
+                }
             }
         }
 
