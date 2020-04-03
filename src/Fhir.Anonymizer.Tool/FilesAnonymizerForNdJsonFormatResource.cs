@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Fhir.Anonymizer.Core;
@@ -19,10 +17,10 @@ namespace Fhir.Anonymizer.Tool
         private bool _isRecursive;
         private bool _validateInput;
         private bool _validateOutput;
-        private AnonymizerEngine _engine;
+        private string _configFilePath;
 
         public FilesAnonymizerForNdJsonFormatResource(
-            AnonymizerEngine engine,
+            string configFilePath,
             string inputFolder,
             string outputFolder,
             bool isRecursive,
@@ -34,7 +32,7 @@ namespace Fhir.Anonymizer.Tool
             _isRecursive = isRecursive;
             _validateInput = validateInput;
             _validateOutput = validateOutput;
-            _engine = engine;
+            _configFilePath = configFilePath;
         }
 
         public async Task AnonymizeAsync()
@@ -54,6 +52,7 @@ namespace Fhir.Anonymizer.Tool
                     Directory.CreateDirectory(resourceOutputFolder);
                 }
 
+                var engine = CreateAnonymizerEngineForFile(bulkResourceFileName);
                 int completedCount = 0;
                 int failedCount = 0;
                 int consumeCompletedCount = 0;
@@ -72,7 +71,7 @@ namespace Fhir.Anonymizer.Tool
                                 ValidateInput = _validateInput,
                                 ValidateOutput = _validateOutput
                             };
-                            return _engine.AnonymizeJson(content, settings);
+                            return engine.AnonymizeJson(content, settings);
                         }
                         catch (Exception ex)
                         {
@@ -110,6 +109,24 @@ namespace Fhir.Anonymizer.Tool
                 .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
             return Path.Combine(outputFolder, partialFilename);
+        }
+
+        private AnonymizerEngine CreateAnonymizerEngineForFile(string filePath)
+        {
+            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(_configFilePath);
+            var dateShiftScope = configurationManager.GetParameterConfiguration().DateShiftScope;
+            if (dateShiftScope == DateShiftScope.File)
+            {
+                var fileName = Path.GetFileName(filePath);
+                configurationManager.SetDateShiftPrefix(fileName);
+            }
+            else if (dateShiftScope == DateShiftScope.Folder)
+            {
+                var folderName = Path.GetFileName(_inputFolder);
+                configurationManager.SetDateShiftPrefix(folderName);
+            }
+
+            return new AnonymizerEngine(configurationManager);
         }
     }
 }

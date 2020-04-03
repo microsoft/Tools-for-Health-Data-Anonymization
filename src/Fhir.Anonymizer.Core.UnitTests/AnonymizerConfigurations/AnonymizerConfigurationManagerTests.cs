@@ -40,5 +40,17 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
             Assert.True(!string.IsNullOrEmpty(parameters.DateShiftKey));
         }
 
+        [Theory]
+        [InlineData("abc123")]
+        [InlineData("foldername")]
+        [InlineData("filename")]
+        public void GivenADateShiftPrefix_WhenSet_DateShiftPrefixShouldBeSetCorrectly(string dateShiftPrefix)
+        {
+            var configFilePath = "./TestConfigurations/configuration-test-sample.json";
+            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
+            configurationManager.SetDateShiftPrefix(dateShiftPrefix);
+
+            Assert.Equal(dateShiftPrefix, configurationManager.GetParameterConfiguration().DateShiftPrefix);
+        }
     }
 }

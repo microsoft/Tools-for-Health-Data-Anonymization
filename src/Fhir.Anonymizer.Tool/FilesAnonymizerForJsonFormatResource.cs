@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Fhir.Anonymizer.Core;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.PartitionedExecution;
-using Hl7.FhirPath.Sprache;
 
 namespace Fhir.Anonymizer.Tool
 {
@@ -20,10 +17,10 @@ namespace Fhir.Anonymizer.Tool
         private bool _isRecursive;
         private bool _validateInput;
         private bool _validateOutput;
-        private AnonymizerEngine _engine;
+        private string _configFilePath;
 
         public FilesAnonymizerForJsonFormatResource(
-            AnonymizerEngine engine,
+            string configFilePath,
             string inputFolder,
             string outputFolder,
             bool isRecursive,
@@ -35,7 +32,7 @@ namespace Fhir.Anonymizer.Tool
             _isRecursive = isRecursive;
             _validateInput = validateInput;
             _validateOutput = validateOutput;
-            _engine = engine;
+            _configFilePath = configFilePath;
         }
 
         public async Task AnonymizeAsync()
@@ -91,6 +88,7 @@ namespace Fhir.Anonymizer.Tool
                 Directory.CreateDirectory(resourceOutputFolder);
             }
 
+            var engine = CreateAnonymizerEngineForFile(fileName);
             string resourceJson = await File.ReadAllTextAsync(fileName).ConfigureAwait(false);
             using (FileStream outputStream = new FileStream(resourceOutputFileName, FileMode.Create))
             {
@@ -103,7 +101,7 @@ namespace Fhir.Anonymizer.Tool
                         ValidateInput = _validateInput,
                         ValidateOutput = _validateOutput
                     };
-                    var resourceResult = _engine.AnonymizeJson(resourceJson, settings);
+                    var resourceResult = engine.AnonymizeJson(resourceJson, settings);
                     await writer.WriteAsync(resourceResult).ConfigureAwait(false);
                     await writer.FlushAsync().ConfigureAwait(false);
                 }
@@ -123,6 +121,24 @@ namespace Fhir.Anonymizer.Tool
                 .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
             return Path.Combine(outputFolder, partialFilename);
+        }
+
+        private AnonymizerEngine CreateAnonymizerEngineForFile(string filePath)
+        {
+            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(_configFilePath);
+            var dateShiftScope = configurationManager.GetParameterConfiguration().DateShiftScope;
+            if (dateShiftScope == DateShiftScope.File)
+            {
+                var fileName = Path.GetFileName(filePath);
+                configurationManager.SetDateShiftPrefix(fileName);
+            }
+            else if (dateShiftScope == DateShiftScope.Folder)
+            {
+                var folderName = Path.GetFileName(_inputFolder);
+                configurationManager.SetDateShiftPrefix(folderName);
+            }
+
+            return new AnonymizerEngine(configurationManager);
         }
     }
 }

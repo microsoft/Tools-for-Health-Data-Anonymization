@@ -34,6 +34,14 @@ namespace Fhir.Anonymizer.Core.UnitTests
             yield return new object[] { new Date("1975-12-26"), new Date("1975-11-06"), new Date("1976-02-14") };
         }
 
+        public static IEnumerable<object[]> GetDateDataForDateShiftWithPrefix()
+        {
+            yield return new object[] { new Date("2015-02-07"), new Date("1975-11-06") };
+            yield return new object[] { new Date("2020-01-17"), new Date("1998-11-21") };
+            yield return new object[] { new Date("1998-10-02"), new Date("2019-11-28") };
+            yield return new object[] { new Date("1975-12-26"), new Date("2020-03-07") };
+        }
+
         public static IEnumerable<object[]> GetDateDataForDateShiftButShouldBeRedacted()
         {
             yield return new object[] { new Date("2015-02"), new Date("2015") };
@@ -106,13 +114,28 @@ namespace Fhir.Anonymizer.Core.UnitTests
 
         [Theory]
         [MemberData(nameof(GetDateDataForDateShift))]
-        public void GivenADate_WhenDateShift_ThenDateShouldBeShifted(Date dateTime, DateTime minExpectedDate, DateTime maxExpectedDate)
+        public void GivenADate_WhenDateShift_ThenDateShouldBeShifted(Date date, DateTime minExpectedDate, DateTime maxExpectedDate)
         {
-            var node = ElementNode.FromElement(dateTime.ToTypedElement());
-            DateTimeUtility.ShiftDateNode(node, string.Empty, true);
+            var node = ElementNode.FromElement(date.ToTypedElement());
+            DateTimeUtility.ShiftDateNode(node, string.Empty, string.Empty, true);
 
             Assert.True(minExpectedDate <= DateTime.Parse(node.Value.ToString()));
             Assert.True(maxExpectedDate >= DateTime.Parse(node.Value.ToString()));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetDateDataForDateShiftWithPrefix))]
+        public void GivenADate_WhenDateShiftWithSamePrefix_ThenSameAmountShouldBeShifted(Date date1, Date date2)
+        {
+            var node1 = ElementNode.FromElement(date1.ToTypedElement());
+            DateTimeUtility.ShiftDateNode(node1, "123", "filename", true);
+            var offset1 = DateTime.Parse(node1.Value.ToString()).Subtract(DateTime.Parse(date1.ToString()));
+
+            var node2 = ElementNode.FromElement(date2.ToTypedElement());
+            DateTimeUtility.ShiftDateNode(node2, "123", "filename", true);
+            var offset2 = DateTime.Parse(node2.Value.ToString()).Subtract(DateTime.Parse(date2.ToString()));
+
+            Assert.Equal(offset1.Days, offset2.Days);
         }
 
         [Theory]
@@ -120,7 +143,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADateWithoutDayOrAgeOver89_WhenDateShift_ThenDateShouldBeRedacted(Date date, Date expectedDate)
         {
             var node = ElementNode.FromElement(date.ToTypedElement());
-            DateTimeUtility.ShiftDateNode(node, string.Empty, true);
+            DateTimeUtility.ShiftDateNode(node, string.Empty, string.Empty, true);
 
             Assert.Equal(expectedDate?.ToString() ?? null, node.Value);
         }
@@ -140,7 +163,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADateTime_WhenDateShift_ThenDateTimeShouldBeShifted(FhirDateTime dateTime, FhirDateTime minExpectedDateTime, FhirDateTime maxExpectedDateTime)
         {
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
-            DateTimeUtility.ShiftDateTimeAndInstantNode(node, Guid.NewGuid().ToString("N"), true);
+            DateTimeUtility.ShiftDateTimeAndInstantNode(node, Guid.NewGuid().ToString("N"), string.Empty, true);
 
             Assert.True(minExpectedDateTime <= new FhirDateTime(node.Value.ToString()));
             Assert.True(maxExpectedDateTime >= new FhirDateTime(node.Value.ToString()));
@@ -151,7 +174,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADateTime_WhenDateShift_ThenDateTimeFormatShouldNotChange(string dateShiftKey, FhirDateTime dateTime, string expectedDateTimeString)
         {
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
-            DateTimeUtility.ShiftDateTimeAndInstantNode(node, dateShiftKey, true);
+            DateTimeUtility.ShiftDateTimeAndInstantNode(node, dateShiftKey, string.Empty, true);
             Assert.Equal(expectedDateTimeString, node.Value.ToString());
         }
 
@@ -160,7 +183,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADateTimeWithoutDayOrAgeOver89_WhenDateShift_ThenDateTimeShouldBeRedacted(FhirDateTime dateTime, FhirDateTime expectedDateTime)
         {
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
-            DateTimeUtility.ShiftDateTimeAndInstantNode(node, string.Empty, true);
+            DateTimeUtility.ShiftDateTimeAndInstantNode(node, string.Empty, string.Empty, true);
 
             Assert.Equal(expectedDateTime?.ToString() ?? null, node.Value);
         }
