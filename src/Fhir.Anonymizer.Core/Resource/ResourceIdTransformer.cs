@@ -61,7 +61,7 @@ namespace Fhir.Anonymizer.Core.Resource
 
         public static void SaveMappingFile(string mappingFile)
         {
-            File.WriteAllText(mappingFile, JsonConvert.SerializeObject(_resourceIdMap));
+            File.WriteAllText(mappingFile, JsonConvert.SerializeObject(_resourceIdMap, Formatting.Indented));
         }
 
         public static void LoadMappingFile(string mappingFile)
@@ -113,6 +113,7 @@ namespace Fhir.Anonymizer.Core.Resource
                     }
 
                     _logger.LogDebug($"Literal reference {reference} is transformed to {newReference}.");
+
                     return newReference;
                 }
             }
