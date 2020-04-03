@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Fhir.Anonymizer.Core.Resource
 {
@@ -19,8 +20,11 @@ namespace Fhir.Anonymizer.Core.Resource
         // literal reference can be absolute or relative url, oid, or uuid.
         private static readonly List<Regex> _literalReferenceRegexes = new List<Regex>
         {
+            // Regex for absolute or relative url reference, https://www.hl7.org/fhir/references.html#literal
             new Regex(@"(Account|ActivityDefinition|AdverseEvent|AllergyIntolerance|Appointment|AppointmentResponse|AuditEvent|Basic|Binary|BiologicallyDerivedProduct|BodyStructure|Bundle|CapabilityStatement|CarePlan|CareTeam|CatalogEntry|ChargeItem|ChargeItemDefinition|Claim|ClaimResponse|ClinicalImpression|CodeSystem|Communication|CommunicationRequest|CompartmentDefinition|Composition|ConceptMap|Condition|Consent|Contract|Coverage|CoverageEligibilityRequest|CoverageEligibilityResponse|DetectedIssue|Device|DeviceDefinition|DeviceMetric|DeviceRequest|DeviceUseStatement|DiagnosticReport|DocumentManifest|DocumentReference|EffectEvidenceSynthesis|Encounter|Endpoint|EnrollmentRequest|EnrollmentResponse|EpisodeOfCare|EventDefinition|Evidence|EvidenceVariable|ExampleScenario|ExplanationOfBenefit|FamilyMemberHistory|Flag|Goal|GraphDefinition|Group|GuidanceResponse|HealthcareService|ImagingStudy|Immunization|ImmunizationEvaluation|ImmunizationRecommendation|ImplementationGuide|InsurancePlan|Invoice|Library|Linkage|List|Location|Measure|MeasureReport|Media|Medication|MedicationAdministration|MedicationDispense|MedicationKnowledge|MedicationRequest|MedicationStatement|MedicinalProduct|MedicinalProductAuthorization|MedicinalProductContraindication|MedicinalProductIndication|MedicinalProductIngredient|MedicinalProductInteraction|MedicinalProductManufactured|MedicinalProductPackaged|MedicinalProductPharmaceutical|MedicinalProductUndesirableEffect|MessageDefinition|MessageHeader|MolecularSequence|NamingSystem|NutritionOrder|Observation|ObservationDefinition|OperationDefinition|OperationOutcome|Organization|OrganizationAffiliation|Patient|PaymentNotice|PaymentReconciliation|Person|PlanDefinition|Practitioner|PractitionerRole|Procedure|Provenance|Questionnaire|QuestionnaireResponse|RelatedPerson|RequestGroup|ResearchDefinition|ResearchElementDefinition|ResearchStudy|ResearchSubject|RiskAssessment|RiskEvidenceSynthesis|Schedule|SearchParameter|ServiceRequest|Slot|Specimen|SpecimenDefinition|StructureDefinition|StructureMap|Subscription|Substance|SubstanceNucleicAcid|SubstancePolymer|SubstanceProtein|SubstanceReferenceInformation|SubstanceSourceMaterial|SubstanceSpecification|SupplyDelivery|SupplyRequest|Task|TerminologyCapabilities|TestReport|TestScript|ValueSet|VerificationResult|VisionPrescription)\/(?<id>[A-Za-z0-9\-\.]{1,64})"),
+            // Regex for oid reference https://www.hl7.org/fhir/datatypes.html#oid
             new Regex(@"urn:oid:(?<id>[0-2](\.(0|[1-9][0-9]*))+)"),
+            // Regex for uuid reference https://www.hl7.org/fhir/datatypes.html#uuid
             new Regex(@"urn:uuid:(?<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
         };
 
@@ -57,29 +61,14 @@ namespace Fhir.Anonymizer.Core.Resource
 
         public static void SaveMappingFile(string mappingFile)
         {
-            using var fileStream = new FileStream(mappingFile, FileMode.Create);
-            using var writer = new StreamWriter(fileStream);
-            foreach(var k in _resourceIdMap.Keys)
-            {
-                writer.WriteLine($"{k}{MappingFileDelimiter}{_resourceIdMap[k]}");
-            }
+            File.WriteAllText(mappingFile, JsonConvert.SerializeObject(_resourceIdMap));
         }
 
         public static void LoadMappingFile(string mappingFile)
         {
-            using var fileStream = new FileStream(mappingFile, FileMode.Open);
-            using var reader = new StreamReader(fileStream);
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                {
-                    continue;
-                }
-
-                string[] idList = line.Split(MappingFileDelimiter);
-                _resourceIdMap.TryAdd(idList[0], idList[1]);
-            }
+            var mappingContent = File.ReadAllText(mappingFile);
+            Dictionary<string, string> mapping = JsonConvert.DeserializeObject<Dictionary<string, string>>(mappingContent);
+            LoadExistingMapping(mapping);
         }
 
         public static void LoadExistingMapping(Dictionary<string, string> mapping)

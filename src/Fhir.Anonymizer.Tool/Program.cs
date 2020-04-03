@@ -18,7 +18,7 @@ namespace Fhir.Anonymizer.Tool
             public string OutputFolder { get; set; }
             [Option('c', "configFile", Required = false, Default = "configuration-sample.json", HelpText = "Anonymizer configuration file path.")]
             public string ConfigurationFilePath { get; set; }
-            [Option('m', "mappingFile", Required = false, Default = "mapping-ids.dat", HelpText = "Resource Id mapping file path.")]
+            [Option('m', "mappingFile", Required = false, Default = "mapping-ids.dat", HelpText = "File path to save resource Id mapping.")]
             public string MappingFilePath { get; set; }
             [Option('b', "bulkData", Required = false, Default = false, HelpText = "Resource file is in bulk data format (.ndjson).")]
             public bool IsBulkData { get; set; }
