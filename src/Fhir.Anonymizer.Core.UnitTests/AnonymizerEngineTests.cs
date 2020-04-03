@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Serialization;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests
@@ -15,7 +11,11 @@ namespace Fhir.Anonymizer.Core.UnitTests
         [Fact]
         public void GivenIsPrettyOutputSetTrue_WhenAnonymizeJson_PrettyJsonOutputShouldBeReturned()
         {
-            var result = _engine.AnonymizeJson(TestPatientSample, isPrettyOutput: true);
+            var settings = new AnonymizerSettings()
+            {
+                IsPrettyOutput = true
+            };
+            var result = _engine.AnonymizeJson(TestPatientSample, settings);
             Assert.Equal(PrettyOutputTarget, result);
         }
 

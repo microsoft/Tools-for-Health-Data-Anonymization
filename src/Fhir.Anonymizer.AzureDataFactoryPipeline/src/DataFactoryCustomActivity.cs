@@ -10,6 +10,7 @@ using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Fhir.Anonymizer.AzureDataFactoryPipeline.src;
 using Fhir.Anonymizer.Core;
+using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.PartitionedExecution;
 using Newtonsoft.Json;
 
@@ -139,7 +140,11 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 using (var reader = new StreamReader(contentStream))
                 {
                     string input = await reader.ReadToEndAsync();
-                    string output = _engine.AnonymizeJson(input, isPrettyOutput: true);
+                    var settings = new AnonymizerSettings()
+                    {
+                        IsPrettyOutput = true
+                    };
+                    string output = _engine.AnonymizeJson(input, settings);
 
                     using (MemoryStream outputStream = new MemoryStream(reader.CurrentEncoding.GetBytes(output)))
                     {

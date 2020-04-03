@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Fhir.Anonymizer.Core;
+using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.PartitionedExecution;
 
 namespace Fhir.Anonymizer.Tool
@@ -16,13 +17,23 @@ namespace Fhir.Anonymizer.Tool
         private string _inputFolder;
         private string _outputFolder;
         private bool _isRecursive;
+        private bool _validateInput;
+        private bool _validateOutput;
         private AnonymizerEngine _engine;
 
-        public FilesAnonymizerForNdJsonFormatResource(AnonymizerEngine engine, string inputFolder, string outputFolder, bool isRecursive)
+        public FilesAnonymizerForNdJsonFormatResource(
+            AnonymizerEngine engine,
+            string inputFolder,
+            string outputFolder,
+            bool isRecursive,
+            bool validateInput,
+            bool validateOutput)
         {
             _inputFolder = inputFolder;
             _outputFolder = outputFolder;
             _isRecursive = isRecursive;
+            _validateInput = validateInput;
+            _validateOutput = validateOutput;
             _engine = engine;
         }
 
@@ -55,7 +66,13 @@ namespace Fhir.Anonymizer.Tool
                     {
                         try
                         {
-                            return _engine.AnonymizeJson(content);
+                            var settings = new AnonymizerSettings()
+                            {
+                                IsPrettyOutput = false,
+                                ValidateInput = _validateInput,
+                                ValidateOutput = _validateOutput
+                            };
+                            return _engine.AnonymizeJson(content, settings);
                         }
                         catch (Exception ex)
                         {
