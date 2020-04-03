@@ -23,9 +23,9 @@ namespace Fhir.Anonymizer.Tool
             public bool IsRecursive { get; set; }
             [Option('v', "verbose", Required = false, Default = false, HelpText = "Provide additional details in processing.")]
             public bool IsVerbose { get; set; }
-            [Option("validateInput", Required = false, Default = false, HelpText = "Validate input resources in verbose log.")]
+            [Option("validateInput", Required = false, Default = false, HelpText = "Validate input resources. Details can be found in verbose log.")]
             public bool ValidateInput { get; set; }
-            [Option("validateOutput", Required = false, Default = false, HelpText = "Validate anonymized resources in verbose log.")]
+            [Option("validateOutput", Required = false, Default = false, HelpText = "Validate anonymized resources. Details can be found in verbose log.")]
             public bool ValidateOutput { get; set; }
         }
 
@@ -37,26 +37,32 @@ namespace Fhir.Anonymizer.Tool
 
         private async static Task RunAnonymization(Options options)
         {
-            InitializeAnonymizerLogging(options.IsVerbose);
-
-            var dataProcessor = new FhirResourceDataProcessor(options.ConfigurationFilePath);
-            if (dataProcessor.IsSameDirectory(options.InputFolder, options.OutputFolder))
+            try
             {
-                throw new Exception("Input and output folders are the same! Please choose another folder.");
+                InitializeAnonymizerLogging(options.IsVerbose);
+
+                var dataProcessor = new FhirResourceDataProcessor(options.ConfigurationFilePath);
+                if (dataProcessor.IsSameDirectory(options.InputFolder, options.OutputFolder))
+                {
+                    throw new Exception("Input and output folders are the same! Please choose another folder.");
+                }
+
+                Directory.CreateDirectory(options.OutputFolder);
+
+                if (options.IsBulkData)
+                {
+                    await dataProcessor.AnonymizeBulkDataFolder(options.InputFolder, options.OutputFolder, options.IsRecursive, options.ValidateInput, options.ValidateOutput).ConfigureAwait(false);
+                }
+                else
+                {
+                    await dataProcessor.AnonymizeFolder(options.InputFolder, options.OutputFolder, options.IsRecursive, options.ValidateInput, options.ValidateOutput).ConfigureAwait(false);
+                }
             }
-
-            Directory.CreateDirectory(options.OutputFolder);
-
-            if (options.IsBulkData)
+            finally
             {
-                await dataProcessor.AnonymizeBulkDataFolder(options.InputFolder, options.OutputFolder, options.IsRecursive, options.ValidateInput, options.ValidateOutput).ConfigureAwait(false);
+                // Dispose to flush logs
+                DisposeAnonymizerLogging();
             }
-            else
-            {
-                await dataProcessor.AnonymizeFolder(options.InputFolder, options.OutputFolder, options.IsRecursive, options.ValidateInput, options.ValidateOutput).ConfigureAwait(false);
-            }
-
-            DisposeAnonymizerLogging();
         }
 
         private static void InitializeAnonymizerLogging(bool isVerboseMode)
