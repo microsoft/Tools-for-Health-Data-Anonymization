@@ -28,7 +28,6 @@
     "Organization.contact.address.state": "keep",
     "Organization.contact.address.country": "keep",
 
-    "nodesByType('Extension')": "redact",
     "nodesByType('date')": "dateShift",
     "nodesByType('dateTime')": "dateShift",
     "nodesByType('instant')": "dateShift",
@@ -39,7 +38,6 @@
     "nodesByType('Attachment')": "redact",
     "nodesByType('ContactPoint')": "redact",
     "nodesByType('Narrative')": "redact"
-
   },
   "parameters": {
     "dateShiftKey": "123",

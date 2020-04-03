@@ -28,6 +28,7 @@
   "_birthDate": {
     "extension": [
       {
+        "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime",
         "valueDateTime": "2000-02-11T00:00:00-01:00"
       }
     ]
