@@ -9,6 +9,9 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         [DataMember(Name = "dateShiftKey")]
         public string DateShiftKey { get; set; }
 
+        [DataMember(Name = "enableResourceIdTransformation")]
+        public bool EnableResourceIdTransformation { get; set; }
+
         [DataMember(Name = "enablePartialAgesForRedact")]
         public bool EnablePartialAgesForRedact { get; set; }
 

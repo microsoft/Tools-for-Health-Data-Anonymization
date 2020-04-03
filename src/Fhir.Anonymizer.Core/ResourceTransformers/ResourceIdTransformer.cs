@@ -9,16 +9,15 @@ using Hl7.Fhir.Model;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Fhir.Anonymizer.Core.Resource
+namespace Fhir.Anonymizer.Core.ResourceTransformers
 {
     public class ResourceIdTransformer
     {
         private const string InternalReferencePrefix = "#";
-        private const string MappingFileDelimiter = "\t";
         private const string OidPrefix = "urn:oid:";
         private const string UuidPrefix = "urn:uuid:";
         // literal reference can be absolute or relative url, oid, or uuid.
-        private static readonly List<Regex> _literalReferenceRegexes = new List<Regex>
+        private readonly List<Regex> _literalReferenceRegexes = new List<Regex>
         {
             // Regex for absolute or relative url reference, https://www.hl7.org/fhir/references.html#literal
             new Regex(@"(Account|ActivityDefinition|AdverseEvent|AllergyIntolerance|Appointment|AppointmentResponse|AuditEvent|Basic|Binary|BiologicallyDerivedProduct|BodyStructure|Bundle|CapabilityStatement|CarePlan|CareTeam|CatalogEntry|ChargeItem|ChargeItemDefinition|Claim|ClaimResponse|ClinicalImpression|CodeSystem|Communication|CommunicationRequest|CompartmentDefinition|Composition|ConceptMap|Condition|Consent|Contract|Coverage|CoverageEligibilityRequest|CoverageEligibilityResponse|DetectedIssue|Device|DeviceDefinition|DeviceMetric|DeviceRequest|DeviceUseStatement|DiagnosticReport|DocumentManifest|DocumentReference|EffectEvidenceSynthesis|Encounter|Endpoint|EnrollmentRequest|EnrollmentResponse|EpisodeOfCare|EventDefinition|Evidence|EvidenceVariable|ExampleScenario|ExplanationOfBenefit|FamilyMemberHistory|Flag|Goal|GraphDefinition|Group|GuidanceResponse|HealthcareService|ImagingStudy|Immunization|ImmunizationEvaluation|ImmunizationRecommendation|ImplementationGuide|InsurancePlan|Invoice|Library|Linkage|List|Location|Measure|MeasureReport|Media|Medication|MedicationAdministration|MedicationDispense|MedicationKnowledge|MedicationRequest|MedicationStatement|MedicinalProduct|MedicinalProductAuthorization|MedicinalProductContraindication|MedicinalProductIndication|MedicinalProductIngredient|MedicinalProductInteraction|MedicinalProductManufactured|MedicinalProductPackaged|MedicinalProductPharmaceutical|MedicinalProductUndesirableEffect|MessageDefinition|MessageHeader|MolecularSequence|NamingSystem|NutritionOrder|Observation|ObservationDefinition|OperationDefinition|OperationOutcome|Organization|OrganizationAffiliation|Patient|PaymentNotice|PaymentReconciliation|Person|PlanDefinition|Practitioner|PractitionerRole|Procedure|Provenance|Questionnaire|QuestionnaireResponse|RelatedPerson|RequestGroup|ResearchDefinition|ResearchElementDefinition|ResearchStudy|ResearchSubject|RiskAssessment|RiskEvidenceSynthesis|Schedule|SearchParameter|ServiceRequest|Slot|Specimen|SpecimenDefinition|StructureDefinition|StructureMap|Subscription|Substance|SubstanceNucleicAcid|SubstancePolymer|SubstanceProtein|SubstanceReferenceInformation|SubstanceSourceMaterial|SubstanceSpecification|SupplyDelivery|SupplyRequest|Task|TerminologyCapabilities|TestReport|TestScript|ValueSet|VerificationResult|VisionPrescription)\/(?<id>[A-Za-z0-9\-\.]{1,64})"),
@@ -28,10 +27,20 @@ namespace Fhir.Anonymizer.Core.Resource
             new Regex(@"urn:uuid:(?<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
         };
 
-        private static readonly ConcurrentDictionary<string, string> _resourceIdMap = new ConcurrentDictionary<string, string>();
-        private static readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
+        private readonly ConcurrentDictionary<string, string> _resourceIdMap;
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<ResourceIdTransformer>();
 
-        public static void Transform(ElementNode node)
+        public ResourceIdTransformer()
+        {
+            _resourceIdMap = new ConcurrentDictionary<string, string>();
+        }
+
+        public ResourceIdTransformer(ConcurrentDictionary<string, string> presetIdMap)
+        {
+            _resourceIdMap = presetIdMap;
+        }
+
+        public void Transform(ElementNode node)
         {
             if (ModelInfo.IsKnownResource(node.InstanceType))
             {
@@ -59,19 +68,21 @@ namespace Fhir.Anonymizer.Core.Resource
             }
         }
 
-        public static void SaveMappingFile(string mappingFile)
+        public void SaveMappingFile(string mappingFile)
         {
             File.WriteAllText(mappingFile, JsonConvert.SerializeObject(_resourceIdMap, Formatting.Indented));
+            _logger.LogDebug($"Resource Id mapping table is saved to {mappingFile}");
         }
 
-        public static void LoadMappingFile(string mappingFile)
+        public void LoadMappingFile(string mappingFile)
         {
             var mappingContent = File.ReadAllText(mappingFile);
             Dictionary<string, string> mapping = JsonConvert.DeserializeObject<Dictionary<string, string>>(mappingContent);
             LoadExistingMapping(mapping);
+            _logger.LogDebug($"Resource Id mapping table is loaded from {mappingFile}");
         }
 
-        public static void LoadExistingMapping(Dictionary<string, string> mapping)
+        public void LoadExistingMapping(Dictionary<string, string> mapping)
         {
             foreach(var entry in mapping)
             {
@@ -79,12 +90,12 @@ namespace Fhir.Anonymizer.Core.Resource
             }
         }
 
-        public static string TransformId(string id)
+        public string TransformId(string id)
         {
             return string.IsNullOrEmpty(id) ? id : _resourceIdMap.GetOrAdd(id, Guid.NewGuid().ToString());
         }
 
-        public static string TransformIdFromReference(string reference)
+        public string TransformIdFromReference(string reference)
         {
             if (string.IsNullOrEmpty(reference))
             {

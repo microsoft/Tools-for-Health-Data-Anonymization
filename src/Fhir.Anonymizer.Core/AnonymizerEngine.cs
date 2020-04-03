@@ -5,8 +5,10 @@ using EnsureThat;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Processors;
-using Fhir.Anonymizer.Core.Resource;
+using Fhir.Anonymizer.Core.ResourceTransformers;
+using Fhir.Anonymizer.Core.Validation;
 using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Specification;
 using Hl7.FhirPath;
@@ -19,7 +21,9 @@ namespace Fhir.Anonymizer.Core
         private readonly FhirJsonParser _parser = new FhirJsonParser();
         private readonly PocoStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
+        private readonly ResourceValidator _validator = new ResourceValidator();
         private readonly AnonymizerConfigurationManager _configurationManger;
+        private readonly ResourceIdTransformer _idTransformer = new ResourceIdTransformer();
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
 
         public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath)) 
@@ -31,31 +35,62 @@ namespace Fhir.Anonymizer.Core
             _configurationManger = configurationManager;
             _processors = new Dictionary<string, IAnonymizerProcessor>();
             InitializeProcessors(_configurationManger);
-            _logger.LogDebug("AnonymizerEngine initialized successfully");
+            _logger.LogDebug("AnonymizerEngine initialized successfully.");
         }
 
-        public string AnonymizeJson(string json, bool isPrettyOutput = false)
+        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, ResourceIdTransformer idTransformer)
+        {
+            _configurationManger = configurationManager;
+            _idTransformer = idTransformer;
+            _processors = new Dictionary<string, IAnonymizerProcessor>();
+            InitializeProcessors(_configurationManger);
+            _logger.LogDebug("AnonymizerEngine initialized successfully with preset resource Id mapping.");
+        }
+
+        public void ExportIdMappingFile(string mappingFile)
+        {
+            _idTransformer.SaveMappingFile(mappingFile);
+        }
+
+        public string AnonymizeJson(string json, AnonymizerSettings settings = null)
         {
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));
 
             ElementNode root;
+            Resource resource;
             try
             {
-                root = ElementNode.FromElement(_parser.Parse(json).ToTypedElement());
+                resource = _parser.Parse<Resource>(json);
+                root = ElementNode.FromElement(resource.ToTypedElement());
             }
             catch(Exception innerException)
             {
                 throw new Exception("Failed to parse json resource, please check the json content.", innerException);
             }
 
-            var anonymizedNode = AnonymizeResourceNode(root);
-            ResourceIdTransformer.Transform(anonymizedNode);
-
-            FhirJsonSerializationSettings settings = new FhirJsonSerializationSettings
+            if (settings != null && settings.ValidateInput)
             {
-                Pretty = isPrettyOutput
+                _validator.ValidateInput(resource);
+            }
+            
+            var anonymizedNode = AnonymizeResourceNode(root);
+
+            if (_configurationManger.GetParameterConfiguration().EnableResourceIdTransformation)
+            {
+                _idTransformer.Transform(anonymizedNode);
+            }
+
+            if (settings != null && settings.ValidateOutput)
+            {
+                anonymizedNode.RemoveNullChildren();
+                _validator.ValidateOutput(anonymizedNode.ToPoco<Resource>());
+            }
+
+            FhirJsonSerializationSettings serializationSettings = new FhirJsonSerializationSettings
+            {
+                Pretty = settings != null && settings.IsPrettyOutput
             };
-            return anonymizedNode.ToJson(settings);
+            return anonymizedNode.ToJson(serializationSettings);
         }
 
         public ElementNode AnonymizeResourceNode(ElementNode root)

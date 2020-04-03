@@ -503,6 +503,7 @@
   },
   "parameters": {
     "dateShiftKey": "",
+    "enableResourceIdTransformation": true,
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,

@@ -12,25 +12,29 @@ namespace Fhir.Anonymizer.Tool
     public class FhirResourceDataProcessor
     {
         private readonly AnonymizerEngine _engine;
+        private readonly string _idMappingFilePath;
 
-        public FhirResourceDataProcessor(string configFilePath)
+        public FhirResourceDataProcessor(string configFilePath, string idMappingFilePath)
         {
             _engine = new AnonymizerEngine(configFilePath);
+            _idMappingFilePath = idMappingFilePath;
         }
 
-        public async Task AnonymizeFolder(string inputFolder, string outputFolder, bool isRecursive)
+        public async Task AnonymizeFolder(string inputFolder, string outputFolder, bool isRecursive, bool validateInput, bool validateOutput)
         {
-            var anonymizer = new FilesAnonymizerForJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive);
+            var anonymizer = new FilesAnonymizerForJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive, validateInput, validateOutput);
             await anonymizer.AnonymizeAsync().ConfigureAwait(false);
-            
+
+            _engine.ExportIdMappingFile(_idMappingFilePath);
             Console.WriteLine($"Finished processing '{inputFolder}'! ");
         }
 
-        public async Task AnonymizeBulkDataFolder(string inputFolder, string outputFolder, bool isRecursive)
+        public async Task AnonymizeBulkDataFolder(string inputFolder, string outputFolder, bool isRecursive, bool validateInput, bool validateOutput)
         {
-            var anonymizer = new FilesAnonymizerForNdJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive);
+            var anonymizer = new FilesAnonymizerForNdJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive, validateInput, validateOutput);
             await anonymizer.AnonymizeAsync().ConfigureAwait(false);
 
+            _engine.ExportIdMappingFile(_idMappingFilePath);
             Console.WriteLine($"Finished processing '{inputFolder}'!");
         }
 

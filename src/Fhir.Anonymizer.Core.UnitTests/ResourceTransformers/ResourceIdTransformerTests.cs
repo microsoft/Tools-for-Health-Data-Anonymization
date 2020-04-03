@@ -1,16 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Fhir.Anonymizer.Core.Resource;
+using Fhir.Anonymizer.Core.ResourceTransformers;
 using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.FhirPath;
+using Newtonsoft.Json;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests
+namespace Fhir.Anonymizer.Core.UnitTests.ResourceTransformers
 {
     public class ResourceIdTransformerTests
-    {        
+    {
+        private ResourceIdTransformer _idTransformer = new ResourceIdTransformer();
         public ResourceIdTransformerTests()
         {
             var _presetIdMappings = new Dictionary<string, string>
@@ -21,7 +25,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
                 { "c757873d-ec9a-4326-a141-556f43239520", "d05fc8cb-5f9d-4852-8629-d5205a8a5b28" },
                 { "1.2.3.4.5", "069e1601-005a-4886-b5cd-864cc5bf12e1" }
             };
-            ResourceIdTransformer.LoadExistingMapping(_presetIdMappings);
+            _idTransformer.LoadExistingMapping(_presetIdMappings);
 
             _testConditionNode = ElementNode.
                 FromElement(new FhirJsonParser().Parse(TestContitionSample).ToTypedElement());
@@ -49,7 +53,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         [Fact]
         public void GivenAElementNode_WhenTransformingId_ResourceIdsShouldBeTransformed()
         {
-            ResourceIdTransformer.Transform(_testConditionNode);
+            _idTransformer.Transform(_testConditionNode);
             Assert.Equal("example-abc", _testConditionNode.Select("Condition.id").First().Value.ToString());
             Assert.Equal("#p1-abc", _testConditionNode.Select("Condition.subject.reference").First().Value.ToString());
         }
@@ -58,11 +62,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenAMappingFileName_WhenSave_MappingDataShouldBeSaved()
         {
             var mappingFileName = "testmapping.txt";
-            ResourceIdTransformer.SaveMappingFile(mappingFileName);
+            _idTransformer.SaveMappingFile(mappingFileName);
+            Assert.True(File.Exists(mappingFileName));
 
-            var idMap = File.ReadAllLines(mappingFileName)
-                .Select(line => line.Split("\t"))
-                .ToDictionary(entry => entry[0], entry => entry[1]);
+            var idMap = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(mappingFileName));
             Assert.True(idMap.ContainsKey("p1"));
             Assert.False(idMap.ContainsKey("test"));
             Assert.Equal("example-abc", idMap["example"]);
@@ -72,7 +75,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         [MemberData(nameof(GetLiteralReferenceData))]
         public void GivenALiteralReference_WhenTransforming_CorrectIdShouldBeReplaced(string reference, string expectedReferece)
         {
-            var result = ResourceIdTransformer.TransformIdFromReference(reference);
+            var result = _idTransformer.TransformIdFromReference(reference);
             Assert.Equal(expectedReferece, result);
         }
 
@@ -80,7 +83,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         [MemberData(nameof(GetResourceIdData))]
         public void GivenAResourceId_WhenTransforming_CorrectNewIdShouldBeReturned(string id, string expectedId)
         {
-            var result = ResourceIdTransformer.TransformId(id);
+            var result = _idTransformer.TransformId(id);
             Assert.Equal(expectedId, result);
         }
 
