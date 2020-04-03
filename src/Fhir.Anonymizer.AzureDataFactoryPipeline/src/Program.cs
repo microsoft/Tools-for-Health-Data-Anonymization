@@ -8,6 +8,8 @@ namespace Fhir.Anonymizer.DataFactoryTool
     {
         [Option('f', "force", Required = false, HelpText = "Force overwrite the exist blob files in the output container.")]
         public bool Force { get; set; }
+        [Option('m', "mappingFile", Required = false, Default = "mapping-ids.dat", HelpText = "File path to save resource Id mapping.")]
+        public string MappingFilePath { get; set; }
     }
 
     class Program
@@ -15,7 +17,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
         static async Task Main(string[] args)
         {
             await Parser.Default.ParseArguments<Options>(args)
-               .MapResult(async option => await new DataFactoryCustomActivity().Run(option.Force).ConfigureAwait(false), _ => Task.FromResult(1)).ConfigureAwait(false);
+               .MapResult(async option => await new DataFactoryCustomActivity().Run(option.MappingFilePath, option.Force).ConfigureAwait(false), _ => Task.FromResult(1)).ConfigureAwait(false);
         }
     }
 }

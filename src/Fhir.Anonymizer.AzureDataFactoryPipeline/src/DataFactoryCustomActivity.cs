@@ -231,7 +231,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
             return ".json".Equals(Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public async Task Run(bool force = false)
+        public async Task Run(string mappingFile, bool force = false)
         {
             // Increase connection limit of single endpoint: 2 => 128
             System.Net.ServicePointManager.DefaultConnectionLimit = 128;
@@ -240,6 +240,8 @@ namespace Fhir.Anonymizer.DataFactoryTool
 
             var input = LoadActivityInput();
             await AnonymizeDataset(input, force).ConfigureAwait(false);
+
+            _engine.ExportIdMappingFile(mappingFile);
         }
     }
 }
