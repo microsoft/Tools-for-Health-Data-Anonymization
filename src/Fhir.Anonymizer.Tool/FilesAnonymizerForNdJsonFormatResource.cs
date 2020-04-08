@@ -122,7 +122,7 @@ namespace Fhir.Anonymizer.Tool
             }
             else if (dateShiftScope == DateShiftScope.Folder)
             {
-                var folderName = Path.GetFileName(_inputFolder);
+                var folderName = Path.GetFileName(Path.GetDirectoryName(_inputFolder));
                 configurationManager.SetDateShiftPrefix(folderName);
             }
 

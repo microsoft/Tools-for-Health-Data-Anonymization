@@ -18,7 +18,6 @@ namespace Fhir.Anonymizer.DataFactoryTool
 {
     public class DataFactoryCustomActivity
     {
-        private AnonymizerEngine _engine;
         private readonly string _activityConfigurationFile = "activity.json";
         private readonly string _datasetsConfigurationFile = "datasets.json";
 
@@ -89,7 +88,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainer.Name, outputBlobName, BlobClientOptions.Value);
                 await outputBlobClient.DeleteIfExistsAsync().ConfigureAwait(false);
 
-                await AnonymizeSingleBlobInJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name).ConfigureAwait(false);
+                await AnonymizeSingleBlobInJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name, inputBlobPrefix).ConfigureAwait(false);
 
                 return string.Empty;
             };
@@ -117,11 +116,11 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainer.Name, outputBlobName, BlobClientOptions.Value);
                 await outputBlobClient.DeleteIfExistsAsync().ConfigureAwait(false);
 
-                await AnonymizeSingleBlobInNdJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name);
+                await AnonymizeSingleBlobInNdJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name, inputBlobPrefix);
             }
         }
 
-        private async Task AnonymizeSingleBlobInJsonFormatAsync(BlobClient inputBlobClient, BlockBlobClient outputBlobClient, string blobName)
+        private async Task AnonymizeSingleBlobInJsonFormatAsync(BlobClient inputBlobClient, BlockBlobClient outputBlobClient, string blobName, string inputFolderPrefix)
         {
             try
             {
@@ -140,11 +139,12 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 using (var reader = new StreamReader(contentStream))
                 {
                     string input = await reader.ReadToEndAsync();
+                    var engine = CreateAnonymizerEngineForBlob(blobName, inputFolderPrefix);
                     var settings = new AnonymizerSettings()
                     {
                         IsPrettyOutput = true
                     };
-                    string output = _engine.AnonymizeJson(input, settings);
+                    string output = engine.AnonymizeJson(input, settings);
 
                     using (MemoryStream outputStream = new MemoryStream(reader.CurrentEncoding.GetBytes(output)))
                     {
@@ -172,7 +172,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
             }
         }
 
-        private async Task AnonymizeSingleBlobInNdJsonFormatAsync(BlobClient inputBlobClient, BlockBlobClient outputBlobClient, string blobName)
+        private async Task AnonymizeSingleBlobInNdJsonFormatAsync(BlobClient inputBlobClient, BlockBlobClient outputBlobClient, string blobName, string inputFolderPrefix)
         {
             var processedCount = 0;
             var processedErrorCount = 0;
@@ -185,7 +185,8 @@ namespace Fhir.Anonymizer.DataFactoryTool
             {
                 try
                 {
-                    return _engine.AnonymizeJson(item);
+                    var engine = CreateAnonymizerEngineForBlob(blobName, inputFolderPrefix);
+                    return engine.AnonymizeJson(item);
                 }
                 catch (Exception ex)
                 {
@@ -231,12 +232,28 @@ namespace Fhir.Anonymizer.DataFactoryTool
             return ".json".Equals(Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase);
         }
 
+        private AnonymizerEngine CreateAnonymizerEngineForBlob(string blobName, string inputFolderPrefix)
+        {
+            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile("./configuration-sample.json");
+            var dateShiftScope = configurationManager.GetParameterConfiguration().DateShiftScope;
+            if (dateShiftScope == DateShiftScope.File)
+            {
+                var fileName = Path.GetFileName(blobName);
+                configurationManager.SetDateShiftPrefix(fileName);
+            }
+            else if (dateShiftScope == DateShiftScope.Folder)
+            {
+                var folderName = Path.GetFileName(Path.GetDirectoryName(inputFolderPrefix));
+                configurationManager.SetDateShiftPrefix(folderName);
+            }
+
+            return new AnonymizerEngine(configurationManager);
+        }
+
         public async Task Run(bool force = false)
         {
             // Increase connection limit of single endpoint: 2 => 128
             System.Net.ServicePointManager.DefaultConnectionLimit = 128;
-
-            _engine = new AnonymizerEngine("./configuration-sample.json");
 
             var input = LoadActivityInput();
             await AnonymizeDataset(input, force).ConfigureAwait(false);
