@@ -19,11 +19,13 @@ namespace Fhir.Anonymizer.Core.Extensions
 
         private static IEnumerable<ITypedElement> NodesByType(IEnumerable<ITypedElement> nodes, string typeName)
         {
+            // TODO add logic filter sub resource
             return nodes.DescendantsAndSelf().Where(n => typeName.Equals(n.InstanceType));
         }
 
         private static IEnumerable<ITypedElement> NodesByName(IEnumerable<ITypedElement> nodes, string name)
         {
+            // TODO add logic filter sub resource
             return nodes.DescendantsAndSelf().Where(n => name.Equals(n.Name));
         }
     }

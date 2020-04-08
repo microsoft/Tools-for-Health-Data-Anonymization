@@ -1,9 +1,10 @@
 ﻿{
   "fhirPathRules": {
-    "Patient.address.state": "keep",
-    "Patient.address.country": "keep",
-    "Patient.contact.address.state": "keep",
-    "Patient.contact.address.country": "keep",
+    "Patient.nodesByType('HumanName').use": "keep",
+    "Patient.nodesByType('Address').state": "keep",
+    "Patient.nodesByType('Address').country": "keep",
+    "Patient.nodesByType('Address').where(city='KeepTest')": "keep",
+
     "Patient.generalPractitioner": "redact",
     "Patient.link.other": "redact",
 
