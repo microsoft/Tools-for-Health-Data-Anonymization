@@ -52,7 +52,6 @@ namespace Fhir.Anonymizer.Tool
                     Directory.CreateDirectory(resourceOutputFolder);
                 }
 
-                var engine = CreateAnonymizerEngineForFile(bulkResourceFileName);
                 int completedCount = 0;
                 int failedCount = 0;
                 int consumeCompletedCount = 0;
@@ -65,6 +64,7 @@ namespace Fhir.Anonymizer.Tool
                     {
                         try
                         {
+                            var engine = CreateAnonymizerEngineForFile(bulkResourceFileName);
                             var settings = new AnonymizerSettings()
                             {
                                 IsPrettyOutput = false,

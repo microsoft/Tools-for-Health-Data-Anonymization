@@ -88,13 +88,13 @@ namespace Fhir.Anonymizer.Tool
                 Directory.CreateDirectory(resourceOutputFolder);
             }
 
-            var engine = CreateAnonymizerEngineForFile(fileName);
             string resourceJson = await File.ReadAllTextAsync(fileName).ConfigureAwait(false);
             using (FileStream outputStream = new FileStream(resourceOutputFileName, FileMode.Create))
             {
                 using StreamWriter writer = new StreamWriter(outputStream);
                 try
                 {
+                    var engine = CreateAnonymizerEngineForFile(fileName);
                     var settings = new AnonymizerSettings()
                     {
                         IsPrettyOutput = true,
