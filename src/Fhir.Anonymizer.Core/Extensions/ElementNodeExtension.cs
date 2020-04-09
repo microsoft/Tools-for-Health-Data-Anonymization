@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model;
 
 namespace Fhir.Anonymizer.Core.Extensions
 {
@@ -73,6 +74,11 @@ namespace Fhir.Anonymizer.Core.Extensions
         public static bool HasContainedNode(this ElementNode node)
         {
             return node != null && node.Children(s_containedNodeName).Any();
+        }
+
+        public static bool IsFhirResource(this ElementNode node)
+        {
+            return Enum.TryParse<ResourceType>(node.InstanceType, false, out _);
         }
 
         public static string GetFhirPath(this ElementNode node)

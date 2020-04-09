@@ -35,14 +35,7 @@ namespace Fhir.Anonymizer.Core.Extensions
 
             foreach (var child in node.Descendants().Cast<ElementNode>())
             {
-                if (child.IsBundleNode())
-                {
-                    foreach (var bundleNode in child.GetEntryResourceChildren())
-                    {
-                        yield return bundleNode;
-                    }
-                }
-                else if (child.IsContainedNode())
+                if (child.IsFhirResource())
                 {
                     yield return child;
                 }
@@ -54,7 +47,7 @@ namespace Fhir.Anonymizer.Core.Extensions
             foreach (var child in node.Children().Cast<ElementNode>())
             {
                 // Skip sub resources in bundle entry and contained list
-                if (child.IsEntryNode() || child.IsContainedNode())
+                if (child.IsFhirResource())
                 {
                     continue;
                 }
