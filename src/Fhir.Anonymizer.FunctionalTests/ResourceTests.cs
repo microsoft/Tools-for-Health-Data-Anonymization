@@ -22,7 +22,7 @@ namespace Fhir.Anonymizer.FunctionalTests
                 { "example", "example-abc" },
             });
 
-            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(Path.Combine("TestConfigurations", "configuration-test-sample.json"));
+            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(Path.Combine("Configurations", "common-config.json"));
             _engine = new AnonymizerEngine(configurationManager, idTransformer);
         }
 
