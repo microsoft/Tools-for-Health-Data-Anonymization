@@ -41,17 +41,17 @@ namespace Fhir.Anonymizer.Core
         {
             var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
             var dateShiftScope = configurationManager.GetParameterConfiguration().DateShiftScope;
-            var dateShiftPrefix = string.Empty;
+            var dateShiftKeyPrefix = string.Empty;
             if (dateShiftScope == DateShiftScope.File)
             {
-                dateShiftPrefix = Path.GetFileName(fileName);
+                dateShiftKeyPrefix = Path.GetFileName(fileName);
             }
             else if (dateShiftScope == DateShiftScope.Folder)
             {
-                dateShiftPrefix = Path.GetFileName(inputFolderName.TrimEnd('\\', '/'));
+                dateShiftKeyPrefix = Path.GetFileName(inputFolderName.TrimEnd('\\', '/'));
             }
 
-            configurationManager.SetDateShiftPrefix(dateShiftPrefix);
+            configurationManager.SetDateShiftKeyPrefix(dateShiftKeyPrefix);
             return new AnonymizerEngine(configurationManager);
         }
 

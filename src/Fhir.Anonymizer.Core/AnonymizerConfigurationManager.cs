@@ -74,9 +74,9 @@ namespace Fhir.Anonymizer.Core
             return _configuration.ParameterConfiguration;
         }
 
-        public void SetDateShiftPrefix(string prefix)
+        public void SetDateShiftKeyPrefix(string prefix)
         {
-            _configuration.ParameterConfiguration.DateShiftPrefix = prefix;
+            _configuration.ParameterConfiguration.DateShiftKeyPrefix = prefix;
         }
 
         private bool IsResourcePathRule(string path)

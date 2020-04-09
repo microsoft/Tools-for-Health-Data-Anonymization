@@ -90,7 +90,7 @@ namespace Fhir.Anonymizer.Core.Utility
             }
         }
 
-        public static void ShiftDateNode(ElementNode node, string dateShiftKey, string dateShiftPrefix, bool enablePartialDatesForRedact = false)
+        public static void ShiftDateNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
         {
             if (!node.IsDateNode())
             {
@@ -100,7 +100,7 @@ namespace Fhir.Anonymizer.Core.Utility
             var matchedGroups = s_dateRegex.Match(node.Value.ToString()).Groups;
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
-                int offset = GetDateShiftValue(node, dateShiftKey, dateShiftPrefix);
+                int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
             }
             else
@@ -109,7 +109,7 @@ namespace Fhir.Anonymizer.Core.Utility
             }
         }
 
-        public static void ShiftDateTimeAndInstantNode(ElementNode node, string dateShiftKey, string dateShiftPrefix, bool enablePartialDatesForRedact = false)
+        public static void ShiftDateTimeAndInstantNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
         {
             if (!node.IsDateTimeNode() && !node.IsInstantNode())
             {
@@ -119,7 +119,7 @@ namespace Fhir.Anonymizer.Core.Utility
             var matchedGroups = s_dateTimeRegex.Match(node.Value.ToString()).Groups;
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
-                int offset = GetDateShiftValue(node, dateShiftKey, dateShiftPrefix);
+                int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 if (matchedGroups[s_timeIndex].Captures.Any())
                 {
                     var newDate = DateTimeOffset.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
@@ -155,15 +155,15 @@ namespace Fhir.Anonymizer.Core.Utility
             return age > s_ageThreshold; 
         }
 
-        private static int GetDateShiftValue(ElementNode node, string dateShiftKey, string dateShiftPrefix)
+        private static int GetDateShiftValue(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix)
         {
-            if (string.IsNullOrEmpty(dateShiftPrefix))
+            if (string.IsNullOrEmpty(dateShiftKeyPrefix))
             {
-                dateShiftPrefix = TryGetResourceId(node);
+                dateShiftKeyPrefix = TryGetResourceId(node);
             }
             
             int offset = 0;
-            var bytes = Encoding.UTF8.GetBytes(dateShiftPrefix + dateShiftKey);
+            var bytes = Encoding.UTF8.GetBytes(dateShiftKeyPrefix + dateShiftKey);
             foreach (byte b in bytes)
             {
                 offset = (offset * s_dateShiftSeed + (int)b) % (2 * s_dateShiftRange + 1);

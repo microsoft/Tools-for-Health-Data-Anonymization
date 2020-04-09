@@ -44,13 +44,13 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
         [InlineData("abc123")]
         [InlineData("foldername")]
         [InlineData("filename")]
-        public void GivenADateShiftPrefix_WhenSet_DateShiftPrefixShouldBeSetCorrectly(string dateShiftPrefix)
+        public void GivenADateShiftKeyPrefix_WhenSet_DateShiftKeyPrefixShouldBeSetCorrectly(string dateShiftKeyPrefix)
         {
             var configFilePath = "./TestConfigurations/configuration-test-sample.json";
             var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
-            configurationManager.SetDateShiftPrefix(dateShiftPrefix);
+            configurationManager.SetDateShiftKeyPrefix(dateShiftKeyPrefix);
 
-            Assert.Equal(dateShiftPrefix, configurationManager.GetParameterConfiguration().DateShiftPrefix);
+            Assert.Equal(dateShiftKeyPrefix, configurationManager.GetParameterConfiguration().DateShiftKeyPrefix);
         }
     }
 }

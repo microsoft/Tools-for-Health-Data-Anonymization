@@ -24,6 +24,6 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         [DataMember(Name = "restrictedZipCodeTabulationAreas")]
         public List<string> RestrictedZipCodeTabulationAreas { get; set; }
 
-        public string DateShiftPrefix { get; set; }
+        public string DateShiftKeyPrefix { get; set; }
     }
 }
