@@ -15,6 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.AzureDataFa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Tools.UnitTests", "src\Fhir.Anonymizer.Tools.UnitTests\Fhir.Anonymizer.Tools.UnitTests.csproj", "{778BB8FF-5AB5-4E93-81E2-23729865FD1B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31EA56C6-84A2-4BB6-80BB-71D4212773C6}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
