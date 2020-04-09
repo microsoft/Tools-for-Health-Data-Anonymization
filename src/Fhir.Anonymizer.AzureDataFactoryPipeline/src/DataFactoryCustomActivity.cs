@@ -20,6 +20,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
     {
         private readonly string _activityConfigurationFile = "activity.json";
         private readonly string _datasetsConfigurationFile = "datasets.json";
+        private readonly string _configFile = "./configuration-sample.json";
 
         public static Lazy<BlobClientOptions> BlobClientOptions = new Lazy<BlobClientOptions>( () =>
         {
@@ -139,7 +140,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 using (var reader = new StreamReader(contentStream))
                 {
                     string input = await reader.ReadToEndAsync();
-                    var engine = CreateAnonymizerEngineForBlob(blobName, inputFolderPrefix);
+                    var engine = AnonymizerEngine.CreateWithFileContext(_configFile, blobName, inputFolderPrefix);
                     var settings = new AnonymizerSettings()
                     {
                         IsPrettyOutput = true
@@ -185,7 +186,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
             {
                 try
                 {
-                    var engine = CreateAnonymizerEngineForBlob(blobName, inputFolderPrefix);
+                    var engine = AnonymizerEngine.CreateWithFileContext(_configFile, blobName, inputFolderPrefix);
                     return engine.AnonymizeJson(item);
                 }
                 catch (Exception ex)
@@ -230,24 +231,6 @@ namespace Fhir.Anonymizer.DataFactoryTool
         private bool IsInputFileInJsonFormat(string fileName)
         {
             return ".json".Equals(Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        private AnonymizerEngine CreateAnonymizerEngineForBlob(string blobName, string inputFolderPrefix)
-        {
-            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile("./configuration-sample.json");
-            var dateShiftScope = configurationManager.GetParameterConfiguration().DateShiftScope;
-            if (dateShiftScope == DateShiftScope.File)
-            {
-                var fileName = Path.GetFileName(blobName);
-                configurationManager.SetDateShiftPrefix(fileName);
-            }
-            else if (dateShiftScope == DateShiftScope.Folder)
-            {
-                var folderName = Path.GetFileName(Path.GetDirectoryName(inputFolderPrefix));
-                configurationManager.SetDateShiftPrefix(folderName);
-            }
-
-            return new AnonymizerEngine(configurationManager);
         }
 
         public async Task Run(bool force = false)

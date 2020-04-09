@@ -64,7 +64,7 @@ namespace Fhir.Anonymizer.Tool
                     {
                         try
                         {
-                            var engine = CreateAnonymizerEngineForFile(bulkResourceFileName);
+                            var engine = AnonymizerEngine.CreateWithFileContext(_configFilePath, bulkResourceFileName, _inputFolder);
                             var settings = new AnonymizerSettings()
                             {
                                 IsPrettyOutput = false,
@@ -109,24 +109,6 @@ namespace Fhir.Anonymizer.Tool
                 .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
             return Path.Combine(outputFolder, partialFilename);
-        }
-
-        private AnonymizerEngine CreateAnonymizerEngineForFile(string filePath)
-        {
-            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(_configFilePath);
-            var dateShiftScope = configurationManager.GetParameterConfiguration().DateShiftScope;
-            if (dateShiftScope == DateShiftScope.File)
-            {
-                var fileName = Path.GetFileName(filePath);
-                configurationManager.SetDateShiftPrefix(fileName);
-            }
-            else if (dateShiftScope == DateShiftScope.Folder)
-            {
-                var folderName = Path.GetFileName(Path.GetDirectoryName(_inputFolder));
-                configurationManager.SetDateShiftPrefix(folderName);
-            }
-
-            return new AnonymizerEngine(configurationManager);
         }
     }
 }
