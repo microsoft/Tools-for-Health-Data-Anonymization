@@ -20,7 +20,6 @@ namespace Fhir.Anonymizer.Core.Extensions
         internal static readonly string s_postalCodeNodeName = "postalCode";
         internal static readonly string s_containedNodeName = "contained";
         internal static readonly string s_entryNodeName = "entry";
-        internal static readonly string s_resourceNodeName = "resource";
 
         private static readonly string s_locationToFhirPathRegex = @"\[.*?\]";
 
@@ -74,20 +73,6 @@ namespace Fhir.Anonymizer.Core.Extensions
         public static bool HasContainedNode(this ElementNode node)
         {
             return node != null && node.Children(s_containedNodeName).Any();
-        }
-
-        public static List<ElementNode> GetEntryResourceChildren(this ElementNode node)
-        {
-            return node?.Children(s_entryNodeName)
-                    .Select(entry => entry?.Children(s_resourceNodeName).FirstOrDefault())
-                    .Where(resource => resource != null)
-                    .Cast<ElementNode>()
-                    .ToList();
-        }
-
-        public static List<ElementNode> GetContainedChildren(this ElementNode node)
-        {
-            return node?.Children(s_containedNodeName).Cast<ElementNode>().ToList();
         }
 
         public static string GetFhirPath(this ElementNode node)

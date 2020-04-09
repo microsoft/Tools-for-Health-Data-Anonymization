@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Processors;
@@ -13,10 +14,10 @@ namespace Fhir.Anonymizer.Core
 {
     internal class InternalAnonymizeLogic
     {
-        private AnonymizerRule[] _rules;
+        private AnonymizationFhirPathRule[] _rules;
         private Dictionary<string, IAnonymizerProcessor> _processors;
 
-        internal InternalAnonymizeLogic(AnonymizerRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
+        internal InternalAnonymizeLogic(AnonymizationFhirPathRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
         {
             _rules = rules;
             _processors = processors;

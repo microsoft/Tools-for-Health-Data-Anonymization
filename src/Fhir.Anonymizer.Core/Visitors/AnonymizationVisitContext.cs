@@ -9,6 +9,5 @@ namespace Fhir.Anonymizer.Core.Visitors
     {
         public HashSet<ElementNode> VisitedNodes { get; set; } = new HashSet<ElementNode>();
 
-
     }
 }

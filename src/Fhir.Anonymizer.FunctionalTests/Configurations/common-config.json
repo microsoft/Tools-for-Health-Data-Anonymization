@@ -1,45 +1,70 @@
 ﻿{
-  "fhirPathRules": {
-    "Patient.nodesByType('HumanName').use": "keep",
-    "Patient.nodesByType('Address').state": "keep",
-    "Patient.nodesByType('Address').country": "keep",
-    "Patient.nodesByType('Address').where(city='KeepTest')": "keep",
-
-    "Patient.generalPractitioner": "redact",
-    "Patient.link.other": "redact",
-
-    "Practitioner.address.state": "keep",
-    "Practitioner.address.country": "keep",
-
-    "PractitionerRole.practitioner": "redact",
-    "PractitionerRole.location": "redact",
-    "PractitionerRole.notAvailable.description": "redact",
-    "PractitionerRole.availabilityExceptions": "redact",
-
-    "RelatedPersion.address.state": "keep",
-    "RelatedPersion.address.country": "keep",
-
-    "Person.address.state": "keep",
-    "Person.address.country": "keep",
-    "Person.link.target": "redact",
-
-    "Organization.identifier": "keep",
-    "Organization.telecom": "keep",
-    "Organization.address": "keep",
-    "Organization.contact.address.state": "keep",
-    "Organization.contact.address.country": "keep",
-
-    "nodesByType('date')": "dateShift",
-    "nodesByType('dateTime')": "dateShift",
-    "nodesByType('instant')": "dateShift",
-    "nodesByType('Identifier')": "redact",
-    "nodesByType('HumanName')": "redact",
-    "nodesByType('Address')": "redact",
-    "nodesByType('Annotation')": "redact",
-    "nodesByType('Attachment')": "redact",
-    "nodesByType('ContactPoint')": "redact",
-    "nodesByType('Narrative')": "redact"
-  },
+  "fhirPathRules": [
+    {
+      "path": "Patient.nodesByType('HumanName').use",
+      "method": "keep"
+    },
+    {
+      "path": "Patient.nodesByType('Address').state",
+      "method": "keep"
+    },
+    {
+      "path": "Patient.nodesByType('Address').country",
+      "method": "keep"
+    },
+    {
+      "path": "Patient.nodesByType('Address').where(city='KeepTest')",
+      "method": "keep"
+    },
+    {
+      "path": "Patient.generalPractitioner",
+      "method": "redact"
+    },
+    {
+      "path": "Patient.link.other",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('date')",
+      "method": "dateShift"
+    },
+    {
+      "path": "nodesByType('dateTime')",
+      "method": "dateShift"
+    },
+    {
+      "path": "nodesByType('instant')",
+      "method": "dateShift"
+    },
+    {
+      "path": "nodesByType('Identifier')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('HumanName')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('Address')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('Annotation')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('Attachment')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('ContactPoint')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('Narrative')",
+      "method": "redact"
+    }
+  ],
   "parameters": {
     "dateShiftKey": "123",
     "enablePartialAgesForRedact": true,

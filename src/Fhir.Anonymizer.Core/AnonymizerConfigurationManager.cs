@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,7 +14,7 @@ namespace Fhir.Anonymizer.Core
         private readonly AnonymizerConfiguration _configuration;
         private readonly Dictionary<string, IEnumerable<AnonymizerRule>> _resourcePathRules;
 
-        public AnonymizerRule[] FhirPathRules { get; private set; } = null;
+        public AnonymizationFhirPathRule[] FhirPathRules { get; private set; } = null;
 
         public AnonymizerConfigurationManager(AnonymizerConfiguration configuration)
         {
@@ -25,8 +26,7 @@ namespace Fhir.Anonymizer.Core
             if (configuration.FhirPathRules!= null)
             {
                 //TODO add capability check here.
-
-                FhirPathRules = _configuration.FhirPathRules.Select(entry => new AnonymizerRule(entry.Key, entry.Value, AnonymizerRuleType.FhirPathRule, entry.Key)).ToArray();
+                FhirPathRules = _configuration.FhirPathRules.Select(entry => AnonymizationFhirPathRule.CreateAnonymizationFhirPathRule(entry)).ToArray();
             }
             else
             {
