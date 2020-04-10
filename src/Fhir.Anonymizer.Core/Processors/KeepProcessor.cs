@@ -1,10 +1,11 @@
-﻿using Hl7.Fhir.ElementModel;
+﻿using Fhir.Anonymizer.Core.Models;
+using Hl7.Fhir.ElementModel;
 
 namespace Fhir.Anonymizer.Core.Processors
 {
     public class KeepProcessor: IAnonymizerProcessor
     {
-        public void Process(ElementNode node)
+        public void Process(ElementNode node, AnonymizationStatus status)
         {
         }
     }

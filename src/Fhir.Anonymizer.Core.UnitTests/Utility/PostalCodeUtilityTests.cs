@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Utility;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
@@ -29,7 +30,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         {
             var node = ElementNode.FromElement(new FhirString(postalCode).ToTypedElement());
             node.Name = "postalCode";
-            PostalCodeUtility.RedactPostalCode(node, false, null);
+            PostalCodeUtility.RedactPostalCode(node, new AnonymizationStatus(), false, null);
 
             Assert.Null(node.Value);
         }
@@ -40,7 +41,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         {
             var node = ElementNode.FromElement(new FhirString(postalCode).ToTypedElement());
             node.Name = "postalCode";
-            PostalCodeUtility.RedactPostalCode(node, true, new List<string>() { "203", "556" });
+            PostalCodeUtility.RedactPostalCode(node, new AnonymizationStatus(), true, new List<string>() { "203", "556" });
 
             Assert.Equal(expectedPostalCode.ToString(), node.Value);
         }
