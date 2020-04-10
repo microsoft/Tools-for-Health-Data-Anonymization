@@ -26,13 +26,12 @@ namespace Fhir.Anonymizer.Core
         internal ElementNode Anonymize(ElementNode node)
         {
             var subResourceNodesAndSelf = node.SubResourceNodesAndSelf();
-
-            string typeString = node.InstanceType;
-            var resourceSpecificAndGeneralRules = _rules.Where(r => r.ResourceType.Equals(typeString) || string.IsNullOrEmpty(r.ResourceType));
-
             AnonymizationVisitContext context = new AnonymizationVisitContext();
             foreach (var subNode in subResourceNodesAndSelf)
             {
+                string typeString = subNode.InstanceType;
+                var resourceSpecificAndGeneralRules = _rules.Where(r => r.ResourceType.Equals(typeString) || string.IsNullOrEmpty(r.ResourceType));
+                
                 foreach (var rule in resourceSpecificAndGeneralRules)
                 {
                     string method = rule.Method.ToUpperInvariant();
