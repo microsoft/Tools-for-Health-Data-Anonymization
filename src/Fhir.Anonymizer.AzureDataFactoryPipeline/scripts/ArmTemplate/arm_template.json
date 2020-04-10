@@ -106,7 +106,7 @@
                             "folderPath": "[concat(parameters('sourceStorageActivityApplicationContainer'), '/AdfApplication')]",
                             "extendedProperties": {
                                 "sourceConnectionString": "[parameters('sourceStorageLinkedService_connectionString')]",
-                                "destinationConnectionString": "[parameters('destinationStorageLinkedService_connectionString')]"
+                                "destinationConnectionString": "[parameters('destinationStorageLinkedService_connectionString')]",
                                 "skip": {
                                     "value": "@pipeline().parameters.skipExistedBlob",
                                     "type": "Expression"
