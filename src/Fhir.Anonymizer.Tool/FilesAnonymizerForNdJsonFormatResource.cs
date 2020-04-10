@@ -115,10 +115,10 @@ namespace Fhir.Anonymizer.Tool
                     };
 
                     await executor.ExecuteAsync(CancellationToken.None, true, progress).ConfigureAwait(false);
-
-                    // Rename file name after success process
-                    File.Move(tempBulkResourceOutputFileName, bulkResourceOutputFileName);
                 }
+
+                // Rename file name after success process
+                File.Move(tempBulkResourceOutputFileName, bulkResourceOutputFileName);
 
                 Console.WriteLine($"Finished processing '{bulkResourceFileName}'!");
             }
@@ -129,7 +129,7 @@ namespace Fhir.Anonymizer.Tool
             string fileName = Path.GetFileName(pathFileName);
             string directory = Path.GetDirectoryName(pathFileName);
 
-            return Path.Combine(directory, $"_{fileName}");
+            return Path.Combine(directory, $"temp_{fileName}");
         }
 
         private string GetResourceOutputFileName(string fileName, string inputFolder, string outputFolder)

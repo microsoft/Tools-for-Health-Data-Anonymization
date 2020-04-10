@@ -91,33 +91,30 @@ namespace Fhir.Anonymizer.Tool
                 Directory.CreateDirectory(resourceOutputFolder);
             }
 
-            if (_skipExistedFile && File.Exists(fileName))
+            if (_skipExistedFile && File.Exists(resourceOutputFileName))
             {
+                Console.WriteLine($"Skip processing on file {fileName}.");
                 return string.Empty;
             }
 
             string resourceJson = await File.ReadAllTextAsync(fileName).ConfigureAwait(false);
-            using (FileStream outputStream = new FileStream(resourceOutputFileName, FileMode.Create))
+            try
             {
-                using StreamWriter writer = new StreamWriter(outputStream);
-                try
+                var engine = AnonymizerEngine.CreateWithFileContext(_configFilePath, fileName, _inputFolder);
+                var settings = new AnonymizerSettings()
                 {
-                    var engine = AnonymizerEngine.CreateWithFileContext(_configFilePath, fileName, _inputFolder);
-                    var settings = new AnonymizerSettings()
-                    {
-                        IsPrettyOutput = true,
-                        ValidateInput = _validateInput,
-                        ValidateOutput = _validateOutput
-                    };
-                    var resourceResult = engine.AnonymizeJson(resourceJson, settings);
-                    await writer.WriteAsync(resourceResult).ConfigureAwait(false);
-                    await writer.FlushAsync().ConfigureAwait(false);
-                }
-                catch (Exception innerException)
-                {
-                    Console.Error.WriteLine($"[{fileName}] Error:\nResource: {resourceJson}\nErrorMessage: {innerException.ToString()}");
-                    throw;
-                }
+                    IsPrettyOutput = true,
+                    ValidateInput = _validateInput,
+                    ValidateOutput = _validateOutput
+                };
+                var resourceResult = engine.AnonymizeJson(resourceJson, settings);
+
+                await File.WriteAllTextAsync(resourceOutputFileName, resourceResult).ConfigureAwait(false);
+            }
+            catch (Exception innerException)
+            {
+                Console.Error.WriteLine($"[{fileName}] Error:\nResource: {resourceJson}\nErrorMessage: {innerException.ToString()}");
+                throw;
             }
 
             return string.Empty;
