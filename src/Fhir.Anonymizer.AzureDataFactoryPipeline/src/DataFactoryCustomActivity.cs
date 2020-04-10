@@ -123,7 +123,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
 
                 var inputBlobClient = new BlobClient(inputData.SourceStorageConnectionString, inputContainer.Name, blob.Name, BlobClientOptions.Value);
                 var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainer.Name, outputBlobName, BlobClientOptions.Value);
-                await outputBlobClient.DeleteIfExistsAsync().ConfigureAwait(false);
+                
 
                 if (inputData.SkipExistedFile && await outputBlobClient.ExistsAsync().ConfigureAwait(false))
                 {
@@ -131,6 +131,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 }
                 else
                 {
+                    await outputBlobClient.DeleteIfExistsAsync().ConfigureAwait(false);
                     await AnonymizeSingleBlobInNdJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name, inputBlobPrefix);
                 }
             }
