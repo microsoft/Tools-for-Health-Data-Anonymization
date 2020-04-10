@@ -12,5 +12,6 @@ namespace Fhir.Anonymizer.DataFactoryTool
         public string DestinationContainerName { get; set; }
         public string SourceFolderPath { get; set; }
         public string DestinationFolderPath { get; set; }
+        public bool SkipExistedFile { get; set; }
     }
 }

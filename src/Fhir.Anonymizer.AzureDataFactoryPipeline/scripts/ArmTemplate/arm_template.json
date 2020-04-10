@@ -107,7 +107,7 @@
                             "extendedProperties": {
                                 "sourceConnectionString": "[parameters('sourceStorageLinkedService_connectionString')]",
                                 "destinationConnectionString": "[parameters('destinationStorageLinkedService_connectionString')]",
-                                "skip": {
+                                "skipExistedBlob": {
                                     "value": "@pipeline().parameters.skipExistedBlob",
                                     "type": "Expression"
                                 }
