@@ -19,6 +19,8 @@ namespace Fhir.Anonymizer.Tool
             public string ConfigurationFilePath { get; set; }
             [Option('b', "bulkData", Required = false, Default = false, HelpText = "Resource file is in bulk data format (.ndjson).")]
             public bool IsBulkData { get; set; }
+            [Option('s', "skip", Required = false, Default = false, HelpText = "Skip existed files in target folder.")]
+            public bool SkipExistedFile { get; set; }
             [Option('r', "recursive", Required = false, Default = false, HelpText = "Process resource files in input folder recursively.")]
             public bool IsRecursive { get; set; }
             [Option('v', "verbose", Required = false, Default = false, HelpText = "Provide additional details in processing.")]
@@ -51,11 +53,11 @@ namespace Fhir.Anonymizer.Tool
 
                 if (options.IsBulkData)
                 {
-                    await dataProcessor.AnonymizeBulkDataFolder(options.InputFolder, options.OutputFolder, options.IsRecursive, options.ValidateInput, options.ValidateOutput).ConfigureAwait(false);
+                    await dataProcessor.AnonymizeBulkDataFolder(options.InputFolder, options.OutputFolder, options.IsRecursive, options.ValidateInput, options.ValidateOutput, options.SkipExistedFile).ConfigureAwait(false);
                 }
                 else
                 {
-                    await dataProcessor.AnonymizeFolder(options.InputFolder, options.OutputFolder, options.IsRecursive, options.ValidateInput, options.ValidateOutput).ConfigureAwait(false);
+                    await dataProcessor.AnonymizeFolder(options.InputFolder, options.OutputFolder, options.IsRecursive, options.ValidateInput, options.ValidateOutput, options.SkipExistedFile).ConfigureAwait(false);
                 }
             }
             finally

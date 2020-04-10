@@ -17,6 +17,7 @@ namespace Fhir.Anonymizer.Tool
         private bool _isRecursive;
         private bool _validateInput;
         private bool _validateOutput;
+        private bool _skipExistedFile;
         private string _configFilePath;
 
         public FilesAnonymizerForNdJsonFormatResource(
@@ -25,7 +26,8 @@ namespace Fhir.Anonymizer.Tool
             string outputFolder,
             bool isRecursive,
             bool validateInput,
-            bool validateOutput)
+            bool validateOutput,
+            bool skipExistedFile)
         {
             _inputFolder = inputFolder;
             _outputFolder = outputFolder;
@@ -33,6 +35,7 @@ namespace Fhir.Anonymizer.Tool
             _validateInput = validateInput;
             _validateOutput = validateOutput;
             _configFilePath = configFilePath;
+            _skipExistedFile = skipExistedFile;
         }
 
         public async Task AnonymizeAsync()
@@ -46,17 +49,32 @@ namespace Fhir.Anonymizer.Tool
                 Console.WriteLine($"Processing {bulkResourceFileName}");
 
                 var bulkResourceOutputFileName = GetResourceOutputFileName(bulkResourceFileName, _inputFolder, _outputFolder);
+                var tempBulkResourceOutputFileName = GetTempFileName(bulkResourceOutputFileName);
                 if (_isRecursive)
                 {
                     var resourceOutputFolder = Path.GetDirectoryName(bulkResourceOutputFileName);
                     Directory.CreateDirectory(resourceOutputFolder);
                 }
 
+                if (_skipExistedFile && File.Exists(bulkResourceOutputFileName))
+                {
+                    Console.WriteLine($"Skip processing on file {bulkResourceOutputFileName}.");
+                    continue;
+                }
+                else
+                {
+                    if (File.Exists(bulkResourceOutputFileName))
+                    {
+                        Console.WriteLine($"Remove exsited target file {bulkResourceOutputFileName}.");
+                        File.Delete(bulkResourceOutputFileName);
+                    }
+                }
+
                 int completedCount = 0;
                 int failedCount = 0;
                 int consumeCompletedCount = 0;
                 using (FileStream inputStream = new FileStream(bulkResourceFileName, FileMode.Open))
-                using (FileStream outputStream = new FileStream(bulkResourceOutputFileName, FileMode.Create))
+                using (FileStream outputStream = new FileStream(tempBulkResourceOutputFileName, FileMode.Create))
                 {
                     using FhirStreamReader reader = new FhirStreamReader(inputStream);
                     using FhirStreamConsumer consumer = new FhirStreamConsumer(outputStream);
@@ -96,11 +114,22 @@ namespace Fhir.Anonymizer.Tool
                         Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {failedCount} Process failed. {consumeCompletedCount} Consume completed.");
                     };
 
-                    await executor.ExecuteAsync(CancellationToken.None, false, progress).ConfigureAwait(false);
+                    await executor.ExecuteAsync(CancellationToken.None, true, progress).ConfigureAwait(false);
+
+                    // Rename file name after success process
+                    File.Move(tempBulkResourceOutputFileName, bulkResourceOutputFileName);
                 }
 
                 Console.WriteLine($"Finished processing '{bulkResourceFileName}'!");
             }
+        }
+
+        private string GetTempFileName(string pathFileName)
+        {
+            string fileName = Path.GetFileName(pathFileName);
+            string directory = Path.GetDirectoryName(pathFileName);
+
+            return Path.Combine(directory, $"_{fileName}");
         }
 
         private string GetResourceOutputFileName(string fileName, string inputFolder, string outputFolder)

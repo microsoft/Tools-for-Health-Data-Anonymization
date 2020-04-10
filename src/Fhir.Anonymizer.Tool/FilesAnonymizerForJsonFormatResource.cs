@@ -18,6 +18,7 @@ namespace Fhir.Anonymizer.Tool
         private bool _validateInput;
         private bool _validateOutput;
         private string _configFilePath;
+        private bool _skipExistedFile;
 
         public FilesAnonymizerForJsonFormatResource(
             string configFilePath,
@@ -25,7 +26,8 @@ namespace Fhir.Anonymizer.Tool
             string outputFolder,
             bool isRecursive,
             bool validateInput,
-            bool validateOutput)
+            bool validateOutput,
+            bool skipExistedFile)
         {
             _inputFolder = inputFolder;
             _outputFolder = outputFolder;
@@ -33,6 +35,7 @@ namespace Fhir.Anonymizer.Tool
             _validateInput = validateInput;
             _validateOutput = validateOutput;
             _configFilePath = configFilePath;
+            _skipExistedFile = skipExistedFile;
         }
 
         public async Task AnonymizeAsync()
@@ -86,6 +89,11 @@ namespace Fhir.Anonymizer.Tool
             {
                 var resourceOutputFolder = Path.GetDirectoryName(resourceOutputFileName);
                 Directory.CreateDirectory(resourceOutputFolder);
+            }
+
+            if (_skipExistedFile && File.Exists(fileName))
+            {
+                return string.Empty;
             }
 
             string resourceJson = await File.ReadAllTextAsync(fileName).ConfigureAwait(false);
