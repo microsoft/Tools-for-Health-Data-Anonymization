@@ -308,9 +308,9 @@ You can specify dateShift as a de-identification method in the configuration fil
 
 ### Steps
 1. Get _dateShiftKeyPrefix_ according to _dateShiftScope_.
-- For scope _resource_, _dateShiftKeyPrefix_ refers to the resource ID.
+- For scope _resource_, _dateShiftKeyPrefix_ refers to the resource id.
 - For scope _file_, _dateShiftKeyPrefix_ refers to the file name.
-- For scope _folder_, _dateShiftKeyPrefix_ refers to the input folder name.
+- For scope _folder_, _dateShiftKeyPrefix_ refers to the root input folder name.
 2. Create a string by combining _dateShiftKeyPrefix_ and _dateShiftKey_.
 3. Feed the above string to hash function to get an integer between [-50, 50]. 
 4. Use the above integer as the offset to shift the input date/dateTime/instant value.
