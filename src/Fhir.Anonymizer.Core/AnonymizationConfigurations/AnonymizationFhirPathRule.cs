@@ -9,7 +9,7 @@ namespace Fhir.Anonymizer.Core.AnonymizationConfigurations
 {
     public class AnonymizationFhirPathRule : AnonymizerRule
     {
-        private static Regex s_pathRegex = new Regex(@"^((?<resourceType>[A-Z][a-zA-Z]*)\.)?(?<expression>.+?)$");
+        private static Regex s_pathRegex = new Regex(@"^(?<resourceType>[A-Z][a-zA-Z]*)?(\.)?(?<expression>.*?)$");
 
         public string Expression { get; set; }
 
@@ -45,12 +45,23 @@ namespace Fhir.Anonymizer.Core.AnonymizationConfigurations
                 expression = match.Groups["expression"].Value;
             }
 
+            if (string.IsNullOrEmpty(expression))
+            {
+                // For case Path == "Resource"
+                expression = path;
+            }
+
             return new AnonymizationFhirPathRule(path, expression, resourceType, method, AnonymizerRuleType.FhirPathRule, path);
         }
 
         public AnonymizationFhirPathRule(string path, string expression, string resourceType, string method, AnonymizerRuleType type, string source)
             : base(path, method, type, source)
         {
+            if (string.IsNullOrEmpty(expression))
+            {
+                throw new ArgumentNullException("expression");
+            }
+
             Expression = expression;
             ResourceType = resourceType;
         }

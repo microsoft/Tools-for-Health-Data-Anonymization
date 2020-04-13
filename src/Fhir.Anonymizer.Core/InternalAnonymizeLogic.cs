@@ -12,18 +12,18 @@ using Hl7.FhirPath;
 
 namespace Fhir.Anonymizer.Core
 {
-    internal class InternalAnonymizeLogic
+    public class InternalAnonymizeLogic
     {
         private AnonymizationFhirPathRule[] _rules;
         private Dictionary<string, IAnonymizerProcessor> _processors;
 
-        internal InternalAnonymizeLogic(AnonymizationFhirPathRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
+        public InternalAnonymizeLogic(AnonymizationFhirPathRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
         {
             _rules = rules;
             _processors = processors;
         }
 
-        internal ElementNode Anonymize(ElementNode node)
+        public ElementNode Anonymize(ElementNode node)
         {
             var subResourceNodesAndSelf = node.SubResourceNodesAndSelf();
             AnonymizationVisitContext context = new AnonymizationVisitContext();
