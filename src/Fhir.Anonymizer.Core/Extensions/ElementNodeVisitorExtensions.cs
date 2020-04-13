@@ -18,6 +18,12 @@ namespace Fhir.Anonymizer.Core.Extensions
             {
                 foreach (var child in node.Children().Cast<ElementNode>())
                 {
+                    // skip nodes in Bundle & Contained
+                    if (child.IsEntryNode() || child.IsContainedNode())
+                    {
+                        continue;
+                    }
+
                     child.Accept<T>(visitor, context);
                 }
             }
