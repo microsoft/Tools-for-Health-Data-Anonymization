@@ -26,16 +26,18 @@ namespace Fhir.Anonymizer.Core.Processors
             return new DateShiftProcessor(parameters.DateShiftKey, parameters.DateShiftKeyPrefix, parameters.EnablePartialDatesForRedact);
         }
 
-        public void Process(ElementNode node, AnonymizationStatus status)
+        public ProcessResult Process(ElementNode node)
         {
             if (node.IsDateNode())
             {
-                DateTimeUtility.ShiftDateNode(node, status, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
+                return DateTimeUtility.ShiftDateNode(node, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
             }
             else if (node.IsDateTimeNode() || node.IsInstantNode())
             {
-                DateTimeUtility.ShiftDateTimeAndInstantNode(node, status, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
+                return DateTimeUtility.ShiftDateTimeAndInstantNode(node, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
             }
+
+            return new ProcessResult();
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Fhir.Anonymizer.Core.Models
 {
-    public class AnonymizationStatus
+    public class AnonymizationSummary
     {
         public bool IsRedacted { get; set; }
 
@@ -34,11 +34,11 @@ namespace Fhir.Anonymizer.Core.Models
             }
         }
 
-        public void UpdateStatus(AnonymizationStatus status)
+        public void UpdateSummary(AnonymizationSummary summary)
         {
-            IsRedacted = status.IsRedacted ? status.IsRedacted : IsRedacted;
-            IsAbstracted = status.IsAbstracted ? status.IsAbstracted : IsAbstracted;
-            IsPerturbed = status.IsPerturbed ? status.IsPerturbed : IsPerturbed;
+            IsRedacted = summary.IsRedacted ? summary.IsRedacted : IsRedacted;
+            IsAbstracted = summary.IsAbstracted ? summary.IsAbstracted : IsAbstracted;
+            IsPerturbed = summary.IsPerturbed ? summary.IsPerturbed : IsPerturbed;
         }
     }
 }

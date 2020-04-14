@@ -30,9 +30,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
         {
             var node = ElementNode.FromElement(new FhirString(postalCode).ToTypedElement());
             node.Name = "postalCode";
-            PostalCodeUtility.RedactPostalCode(node, new AnonymizationStatus(), false, null);
+            var processResult = PostalCodeUtility.RedactPostalCode(node, false, null);
 
             Assert.Null(node.Value);
+            Assert.True(processResult.Summary.IsRedacted);
         }
 
         [Theory]
@@ -41,9 +42,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
         {
             var node = ElementNode.FromElement(new FhirString(postalCode).ToTypedElement());
             node.Name = "postalCode";
-            PostalCodeUtility.RedactPostalCode(node, new AnonymizationStatus(), true, new List<string>() { "203", "556" });
+            var processResult = PostalCodeUtility.RedactPostalCode(node, true, new List<string>() { "203", "556" });
 
             Assert.Equal(expectedPostalCode.ToString(), node.Value);
+            Assert.True(processResult.Summary.IsAbstracted);
         }
     }
 }

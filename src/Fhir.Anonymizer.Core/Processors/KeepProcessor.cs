@@ -5,8 +5,9 @@ namespace Fhir.Anonymizer.Core.Processors
 {
     public class KeepProcessor: IAnonymizerProcessor
     {
-        public void Process(ElementNode node, AnonymizationStatus status)
+        public ProcessResult Process(ElementNode node)
         {
+            return new ProcessResult();
         }
     }
 }

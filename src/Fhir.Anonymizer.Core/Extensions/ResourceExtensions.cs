@@ -9,26 +9,26 @@ namespace Fhir.Anonymizer.Core.Extensions
 {
     public static class ResourceExtensions
     {
-        public static void TryAddSecurityLabels(this Resource resource, AnonymizationStatus status)
+        public static void TryAddSecurityLabels(this Resource resource, AnonymizationSummary summary)
         {
             if (resource.Meta == null)
             {
                 resource.Meta = new Meta();
             }
 
-            if (status.IsRedacted && !resource.Meta.Security.Any(x =>
+            if (summary.IsRedacted && !resource.Meta.Security.Any(x =>
                 string.Equals(x.Code, SecurityLabels.REDACT.Code, StringComparison.InvariantCultureIgnoreCase)))
             {
                 resource.Meta.Security.Add(SecurityLabels.REDACT);
             }
 
-            if (status.IsAbstracted && !resource.Meta.Security.Any(x =>
+            if (summary.IsAbstracted && !resource.Meta.Security.Any(x =>
                 string.Equals(x.Code, SecurityLabels.ABSTRED.Code, StringComparison.InvariantCultureIgnoreCase)))
             {
                 resource.Meta.Security.Add(SecurityLabels.ABSTRED);
             }
             
-            if (status.IsPerturbed && !resource.Meta.Security.Any(x =>
+            if (summary.IsPerturbed && !resource.Meta.Security.Any(x =>
                 string.Equals(x.Code, SecurityLabels.PERTURBED.Code, StringComparison.InvariantCultureIgnoreCase)))
             {
                 resource.Meta.Security.Add(SecurityLabels.PERTURBED);

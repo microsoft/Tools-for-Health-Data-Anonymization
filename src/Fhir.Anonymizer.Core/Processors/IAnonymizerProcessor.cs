@@ -5,6 +5,6 @@ namespace Fhir.Anonymizer.Core.Processors
 {
     public interface IAnonymizerProcessor
     {
-        public void Process(ElementNode node, AnonymizationStatus status);
+        public ProcessResult Process(ElementNode node);
     }
 }

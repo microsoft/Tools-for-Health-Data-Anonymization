@@ -27,11 +27,12 @@ namespace Fhir.Anonymizer.Core.Utility
         // The regex of time is defined in: https://www.hl7.org/fhir/datatypes.html#time    
         private static readonly Regex s_timeRegex = new Regex(@"([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?");
 
-        public static void RedactDateNode(ElementNode node, AnonymizationStatus status, bool enablePartialDatesForRedact = false)
+        public static ProcessResult RedactDateNode(ElementNode node, bool enablePartialDatesForRedact = false)
         {
+            var processResult = new ProcessResult();
             if (!node.IsDateNode())
             {
-                return;
+                return processResult;
             }
 
             var originalValue = node.Value?.ToString();
@@ -49,14 +50,16 @@ namespace Fhir.Anonymizer.Core.Utility
                 node.Value = null;
             }
 
-            status.UpdateIsRedacted(originalValue, node.Value?.ToString());
+            processResult.Summary.UpdateIsRedacted(originalValue, node.Value?.ToString());
+            return processResult;
         }
 
-        public static void RedactDateTimeAndInstantNode(ElementNode node, AnonymizationStatus status, bool enablePartialDatesForRedact = false)
+        public static ProcessResult RedactDateTimeAndInstantNode(ElementNode node, bool enablePartialDatesForRedact = false)
         {
+            var processResult = new ProcessResult();
             if (!node.IsDateTimeNode() && !node.IsInstantNode())
             {
-                return;
+                return processResult;
             }
 
             var originalValue = node.Value?.ToString();
@@ -74,14 +77,16 @@ namespace Fhir.Anonymizer.Core.Utility
                 node.Value = null;
             }
 
-            status.UpdateIsRedacted(originalValue, node.Value?.ToString());
+            processResult.Summary.UpdateIsRedacted(originalValue, node.Value?.ToString());
+            return processResult;
         }
 
-        public static void RedactAgeDecimalNode(ElementNode node, AnonymizationStatus status, bool enablePartialAgesForRedact = false)
+        public static ProcessResult RedactAgeDecimalNode(ElementNode node, bool enablePartialAgesForRedact = false)
         {
+            var processResult = new ProcessResult();
             if (!node.IsAgeDecimalNode())
             {
-                return;
+                return processResult;
             }
 
             var originalValue = node.Value?.ToString();
@@ -97,14 +102,16 @@ namespace Fhir.Anonymizer.Core.Utility
                 node.Value = null;
             }
 
-            status.UpdateIsRedacted(originalValue, node.Value?.ToString());
+            processResult.Summary.UpdateIsRedacted(originalValue, node.Value?.ToString());
+            return processResult;
         }
 
-        public static void ShiftDateNode(ElementNode node, AnonymizationStatus status, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
+        public static ProcessResult ShiftDateNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
         {
+            var processResult = new ProcessResult();
             if (!node.IsDateNode())
             {
-                return;
+                return processResult;
             }
 
             var matchedGroups = s_dateRegex.Match(node.Value.ToString()).Groups;
@@ -113,19 +120,22 @@ namespace Fhir.Anonymizer.Core.Utility
                 var originalValue = node.Value?.ToString();
                 int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
-                status.UpdateIsPerturbed(originalValue, node.Value?.ToString());
+                processResult.Summary.UpdateIsPerturbed(originalValue, node.Value?.ToString());
             }
             else
             {
-                RedactDateNode(node, status, enablePartialDatesForRedact);
+                processResult = RedactDateNode(node, enablePartialDatesForRedact);
             }
+
+            return processResult;
         }
 
-        public static void ShiftDateTimeAndInstantNode(ElementNode node, AnonymizationStatus status, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
+        public static ProcessResult ShiftDateTimeAndInstantNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
         {
+            var processResult = new ProcessResult();
             if (!node.IsDateTimeNode() && !node.IsInstantNode())
             {
-                return;
+                return processResult;
             }
 
             var matchedGroups = s_dateTimeRegex.Match(node.Value.ToString()).Groups;
@@ -150,12 +160,14 @@ namespace Fhir.Anonymizer.Core.Utility
                 {
                     node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
                 }
-                status.UpdateIsPerturbed(originalValue, node.Value?.ToString());
+                processResult.Summary.UpdateIsPerturbed(originalValue, node.Value?.ToString());
             }
             else
             {
-                RedactDateTimeAndInstantNode(node, status, enablePartialDatesForRedact);
+                processResult = RedactDateTimeAndInstantNode(node, enablePartialDatesForRedact);
             }
+
+            return processResult;
         }
 
         private static bool IndicateAgeOverThreshold(GroupCollection groups)

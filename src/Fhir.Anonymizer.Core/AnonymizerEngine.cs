@@ -77,13 +77,10 @@ namespace Fhir.Anonymizer.Core
                 _validator.ValidateInput(resource);
             }
 
-            var status = new AnonymizationStatus();
-            var anonymizedNode = AnonymizeResourceNode(root, status);
-            
-            anonymizedNode.RemoveNullChildren();
-            var anonymizedResource = anonymizedNode.ToPoco<Resource>();
-            
-            anonymizedResource.TryAddSecurityLabels(status);
+            var processResult = AnonymizeResourceNode(root);
+            root.RemoveNullChildren();
+            var anonymizedResource = root.ToPoco<Resource>();
+            anonymizedResource.TryAddSecurityLabels(processResult.Summary);
 
             if (settings != null && settings.ValidateOutput)
             {
@@ -97,21 +94,23 @@ namespace Fhir.Anonymizer.Core
             return anonymizedResource.ToJson(serializationSettings);
         }
 
-        public ElementNode AnonymizeResourceNode(ElementNode root, AnonymizationStatus status)
+        public ProcessResult AnonymizeResourceNode(ElementNode root)
         {
             EnsureArg.IsNotNull(root, nameof(root));
 
+            var processResult = new ProcessResult();
             if (root.IsBundleNode())
             {
                 var entryResources = root.GetEntryResourceChildren();
-                var entryStatus = AnonymizeBundleEntryResourceNodes(entryResources);
-                status.UpdateStatus(entryStatus);
+                var entryResult = AnonymizeBundleEntryResourceNodes(entryResources);
+                processResult.Summary.UpdateSummary(entryResult.Summary);
             }
 
             if (root.HasContainedNode())
             {
                 var containedResources = root.GetContainedChildren();
-                AnonymizeContainedResourceNodes(containedResources, status);
+                var containedResult = AnonymizeContainedResourceNodes(containedResources);
+                processResult.Summary.UpdateSummary(containedResult.Summary);
             }
 
             var resourceContext = ResourceAnonymizerContext.Create(root, _configurationManger);
@@ -126,52 +125,58 @@ namespace Fhir.Anonymizer.Core
 
                 foreach (var node in matchedNodes)
                 {
-                    AnonymizeChildNode(node, rule, resourceContext.PathSet, resourceId, status);
+                    var result = AnonymizeChildNode(node, rule, resourceContext.PathSet, resourceId);
+                    processResult.Summary.UpdateSummary(result.Summary);
                 }
             }
 
-            return root;
+            return processResult;
         }
 
-        private void AnonymizeContainedResourceNodes(List<ElementNode> resourceNodes, AnonymizationStatus status)
+        private ProcessResult AnonymizeContainedResourceNodes(List<ElementNode> resourceNodes)
         {
+            var processResult = new ProcessResult();
             // For contained, all contained resources share the same status with root resource
-            foreach (var resource in resourceNodes)
+            foreach (var resourceNode in resourceNodes)
             {
-                var newResource = AnonymizeResourceNode(GetResourceRoot(resource), status);
-                resource.Parent.Replace(_provider, resource, newResource);
+                var newResourceNode = GetResourceRoot(resourceNode);
+                var result = AnonymizeResourceNode(newResourceNode);
+                resourceNode.Parent.Replace(_provider, resourceNode, newResourceNode);
+                processResult.Summary.UpdateSummary(result.Summary);
             }
+
+            return processResult;
         }
 
-        private AnonymizationStatus AnonymizeBundleEntryResourceNodes(List<ElementNode> resourceNodes)
+        private ProcessResult AnonymizeBundleEntryResourceNodes(List<ElementNode> resourceNodes)
         {
-            var bundleStatus = new AnonymizationStatus();
+            var processResult = new ProcessResult();
             // For Bundle, every entry has its own status
-            foreach (var resource in resourceNodes)
+            foreach (var resourceNode in resourceNodes)
             {
-                var status = new AnonymizationStatus();
-                var anonymizedNode = AnonymizeResourceNode(GetResourceRoot(resource), status);
+                var newResourceNode = GetResourceRoot(resourceNode);
+                var result = AnonymizeResourceNode(newResourceNode);
                 
-                anonymizedNode.RemoveNullChildren();
-                var anonymizedResource = anonymizedNode.ToPoco<Resource>();
+                newResourceNode.RemoveNullChildren();
+                var anonymizedResource = newResourceNode.ToPoco<Resource>();
+                anonymizedResource.TryAddSecurityLabels(result.Summary);
                 
-                anonymizedResource.TryAddSecurityLabels(status);
-                bundleStatus.UpdateStatus(status);
-                
-                var newResource = ElementNode.FromElement(anonymizedResource.ToTypedElement());
-                resource.Parent.Replace(_provider, resource, newResource);
+                resourceNode.Parent.Replace(_provider, resourceNode, ElementNode.FromElement(anonymizedResource.ToTypedElement()));
+                processResult.Summary.UpdateSummary(result.Summary);
             }
 
-            return bundleStatus;
+            return processResult;
         }
 
-        private void AnonymizeChildNode(ElementNode node, AnonymizerRule rule, HashSet<string> rulePathSet, string resourceId, AnonymizationStatus status)
+        private ProcessResult AnonymizeChildNode(ElementNode node, AnonymizerRule rule, HashSet<string> rulePathSet, string resourceId)
         {
+            var processResult = new ProcessResult();
             var method = rule.Method.ToUpperInvariant();
 
             if (node.Value != null && _processors.ContainsKey(method))
             {
-                _processors[method].Process(node, status);
+                var result = _processors[method].Process(node);
+                processResult.Summary.UpdateSummary(result.Summary);
                 _logger.LogDebug($"{node.GetFhirPath()} in resource ID {resourceId} is applied {method} due to rule \"{rule.Source}:{rule.Method}\"");
             }
 
@@ -180,9 +185,12 @@ namespace Fhir.Anonymizer.Core
             {
                 if (!rulePathSet.Contains(child.GetFhirPath()))
                 {
-                    AnonymizeChildNode(child, rule, rulePathSet, resourceId, status);
+                    var result = AnonymizeChildNode(child, rule, rulePathSet, resourceId);
+                    processResult.Summary.UpdateSummary(result.Summary);
                 }
             }
+
+            return processResult;
         }
 
         private ElementNode GetResourceRoot(ElementNode node)

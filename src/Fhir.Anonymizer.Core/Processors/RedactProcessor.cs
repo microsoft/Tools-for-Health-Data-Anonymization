@@ -32,29 +32,31 @@ namespace Fhir.Anonymizer.Core.Processors
                 parameters.EnablePartialZipCodesForRedact, parameters.RestrictedZipCodeTabulationAreas);
         }
 
-        public void Process(ElementNode node, AnonymizationStatus status)
+        public ProcessResult Process(ElementNode node)
         {
             if (node.IsDateNode())
             {
-                DateTimeUtility.RedactDateNode(node, status, EnablePartialDatesForRedact);
+                return DateTimeUtility.RedactDateNode(node, EnablePartialDatesForRedact);
             }
             else if (node.IsDateTimeNode() || node.IsInstantNode())
             {
-                DateTimeUtility.RedactDateTimeAndInstantNode(node, status, EnablePartialDatesForRedact);
+                return DateTimeUtility.RedactDateTimeAndInstantNode(node, EnablePartialDatesForRedact);
             }
             else if (node.IsAgeDecimalNode())
             {
-                DateTimeUtility.RedactAgeDecimalNode(node, status, EnablePartialAgesForRedact);
+                return DateTimeUtility.RedactAgeDecimalNode(node, EnablePartialAgesForRedact);
             }
             else if (node.IsPostalCodeNode())
             {
-                PostalCodeUtility.RedactPostalCode(node, status, EnablePartialZipCodesForRedact, RestrictedZipCodeTabulationAreas);
+                return PostalCodeUtility.RedactPostalCode(node, EnablePartialZipCodesForRedact, RestrictedZipCodeTabulationAreas);
             }
             else
             {
+                var processResult = new ProcessResult();
                 var originalValue = node.Value.ToString();
                 node.Value = null;
-                status.UpdateIsRedacted(originalValue, node.Value?.ToString());
+                processResult.Summary.UpdateIsRedacted(originalValue, node.Value?.ToString());
+                return processResult;
             }
         }
     }

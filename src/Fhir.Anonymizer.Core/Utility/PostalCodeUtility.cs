@@ -11,11 +11,12 @@ namespace Fhir.Anonymizer.Core.Utility
         private static readonly char s_replacementDigit = '0';
         private static readonly int s_initialDigitsCount = 3;
 
-        public static void RedactPostalCode(ElementNode node, AnonymizationStatus status, bool enablePartialZipCodesForRedact = false, List<string> restrictedZipCodeTabulationAreas = null)
+        public static ProcessResult RedactPostalCode(ElementNode node, bool enablePartialZipCodesForRedact = false, List<string> restrictedZipCodeTabulationAreas = null)
         {
+            var processResult = new ProcessResult();
             if (!node.IsPostalCodeNode())
             {
-                return;
+                return processResult;
             }
 
             var originalValue = node.Value?.ToString();
@@ -29,13 +30,15 @@ namespace Fhir.Anonymizer.Core.Utility
                 {
                     node.Value = $"{node.Value.ToString().Substring(0, s_initialDigitsCount)}{new string(s_replacementDigit, node.Value.ToString().Length - s_initialDigitsCount)}";
                 }
-                status.UpdateIsAbstracted(originalValue, node.Value?.ToString());
+                processResult.Summary.UpdateIsAbstracted(originalValue, node.Value?.ToString());
             }
             else
             {
                 node.Value = null;
-                status.UpdateIsRedacted(originalValue, node.Value?.ToString());
+                processResult.Summary.UpdateIsRedacted(originalValue, node.Value?.ToString());
             }
+
+            return processResult;
         }
     }
 }
