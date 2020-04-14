@@ -289,7 +289,8 @@ Parameters affect the de-identification methods specified in the type rules and 
 
 |Method| Parameter | Affected fields | Valid values | Default value | Description
 | ----- | ----- | ----- | ----- | ----- | ----- |
-| dateShift |dateShiftKey|date, dateTime, instant fields| string|A randomly generated string|This key in conjunction with the FHIR resource id is used in the [Date-shift algorithm](#date-shift-algorithm). 
+| dateShift |dateShiftKey|date, dateTime, instant fields| string|A randomly generated string|This key is used to generate date-shift amount in the [Date-shift algorithm](#date-shift-algorithm). 
+| dateShift |dateShiftScope|date, dateTime, instant fields| resource, file, folder | resource | This parameter is used to select date-shift scope. Dates within the same scope will be shifted the same amount. Please provide dateShiftKey together with it. |
 | redact | enablePartialAgesForRedact |Age fields | boolean | false | If the value is set to **true**, only age values over 89 will be redacted. |
 | redact | enablePartialDatesForRedact  | date, dateTime, instant fields | boolean | false | If the value is set to **true**, date, dateTime, instant will keep year if indicative age is not over 89. |
 | redact | enablePartialZipCodesForRedact  | Zip Code fields | boolean | false | If the value is set to **true**, Zip Code will be redacted as per the HIPAA Safe Harbor rule. |
@@ -299,17 +300,21 @@ Parameters affect the de-identification methods specified in the type rules and 
 You can specify dateShift as a de-identification method in the configuration file. With this method, the input date/dateTime/instant value will be shifted within a 100-day differential. The following algorithm is used to shift the target dates:
 
 ### Input
-* A date/dateTime/instant value (required)
-* FHIR resource id (optional). If not specified, an empty string will be used.
-* Date shift key (optional). If not specified, a randomly generated string will be used.
+- [Required] A date/dateTime/instant value
+- [Optional] _dateShiftKey_. If not specified, a randomly generated string will be used as default key.
+- [Optional] _dateShiftScope_. If not specified, _resource_ will be set as default scope.
 
 ### Output
 * A shifted date/datetime/instant value
 
 ### Steps
-1. Create a string by combining FHIR resource id and date shift key.
-2. Feed the above string to hash function to get an integer between [-50, 50]. 
-3. Use the above integer as the offset to shift the input date/dateTime/instant value
+1. Get _dateShiftKeyPrefix_ according to _dateShiftScope_.
+- For scope _resource_, _dateShiftKeyPrefix_ refers to the resource id.
+- For scope _file_, _dateShiftKeyPrefix_ refers to the file name.
+- For scope _folder_, _dateShiftKeyPrefix_ refers to the root input folder name.
+2. Create a string by combining _dateShiftKeyPrefix_ and _dateShiftKey_.
+3. Feed the above string to hash function to get an integer between [-50, 50]. 
+4. Use the above integer as the offset to shift the input date/dateTime/instant value.
 
 ### Note
 
@@ -321,7 +326,6 @@ You can specify dateShift as a de-identification method in the configuration fil
 
 ## Current limitations
 1. We only support FHIR data in R4, JSON format. Support for XML and STU 3 is planned.
-2. Date-shift algorithm shifts the dates within a resource by the same random amount. We are working on the ability to shift the dates by the same random amount across resources. 
 
 ## FAQ
 ### How can we use FHIR Tools for Anonymization to anonymize HL7 v2.x data
