@@ -101,7 +101,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var processResult = DateTimeUtility.RedactDateNode(node, true);
 
             Assert.Equal(expectedDate?.ToString() ?? null, node.Value);
-            Assert.Equal(!date.Equals(expectedDate), processResult.Summary.IsRedacted);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -112,7 +112,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var processResult = DateTimeUtility.RedactDateNode(node, false);
 
             Assert.Null(node.Value);
-            Assert.True(processResult.Summary.IsRedacted);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -124,7 +124,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
 
             Assert.True(minExpectedDate <= DateTime.Parse(node.Value.ToString()));
             Assert.True(maxExpectedDate >= DateTime.Parse(node.Value.ToString()));
-            Assert.True(processResult.Summary.IsPerturbed);
+            Assert.True(processResult.IsPerturbed);
         }
 
         [Theory]
@@ -139,8 +139,8 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var processResult2 = DateTimeUtility.ShiftDateNode(node2, "123", "filename", true);
             var offset2 = DateTime.Parse(node2.Value.ToString()).Subtract(DateTime.Parse(date2.ToString()));
 
-            Assert.True(processResult1.Summary.IsPerturbed);
-            Assert.True(processResult2.Summary.IsPerturbed);
+            Assert.True(processResult1.IsPerturbed);
+            Assert.True(processResult2.IsPerturbed);
             Assert.Equal(offset1.Days, offset2.Days);
         }
 
@@ -152,7 +152,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var processResult = DateTimeUtility.ShiftDateNode(node, string.Empty, string.Empty, true);
 
             Assert.Equal(expectedDate?.ToString() ?? null, node.Value);
-            Assert.True(processResult.Summary.IsRedacted);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -163,7 +163,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var processResult = DateTimeUtility.RedactDateTimeAndInstantNode(node, true);
 
             Assert.Equal(expectedDateTime?.ToString() ?? null, node.Value);
-            Assert.Equal(!dateTime.Equals(expectedDateTime), processResult.Summary.IsRedacted);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -175,7 +175,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
 
             Assert.True(minExpectedDateTime <= new FhirDateTime(node.Value.ToString()));
             Assert.True(maxExpectedDateTime >= new FhirDateTime(node.Value.ToString()));
-            Assert.True(processResult.Summary.IsPerturbed);
+            Assert.True(processResult.IsPerturbed);
         }
 
         [Theory]
@@ -185,7 +185,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
             var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, dateShiftKey, string.Empty, true);
             Assert.Equal(expectedDateTimeString, node.Value.ToString());
-            Assert.True(processResult.Summary.IsPerturbed);
+            Assert.True(processResult.IsPerturbed);
         }
 
         [Theory]
@@ -196,7 +196,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, string.Empty, string.Empty, true);
 
             Assert.Equal(expectedDateTime?.ToString() ?? null, node.Value);
-            Assert.True(processResult.Summary.IsRedacted);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -207,7 +207,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var processResult = DateTimeUtility.RedactAgeDecimalNode(node, true);
 
             Assert.Equal(int.Parse(age.Value.ToString()) > 89 ? null : age.Value.ToString(), node.Value?.ToString() ?? null);
-            Assert.Equal(int.Parse(age.Value.ToString()) > 89 ? true : false, processResult.Summary.IsRedacted);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -218,7 +218,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var processResult = DateTimeUtility.RedactAgeDecimalNode(node, false);
 
             Assert.Null(node.Value);
-            Assert.True(processResult.Summary.IsRedacted);
+            Assert.True(processResult.IsRedacted);
         }
     }
 }

@@ -30,12 +30,12 @@ namespace Fhir.Anonymizer.Core.Utility
                 {
                     node.Value = $"{node.Value.ToString().Substring(0, s_initialDigitsCount)}{new string(s_replacementDigit, node.Value.ToString().Length - s_initialDigitsCount)}";
                 }
-                processResult.Summary.UpdateIsAbstracted(originalValue, node.Value?.ToString());
+                processResult.IsAbstracted = true;
             }
             else
             {
                 node.Value = null;
-                processResult.Summary.UpdateIsRedacted(originalValue, node.Value?.ToString());
+                processResult.IsRedacted = true;
             }
 
             return processResult;

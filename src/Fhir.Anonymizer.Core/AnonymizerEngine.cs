@@ -80,7 +80,7 @@ namespace Fhir.Anonymizer.Core
             var processResult = AnonymizeResourceNode(root);
             root.RemoveNullChildren();
             var anonymizedResource = root.ToPoco<Resource>();
-            anonymizedResource.TryAddSecurityLabels(processResult.Summary);
+            anonymizedResource.TryAddSecurityLabels(processResult);
 
             if (settings != null && settings.ValidateOutput)
             {
@@ -103,14 +103,14 @@ namespace Fhir.Anonymizer.Core
             {
                 var entryResources = root.GetEntryResourceChildren();
                 var entryResult = AnonymizeBundleEntryResourceNodes(entryResources);
-                processResult.Summary.UpdateSummary(entryResult.Summary);
+                processResult.UpdateResult(entryResult);
             }
 
             if (root.HasContainedNode())
             {
                 var containedResources = root.GetContainedChildren();
                 var containedResult = AnonymizeContainedResourceNodes(containedResources);
-                processResult.Summary.UpdateSummary(containedResult.Summary);
+                processResult.UpdateResult(containedResult);
             }
 
             var resourceContext = ResourceAnonymizerContext.Create(root, _configurationManger);
@@ -126,7 +126,7 @@ namespace Fhir.Anonymizer.Core
                 foreach (var node in matchedNodes)
                 {
                     var result = AnonymizeChildNode(node, rule, resourceContext.PathSet, resourceId);
-                    processResult.Summary.UpdateSummary(result.Summary);
+                    processResult.UpdateResult(result);
                 }
             }
 
@@ -142,7 +142,7 @@ namespace Fhir.Anonymizer.Core
                 var newResourceNode = GetResourceRoot(resourceNode);
                 var result = AnonymizeResourceNode(newResourceNode);
                 resourceNode.Parent.Replace(_provider, resourceNode, newResourceNode);
-                processResult.Summary.UpdateSummary(result.Summary);
+                processResult.UpdateResult(result);
             }
 
             return processResult;
@@ -159,10 +159,10 @@ namespace Fhir.Anonymizer.Core
                 
                 newResourceNode.RemoveNullChildren();
                 var anonymizedResource = newResourceNode.ToPoco<Resource>();
-                anonymizedResource.TryAddSecurityLabels(result.Summary);
+                anonymizedResource.TryAddSecurityLabels(result);
                 
                 resourceNode.Parent.Replace(_provider, resourceNode, ElementNode.FromElement(anonymizedResource.ToTypedElement()));
-                processResult.Summary.UpdateSummary(result.Summary);
+                processResult.UpdateResult(result);
             }
 
             return processResult;
@@ -176,7 +176,7 @@ namespace Fhir.Anonymizer.Core
             if (node.Value != null && _processors.ContainsKey(method))
             {
                 var result = _processors[method].Process(node);
-                processResult.Summary.UpdateSummary(result.Summary);
+                processResult.UpdateResult(result);
                 _logger.LogDebug($"{node.GetFhirPath()} in resource ID {resourceId} is applied {method} due to rule \"{rule.Source}:{rule.Method}\"");
             }
 
@@ -186,7 +186,7 @@ namespace Fhir.Anonymizer.Core
                 if (!rulePathSet.Contains(child.GetFhirPath()))
                 {
                     var result = AnonymizeChildNode(child, rule, rulePathSet, resourceId);
-                    processResult.Summary.UpdateSummary(result.Summary);
+                    processResult.UpdateResult(result);
                 }
             }
 

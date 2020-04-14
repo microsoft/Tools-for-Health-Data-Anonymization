@@ -2,11 +2,17 @@
 {
     public class ProcessResult
     {
-        public AnonymizationSummary Summary { get; set; }
+        public bool IsRedacted { get; set; }
 
-        public ProcessResult()
+        public bool IsAbstracted { get; set; }
+
+        public bool IsPerturbed { get; set; }
+
+        public void UpdateResult(ProcessResult result)
         {
-            Summary = new AnonymizationSummary();
+            IsRedacted = result.IsRedacted ? result.IsRedacted : IsRedacted;
+            IsAbstracted = result.IsAbstracted ? result.IsAbstracted : IsAbstracted;
+            IsPerturbed = result.IsPerturbed ? result.IsPerturbed : IsPerturbed;
         }
     }
 }

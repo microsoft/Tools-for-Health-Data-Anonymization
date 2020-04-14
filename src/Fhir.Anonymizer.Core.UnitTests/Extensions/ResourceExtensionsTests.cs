@@ -15,12 +15,12 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
         public void GivenAResourceWithoutSecurityLabels_WhenTryAddSecurityLabels_SecurityLabelsShouldBeAdded()
         {
             var resource = new Patient();
-            var summary = new AnonymizationSummary()
+            var result = new ProcessResult()
             {
                 IsRedacted = true
             };
 
-            resource.TryAddSecurityLabels(summary);
+            resource.TryAddSecurityLabels(result);
             Assert.Single(resource.Meta.Security);
             Assert.Equal(SecurityLabels.REDACT.Code, resource.Meta.Security.First().Code);
         }
@@ -38,12 +38,12 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
                     }
                 }
             };
-            var summary = new AnonymizationSummary()
+            var result = new ProcessResult()
             {
                 IsRedacted = true
             };
 
-            resource.TryAddSecurityLabels(summary);
+            resource.TryAddSecurityLabels(result);
             Assert.Equal(2, resource.Meta.Security.Count);
             Assert.Equal("MASKED", resource.Meta.Security[0].Code);
             Assert.Equal(SecurityLabels.REDACT.Code, resource.Meta.Security[1].Code);
@@ -62,12 +62,12 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
                     }
                 }
             };
-            var summary = new AnonymizationSummary()
+            var result = new ProcessResult()
             {
                 IsRedacted = true
             };
 
-            resource.TryAddSecurityLabels(summary);
+            resource.TryAddSecurityLabels(result);
             Assert.Single(resource.Meta.Security);
             Assert.Equal(SecurityLabels.REDACT.Code, resource.Meta.Security.First().Code);
         }

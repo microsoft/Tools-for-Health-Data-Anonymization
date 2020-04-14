@@ -17,19 +17,19 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             var node = ElementNode.FromElement(testDate.ToTypedElement());
             var processResult = processor.Process(node);
             Assert.Equal("2015-01-17", node.Value.ToString());
-            Assert.True(processResult.Summary.IsPerturbed);
+            Assert.True(processResult.IsPerturbed);
 
             testDate = new Date("2015-02");
             node = ElementNode.FromElement(testDate.ToTypedElement());
             processResult = processor.Process(node);
             Assert.Equal("2015", node.Value.ToString());
-            Assert.True(processResult.Summary.IsRedacted);
+            Assert.True(processResult.IsRedacted);
 
             processor = new DateShiftProcessor(dateShiftKey: "dummy", string.Empty, enablePartialDatesForRedact: false);
             node = ElementNode.FromElement(testDate.ToTypedElement());
             processResult = processor.Process(node);
             Assert.Null(node.Value);
-            Assert.True(processResult.Summary.IsRedacted);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             var node = ElementNode.FromElement(testDateTime.ToTypedElement());
             var processResult = processor.Process(node);
             Assert.Equal("2015-01-17T00:00:00-05:00", node.Value.ToString());
-            Assert.True(processResult.Summary.IsPerturbed);
+            Assert.True(processResult.IsPerturbed);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             var node = ElementNode.FromElement(testInstant.ToTypedElement());
             var processResult = processor.Process(node);
             Assert.Equal("2015-01-17T00:00:00+00:00", node.Value.ToString());
-            Assert.True(processResult.Summary.IsPerturbed);
+            Assert.True(processResult.IsPerturbed);
         }
     }
 }

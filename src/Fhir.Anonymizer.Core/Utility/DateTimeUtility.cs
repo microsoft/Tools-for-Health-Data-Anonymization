@@ -50,7 +50,7 @@ namespace Fhir.Anonymizer.Core.Utility
                 node.Value = null;
             }
 
-            processResult.Summary.UpdateIsRedacted(originalValue, node.Value?.ToString());
+            processResult.IsRedacted = true;
             return processResult;
         }
 
@@ -77,7 +77,7 @@ namespace Fhir.Anonymizer.Core.Utility
                 node.Value = null;
             }
 
-            processResult.Summary.UpdateIsRedacted(originalValue, node.Value?.ToString());
+            processResult.IsRedacted = true;
             return processResult;
         }
 
@@ -102,7 +102,7 @@ namespace Fhir.Anonymizer.Core.Utility
                 node.Value = null;
             }
 
-            processResult.Summary.UpdateIsRedacted(originalValue, node.Value?.ToString());
+            processResult.IsRedacted = true;
             return processResult;
         }
 
@@ -120,7 +120,7 @@ namespace Fhir.Anonymizer.Core.Utility
                 var originalValue = node.Value?.ToString();
                 int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
-                processResult.Summary.UpdateIsPerturbed(originalValue, node.Value?.ToString());
+                processResult.IsPerturbed = true;
             }
             else
             {
@@ -160,7 +160,7 @@ namespace Fhir.Anonymizer.Core.Utility
                 {
                     node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
                 }
-                processResult.Summary.UpdateIsPerturbed(originalValue, node.Value?.ToString());
+                processResult.IsPerturbed = true;
             }
             else
             {

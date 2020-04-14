@@ -52,11 +52,11 @@ namespace Fhir.Anonymizer.Core.Processors
             }
             else
             {
-                var processResult = new ProcessResult();
-                var originalValue = node.Value.ToString();
                 node.Value = null;
-                processResult.Summary.UpdateIsRedacted(originalValue, node.Value?.ToString());
-                return processResult;
+                return new ProcessResult()
+                {
+                    IsRedacted = true
+                };
             }
         }
     }
