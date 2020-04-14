@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using EnsureThat;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
@@ -34,6 +35,24 @@ namespace Fhir.Anonymizer.Core
             _processors = new Dictionary<string, IAnonymizerProcessor>();
             InitializeProcessors(_configurationManger);
             _logger.LogDebug("AnonymizerEngine initialized successfully");
+        }
+
+        public static AnonymizerEngine CreateWithFileContext(string configFilePath, string fileName, string inputFolderName)
+        {
+            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
+            var dateShiftScope = configurationManager.GetParameterConfiguration().DateShiftScope;
+            var dateShiftKeyPrefix = string.Empty;
+            if (dateShiftScope == DateShiftScope.File)
+            {
+                dateShiftKeyPrefix = Path.GetFileName(fileName);
+            }
+            else if (dateShiftScope == DateShiftScope.Folder)
+            {
+                dateShiftKeyPrefix = Path.GetFileName(inputFolderName.TrimEnd('\\', '/'));
+            }
+
+            configurationManager.SetDateShiftKeyPrefix(dateShiftKeyPrefix);
+            return new AnonymizerEngine(configurationManager);
         }
 
         public string AnonymizeJson(string json, AnonymizerSettings settings = null)

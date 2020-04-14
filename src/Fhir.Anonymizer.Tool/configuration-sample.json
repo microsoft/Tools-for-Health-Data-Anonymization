@@ -549,6 +549,7 @@
   },
   "parameters": {
     "dateShiftKey": "",
+    "dateShiftScope": "resource",
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,

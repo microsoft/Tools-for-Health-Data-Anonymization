@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Fhir.Anonymizer.Core;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.PartitionedExecution;
-using Hl7.FhirPath.Sprache;
 
 namespace Fhir.Anonymizer.Tool
 {
@@ -20,10 +17,10 @@ namespace Fhir.Anonymizer.Tool
         private bool _isRecursive;
         private bool _validateInput;
         private bool _validateOutput;
-        private AnonymizerEngine _engine;
+        private string _configFilePath;
 
         public FilesAnonymizerForJsonFormatResource(
-            AnonymizerEngine engine,
+            string configFilePath,
             string inputFolder,
             string outputFolder,
             bool isRecursive,
@@ -35,7 +32,7 @@ namespace Fhir.Anonymizer.Tool
             _isRecursive = isRecursive;
             _validateInput = validateInput;
             _validateOutput = validateOutput;
-            _engine = engine;
+            _configFilePath = configFilePath;
         }
 
         public async Task AnonymizeAsync()
@@ -97,13 +94,14 @@ namespace Fhir.Anonymizer.Tool
                 using StreamWriter writer = new StreamWriter(outputStream);
                 try
                 {
+                    var engine = AnonymizerEngine.CreateWithFileContext(_configFilePath, fileName, _inputFolder);
                     var settings = new AnonymizerSettings()
                     {
                         IsPrettyOutput = true,
                         ValidateInput = _validateInput,
                         ValidateOutput = _validateOutput
                     };
-                    var resourceResult = _engine.AnonymizeJson(resourceJson, settings);
+                    var resourceResult = engine.AnonymizeJson(resourceJson, settings);
                     await writer.WriteAsync(resourceResult).ConfigureAwait(false);
                     await writer.FlushAsync().ConfigureAwait(false);
                 }
