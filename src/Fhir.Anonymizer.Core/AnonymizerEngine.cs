@@ -84,7 +84,7 @@ namespace Fhir.Anonymizer.Core
                 _validator.ValidateInput(resource);
             }
             
-            ElementNode anonymizedNode = anonymizeLogic != null ? anonymizeLogic.Anonymize(root) : AnonymizeResourceNode(root);
+            ElementNode anonymizedNode = anonymizeLogic.Anonymize(root);
             if (settings != null && settings.ValidateOutput)
             {
                 anonymizedNode.RemoveNullChildren();
@@ -96,76 +96,6 @@ namespace Fhir.Anonymizer.Core
                 Pretty = settings != null && settings.IsPrettyOutput
             };
             return anonymizedNode.ToJson(serializationSettings);
-        }
-
-        public ElementNode AnonymizeResourceNode(ElementNode root)
-        {
-            EnsureArg.IsNotNull(root, nameof(root));
-
-            if (root.IsBundleNode())
-            {
-                var entryResources = root.GetEntryResourceChildren();
-                AnonymizeInternalResourceNodes(entryResources);
-            }
-
-            if (root.HasContainedNode())
-            {
-                var containedResources = root.GetContainedChildren();
-                AnonymizeInternalResourceNodes(containedResources);
-            }
-
-            var resourceContext = ResourceAnonymizerContext.Create(root, _configurationManger);
-            var resourceId = root.GetNodeId();
-            foreach (var rule in resourceContext.RuleList)
-            {
-                var matchedNodes = root.Select(rule.Path).Cast<ElementNode>();
-
-                _logger.LogDebug(rule.Type == AnonymizerRuleType.PathRule ?
-                    $"Path {rule.Source} matches {matchedNodes.Count()} nodes in resource ID {resourceId}." :
-                    $"Type {rule.Source} matches {matchedNodes.Count()} nodes with path {rule.Path} in resource ID {resourceId}.");
-
-                foreach (var node in matchedNodes)
-                {
-                    AnonymizeChildNode(node, rule, resourceContext.PathSet, resourceId);
-                }
-            }
-
-            return root;
-        }
-
-        private void AnonymizeInternalResourceNodes(List<ElementNode> resourceNodes)
-        {
-            foreach(var resource in resourceNodes)
-            {
-                var newResource = AnonymizeResourceNode(GetResourceRoot(resource));
-                resource.Parent.Replace(_provider, resource, newResource);
-            }
-        }
-
-        private void AnonymizeChildNode(ElementNode node, AnonymizerRule rule, HashSet<string> rulePathSet, string resourceId)
-        {
-            var method = rule.Method.ToUpperInvariant();
-
-            if (node.Value != null && _processors.ContainsKey(method))
-            {
-                _processors[method].Process(node);
-                _logger.LogDebug($"{node.GetFhirPath()} in resource ID {resourceId} is applied {method} due to rule \"{rule.Source}:{rule.Method}\"");
-            }
-
-            var children = node.Children().Cast<ElementNode>();
-            foreach (var child in children)
-            {
-                if (!rulePathSet.Contains(child.GetFhirPath()))
-                {
-                    AnonymizeChildNode(child, rule, rulePathSet, resourceId);
-                }
-            }
-        }
-
-        private ElementNode GetResourceRoot(ElementNode node)
-        {
-            var content = node.ToJson();
-            return ElementNode.FromElement(_parser.Parse(content).ToTypedElement());
         }
 
         private void InitializeProcessors(AnonymizerConfigurationManager configurationManager)
