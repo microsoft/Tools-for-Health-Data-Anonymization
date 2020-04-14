@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using EnsureThat;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Processors;
+using Fhir.Anonymizer.Core.Validation;
 using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Specification;
 using Hl7.FhirPath;
@@ -18,6 +21,7 @@ namespace Fhir.Anonymizer.Core
         private readonly FhirJsonParser _parser = new FhirJsonParser();
         private readonly PocoStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
+        private readonly ResourceValidator _validator = new ResourceValidator();
         private readonly AnonymizerConfigurationManager _configurationManger;
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
         private readonly InternalAnonymizeLogic anonymizeLogic = null;
@@ -41,33 +45,57 @@ namespace Fhir.Anonymizer.Core
             _logger.LogDebug("AnonymizerEngine initialized successfully");
         }
 
-        public string AnonymizeJson(string json, bool isPrettyOutput = false)
+        public static AnonymizerEngine CreateWithFileContext(string configFilePath, string fileName, string inputFolderName)
+        {
+            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
+            var dateShiftScope = configurationManager.GetParameterConfiguration().DateShiftScope;
+            var dateShiftKeyPrefix = string.Empty;
+            if (dateShiftScope == DateShiftScope.File)
+            {
+                dateShiftKeyPrefix = Path.GetFileName(fileName);
+            }
+            else if (dateShiftScope == DateShiftScope.Folder)
+            {
+                dateShiftKeyPrefix = Path.GetFileName(inputFolderName.TrimEnd('\\', '/'));
+            }
+
+            configurationManager.SetDateShiftKeyPrefix(dateShiftKeyPrefix);
+            return new AnonymizerEngine(configurationManager);
+        }
+
+        public string AnonymizeJson(string json, AnonymizerSettings settings = null)
         {
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));
 
             ElementNode root;
+            Resource resource;
             try
             {
-                root = ElementNode.FromElement(_parser.Parse(json).ToTypedElement());
+                resource = _parser.Parse<Resource>(json);
+                root = ElementNode.FromElement(resource.ToTypedElement());
             }
             catch(Exception innerException)
             {
                 throw new Exception("Failed to parse json resource, please check the json content.", innerException);
             }
 
-            FhirJsonSerializationSettings settings = new FhirJsonSerializationSettings
+            if (settings != null && settings.ValidateInput)
             {
-                Pretty = isPrettyOutput
-            };
+                _validator.ValidateInput(resource);
+            }
+            
+            ElementNode anonymizedNode = anonymizeLogic != null ? anonymizeLogic.Anonymize(root) : AnonymizeResourceNode(root);
+            if (settings != null && settings.ValidateOutput)
+            {
+                anonymizedNode.RemoveNullChildren();
+                _validator.ValidateOutput(anonymizedNode.ToPoco<Resource>());
+            }
 
-            if (anonymizeLogic != null)
+            FhirJsonSerializationSettings serializationSettings = new FhirJsonSerializationSettings
             {
-                return anonymizeLogic.Anonymize(root).ToJson(settings);
-            }
-            else
-            {
-                return AnonymizeResourceNode(root).ToJson(settings);
-            }
+                Pretty = settings != null && settings.IsPrettyOutput
+            };
+            return anonymizedNode.ToJson(serializationSettings);
         }
 
         public ElementNode AnonymizeResourceNode(ElementNode root)

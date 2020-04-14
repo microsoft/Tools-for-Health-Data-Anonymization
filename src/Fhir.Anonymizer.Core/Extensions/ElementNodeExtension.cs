@@ -91,5 +91,25 @@ namespace Fhir.Anonymizer.Core.Extensions
             var id = node.Children("id").FirstOrDefault();
             return id?.Value?.ToString() ?? string.Empty;
         }
+
+        public static void RemoveNullChildren(this ElementNode node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            var children = node.Children().Cast<ElementNode>().ToList();
+            foreach (var child in children)
+            {
+                RemoveNullChildren(child);
+            }
+
+            if (!node.Children().Any() && node.Value == null && !Enum.TryParse<ResourceType>(node.InstanceType, true, out _))
+            {
+                node.Parent.Remove(node);
+                return;
+            }
+        }
     }
 }

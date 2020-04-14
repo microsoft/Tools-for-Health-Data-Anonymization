@@ -1,34 +1,29 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Fhir.Anonymizer.Core;
-using Fhir.Anonymizer.Core.PartitionedExecution;
 
 namespace Fhir.Anonymizer.Tool
 {
     public class FhirResourceDataProcessor
     {
-        private readonly AnonymizerEngine _engine;
+        private readonly string _configFilePath;
 
         public FhirResourceDataProcessor(string configFilePath)
         {
-            _engine = new AnonymizerEngine(configFilePath);
+            _configFilePath = configFilePath;
         }
 
-        public async Task AnonymizeFolder(string inputFolder, string outputFolder, bool isRecursive)
+        public async Task AnonymizeFolder(string inputFolder, string outputFolder, bool isRecursive, bool validateInput, bool validateOutput)
         {
-            var anonymizer = new FilesAnonymizerForJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive);
+            var anonymizer = new FilesAnonymizerForJsonFormatResource(_configFilePath, inputFolder, outputFolder, isRecursive, validateInput, validateOutput);
             await anonymizer.AnonymizeAsync().ConfigureAwait(false);
             
             Console.WriteLine($"Finished processing '{inputFolder}'! ");
         }
 
-        public async Task AnonymizeBulkDataFolder(string inputFolder, string outputFolder, bool isRecursive)
+        public async Task AnonymizeBulkDataFolder(string inputFolder, string outputFolder, bool isRecursive, bool validateInput, bool validateOutput)
         {
-            var anonymizer = new FilesAnonymizerForNdJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive);
+            var anonymizer = new FilesAnonymizerForNdJsonFormatResource(_configFilePath, inputFolder, outputFolder, isRecursive, validateInput, validateOutput);
             await anonymizer.AnonymizeAsync().ConfigureAwait(false);
 
             Console.WriteLine($"Finished processing '{inputFolder}'!");

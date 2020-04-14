@@ -47,7 +47,7 @@ namespace Fhir.Anonymizer.Core.AnonymizationConfigurations
 
             if (string.IsNullOrEmpty(expression))
             {
-                // For case Path == "Resource"
+                // For case: Path == "Resource"
                 expression = path;
             }
 
