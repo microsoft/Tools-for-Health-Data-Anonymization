@@ -1,5 +1,8 @@
 ﻿{
-  "typeRules": {
-    "HumanName": "remove"
-  }
+  "fhirPathRules": [
+    {
+      "path": "Patient",
+      "method": "invaliid"
+    }
+  ]
 }

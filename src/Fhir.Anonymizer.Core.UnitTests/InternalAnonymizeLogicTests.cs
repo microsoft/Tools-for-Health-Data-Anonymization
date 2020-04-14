@@ -58,7 +58,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void GivenFhirPathMatchContianedNode_WhenProcess_NodesInContainedShouldBeRedact()
+        public void GivenAFhirPathMatchContianedNode_WhenProcess_NodesInContainedShouldBeRedact()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
@@ -77,7 +77,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void GivenFhirPathMatchBundleEntryNode_WhenProcess_NodesInBundleShouldBeRedact()
+        public void GivenAFhirPathMatchBundleEntryNode_WhenProcess_NodesInBundleShouldBeRedact()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
@@ -98,7 +98,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void GivenRuleWithNodeByTypeAndResourceType_WhenProcess_OnlyNodeInSpecificResourceTypeShouldBeRedact()
+        public void GivenARuleWithNodeByTypeAndResourceType_WhenProcess_OnlyNodeInSpecificResourceTypeShouldBeRedact()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
@@ -121,7 +121,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void GivenRuleWitoutResourceType_WhenProcess_AllNodesShouldBeRedact()
+        public void GivenARuleWitoutResourceType_WhenProcess_AllNodesShouldBeRedact()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {

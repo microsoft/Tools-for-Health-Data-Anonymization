@@ -1,18 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Fhir.Anonymizer.Core.Extensions;
+using Hl7.FhirPath;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
 {
     public class AnonymizerConfigurationManagerTests
     {
+        public AnonymizerConfigurationManagerTests()
+        {
+            FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
+        }
+
         public static IEnumerable<object[]> GetInvalidConfigs()
         {
             yield return new object[] { "./TestConfigurations/configuration-miss-rules.json" };
-            yield return new object[] { "./TestConfigurations/configuration-unsupported-path.json" };
-            yield return new object[] { "./TestConfigurations/configuration-unsupported-type.json" };
             yield return new object[] { "./TestConfigurations/configuration-unsupported-method.json" };
+            yield return new object[] { "./TestConfigurations/configuration-invalid-fhirpath.json" };
         }
 
         public static IEnumerable<object[]> GetValidConfigs()

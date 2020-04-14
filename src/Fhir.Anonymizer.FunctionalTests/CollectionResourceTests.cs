@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using Fhir.Anonymizer.Core;
+using Fhir.Anonymizer.Core.Extensions;
+using Hl7.FhirPath;
 using Xunit;
 
 namespace Fhir.Anonymizer.FunctionalTests
@@ -9,6 +11,7 @@ namespace Fhir.Anonymizer.FunctionalTests
         private AnonymizerEngine engine;
         public CollectionResourceTests()
         {
+            FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
             engine = new AnonymizerEngine(Path.Combine("Configurations", "common-config.json"));
         }
 
