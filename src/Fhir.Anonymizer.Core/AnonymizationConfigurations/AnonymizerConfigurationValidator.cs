@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
-using Hl7.Fhir.Model;
 using Hl7.FhirPath;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizerConfigurationValidator
     {
-        private readonly Regex s_fhirPathRegex = new Regex(@"^[a-zA-Z]+(\.([a-zA-Z]+))*$");
-
         public void Validate(AnonymizerConfiguration config)
         {
             if (config.FhirPathRules == null)
