@@ -1,4 +1,10 @@
 ﻿{
+  "fhirPathRules": [
+    {
+      "path": "nodesByType('HumanName')",
+      "method": "redact"
+    }
+  ],
   "pathRules": {
     "Patient.address.state": "keep",
     "Patient.address.country": "keep",

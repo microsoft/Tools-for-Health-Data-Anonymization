@@ -23,24 +23,20 @@ namespace Fhir.Anonymizer.Core
 
             _configuration = configuration;
 
-            if (configuration.FhirPathRules!= null)
+            FhirPathRules = _configuration.FhirPathRules.Select(entry => AnonymizationFhirPathRule.CreateAnonymizationFhirPathRule(entry)).ToArray();
+
+            #region deprecated v1 config
+            if (_configuration.PathRules != null)
             {
-                //TODO add capability check here.
-                FhirPathRules = _configuration.FhirPathRules.Select(entry => AnonymizationFhirPathRule.CreateAnonymizationFhirPathRule(entry)).ToArray();
+                _resourcePathRules = _configuration.PathRules.Where(entry => IsResourcePathRule(entry.Key))
+                    .GroupBy(entry => ExtractResourceTypeFromPath(entry.Key))
+                    .ToDictionary(group => group.Key, group => group.Select(item => new AnonymizerRule(item.Key, item.Value, AnonymizerRuleType.PathRule, item.Key)));
             }
             else
             {
-                if (_configuration.PathRules != null)
-                {
-                    _resourcePathRules = _configuration.PathRules.Where(entry => IsResourcePathRule(entry.Key))
-                        .GroupBy(entry => ExtractResourceTypeFromPath(entry.Key))
-                        .ToDictionary(group => group.Key, group => group.Select(item => new AnonymizerRule(item.Key, item.Value, AnonymizerRuleType.PathRule, item.Key)));
-                }
-                else
-                {
-                    _resourcePathRules = new Dictionary<string, IEnumerable<AnonymizerRule>>();
-                }
+                _resourcePathRules = new Dictionary<string, IEnumerable<AnonymizerRule>>();
             }
+            #endregion
         }
 
         public static AnonymizerConfigurationManager CreateFromConfigurationFile(string configFilePath)
