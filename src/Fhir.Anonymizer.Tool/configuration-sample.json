@@ -179,13 +179,14 @@
     {"path": "nodesByType('Reference').display", "method": "redact"},
 
     {"path": "nodesByType('base64Binary')", "method": "redact"},
-    {"path": "nodesByType('date')", "method": "redact"},
-    {"path": "nodesByType('dateTime')", "method": "redact"},
-    {"path": "nodesByType('instant')", "method": "redact"},
+    {"path": "nodesByType('date')", "method": "dateshift"},
+    {"path": "nodesByType('dateTime')", "method": "dateshift"},
+    {"path": "nodesByType('instant')", "method": "dateshift"},
     {"path": "nodesByType('Address')", "method": "redact"},
     {"path": "nodesByType('Age')", "method": "redact"},
     {"path": "nodesByType('Annotation')", "method": "redact"},
-    {"path": "nodesByType('HumanName')", "method": "redact"}
+    {"path": "nodesByType('HumanName')", "method": "redact"},
+    {"path": "nodesByType('ContactPoint')", "method": "redact"}
   ],
   "parameters": {
     "dateShiftKey": "",

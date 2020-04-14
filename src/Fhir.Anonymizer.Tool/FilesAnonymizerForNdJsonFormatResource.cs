@@ -33,6 +33,8 @@ namespace Fhir.Anonymizer.Tool
             _validateInput = validateInput;
             _validateOutput = validateOutput;
             _configFilePath = configFilePath;
+
+            AnonymizerEngine.InitFhirPathExtensionSymbols();
         }
 
         public async Task AnonymizeAsync()

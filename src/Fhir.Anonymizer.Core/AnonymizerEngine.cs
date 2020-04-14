@@ -19,24 +19,28 @@ namespace Fhir.Anonymizer.Core
     public class AnonymizerEngine
     {
         private readonly FhirJsonParser _parser = new FhirJsonParser();
-        private readonly PocoStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly ResourceValidator _validator = new ResourceValidator();
         private readonly AnonymizerConfigurationManager _configurationManger;
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
         private readonly InternalAnonymizeLogic anonymizeLogic = null;
 
-        public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath)) 
-        { 
+        public static void InitFhirPathExtensionSymbols()
+        {
+            FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
         }
 
-        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager)
+        public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath)) 
+        {
+            
+        }
+
+        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager) : base()
         {
             _configurationManger = configurationManager;
             _processors = new Dictionary<string, IAnonymizerProcessor>();
 
             InitializeProcessors(_configurationManger);
-            FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
 
             anonymizeLogic = new InternalAnonymizeLogic(_configurationManger.FhirPathRules, _processors);
 
