@@ -35,7 +35,6 @@ namespace Fhir.Anonymizer.Core.Utility
                 return processResult;
             }
 
-            var originalValue = node.Value?.ToString();
             if (enablePartialDatesForRedact)
             {
                 var matchedGroups = s_dateRegex.Match(node.Value.ToString()).Groups;
@@ -62,7 +61,6 @@ namespace Fhir.Anonymizer.Core.Utility
                 return processResult;
             }
 
-            var originalValue = node.Value?.ToString();
             if (enablePartialDatesForRedact)
             {
                 var matchedGroups = s_dateTimeRegex.Match(node.Value.ToString()).Groups;
@@ -89,7 +87,6 @@ namespace Fhir.Anonymizer.Core.Utility
                 return processResult;
             }
 
-            var originalValue = node.Value?.ToString();
             if (enablePartialAgesForRedact)
             {
                 if (int.Parse(node.Value.ToString()) > s_ageThreshold)
@@ -117,7 +114,6 @@ namespace Fhir.Anonymizer.Core.Utility
             var matchedGroups = s_dateRegex.Match(node.Value.ToString()).Groups;
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
-                var originalValue = node.Value?.ToString();
                 int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
                 processResult.IsPerturbed = true;
@@ -141,7 +137,6 @@ namespace Fhir.Anonymizer.Core.Utility
             var matchedGroups = s_dateTimeRegex.Match(node.Value.ToString()).Groups;
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
-                var originalValue = node.Value?.ToString();
                 int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 if (matchedGroups[s_timeIndex].Captures.Any())
                 {

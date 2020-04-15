@@ -19,7 +19,6 @@ namespace Fhir.Anonymizer.Core.Utility
                 return processResult;
             }
 
-            var originalValue = node.Value?.ToString();
             if (enablePartialZipCodesForRedact)
             {
                 if (restrictedZipCodeTabulationAreas != null && restrictedZipCodeTabulationAreas.Any(x => node.Value.ToString().StartsWith(x)))
