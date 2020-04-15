@@ -81,7 +81,6 @@
     {"path": "Goal.start", "method": "redact"},
     {"path": "Goal.statusReason", "method": "redact"},
     {"path": "Goal.target.detail", "method": "redact"},
-    {"path": "Goal.expressedBy.display", "method": "redact"},
     {"path": "ServiceRequest.patientInstruction", "method": "redact"},
     {"path": "NutritionOrder.oralDiet.instruction", "method": "redact"},
     {"path": "NutritionOrder.supplement.instruction", "method": "redact"},
