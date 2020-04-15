@@ -20,15 +20,15 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
             patient.Address.Add(new Address());
 
             var node = ElementNode.FromElement(patient.ToTypedElement());
-            var context = new HashSet<string>();
-            node.Accept(new TestVisitor(), context);
+            var result = new HashSet<string>();
+            node.Accept(new TestVisitor(result));
 
-            Assert.Equal(5, context.Count);
-            Assert.Contains("Patient", context);
-            Assert.Contains("Patient.active[0]", context);
-            Assert.Contains("Patient.address[0]", context);
-            Assert.Contains("Patient.address[0].city[0]", context);
-            Assert.Contains("Patient.address[1]", context);
+            Assert.Equal(5, result.Count);
+            Assert.Contains("Patient", result);
+            Assert.Contains("Patient.active[0]", result);
+            Assert.Contains("Patient.address[0]", result);
+            Assert.Contains("Patient.address[0].city[0]", result);
+            Assert.Contains("Patient.address[1]", result);
         }
 
         [Fact]
@@ -41,15 +41,15 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
             patient.Contained.Add(new Observation() {  Status = ObservationStatus.Unknown });
 
             var node = ElementNode.FromElement(patient.ToTypedElement());
-            var context = new HashSet<string>();
-            node.Accept(new TestVisitor(), context);
+            var result = new HashSet<string>();
+            node.Accept(new TestVisitor(result));
 
-            Assert.Equal(5, context.Count);
-            Assert.Contains("Patient", context);
-            Assert.Contains("Patient.active[0]", context);
-            Assert.Contains("Patient.address[0]", context);
-            Assert.Contains("Patient.address[0].city[0]", context);
-            Assert.Contains("Patient.address[1]", context);
+            Assert.Equal(5, result.Count);
+            Assert.Contains("Patient", result);
+            Assert.Contains("Patient.active[0]", result);
+            Assert.Contains("Patient.address[0]", result);
+            Assert.Contains("Patient.address[0].city[0]", result);
+            Assert.Contains("Patient.address[1]", result);
         }
 
         [Fact]
@@ -64,20 +64,40 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
             bundle.AddResourceEntry(patient, "http://example.org/fhir/Patient/1");
 
             var node = ElementNode.FromElement(bundle.ToTypedElement());
-            var context = new HashSet<string>();
-            node.Accept(new TestVisitor(), context);
+            var result = new HashSet<string>();
+            node.Accept(new TestVisitor(result));
 
-            Assert.Equal(2, context.Count);
-            Assert.Contains("Bundle", context);
-            Assert.Contains("Bundle.timestamp[0]", context);
+            Assert.Equal(4, result.Count);
+            Assert.Contains("Bundle", result);
+            Assert.Contains("Bundle.timestamp[0]", result);
+            Assert.Contains("Bundle.entry[0].fullUrl[0]", result);
+            Assert.Contains("Bundle.entry[0]", result);
         }
 
-        private class TestVisitor : AbstractElementNodeVisitor<HashSet<string>>
+        private class TestVisitor : AbstractElementNodeVisitor
         {
-            public override bool Visit(ElementNode node, HashSet<string> context)
+            private HashSet<string> _result;
+            public TestVisitor(HashSet<string> result)
             {
-                context.Add(node.Location);
-                return base.Visit(node, context);
+                _result = result;
+            }
+
+            public override bool PreVisitBundleEntryNode(ElementNode node)
+            {
+                // Skip process in the bundle entry
+                return false;
+            }
+
+            public override bool PreVisitContainedNode(ElementNode node)
+            {
+                // Skip process in the contained entry
+                return false;
+            }
+
+            public override bool Visit(ElementNode node)
+            {
+                _result.Add(node.Location);
+                return true;
             }
         }
     }

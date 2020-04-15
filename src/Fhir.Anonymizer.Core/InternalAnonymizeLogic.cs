@@ -8,6 +8,7 @@ using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Processors;
 using Fhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model;
 using Hl7.FhirPath;
 
 namespace Fhir.Anonymizer.Core
@@ -23,10 +24,12 @@ namespace Fhir.Anonymizer.Core
             _processors = processors;
         }
 
-        public ElementNode Anonymize(ElementNode node)
+        public Resource Anonymize(Resource resource)
         {
+            ElementNode node = ElementNode.FromElement(resource.ToTypedElement());
             var subResourceNodesAndSelf = node.SubResourceNodesAndSelf();
             AnonymizationVisitContext context = new AnonymizationVisitContext();
+            
             foreach (var subNode in subResourceNodesAndSelf)
             {
                 string typeString = subNode.InstanceType;
@@ -40,15 +43,23 @@ namespace Fhir.Anonymizer.Core
                         continue;
                     }
 
-                    var visitor = new AnonymizationOperationVisitor(_processors[method]);
-                    foreach (var matchNode in subNode.Select(rule.Expression).Cast<ElementNode>())
-                    {
-                        matchNode.Accept(visitor, context);
-                    }
+                    ProcessNode(context, subNode, rule, method);
                 }
             }
 
-            return node;
+            node.RemoveNullChildren();
+            Resource result = node.ToPoco<Resource>();
+            result.TryAddSecurityLabels(context.ProcessResult);
+            return result;
+        }
+
+        private void ProcessNode(AnonymizationVisitContext context, ElementNode subNode, AnonymizationFhirPathRule rule, string method)
+        {
+            //var visitor = new ProcessorVisitor(_processors[method]);
+            //foreach (var matchNode in subNode.Select(rule.Expression).Cast<ElementNode>())
+            //{
+            //    matchNode.Accept(visitor, context);
+            //}
         }
     }
 }

@@ -29,12 +29,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
             InternalAnonymizeLogic logic = new InternalAnonymizeLogic(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
-            var result = logic.Anonymize(ElementNode.FromElement(patient.ToTypedElement()));
-            var patientCity = result.Select("Patient.address[0].city").First().Value;
-            var patientCountry = result.Select("Patient.address[0].country").First().Value;
+            var result = ElementNode.FromElement(logic.Anonymize(patient).ToTypedElement());
+            var patientAddress = result.Select("Patient.address[0]").FirstOrDefault();
 
-            Assert.Null(patientCity);
-            Assert.Null(patientCountry);
+            Assert.Null(patientAddress);
         }
 
         [Fact]
@@ -49,7 +47,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             InternalAnonymizeLogic logic = new InternalAnonymizeLogic(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
-            var result = logic.Anonymize(ElementNode.FromElement(patient.ToTypedElement()));
+            var result = ElementNode.FromElement(logic.Anonymize(patient).ToTypedElement());
             string patientCity = result.Select("Patient.address[0].city").First().Value.ToString();
             string patientCountry = result.Select("Patient.address[0].country").First().Value.ToString();
 
@@ -62,18 +60,16 @@ namespace Fhir.Anonymizer.Core.UnitTests
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
-                new AnonymizationFhirPathRule("Person.address", "address", "Person", "redact", AnonymizerRuleType.FhirPathRule, "Person.address"),
+                new AnonymizationFhirPathRule("Person.address.city", "address.city", "Person", "redact", AnonymizerRuleType.FhirPathRule, "Person.address"),
             };
 
             InternalAnonymizeLogic logic = new InternalAnonymizeLogic(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
-            var result = logic.Anonymize(ElementNode.FromElement(patient.ToTypedElement()));
-            var personCity = result.Select("Patient.contained[0].contained[0].address[0].city[0]").First().Value;
-            var personCountry = result.Select("Patient.contained[0].contained[0].address[0].country[0]").First().Value;
+            var result = ElementNode.FromElement(logic.Anonymize(patient).ToTypedElement());
+            var personCity = result.Select("Patient.contained[0].contained[0].address[0].city[0]").FirstOrDefault();
 
             Assert.Null(personCity);
-            Assert.Null(personCountry);
         }
 
         [Fact]
@@ -81,7 +77,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
-                new AnonymizationFhirPathRule("Person.address", "address", "Person", "redact", AnonymizerRuleType.FhirPathRule, "Person.address"),
+                new AnonymizationFhirPathRule("Person.address.city", "address.city", "Person", "redact", AnonymizerRuleType.FhirPathRule, "Person.address"),
             };
 
             InternalAnonymizeLogic logic = new InternalAnonymizeLogic(rules, CreateTestProcessors());
@@ -89,12 +85,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var person = CreateTestPerson();
             var bundle = new Bundle();
             bundle.AddResourceEntry(person, "http://example.org/fhir/Person/1");
-            var result = logic.Anonymize(ElementNode.FromElement(bundle.ToTypedElement()));
-            var personCity = result.Select("Bundle.entry[0].resource[0].address[0].city[0]").First().Value;
-            var personCountry = result.Select("Bundle.entry[0].resource[0].address[0].country[0]").First().Value;
+            var result = ElementNode.FromElement(logic.Anonymize(bundle).ToTypedElement());
+            var personCity = result.Select("Bundle.entry[0].resource[0].address[0].city[0]").FirstOrDefault();
 
             Assert.Null(personCity);
-            Assert.Null(personCountry);
         }
 
         [Fact]
@@ -108,16 +102,14 @@ namespace Fhir.Anonymizer.Core.UnitTests
             InternalAnonymizeLogic logic = new InternalAnonymizeLogic(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
-            var result = logic.Anonymize(ElementNode.FromElement(patient.ToTypedElement()));
-            var personCity = result.Select("Patient.contained[0].contained[0].address[0].city[0]").First().Value;
-            var personCountry = result.Select("Patient.contained[0].contained[0].address[0].country[0]").First().Value;
+            var result = ElementNode.FromElement(logic.Anonymize(patient).ToTypedElement());
+            var personAddress = result.Select("Patient.contained[0].contained[0].address[0]").FirstOrDefault();
             string patientCity = result.Select("Patient.address[0].city").First().Value.ToString();
             string patientCountry = result.Select("Patient.address[0].country").First().Value.ToString();
 
             Assert.Equal("patienttestcity1", patientCity);
             Assert.Equal("patienttestcountry1", patientCountry);
-            Assert.Null(personCity);
-            Assert.Null(personCountry);
+            Assert.Null(personAddress);
         }
 
         [Fact]
@@ -131,16 +123,12 @@ namespace Fhir.Anonymizer.Core.UnitTests
             InternalAnonymizeLogic logic = new InternalAnonymizeLogic(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
-            var result = logic.Anonymize(ElementNode.FromElement(patient.ToTypedElement()));
-            var personCity = result.Select("Patient.contained[0].contained[0].address[0].city[0]").First().Value;
-            var personCountry = result.Select("Patient.contained[0].contained[0].address[0].country[0]").First().Value;
-            var patientCity = result.Select("Patient.address[0].city").First().Value;
-            var patientCountry = result.Select("Patient.address[0].country").First().Value;
+            var result = ElementNode.FromElement(logic.Anonymize(patient).ToTypedElement());
+            var personAddress = result.Select("Patient.contained[0].contained[0].address[0]").FirstOrDefault();
+            var patientAddress = result.Select("Patient.address[0]").FirstOrDefault();
 
-            Assert.Null(patientCity);
-            Assert.Null(patientCountry);
-            Assert.Null(personCity);
-            Assert.Null(personCountry);
+            Assert.Null(personAddress);
+            Assert.Null(patientAddress);
         }
 
         private Dictionary<string, IAnonymizerProcessor> CreateTestProcessors()
@@ -160,9 +148,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
         {
             Patient patient = new Patient();
 
-            patient.Address.Add(new Address() { City = "patienttestcity1", Country = "patienttestcountry1" });
+            patient.Address.Add(new Address() { City = "patienttestcity1", Country = "patienttestcountry1", District = "TestDistrict" });
             patient.Contact.Add(new Patient.ContactComponent() { Address = new Address() { City = "patienttestcity2", Country = "patienttestcountry2", PostalCode = "12345" } });
             patient.Contained.Add(CreateTestOrganization());
+            patient.Active = true;
 
             return patient;
         }
@@ -172,8 +161,9 @@ namespace Fhir.Anonymizer.Core.UnitTests
             Organization organization = new Organization();
 
             organization.Name = "TestOrganization";
-            organization.Address.Add(new Address() { City = "OrgTestCity", Country = "OrgTestCountry" });
+            organization.Address.Add(new Address() { City = "OrgTestCity", Country = "OrgTestCountry", District = "TestDistrict" });
             organization.Contained.Add(CreateTestPerson());
+            organization.Active = true;
 
             return organization;
         }
@@ -182,7 +172,8 @@ namespace Fhir.Anonymizer.Core.UnitTests
         {
             Person person = new Person();
 
-            person.Address.Add(new Address() { City = "persontestcity", Country = "persontestcountry"});
+            person.Address.Add(new Address() { City = "persontestcity", Country = "persontestcountry", District = "TestDistrict" });
+            person.Active = true;
 
             return person;
         }

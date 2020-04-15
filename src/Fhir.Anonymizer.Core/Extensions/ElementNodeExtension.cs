@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Fhir.Anonymizer.Core.Models;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
+using Hl7.Fhir.Specification;
 
 namespace Fhir.Anonymizer.Core.Extensions
 {
@@ -21,6 +23,7 @@ namespace Fhir.Anonymizer.Core.Extensions
         internal static readonly string s_postalCodeNodeName = "postalCode";
         internal static readonly string s_containedNodeName = "contained";
         internal static readonly string s_entryNodeName = "entry";
+        internal static readonly string s_entryResourceNodeName = "resource";
 
         private static readonly string s_locationToFhirPathRegex = @"\[.*?\]";
 
@@ -71,6 +74,13 @@ namespace Fhir.Anonymizer.Core.Extensions
             return node != null && string.Equals(node.Name, s_containedNodeName, StringComparison.InvariantCultureIgnoreCase);
         }
 
+        public static bool IsEntryResourceNode(this ElementNode node)
+        {
+            return node != null
+                && string.Equals(node.Name, s_entryResourceNodeName, StringComparison.InvariantCultureIgnoreCase)
+                && string.Equals(node.Parent?.Name, s_entryNodeName, StringComparison.InvariantCultureIgnoreCase);
+        }
+
         public static bool HasContainedNode(this ElementNode node)
         {
             return node != null && node.Children(s_containedNodeName).Any();
@@ -78,7 +88,7 @@ namespace Fhir.Anonymizer.Core.Extensions
 
         public static bool IsFhirResource(this ElementNode node)
         {
-            return Enum.TryParse<ResourceType>(node.InstanceType, false, out _);
+            return node.Definition?.IsResource ?? false;
         }
 
         public static string GetFhirPath(this ElementNode node)
@@ -90,6 +100,11 @@ namespace Fhir.Anonymizer.Core.Extensions
         {
             var id = node.Children("id").FirstOrDefault();
             return id?.Value?.ToString() ?? string.Empty;
+        }
+
+        public static ElementNode GetMeta(this ElementNode node)
+        {
+            return node.Children("meta").Cast<ElementNode>().FirstOrDefault();
         }
 
         public static void RemoveNullChildren(this ElementNode node)
@@ -109,6 +124,45 @@ namespace Fhir.Anonymizer.Core.Extensions
             {
                 node.Parent.Remove(node);
                 return;
+            }
+        }
+
+        public static void AddSecurityTag(this ElementNode node, ProcessResult result, IStructureDefinitionSummaryProvider provider)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            ElementNode metaNode = node.GetMeta();
+            Meta meta = metaNode?.ToPoco<Meta>() ?? new Meta();
+
+            if (result.IsRedacted && !meta.Security.Any(x =>
+                string.Equals(x.Code, SecurityLabels.REDACT.Code, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                meta.Security.Add(SecurityLabels.REDACT);
+            }
+
+            if (result.IsAbstracted && !meta.Security.Any(x =>
+                string.Equals(x.Code, SecurityLabels.ABSTRED.Code, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                meta.Security.Add(SecurityLabels.ABSTRED);
+            }
+
+            if (result.IsPerturbed && !meta.Security.Any(x =>
+                string.Equals(x.Code, SecurityLabels.PERTURBED.Code, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                meta.Security.Add(SecurityLabels.PERTURBED);
+            }
+
+            ElementNode newMetaNode = ElementNode.FromElement(meta.ToTypedElement());
+            if (metaNode == null)
+            {
+                node.Add(provider, newMetaNode);
+            }
+            else 
+            {
+                node.Replace(provider, metaNode, newMetaNode);
             }
         }
     }

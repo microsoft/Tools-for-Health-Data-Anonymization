@@ -1,4 +1,5 @@
 using Fhir.Anonymizer.Core.Extensions;
+using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Utility;
 using Hl7.Fhir.ElementModel;
 
@@ -25,16 +26,18 @@ namespace Fhir.Anonymizer.Core.Processors
             return new DateShiftProcessor(parameters.DateShiftKey, parameters.DateShiftKeyPrefix, parameters.EnablePartialDatesForRedact);
         }
 
-        public void Process(ElementNode node)
+        public ProcessResult Process(ElementNode node)
         {
             if (node.IsDateNode())
             {
-                DateTimeUtility.ShiftDateNode(node, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
+                return DateTimeUtility.ShiftDateNode(node, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
             }
             else if (node.IsDateTimeNode() || node.IsInstantNode())
             {
-                DateTimeUtility.ShiftDateTimeAndInstantNode(node, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
+                return DateTimeUtility.ShiftDateTimeAndInstantNode(node, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
             }
+
+            return new ProcessResult();
         }
     }
 }

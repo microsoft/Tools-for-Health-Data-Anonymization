@@ -10,25 +10,55 @@ namespace Fhir.Anonymizer.Core.Extensions
 {
     public static class ElementNodeVisitorExtensions
     {
-        public static void Accept<T>(this ElementNode node, AbstractElementNodeVisitor<T> visitor, T context)
+        public static void Accept(this ElementNode node, AbstractElementNodeVisitor visitor)
         {
-            bool shouldVisitChild = visitor.Visit(node, context);
+            bool shouldVisitChild = visitor.Visit(node);
 
             if (shouldVisitChild)
             {
                 foreach (var child in node.Children().Cast<ElementNode>())
                 {
-                    // skip nodes in Bundle & Contained
-                    if (child.IsEntryNode() || child.IsContainedNode())
+                    if (child.IsContainedNode())
                     {
-                        continue;
+                        VisitContainedNode(visitor, child);
                     }
-
-                    child.Accept<T>(visitor, context);
+                    else if (child.IsEntryResourceNode())
+                    {
+                        VisitBundleEntryResourceNode(visitor, child);
+                    }
+                    else
+                    {
+                        VisitBasicNode(visitor, child);
+                    }
                 }
             }
 
-            visitor.EndVisit(node, context);
+            visitor.EndVisit(node);
+        }
+
+        private static void VisitBasicNode(AbstractElementNodeVisitor visitor, ElementNode child)
+        {
+            child.Accept(visitor);
+        }
+
+        private static void VisitBundleEntryResourceNode(AbstractElementNodeVisitor visitor, ElementNode child)
+        {
+            bool shouldVisitEntryResourceNode = visitor.PreVisitBundleEntryNode(child);
+            if (shouldVisitEntryResourceNode)
+            {
+                child.Accept(visitor);
+            }
+            visitor.PostVisitBundleEntryNode(child);
+        }
+
+        private static void VisitContainedNode(AbstractElementNodeVisitor visitor, ElementNode child)
+        {
+            bool shouldVisitContainedNode = visitor.PreVisitContainedNode(child);
+            if (shouldVisitContainedNode)
+            {
+                child.Accept(visitor);
+            }
+            visitor.PostVisitContainedNode(child);
         }
     }
 }

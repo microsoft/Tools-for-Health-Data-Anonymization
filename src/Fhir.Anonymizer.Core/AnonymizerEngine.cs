@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using EnsureThat;
+using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Processors;
 using Fhir.Anonymizer.Core.Validation;
+using Fhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
@@ -23,7 +25,7 @@ namespace Fhir.Anonymizer.Core
         private readonly ResourceValidator _validator = new ResourceValidator();
         private readonly AnonymizerConfigurationManager _configurationManger;
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
-        private readonly InternalAnonymizeLogic anonymizeLogic = null;
+        private readonly AnonymizationFhirPathRule[] _rules;
 
         public static void InitFhirPathExtensionSymbols()
         {
@@ -42,7 +44,7 @@ namespace Fhir.Anonymizer.Core
 
             InitializeProcessors(_configurationManger);
 
-            anonymizeLogic = new InternalAnonymizeLogic(_configurationManger.FhirPathRules, _processors);
+            _rules = _configurationManger.FhirPathRules;
 
             _logger.LogDebug("AnonymizerEngine initialized successfully");
         }
@@ -65,16 +67,27 @@ namespace Fhir.Anonymizer.Core
             return new AnonymizerEngine(configurationManager);
         }
 
-        public ElementNode AnonymizeResource(Resource resource, AnonymizerSettings settings = null)
+        private ElementNode AnonymizeElementNode(ElementNode node, AnonymizerSettings settings = null)
+        {
+            EnsureArg.IsNotNull(node);
+
+            var visitor = new AnonymizationVisitor(_rules, _processors);
+            node.Accept(visitor);
+            node.RemoveNullChildren();
+
+            return node;
+        }
+
+        public Resource AnonymizeResource(Resource resource, AnonymizerSettings settings = null)
         {
             EnsureArg.IsNotNull(resource);
 
             ValidateInput(settings, resource);
-            ElementNode root = ElementNode.FromElement(resource.ToTypedElement());
-            ElementNode anonymizedNode = anonymizeLogic.Anonymize(root);
-            ValidateOutput(settings, anonymizedNode);
+            var anonymizedNode = AnonymizeElementNode(ElementNode.FromElement(resource.ToTypedElement()));
+            var anonymizedResource = anonymizedNode.ToPoco<Resource>();
+            ValidateOutput(settings, anonymizedResource);
 
-            return anonymizedNode;
+            return anonymizedResource;
         }
 
         public string AnonymizeJson(string json, AnonymizerSettings settings = null)
@@ -82,13 +95,13 @@ namespace Fhir.Anonymizer.Core
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));
 
             var resource = _parser.Parse<Resource>(json);
-            ElementNode anonymizedNode = AnonymizeResource(resource, settings);
+            Resource anonymizedResource = AnonymizeResource(resource, settings);
 
             FhirJsonSerializationSettings serializationSettings = new FhirJsonSerializationSettings
             {
                 Pretty = settings != null && settings.IsPrettyOutput
             };
-            return anonymizedNode.ToJson(serializationSettings);
+            return anonymizedResource.ToJson(serializationSettings);
         }
 
         private void ValidateInput(AnonymizerSettings settings, Resource resource)
@@ -99,12 +112,11 @@ namespace Fhir.Anonymizer.Core
             }
         }
 
-        private void ValidateOutput(AnonymizerSettings settings, ElementNode anonymizedNode)
+        private void ValidateOutput(AnonymizerSettings settings, Resource anonymizedNode)
         {
             if (settings != null && settings.ValidateOutput)
             {
-                anonymizedNode.RemoveNullChildren();
-                _validator.ValidateOutput(anonymizedNode.ToPoco<Resource>());
+                _validator.ValidateOutput(anonymizedNode);
             }
         }
 
