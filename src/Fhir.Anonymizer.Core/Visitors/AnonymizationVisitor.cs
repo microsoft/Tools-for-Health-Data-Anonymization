@@ -19,8 +19,6 @@ namespace Fhir.Anonymizer.Core.Visitors
         private Dictionary<string, IAnonymizerProcessor> _processors;
         private HashSet<ElementNode> _visitedNodes = new HashSet<ElementNode>();
         private Stack<ProcessResult> _processResults = new Stack<ProcessResult>();
-        private readonly PocoStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
-
 
         public bool AddSecurityTag { get; set; } = true;
 
@@ -53,7 +51,7 @@ namespace Fhir.Anonymizer.Core.Visitors
 
                 if (AddSecurityTag && !node.IsContainedNode())
                 {
-                    node.AddSecurityTag(result, _provider);
+                    node.AddSecurityTag(result);
                 }
             }
         }

@@ -29,19 +29,6 @@ namespace Fhir.Anonymizer.Core.Extensions
             return node?.Children(s_containedNodeName).Cast<ElementNode>().ToList();
         }
 
-        public static IEnumerable<ElementNode> SubResourceNodesAndSelf(this ElementNode node)
-        {
-            yield return node;
-
-            foreach (var child in node.Descendants().Cast<ElementNode>())
-            {
-                if (child.IsFhirResource())
-                {
-                    yield return child;
-                }
-            }
-        }
-
         public static IEnumerable<ElementNode> ResourceDescendants(this ElementNode node)
         {
             foreach (var child in node.Children().Cast<ElementNode>())

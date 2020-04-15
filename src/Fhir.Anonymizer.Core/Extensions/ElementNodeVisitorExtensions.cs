@@ -18,47 +18,11 @@ namespace Fhir.Anonymizer.Core.Extensions
             {
                 foreach (var child in node.Children().Cast<ElementNode>())
                 {
-                    if (child.IsContainedNode())
-                    {
-                        VisitContainedNode(visitor, child);
-                    }
-                    else if (child.IsEntryResourceNode())
-                    {
-                        VisitBundleEntryResourceNode(visitor, child);
-                    }
-                    else
-                    {
-                        VisitBasicNode(visitor, child);
-                    }
+                    child.Accept(visitor);
                 }
             }
 
             visitor.EndVisit(node);
-        }
-
-        private static void VisitBasicNode(AbstractElementNodeVisitor visitor, ElementNode child)
-        {
-            child.Accept(visitor);
-        }
-
-        private static void VisitBundleEntryResourceNode(AbstractElementNodeVisitor visitor, ElementNode child)
-        {
-            bool shouldVisitEntryResourceNode = visitor.PreVisitBundleEntryNode(child);
-            if (shouldVisitEntryResourceNode)
-            {
-                child.Accept(visitor);
-            }
-            visitor.PostVisitBundleEntryNode(child);
-        }
-
-        private static void VisitContainedNode(AbstractElementNodeVisitor visitor, ElementNode child)
-        {
-            bool shouldVisitContainedNode = visitor.PreVisitContainedNode(child);
-            if (shouldVisitContainedNode)
-            {
-                child.Accept(visitor);
-            }
-            visitor.PostVisitContainedNode(child);
         }
     }
 }

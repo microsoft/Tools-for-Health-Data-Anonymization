@@ -67,24 +67,13 @@ namespace Fhir.Anonymizer.Core
             return new AnonymizerEngine(configurationManager);
         }
 
-        private ElementNode AnonymizeElementNode(ElementNode node, AnonymizerSettings settings = null)
-        {
-            EnsureArg.IsNotNull(node);
-
-            var visitor = new AnonymizationVisitor(_rules, _processors);
-            node.Accept(visitor);
-            node.RemoveNullChildren();
-
-            return node;
-        }
-
         public Resource AnonymizeResource(Resource resource, AnonymizerSettings settings = null)
         {
             EnsureArg.IsNotNull(resource);
 
             ValidateInput(settings, resource);
-            var anonymizedNode = AnonymizeElementNode(ElementNode.FromElement(resource.ToTypedElement()));
-            var anonymizedResource = anonymizedNode.ToPoco<Resource>();
+            var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
+            var anonymizedResource = resourceNode.AnonymizeElementNode(_rules, _processors).ToPoco<Resource>();
             ValidateOutput(settings, anonymizedResource);
 
             return anonymizedResource;

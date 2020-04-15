@@ -10,6 +10,11 @@
 
         public void Update(ProcessResult result)
         {
+            if (result == null)
+            {
+                return;
+            }
+
             IsRedacted |= result.IsRedacted;
             IsPerturbed |= result.IsPerturbed;
             IsAbstracted |= result.IsAbstracted;

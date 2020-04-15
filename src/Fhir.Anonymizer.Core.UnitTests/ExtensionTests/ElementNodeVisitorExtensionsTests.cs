@@ -32,7 +32,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
         }
 
         [Fact]
-        public void GivenAPatientNodeWithContained_WhenVisit_ContainedNodesShouldNotBeVisited()
+        public void GivenAPatientNodeWithContained_WhenVisit_AllNodesShouldBeVisited()
         {
             Patient patient = new Patient();
             patient.Active = true;
@@ -44,16 +44,18 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
             var result = new HashSet<string>();
             node.Accept(new TestVisitor(result));
 
-            Assert.Equal(5, result.Count);
+            Assert.Equal(7, result.Count);
             Assert.Contains("Patient", result);
             Assert.Contains("Patient.active[0]", result);
             Assert.Contains("Patient.address[0]", result);
             Assert.Contains("Patient.address[0].city[0]", result);
             Assert.Contains("Patient.address[1]", result);
+            Assert.Contains("Patient.contained[0]", result);
+            Assert.Contains("Patient.contained[0].status[0]", result);
         }
 
         [Fact]
-        public void GivenABundleNode_WhenVisit_BundleEntryNodesShouldNotBeVisited()
+        public void GivenABundleNode_WhenVisit_AllNodesShouldBeVisited()
         {
             Bundle bundle = new Bundle();
             bundle.Timestamp = new DateTimeOffset();
@@ -67,11 +69,13 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
             var result = new HashSet<string>();
             node.Accept(new TestVisitor(result));
 
-            Assert.Equal(4, result.Count);
+            Assert.Equal(6, result.Count);
             Assert.Contains("Bundle", result);
             Assert.Contains("Bundle.timestamp[0]", result);
             Assert.Contains("Bundle.entry[0].fullUrl[0]", result);
             Assert.Contains("Bundle.entry[0]", result);
+            Assert.Contains("Bundle.entry[0].resource[0]", result);
+            Assert.Contains("Bundle.entry[0].resource[0].active[0]", result);
         }
 
         private class TestVisitor : AbstractElementNodeVisitor
@@ -80,18 +84,6 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
             public TestVisitor(HashSet<string> result)
             {
                 _result = result;
-            }
-
-            public override bool PreVisitBundleEntryNode(ElementNode node)
-            {
-                // Skip process in the bundle entry
-                return false;
-            }
-
-            public override bool PreVisitContainedNode(ElementNode node)
-            {
-                // Skip process in the contained entry
-                return false;
             }
 
             public override bool Visit(ElementNode node)
