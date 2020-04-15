@@ -1,5 +1,14 @@
 {
   "resourceType": "Condition",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "part of the resource is removed"
+      }
+    ]
+  },
   "contained": [
     {
       "resourceType": "Practitioner",

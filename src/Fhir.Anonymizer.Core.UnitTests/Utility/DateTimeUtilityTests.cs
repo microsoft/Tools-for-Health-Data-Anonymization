@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Utility;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
@@ -97,9 +98,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADate_WhenPartialRedact_ThenDateShouldBeRedacted(Date date, Date expectedDate)
         {
             var node = ElementNode.FromElement(date.ToTypedElement());
-            DateTimeUtility.RedactDateNode(node, true);
+            var processResult = DateTimeUtility.RedactDateNode(node, true);
 
             Assert.Equal(expectedDate?.ToString() ?? null, node.Value);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -107,9 +109,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADate_WhenRedact_ThenDateShouldBeRedacted(Date date)
         {
             var node = ElementNode.FromElement(date.ToTypedElement());
-            DateTimeUtility.RedactDateNode(node, false);
+            var processResult = DateTimeUtility.RedactDateNode(node, false);
 
             Assert.Null(node.Value);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -117,10 +120,11 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADate_WhenDateShift_ThenDateShouldBeShifted(Date date, DateTime minExpectedDate, DateTime maxExpectedDate)
         {
             var node = ElementNode.FromElement(date.ToTypedElement());
-            DateTimeUtility.ShiftDateNode(node, string.Empty, string.Empty, true);
+            var processResult = DateTimeUtility.ShiftDateNode(node, string.Empty, string.Empty, true);
 
             Assert.True(minExpectedDate <= DateTime.Parse(node.Value.ToString()));
             Assert.True(maxExpectedDate >= DateTime.Parse(node.Value.ToString()));
+            Assert.True(processResult.IsPerturbed);
         }
 
         [Theory]
@@ -128,13 +132,15 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADate_WhenDateShiftWithSamePrefix_ThenSameAmountShouldBeShifted(Date date1, Date date2)
         {
             var node1 = ElementNode.FromElement(date1.ToTypedElement());
-            DateTimeUtility.ShiftDateNode(node1, "123", "filename", true);
+            var processResult1 = DateTimeUtility.ShiftDateNode(node1, "123", "filename", true);
             var offset1 = DateTime.Parse(node1.Value.ToString()).Subtract(DateTime.Parse(date1.ToString()));
 
             var node2 = ElementNode.FromElement(date2.ToTypedElement());
-            DateTimeUtility.ShiftDateNode(node2, "123", "filename", true);
+            var processResult2 = DateTimeUtility.ShiftDateNode(node2, "123", "filename", true);
             var offset2 = DateTime.Parse(node2.Value.ToString()).Subtract(DateTime.Parse(date2.ToString()));
 
+            Assert.True(processResult1.IsPerturbed);
+            Assert.True(processResult2.IsPerturbed);
             Assert.Equal(offset1.Days, offset2.Days);
         }
 
@@ -143,9 +149,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADateWithoutDayOrAgeOver89_WhenDateShift_ThenDateShouldBeRedacted(Date date, Date expectedDate)
         {
             var node = ElementNode.FromElement(date.ToTypedElement());
-            DateTimeUtility.ShiftDateNode(node, string.Empty, string.Empty, true);
+            var processResult = DateTimeUtility.ShiftDateNode(node, string.Empty, string.Empty, true);
 
             Assert.Equal(expectedDate?.ToString() ?? null, node.Value);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -153,9 +160,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADateTime_WhenRedact_ThenDateTimeShouldBeRedacted(FhirDateTime dateTime, FhirDateTime expectedDateTime)
         {
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
-            DateTimeUtility.RedactDateTimeAndInstantNode(node, true);
+            var processResult = DateTimeUtility.RedactDateTimeAndInstantNode(node, true);
 
             Assert.Equal(expectedDateTime?.ToString() ?? null, node.Value);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -163,10 +171,11 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADateTime_WhenDateShift_ThenDateTimeShouldBeShifted(FhirDateTime dateTime, FhirDateTime minExpectedDateTime, FhirDateTime maxExpectedDateTime)
         {
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
-            DateTimeUtility.ShiftDateTimeAndInstantNode(node, Guid.NewGuid().ToString("N"), string.Empty, true);
+            var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, Guid.NewGuid().ToString("N"), string.Empty, true);
 
             Assert.True(minExpectedDateTime <= new FhirDateTime(node.Value.ToString()));
             Assert.True(maxExpectedDateTime >= new FhirDateTime(node.Value.ToString()));
+            Assert.True(processResult.IsPerturbed);
         }
 
         [Theory]
@@ -174,8 +183,9 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADateTime_WhenDateShift_ThenDateTimeFormatShouldNotChange(string dateShiftKey, FhirDateTime dateTime, string expectedDateTimeString)
         {
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
-            DateTimeUtility.ShiftDateTimeAndInstantNode(node, dateShiftKey, string.Empty, true);
+            var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, dateShiftKey, string.Empty, true);
             Assert.Equal(expectedDateTimeString, node.Value.ToString());
+            Assert.True(processResult.IsPerturbed);
         }
 
         [Theory]
@@ -183,9 +193,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenADateTimeWithoutDayOrAgeOver89_WhenDateShift_ThenDateTimeShouldBeRedacted(FhirDateTime dateTime, FhirDateTime expectedDateTime)
         {
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
-            DateTimeUtility.ShiftDateTimeAndInstantNode(node, string.Empty, string.Empty, true);
+            var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, string.Empty, string.Empty, true);
 
             Assert.Equal(expectedDateTime?.ToString() ?? null, node.Value);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -193,9 +204,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenAnAge_WhenPartialRedact_ThenAgeOver89ShouldBeRedacted(Age age)
         {
             var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
-            DateTimeUtility.RedactAgeDecimalNode(node, true);
+            var processResult = DateTimeUtility.RedactAgeDecimalNode(node, true);
 
             Assert.Equal(int.Parse(age.Value.ToString()) > 89 ? null : age.Value.ToString(), node.Value?.ToString() ?? null);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
@@ -203,9 +215,10 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public void GivenAnAge_WhenRedact_ThenAgeShouldBeRedacted(Age age)
         {
             var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
-            DateTimeUtility.RedactAgeDecimalNode(node, false);
+            var processResult = DateTimeUtility.RedactAgeDecimalNode(node, false);
 
             Assert.Null(node.Value);
+            Assert.True(processResult.IsRedacted);
         }
     }
 }
