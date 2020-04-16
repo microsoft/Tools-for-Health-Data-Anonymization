@@ -37,7 +37,7 @@ namespace Fhir.Anonymizer.Core
             
         }
 
-        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager) : base()
+        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager)
         {
             _configurationManger = configurationManager;
             _processors = new Dictionary<string, IAnonymizerProcessor>();
