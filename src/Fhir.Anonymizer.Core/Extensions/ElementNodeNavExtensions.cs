@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Model;
 using Hl7.FhirPath;
-using Hl7.FhirPath.Expressions;
 
 namespace Fhir.Anonymizer.Core.Extensions
 {
     public static class ElementNodeNavExtensions
     {
-        internal static readonly string s_containedNodeName = "contained";
-        internal static readonly string s_entryNodeName = "entry";
-        internal static readonly string s_resourceNodeName = "resource";
-
         public static List<ElementNode> GetEntryResourceChildren(this ElementNode node)
         {
-            return node?.Children(s_entryNodeName)
-                    .Select(entry => entry?.Children(s_resourceNodeName).FirstOrDefault())
+            return node?.Children(Constants.EntryNodeName)
+                    .Select(entry => entry?.Children(Constants.ResourceNodeName).FirstOrDefault())
                     .Where(resource => resource != null)
                     .Cast<ElementNode>()
                     .ToList();
@@ -26,7 +18,7 @@ namespace Fhir.Anonymizer.Core.Extensions
 
         public static List<ElementNode> GetContainedChildren(this ElementNode node)
         {
-            return node?.Children(s_containedNodeName).Cast<ElementNode>().ToList();
+            return node?.Children(Constants.ContainedNodeName).Cast<ElementNode>().ToList();
         }
 
         public static IEnumerable<ElementNode> ResourceDescendants(this ElementNode node)
