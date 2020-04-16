@@ -16,13 +16,15 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             RedactProcessor processor = new RedactProcessor(enablePartialDatesForRedact: true, true, true, new List<string>());
             Date testDate = new Date("2015-02");
             var node = ElementNode.FromElement(testDate.ToTypedElement());
-            processor.Process(node);
+            var processResult = processor.Process(node);
             Assert.Equal("2015", node.Value.ToString());
+            Assert.True(processResult.IsRedacted);
 
             processor = new RedactProcessor(enablePartialDatesForRedact: false, true, true, new List<string>());
             node = ElementNode.FromElement(testDate.ToTypedElement());
-            processor.Process(node);
+            processResult = processor.Process(node);
             Assert.Null(node.Value);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Fact]
@@ -31,13 +33,15 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             RedactProcessor processor = new RedactProcessor(enablePartialDatesForRedact: true, true, true, new List<string>());
             FhirDateTime testDateTime = new FhirDateTime("2015-02-07T13:28:17-05:00");
             var node = ElementNode.FromElement(testDateTime.ToTypedElement());
-            processor.Process(node);
+            var processResult = processor.Process(node);
             Assert.Equal("2015", node.Value.ToString());
+            Assert.True(processResult.IsRedacted);
 
             processor = new RedactProcessor(enablePartialDatesForRedact: false, true, true, new List<string>());
             node = ElementNode.FromElement(testDateTime.ToTypedElement());
-            processor.Process(node);
+            processResult = processor.Process(node);
             Assert.Null(node.Value);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Fact]
@@ -46,13 +50,15 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             RedactProcessor processor = new RedactProcessor(enablePartialDatesForRedact: true, true, true, new List<string>());
             Instant testInstant = new Instant(new DateTimeOffset(new DateTime(2015, 1, 1)));
             var node = ElementNode.FromElement(testInstant.ToTypedElement());
-            processor.Process(node);
+            var processResult = processor.Process(node);
             Assert.Equal("2015", node.Value.ToString());
+            Assert.True(processResult.IsRedacted);
 
             processor = new RedactProcessor(enablePartialDatesForRedact: false, true, true, new List<string>());
             node = ElementNode.FromElement(testInstant.ToTypedElement());
-            processor.Process(node);
+            processResult = processor.Process(node);
             Assert.Null(node.Value);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Fact]
@@ -61,19 +67,22 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             RedactProcessor processor = new RedactProcessor(true, enablePartialAgesForRedact: true, true, new List<string>());
             var age = new Age() { Value = 91 };
             var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
-            processor.Process(node);
+            var processResult = processor.Process(node);
             Assert.Null(node.Value);
+            Assert.True(processResult.IsRedacted);
 
             processor = new RedactProcessor(true, enablePartialAgesForRedact: false, true, new List<string>());
             node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
-            processor.Process(node);
+            processResult = processor.Process(node);
             Assert.Null(node.Value);
+            Assert.True(processResult.IsRedacted);
 
             processor = new RedactProcessor(true, enablePartialAgesForRedact: true, true, new List<string>());
             age = new Age() { Value = 89 };
             node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
-            processor.Process(node);
+            processResult = processor.Process(node);
             Assert.Equal("89", node.Value.ToString());
+            Assert.True(processResult.IsRedacted);
         }
 
         [Fact]
@@ -82,19 +91,22 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             RedactProcessor processor = new RedactProcessor(true, true, enablePartialZipCodesForRedact: true, restrictedZipCodeTabulationAreas: new List<string>() { "123" });
             var node = ElementNode.FromElement(new FhirString("12345").ToTypedElement());
             node.Name = "postalCode";
-            processor.Process(node);
+            var processResult = processor.Process(node);
             Assert.Equal("00000", node.Value.ToString());
+            Assert.True(processResult.IsAbstracted);
 
             node = ElementNode.FromElement(new FhirString("54321").ToTypedElement());
             node.Name = "postalCode";
-            processor.Process(node);
+            processResult = processor.Process(node);
             Assert.Equal("54300", node.Value.ToString());
+            Assert.True(processResult.IsAbstracted);
 
             processor = new RedactProcessor(true, true, enablePartialZipCodesForRedact: false, restrictedZipCodeTabulationAreas: new List<string>() { });
             node = ElementNode.FromElement(new FhirString("54321").ToTypedElement());
             node.Name = "postalCode";
-            processor.Process(node);
+            processResult = processor.Process(node);
             Assert.Null(node.Value);
+            Assert.True(processResult.IsRedacted);
         }
 
         [Fact]
@@ -103,8 +115,9 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             RedactProcessor processor = new RedactProcessor(true, true, true, new List<string>());
             var node = ElementNode.FromElement(new FhirString("TestString").ToTypedElement());
             node.Name = "dummy";
-            processor.Process(node);
+            var processResult = processor.Process(node);
             Assert.Null(node.Value);
+            Assert.True(processResult.IsRedacted);
         }
     }
 }

@@ -45,9 +45,18 @@ namespace Fhir.Anonymizer.Core.UnitTests
         private const string PrettyOutputTarget =
 @"{
   ""resourceType"": ""Patient"",
-  ""id"": ""example""
+  ""id"": ""example"",
+  ""meta"": {
+    ""security"": [
+      {
+        ""system"": ""http://terminology.hl7.org/CodeSystem/v3-ObservationValue"",
+        ""code"": ""REDACTED"",
+        ""display"": ""part of the resource is removed""
+      }
+    ]
+  }
 }";
 
-        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"example\"}";
+        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"example\",\"meta\":{\"security\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/v3-ObservationValue\",\"code\":\"REDACTED\",\"display\":\"part of the resource is removed\"}]}}";
     }
 }

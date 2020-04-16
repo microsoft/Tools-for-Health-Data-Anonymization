@@ -198,11 +198,11 @@ namespace Fhir.Anonymizer.DataFactoryTool
             using FhirBlobDataStream inputStream = new FhirBlobDataStream(inputBlobClient);
             FhirStreamReader reader = new FhirStreamReader(inputStream);
             FhirBlobConsumer consumer = new FhirBlobConsumer(outputBlobClient);
+            var engine = AnonymizerEngine.CreateWithFileContext(_configFile, blobName, inputFolderPrefix);
             Func<string, string> anonymizerFunction = (item) =>
             {
                 try
                 {
-                    var engine = AnonymizerEngine.CreateWithFileContext(_configFile, blobName, inputFolderPrefix);
                     return engine.AnonymizeJson(item);
                 }
                 catch (Exception ex)

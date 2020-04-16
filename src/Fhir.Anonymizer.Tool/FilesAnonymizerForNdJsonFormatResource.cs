@@ -78,11 +78,11 @@ namespace Fhir.Anonymizer.Tool
                 {
                     using FhirStreamReader reader = new FhirStreamReader(inputStream);
                     using FhirStreamConsumer consumer = new FhirStreamConsumer(outputStream);
+                    var engine = AnonymizerEngine.CreateWithFileContext(_configFilePath, bulkResourceFileName, _inputFolder);
                     Func<string, string> anonymizeFunction = (content) =>
                     {
                         try
                         {
-                            var engine = AnonymizerEngine.CreateWithFileContext(_configFilePath, bulkResourceFileName, _inputFolder);
                             var settings = new AnonymizerSettings()
                             {
                                 IsPrettyOutput = false,
