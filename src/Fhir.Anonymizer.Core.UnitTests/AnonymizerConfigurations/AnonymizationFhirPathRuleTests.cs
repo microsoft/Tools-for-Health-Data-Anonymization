@@ -15,6 +15,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
             yield return new object[] { new Dictionary<string, string>() { { "path", "nodesByType('address')" }, { "method", "Test" } }, "", "nodesByType('address')", "nodesByType('address')", "Test" };
             yield return new object[] { new Dictionary<string, string>() { { "path", "Patient" }, { "method", "Test" } }, "Patient", "Patient", "Patient", "Test" };
             yield return new object[] { new Dictionary<string, string>() { { "path", "Patient.abc.func(n=1).a.test('abc')" }, { "method", "Test" } }, "Patient", "abc.func(n=1).a.test('abc')", "Patient.abc.func(n=1).a.test('abc')", "Test" };
+            yield return new object[] { new Dictionary<string, string>() { { "path", "Resource" }, { "method", "Test" } }, "Resource", "Resource", "Resource", "Test" };
         }
 
         [Theory]
