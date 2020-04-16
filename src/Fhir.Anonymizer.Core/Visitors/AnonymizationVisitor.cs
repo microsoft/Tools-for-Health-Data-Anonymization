@@ -67,7 +67,7 @@ namespace Fhir.Anonymizer.Core.Visitors
         {
             ProcessResult result = new ProcessResult();
             string typeString = node.InstanceType;
-            var resourceSpecificAndGeneralRules = _rules.Where(r => r.ResourceType.Equals(typeString) || string.IsNullOrEmpty(r.ResourceType));
+            IEnumerable<AnonymizationFhirPathRule> resourceSpecificAndGeneralRules = GetRulesByType(typeString);
 
             foreach (var rule in resourceSpecificAndGeneralRules)
             {
@@ -84,6 +84,14 @@ namespace Fhir.Anonymizer.Core.Visitors
             }
 
             return result;
+        }
+
+        private IEnumerable<AnonymizationFhirPathRule> GetRulesByType(string typeString)
+        {
+            return _rules.Where(r => r.ResourceType.Equals(typeString) 
+                                    || string.IsNullOrEmpty(r.ResourceType) 
+                                    || string.Equals(Constants.GeneralResourceType, r.ResourceType)
+                                    || string.Equals(Constants.GeneralDomainResourceType, r.ResourceType));
         }
 
         public ProcessResult ProcessNodeRecursive(ElementNode node, IAnonymizerProcessor processor, HashSet<ElementNode> visitedNodes)

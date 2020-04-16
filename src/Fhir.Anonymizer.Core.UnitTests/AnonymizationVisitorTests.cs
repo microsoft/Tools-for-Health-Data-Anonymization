@@ -212,6 +212,51 @@ namespace Fhir.Anonymizer.Core.UnitTests
             Assert.Contains(SecurityLabels.PERTURBED.Code, resource.Meta.Security.Select(s => s.Code));
         }
 
+        [Fact]
+        public void GivenARuleWithGeneralType_WhenProcess_AllTypeNodesShouldBeProcessed()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Resource.address", "address", "Patient", "redact", AnonymizerRuleType.FhirPathRule, "Patient.address"),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var patient = CreateTestPatient();
+            var patientNode = ElementNode.FromElement(patient.ToTypedElement());
+            patientNode.Accept(visitor);
+            patientNode.RemoveNullChildren();
+
+            var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
+            Assert.Null(patientAddress);
+
+            patient = patientNode.ToPoco<Patient>();
+            Assert.Single(patient.Meta.Security);
+            Assert.Contains(SecurityLabels.REDACT.Code, patient.Meta.Security.Select(s => s.Code));
+        }
+
+        [Fact]
+        public void GivenARuleForAll_WhenProcess_AllTypeNodesShouldBeProcessed()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Resource", "Resource", "Resource", "redact", AnonymizerRuleType.FhirPathRule, "Resource"),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var patient = CreateTestPatient();
+            var patientNode = ElementNode.FromElement(patient.ToTypedElement());
+            patientNode.Accept(visitor);
+            patientNode.RemoveNullChildren();
+
+            var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
+            Assert.Null(patientAddress);
+
+            patient = patientNode.ToPoco<Patient>();
+            Assert.Single(patient.Meta.Security);
+            Assert.Contains(SecurityLabels.REDACT.Code, patient.Meta.Security.Select(s => s.Code));
+        }
 
         private Dictionary<string, IAnonymizerProcessor> CreateTestProcessors()
         {

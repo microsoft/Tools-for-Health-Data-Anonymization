@@ -11,5 +11,8 @@ namespace Fhir.Anonymizer.Core
 
         internal const int DefaultPartitionedExecutionCount = 4;
         internal const int DefaultPartitionedExecutionBatchSize = 1000;
+
+        internal const string GeneralResourceType = "Resource";
+        internal const string GeneralDomainResourceType = "DomainResource";
     }
 }
