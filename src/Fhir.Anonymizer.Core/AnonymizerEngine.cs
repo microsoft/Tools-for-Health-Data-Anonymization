@@ -73,7 +73,7 @@ namespace Fhir.Anonymizer.Core
 
             ValidateInput(settings, resource);
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
-            var anonymizedResource = resourceNode.AnonymizeElementNode(_rules, _processors).ToPoco<Resource>();
+            var anonymizedResource = resourceNode.Anonymize(_rules, _processors).ToPoco<Resource>();
             ValidateOutput(settings, anonymizedResource);
 
             return anonymizedResource;

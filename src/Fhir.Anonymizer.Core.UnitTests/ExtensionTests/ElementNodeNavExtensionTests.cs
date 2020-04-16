@@ -12,7 +12,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
     public class ElementNodeNavExtensionTests
     {
         [Fact]
-        public void GivenAnSingleResourceNode_WhenGetResourceDescendants_DescendantsShouldBeReturned()
+        public void GivenASingleResourceNode_WhenGetResourceDescendants_DescendantsShouldBeReturned()
         {
             Patient patient = new Patient();
             patient.Address.Add(new Address());
@@ -28,7 +28,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
         }
 
         [Fact]
-        public void GivenAnContianedNode_WhenGetResourceDescendants_ContainedNodesShouldNotBeReturned()
+        public void GivenAContainedNode_WhenGetResourceDescendants_ContainedNodesShouldNotBeReturned()
         {
             Patient patient = new Patient();
             patient.Address.Add(new Address());

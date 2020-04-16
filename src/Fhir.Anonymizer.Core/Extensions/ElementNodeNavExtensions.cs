@@ -40,7 +40,7 @@ namespace Fhir.Anonymizer.Core.Extensions
             }
         }
 
-        public static IEnumerable<ElementNode> ResourceDescendantsAndSelf(this IEnumerable<ElementNode> nodes)
+        public static IEnumerable<ElementNode> SelfAndDescendantsWithoutSubResource(this IEnumerable<ElementNode> nodes)
         {
             foreach (var node in nodes)
             {

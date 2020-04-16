@@ -17,12 +17,12 @@ namespace Fhir.Anonymizer.Core.Extensions
 
         public static IEnumerable<ITypedElement> NodesByType(IEnumerable<ITypedElement> nodes, string typeName)
         {
-            return nodes.Cast<ElementNode>().ResourceDescendantsAndSelf().Where(n => typeName.Equals(n.InstanceType));
+            return nodes.Cast<ElementNode>().SelfAndDescendantsWithoutSubResource().Where(n => typeName.Equals(n.InstanceType));
         }
 
         public static IEnumerable<ITypedElement> NodesByName(IEnumerable<ITypedElement> nodes, string name)
         {
-            return nodes.Cast<ElementNode>().ResourceDescendantsAndSelf().Where(n => name.Equals(n.Name));
+            return nodes.Cast<ElementNode>().SelfAndDescendantsWithoutSubResource().Where(n => name.Equals(n.Name));
         }
     }
 }

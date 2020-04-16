@@ -48,6 +48,7 @@ namespace Fhir.Anonymizer.Core.Visitors
 
                 if (context.Item1 != node)
                 {
+                    // Should never throw exception here. In case any bug happen, we can get clear message for this exception.
                     throw new ConstraintException("Internal error: access wrong context.");
                 }
                 

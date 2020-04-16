@@ -15,7 +15,7 @@ namespace Fhir.Anonymizer.Core.Extensions
     {
         private static readonly PocoStructureDefinitionSummaryProvider s_provider = new PocoStructureDefinitionSummaryProvider();
 
-        public static ElementNode AnonymizeElementNode(this ElementNode node, AnonymizationFhirPathRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
+        public static ElementNode Anonymize(this ElementNode node, AnonymizationFhirPathRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
         {
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, processors);
             node.Accept(visitor);
