@@ -18,7 +18,7 @@ namespace Fhir.Anonymizer.Core.Visitors
         private AnonymizationFhirPathRule[] _rules;
         private Dictionary<string, IAnonymizerProcessor> _processors;
         private HashSet<ElementNode> _visitedNodes = new HashSet<ElementNode>();
-        private Stack<ProcessResult> _processResults = new Stack<ProcessResult>();
+        private Stack<Tuple<ElementNode, ProcessResult>> _contextStack = new Stack<Tuple<ElementNode, ProcessResult>>();
 
         public bool AddSecurityTag { get; set; } = true;
 
@@ -32,8 +32,8 @@ namespace Fhir.Anonymizer.Core.Visitors
         {
             if (node.IsFhirResource())
             {
-                ProcessResult result = AnonymizeResourceNode(node);
-                _processResults.Push(result);
+                ProcessResult result = ProcessResourceNode(node);
+                _contextStack.Push(new Tuple<ElementNode, ProcessResult>(node, result));
             }
 
             return true;
@@ -43,10 +43,17 @@ namespace Fhir.Anonymizer.Core.Visitors
         {
             if (node.IsFhirResource())
             {
-                ProcessResult result = _processResults.Pop();
-                if (_processResults.Count() > 0)
+                Tuple<ElementNode, ProcessResult> context = _contextStack.Pop();
+                ProcessResult result = context.Item2;
+
+                if (context.Item1 != node)
                 {
-                    _processResults.Peek().Update(result);
+                    throw new ConstraintException("Internal error: access wrong context.");
+                }
+                
+                if (_contextStack.Count() > 0)
+                {
+                    _contextStack.Peek().Item2.Update(result);
                 }
 
                 if (AddSecurityTag && !node.IsContainedNode())
@@ -56,7 +63,7 @@ namespace Fhir.Anonymizer.Core.Visitors
             }
         }
 
-        private ProcessResult AnonymizeResourceNode(ElementNode node)
+        private ProcessResult ProcessResourceNode(ElementNode node)
         {
             ProcessResult result = new ProcessResult();
             string typeString = node.InstanceType;
@@ -72,14 +79,14 @@ namespace Fhir.Anonymizer.Core.Visitors
 
                 foreach (var matchNode in node.Select(rule.Expression).Cast<ElementNode>())
                 {
-                    result.Update(ProcessNode(matchNode, _processors[method], _visitedNodes));
+                    result.Update(ProcessNodeRecursive(matchNode, _processors[method], _visitedNodes));
                 }
             }
 
             return result;
         }
 
-        public ProcessResult ProcessNode(ElementNode node, IAnonymizerProcessor processor, HashSet<ElementNode> visitedNodes)
+        public ProcessResult ProcessNodeRecursive(ElementNode node, IAnonymizerProcessor processor, HashSet<ElementNode> visitedNodes)
         {
             ProcessResult result = new ProcessResult();
             if (visitedNodes.Contains(node))
@@ -97,7 +104,7 @@ namespace Fhir.Anonymizer.Core.Visitors
                     continue;
                 }
 
-                result.Update(ProcessNode(child, processor, visitedNodes));
+                result.Update(ProcessNodeRecursive(child, processor, visitedNodes));
             }
 
             return result;
