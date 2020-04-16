@@ -5,12 +5,18 @@ using System.Text;
 using Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
+using Hl7.FhirPath;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
 {
     public class FhirPathSymbolExtensionsTests
     {
+        public FhirPathSymbolExtensionsTests()
+        {
+            FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
+        }
+
         [Fact]
         public void GivenListOfElementNodes_WhenGetDecendantsByType_AllNodesShouldBeReturned()
         {
@@ -95,6 +101,21 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
             Assert.Contains("Patient.address[0]", results);
             Assert.Contains("Organization.address[0]", results);
             Assert.Contains("Patient.contact[0].address[0]", results);
+        }
+
+        [Fact]
+        public void GivenAPatient_WhenNavigateWithExtendedFunction_MatchNodeShouldBeReturned()
+        {
+            Patient patient = new Patient();
+            patient.Active = true;
+            patient.Address.Add(new Address() { City = "Test0" });
+            patient.Contact.Add(new Patient.ContactComponent() { Address = new Address() { City = "Test1" } });
+
+            int resultCount = ElementNode.FromElement(patient.ToTypedElement()).Select("Patient.nodesByName('address')").Count();
+            Assert.Equal(2, resultCount);
+
+            resultCount = ElementNode.FromElement(patient.ToTypedElement()).Select("Patient.nodesByType('Address')").Count();
+            Assert.Equal(2, resultCount);
         }
     }
 }
