@@ -38,6 +38,5 @@ namespace Fhir.Anonymizer.Tool
 
             return string.Equals(inputFolderPath, outputFolderPath, StringComparison.InvariantCultureIgnoreCase);
         }
-
     }
 }

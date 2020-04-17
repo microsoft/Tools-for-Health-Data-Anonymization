@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using CommandLine;
 using Fhir.Anonymizer.Core;
-using Fhir.Anonymizer.Core.ResourceTransformers;
 using Microsoft.Extensions.Logging;
 
 namespace Fhir.Anonymizer.Tool    

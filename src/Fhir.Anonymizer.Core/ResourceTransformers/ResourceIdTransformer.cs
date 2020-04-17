@@ -89,11 +89,7 @@ namespace Fhir.Anonymizer.Core.ResourceTransformers
                     var newReference = $"{reference.Substring(0, group.Index)}{newId}";
                     // add reference suffix if exists (\/_history\/[A-Za-z0-9\-\.]{1,64})?
                     var suffixIndex = group.Index + group.Length;
-                    if (suffixIndex < reference.Length)
-                    {
-                        newReference += reference.Substring(suffixIndex);
-                    }
-
+                    newReference += reference.Substring(suffixIndex);
                     _logger.LogDebug($"Literal reference {reference} is transformed to {newReference}.");
 
                     return newReference;
