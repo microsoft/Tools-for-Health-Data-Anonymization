@@ -1,6 +1,6 @@
 {
   "resourceType": "Bundle",
-  "id": "bundle-references",
+  "id": "44dc30d3b320f82451d2e806ce41bc4013c2b0d0ee493b7c1359145384599bac",
   "meta": {
     "security": [
       {
@@ -28,11 +28,11 @@
         "contained": [
           {
             "resourceType": "Practitioner",
-            "id": "p1-abc"
+            "id": "f64551fcd6f07823cb87971cfb91446425da18286b3ab1ef935e0cbd7a69f68a"
           }
         ],
         "asserter": {
-          "reference": "#p1-abc"
+          "reference": "#f64551fcd6f07823cb87971cfb91446425da18286b3ab1ef935e0cbd7a69f68a"
         }
       }
     }

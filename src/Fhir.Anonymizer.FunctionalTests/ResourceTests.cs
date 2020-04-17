@@ -8,23 +8,7 @@ namespace Fhir.Anonymizer.FunctionalTests
 {
     public class ResourceTests
     {
-        private AnonymizerEngine _engine;
-        public ResourceTests()
-        {
-            var idTransformer = new ResourceIdTransformer();
-            idTransformer.LoadExistingMapping(new Dictionary<string, string>
-            {
-                { "1", "1-abc" },
-                { "23", "23-abc" },
-                { "123", "123-abc" },
-                { "bundle-references", "bundle-references-abc" },
-                { "p1", "p1-abc" },
-                { "example", "example-abc" },
-            });
-
-            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(Path.Combine("Configurations", "common-config.json"));
-            _engine = new AnonymizerEngine(configurationManager, idTransformer);
-        }
+        private AnonymizerEngine _engine = new AnonymizerEngine(Path.Combine("Configurations", "common-config.json"));
 
         [Fact]
         public void GivenAPatientResource_WhenAnonymizing_ThenAnonymizedJsonShouldBeReturned()

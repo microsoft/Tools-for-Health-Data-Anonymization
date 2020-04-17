@@ -12,10 +12,10 @@
   "contained": [
     {
       "resourceType": "Practitioner",
-      "id": "p1-abc"
+      "id": "f64551fcd6f07823cb87971cfb91446425da18286b3ab1ef935e0cbd7a69f68a"
     }
   ],
   "asserter": {
-    "reference": "#p1-abc"
+    "reference": "#f64551fcd6f07823cb87971cfb91446425da18286b3ab1ef935e0cbd7a69f68a"
   }
 }
