@@ -77,6 +77,11 @@ namespace Fhir.Anonymizer.Core.Extensions
             return node != null && node.Children(s_containedNodeName).Any();
         }
 
+        public static bool IsResourceNode(this ElementNode node)
+        {
+            return node.Definition?.IsResource ?? false;
+        }
+
         public static List<ElementNode> GetEntryResourceChildren(this ElementNode node)
         {
             return node?.Children(s_entryNodeName)

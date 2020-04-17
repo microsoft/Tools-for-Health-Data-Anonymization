@@ -38,20 +38,6 @@ namespace Fhir.Anonymizer.Core
             _logger.LogDebug("AnonymizerEngine initialized successfully.");
         }
 
-        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, ResourceIdTransformer idTransformer)
-        {
-            _configurationManger = configurationManager;
-            _idTransformer = idTransformer;
-            _processors = new Dictionary<string, IAnonymizerProcessor>();
-            InitializeProcessors(_configurationManger);
-            _logger.LogDebug("AnonymizerEngine initialized successfully with preset resource Id mapping.");
-        }
-
-        public void ExportIdMappingFile(string mappingFile)
-        {
-            _idTransformer.SaveMappingFile(mappingFile);
-        }
-
         public string AnonymizeJson(string json, AnonymizerSettings settings = null)
         {
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));

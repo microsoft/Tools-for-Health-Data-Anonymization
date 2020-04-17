@@ -12,12 +12,10 @@ namespace Fhir.Anonymizer.Tool
     public class FhirResourceDataProcessor
     {
         private readonly AnonymizerEngine _engine;
-        private readonly string _idMappingFilePath;
 
-        public FhirResourceDataProcessor(string configFilePath, string idMappingFilePath)
+        public FhirResourceDataProcessor(string configFilePath)
         {
             _engine = new AnonymizerEngine(configFilePath);
-            _idMappingFilePath = idMappingFilePath;
         }
 
         public async Task AnonymizeFolder(string inputFolder, string outputFolder, bool isRecursive, bool validateInput, bool validateOutput)
@@ -25,7 +23,6 @@ namespace Fhir.Anonymizer.Tool
             var anonymizer = new FilesAnonymizerForJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive, validateInput, validateOutput);
             await anonymizer.AnonymizeAsync().ConfigureAwait(false);
 
-            _engine.ExportIdMappingFile(_idMappingFilePath);
             Console.WriteLine($"Finished processing '{inputFolder}'! ");
         }
 
@@ -34,7 +31,6 @@ namespace Fhir.Anonymizer.Tool
             var anonymizer = new FilesAnonymizerForNdJsonFormatResource(_engine, inputFolder, outputFolder, isRecursive, validateInput, validateOutput);
             await anonymizer.AnonymizeAsync().ConfigureAwait(false);
 
-            _engine.ExportIdMappingFile(_idMappingFilePath);
             Console.WriteLine($"Finished processing '{inputFolder}'!");
         }
 

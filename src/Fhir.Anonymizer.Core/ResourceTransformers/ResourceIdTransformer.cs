@@ -1,54 +1,43 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Fhir.Anonymizer.Core.Extensions;
+using Fhir.Anonymizer.Core.Utility;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Fhir.Anonymizer.Core.ResourceTransformers
 {
     public class ResourceIdTransformer
     {
         private const string InternalReferencePrefix = "#";
-        private const string OidPrefix = "urn:oid:";
-        private const string UuidPrefix = "urn:uuid:";
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<ResourceIdTransformer>();
+
         // literal reference can be absolute or relative url, oid, or uuid.
         private readonly List<Regex> _literalReferenceRegexes = new List<Regex>
         {
             // Regex for absolute or relative url reference, https://www.hl7.org/fhir/references.html#literal
-            new Regex(@"(Account|ActivityDefinition|AdverseEvent|AllergyIntolerance|Appointment|AppointmentResponse|AuditEvent|Basic|Binary|BiologicallyDerivedProduct|BodyStructure|Bundle|CapabilityStatement|CarePlan|CareTeam|CatalogEntry|ChargeItem|ChargeItemDefinition|Claim|ClaimResponse|ClinicalImpression|CodeSystem|Communication|CommunicationRequest|CompartmentDefinition|Composition|ConceptMap|Condition|Consent|Contract|Coverage|CoverageEligibilityRequest|CoverageEligibilityResponse|DetectedIssue|Device|DeviceDefinition|DeviceMetric|DeviceRequest|DeviceUseStatement|DiagnosticReport|DocumentManifest|DocumentReference|EffectEvidenceSynthesis|Encounter|Endpoint|EnrollmentRequest|EnrollmentResponse|EpisodeOfCare|EventDefinition|Evidence|EvidenceVariable|ExampleScenario|ExplanationOfBenefit|FamilyMemberHistory|Flag|Goal|GraphDefinition|Group|GuidanceResponse|HealthcareService|ImagingStudy|Immunization|ImmunizationEvaluation|ImmunizationRecommendation|ImplementationGuide|InsurancePlan|Invoice|Library|Linkage|List|Location|Measure|MeasureReport|Media|Medication|MedicationAdministration|MedicationDispense|MedicationKnowledge|MedicationRequest|MedicationStatement|MedicinalProduct|MedicinalProductAuthorization|MedicinalProductContraindication|MedicinalProductIndication|MedicinalProductIngredient|MedicinalProductInteraction|MedicinalProductManufactured|MedicinalProductPackaged|MedicinalProductPharmaceutical|MedicinalProductUndesirableEffect|MessageDefinition|MessageHeader|MolecularSequence|NamingSystem|NutritionOrder|Observation|ObservationDefinition|OperationDefinition|OperationOutcome|Organization|OrganizationAffiliation|Patient|PaymentNotice|PaymentReconciliation|Person|PlanDefinition|Practitioner|PractitionerRole|Procedure|Provenance|Questionnaire|QuestionnaireResponse|RelatedPerson|RequestGroup|ResearchDefinition|ResearchElementDefinition|ResearchStudy|ResearchSubject|RiskAssessment|RiskEvidenceSynthesis|Schedule|SearchParameter|ServiceRequest|Slot|Specimen|SpecimenDefinition|StructureDefinition|StructureMap|Subscription|Substance|SubstanceNucleicAcid|SubstancePolymer|SubstanceProtein|SubstanceReferenceInformation|SubstanceSourceMaterial|SubstanceSpecification|SupplyDelivery|SupplyRequest|Task|TerminologyCapabilities|TestReport|TestScript|ValueSet|VerificationResult|VisionPrescription)\/(?<id>[A-Za-z0-9\-\.]{1,64})"),
+            new Regex(@"((http | https)://([A-Za-z0-9\\\/\.\:\%\$])*)?("
+                + String.Join("|", ModelInfo.SupportedResources)
+                + @")\/(?<id>[A-Za-z0-9\-\.]{1,64})(\/_history\/[A-Za-z0-9\-\.]{1,64})?"),
             // Regex for oid reference https://www.hl7.org/fhir/datatypes.html#oid
             new Regex(@"urn:oid:(?<id>[0-2](\.(0|[1-9][0-9]*))+)"),
             // Regex for uuid reference https://www.hl7.org/fhir/datatypes.html#uuid
             new Regex(@"urn:uuid:(?<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
         };
 
-        private readonly ConcurrentDictionary<string, string> _resourceIdMap;
-        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<ResourceIdTransformer>();
-
-        public ResourceIdTransformer()
-        {
-            _resourceIdMap = new ConcurrentDictionary<string, string>();
-        }
-
-        public ResourceIdTransformer(ConcurrentDictionary<string, string> presetIdMap)
-        {
-            _resourceIdMap = presetIdMap;
-        }
-
         public void Transform(ElementNode node)
         {
-            if (ModelInfo.IsKnownResource(node.InstanceType))
+            if (node.IsResourceNode())
             {
                 var idNode = node.Children("id").Cast<ElementNode>().FirstOrDefault();
                 if (idNode != null)
                 {
-                    var newId = TransformId(idNode.Value?.ToString());
-                    _logger.LogDebug($"Resource Id {idNode.Value?.ToString()} is transformed to {newId}");
+                    var id = idNode.Value?.ToString();
+                    var newId = TransformResourceId(id);
+                    _logger.LogDebug($"Resource Id {id} is transformed to {newId}");
                     idNode.Value = newId;
                 }
             }
@@ -57,7 +46,8 @@ namespace Fhir.Anonymizer.Core.ResourceTransformers
                 var referenceNode = node.Children("reference").Cast<ElementNode>().FirstOrDefault();
                 if (referenceNode != null)
                 {
-                    var newReference = TransformIdFromReference(referenceNode.Value?.ToString());
+                    var reference = referenceNode.Value?.ToString();
+                    var newReference = TransformIdFromReference(reference);
                     referenceNode.Value = newReference;
                 }
             }
@@ -68,31 +58,9 @@ namespace Fhir.Anonymizer.Core.ResourceTransformers
             }
         }
 
-        public void SaveMappingFile(string mappingFile)
+        public string TransformResourceId(string resourceId)
         {
-            File.WriteAllText(mappingFile, JsonConvert.SerializeObject(_resourceIdMap, Formatting.Indented));
-            _logger.LogDebug($"Resource Id mapping table is saved to {mappingFile}");
-        }
-
-        public void LoadMappingFile(string mappingFile)
-        {
-            var mappingContent = File.ReadAllText(mappingFile);
-            Dictionary<string, string> mapping = JsonConvert.DeserializeObject<Dictionary<string, string>>(mappingContent);
-            LoadExistingMapping(mapping);
-            _logger.LogDebug($"Resource Id mapping table is loaded from {mappingFile}");
-        }
-
-        public void LoadExistingMapping(Dictionary<string, string> mapping)
-        {
-            foreach(var entry in mapping)
-            {
-                _resourceIdMap.TryAdd(entry.Key, entry.Value);
-            }
-        }
-
-        public string TransformId(string id)
-        {
-            return string.IsNullOrEmpty(id) ? id : _resourceIdMap.GetOrAdd(id, Guid.NewGuid().ToString());
+            return HashUtility.GetResourceIdHash(resourceId);
         }
 
         public string TransformIdFromReference(string reference)
@@ -105,7 +73,7 @@ namespace Fhir.Anonymizer.Core.ResourceTransformers
             if (reference.StartsWith(InternalReferencePrefix))
             {
                 var internalId = reference.Substring(InternalReferencePrefix.Length);
-                var newReference = $"{InternalReferencePrefix}{TransformId(internalId)}";
+                var newReference = $"{InternalReferencePrefix}{TransformResourceId(internalId)}";
                 _logger.LogDebug($"Internal reference {reference} is transformed to {newReference}.");
 
                 return newReference;
@@ -116,11 +84,14 @@ namespace Fhir.Anonymizer.Core.ResourceTransformers
                 var match = regex.Match(reference);
                 if (match.Success)
                 {
-                    var id = match.Groups["id"].Value;
-                    var newReference = reference.Replace(id, TransformId(id));
-                    if (newReference.StartsWith(OidPrefix))
+                    var group = match.Groups["id"];
+                    var newId = TransformResourceId(group.Value);
+                    var newReference = $"{reference.Substring(0, group.Index)}{newId}";
+                    // add reference suffix if exists (\/_history\/[A-Za-z0-9\-\.]{1,64})?
+                    var suffixIndex = group.Index + group.Length;
+                    if (suffixIndex < reference.Length)
                     {
-                        newReference = newReference.Replace(OidPrefix, UuidPrefix);
+                        newReference += reference.Substring(suffixIndex);
                     }
 
                     _logger.LogDebug($"Literal reference {reference} is transformed to {newReference}.");

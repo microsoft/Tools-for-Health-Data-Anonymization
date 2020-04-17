@@ -8,15 +8,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
 {
     public class AnonymizerEngineTests
     {
-        private readonly AnonymizerEngine _engine;
-
-        public AnonymizerEngineTests()
-        {
-            var idTransformer = new ResourceIdTransformer();
-            idTransformer.LoadExistingMapping(new Dictionary<string, string> { { "example", "example-abc" } });
-            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(Path.Combine("TestConfigurations", "configuration-test-sample.json"));
-            _engine = new AnonymizerEngine(configurationManager, idTransformer);
-        }
+        private readonly AnonymizerEngine _engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-test-sample.json"));
 
         [Fact]
         public void GivenIsPrettyOutputSetTrue_WhenAnonymizeJson_PrettyJsonOutputShouldBeReturned()
@@ -55,9 +47,9 @@ namespace Fhir.Anonymizer.Core.UnitTests
         private const string PrettyOutputTarget =
 @"{
   ""resourceType"": ""Patient"",
-  ""id"": ""example-abc""
+  ""id"": ""50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c""
 }";
 
-        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"example-abc\"}";
+        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c\"}";
     }
 }

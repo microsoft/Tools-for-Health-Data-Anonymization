@@ -18,8 +18,6 @@ namespace Fhir.Anonymizer.Tool
             public string OutputFolder { get; set; }
             [Option('c', "configFile", Required = false, Default = "configuration-sample.json", HelpText = "Anonymizer configuration file path.")]
             public string ConfigurationFilePath { get; set; }
-            [Option('m', "mappingFile", Required = false, Default = "mapping-ids.dat", HelpText = "File path to save resource Id mapping.")]
-            public string MappingFilePath { get; set; }
             [Option('b', "bulkData", Required = false, Default = false, HelpText = "Resource file is in bulk data format (.ndjson).")]
             public bool IsBulkData { get; set; }
             [Option('r', "recursive", Required = false, Default = false, HelpText = "Process resource files in input folder recursively.")]
@@ -44,7 +42,7 @@ namespace Fhir.Anonymizer.Tool
             {
                 InitializeAnonymizerLogging(options.IsVerbose);
 
-                var dataProcessor = new FhirResourceDataProcessor(options.ConfigurationFilePath, options.MappingFilePath);
+                var dataProcessor = new FhirResourceDataProcessor(options.ConfigurationFilePath);
                 if (dataProcessor.IsSameDirectory(options.InputFolder, options.OutputFolder))
                 {
                     throw new Exception("Input and output folders are the same! Please choose another folder.");
