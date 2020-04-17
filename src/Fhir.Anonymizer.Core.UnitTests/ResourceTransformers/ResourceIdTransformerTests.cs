@@ -1,13 +1,9 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Fhir.Anonymizer.Core.ResourceTransformers;
 using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.FhirPath;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.ResourceTransformers

@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Fhir.Anonymizer.Core;
-using Fhir.Anonymizer.Core.ResourceTransformers;
 using Xunit;
 
 namespace Fhir.Anonymizer.FunctionalTests
