@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.IO;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Fhir.Anonymizer.Core.ResourceTransformers;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests
@@ -47,9 +45,18 @@ namespace Fhir.Anonymizer.Core.UnitTests
         private const string PrettyOutputTarget =
 @"{
   ""resourceType"": ""Patient"",
-  ""id"": ""50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c""
+  ""id"": ""50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c"",
+  ""meta"": {
+    ""security"": [
+      {
+        ""system"": ""http://terminology.hl7.org/CodeSystem/v3-ObservationValue"",
+        ""code"": ""REDACTED"",
+        ""display"": ""part of the resource is removed""
+      }
+    ]
+  }
 }";
 
-        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c\"}";
+        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c\",\"meta\":{\"security\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/v3-ObservationValue\",\"code\":\"REDACTED\",\"display\":\"part of the resource is removed\"}]}}";
     }
 }

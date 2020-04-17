@@ -549,10 +549,11 @@
   },
   "parameters": {
     "dateShiftKey": "",
-    "enableResourceIdTransformation": true,
+    "dateShiftScope": "resource",
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,
+    "enableResourceIdTransformation": true,
     "restrictedZipCodeTabulationAreas": [
       "036",
       "059",

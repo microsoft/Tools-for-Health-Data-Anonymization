@@ -8,9 +8,9 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
     {
         [DataMember(Name = "dateShiftKey")]
         public string DateShiftKey { get; set; }
-
-        [DataMember(Name = "enableResourceIdTransformation")]
-        public bool EnableResourceIdTransformation { get; set; }
+        
+        [DataMember(Name = "dateShiftScope")]
+        public DateShiftScope DateShiftScope { get; set; }
 
         [DataMember(Name = "enablePartialAgesForRedact")]
         public bool EnablePartialAgesForRedact { get; set; }
@@ -23,5 +23,10 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 
         [DataMember(Name = "restrictedZipCodeTabulationAreas")]
         public List<string> RestrictedZipCodeTabulationAreas { get; set; }
+        
+        [DataMember(Name = "enableResourceIdTransformation")]
+        public bool EnableResourceIdTransformation { get; set; }
+
+        public string DateShiftKeyPrefix { get; set; }
     }
 }

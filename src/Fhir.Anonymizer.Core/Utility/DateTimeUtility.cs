@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Fhir.Anonymizer.Core.Extensions;
+using Fhir.Anonymizer.Core.Models;
 using Hl7.Fhir.ElementModel;
 
 namespace Fhir.Anonymizer.Core.Utility
@@ -26,11 +27,12 @@ namespace Fhir.Anonymizer.Core.Utility
         // The regex of time is defined in: https://www.hl7.org/fhir/datatypes.html#time    
         private static readonly Regex s_timeRegex = new Regex(@"([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?");
 
-        public static void RedactDateNode(ElementNode node, bool enablePartialDatesForRedact = false)
+        public static ProcessResult RedactDateNode(ElementNode node, bool enablePartialDatesForRedact = false)
         {
+            var processResult = new ProcessResult();
             if (!node.IsDateNode())
             {
-                return;
+                return processResult;
             }
 
             if (enablePartialDatesForRedact)
@@ -46,13 +48,17 @@ namespace Fhir.Anonymizer.Core.Utility
             {
                 node.Value = null;
             }
+
+            processResult.IsRedacted = true;
+            return processResult;
         }
 
-        public static void RedactDateTimeAndInstantNode(ElementNode node, bool enablePartialDatesForRedact = false)
+        public static ProcessResult RedactDateTimeAndInstantNode(ElementNode node, bool enablePartialDatesForRedact = false)
         {
+            var processResult = new ProcessResult();
             if (!node.IsDateTimeNode() && !node.IsInstantNode())
             {
-                return;
+                return processResult;
             }
 
             if (enablePartialDatesForRedact)
@@ -68,13 +74,17 @@ namespace Fhir.Anonymizer.Core.Utility
             {
                 node.Value = null;
             }
+
+            processResult.IsRedacted = true;
+            return processResult;
         }
 
-        public static void RedactAgeDecimalNode(ElementNode node, bool enablePartialAgesForRedact = false)
+        public static ProcessResult RedactAgeDecimalNode(ElementNode node, bool enablePartialAgesForRedact = false)
         {
+            var processResult = new ProcessResult();
             if (!node.IsAgeDecimalNode())
             {
-                return;
+                return processResult;
             }
 
             if (enablePartialAgesForRedact)
@@ -88,38 +98,46 @@ namespace Fhir.Anonymizer.Core.Utility
             {
                 node.Value = null;
             }
+
+            processResult.IsRedacted = true;
+            return processResult;
         }
 
-        public static void ShiftDateNode(ElementNode node, string dateShiftKey, bool enablePartialDatesForRedact = false)
+        public static ProcessResult ShiftDateNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
         {
+            var processResult = new ProcessResult();
             if (!node.IsDateNode())
             {
-                return;
+                return processResult;
             }
 
             var matchedGroups = s_dateRegex.Match(node.Value.ToString()).Groups;
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
-                int offset = GetDateShiftValue(node, dateShiftKey);
+                int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
+                processResult.IsPerturbed = true;
             }
             else
             {
-                RedactDateNode(node, enablePartialDatesForRedact);
+                processResult = RedactDateNode(node, enablePartialDatesForRedact);
             }
+
+            return processResult;
         }
 
-        public static void ShiftDateTimeAndInstantNode(ElementNode node, string dateShiftKey, bool enablePartialDatesForRedact = false)
+        public static ProcessResult ShiftDateTimeAndInstantNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
         {
+            var processResult = new ProcessResult();
             if (!node.IsDateTimeNode() && !node.IsInstantNode())
             {
-                return;
+                return processResult;
             }
 
             var matchedGroups = s_dateTimeRegex.Match(node.Value.ToString()).Groups;
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
-                int offset = GetDateShiftValue(node, dateShiftKey);
+                int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 if (matchedGroups[s_timeIndex].Captures.Any())
                 {
                     var newDate = DateTimeOffset.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
@@ -137,11 +155,14 @@ namespace Fhir.Anonymizer.Core.Utility
                 {
                     node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
                 }
+                processResult.IsPerturbed = true;
             }
             else
             {
-                RedactDateTimeAndInstantNode(node, enablePartialDatesForRedact);
+                processResult = RedactDateTimeAndInstantNode(node, enablePartialDatesForRedact);
             }
+
+            return processResult;
         }
 
         private static bool IndicateAgeOverThreshold(GroupCollection groups)
@@ -155,12 +176,15 @@ namespace Fhir.Anonymizer.Core.Utility
             return age > s_ageThreshold; 
         }
 
-        private static int GetDateShiftValue(ElementNode node, string dateShiftKey)
+        private static int GetDateShiftValue(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix)
         {
-            string resourceId = TryGetResourceId(node);
-            int offset = 0;
+            if (string.IsNullOrEmpty(dateShiftKeyPrefix))
+            {
+                dateShiftKeyPrefix = TryGetResourceId(node);
+            }
 
-            var bytes = Encoding.UTF8.GetBytes(resourceId + dateShiftKey);
+            int offset = 0;
+            var bytes = Encoding.UTF8.GetBytes(dateShiftKeyPrefix + dateShiftKey);
             foreach (byte b in bytes)
             {
                 offset = (offset * s_dateShiftSeed + (int)b) % (2 * s_dateShiftRange + 1);

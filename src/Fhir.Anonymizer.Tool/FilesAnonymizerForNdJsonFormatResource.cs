@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Fhir.Anonymizer.Core;
@@ -19,10 +17,10 @@ namespace Fhir.Anonymizer.Tool
         private bool _isRecursive;
         private bool _validateInput;
         private bool _validateOutput;
-        private AnonymizerEngine _engine;
+        private string _configFilePath;
 
         public FilesAnonymizerForNdJsonFormatResource(
-            AnonymizerEngine engine,
+            string configFilePath,
             string inputFolder,
             string outputFolder,
             bool isRecursive,
@@ -34,7 +32,7 @@ namespace Fhir.Anonymizer.Tool
             _isRecursive = isRecursive;
             _validateInput = validateInput;
             _validateOutput = validateOutput;
-            _engine = engine;
+            _configFilePath = configFilePath;
         }
 
         public async Task AnonymizeAsync()
@@ -62,6 +60,7 @@ namespace Fhir.Anonymizer.Tool
                 {
                     using FhirStreamReader reader = new FhirStreamReader(inputStream);
                     using FhirStreamConsumer consumer = new FhirStreamConsumer(outputStream);
+                    var engine = AnonymizerEngine.CreateWithFileContext(_configFilePath, bulkResourceFileName, _inputFolder);
                     Func<string, string> anonymizeFunction = (content) =>
                     {
                         try
@@ -72,7 +71,7 @@ namespace Fhir.Anonymizer.Tool
                                 ValidateInput = _validateInput,
                                 ValidateOutput = _validateOutput
                             };
-                            return _engine.AnonymizeJson(content, settings);
+                            return engine.AnonymizeJson(content, settings);
                         }
                         catch (Exception ex)
                         {
