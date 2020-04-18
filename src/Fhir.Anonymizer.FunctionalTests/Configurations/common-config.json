@@ -43,6 +43,7 @@
   },
   "parameters": {
     "dateShiftKey": "123",
+    "resourceIdHashKey": "123",
     "enableResourceIdTransformation": true,
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,

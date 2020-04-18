@@ -45,7 +45,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         private const string PrettyOutputTarget =
 @"{
   ""resourceType"": ""Patient"",
-  ""id"": ""50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c"",
+  ""id"": ""698d54f0494528a759f19c8e87a9f99e75a5881b9267ee3926bcf62c992d84ba"",
   ""meta"": {
     ""security"": [
       {
@@ -57,6 +57,6 @@ namespace Fhir.Anonymizer.Core.UnitTests
   }
 }";
 
-        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c\",\"meta\":{\"security\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/v3-ObservationValue\",\"code\":\"REDACTED\",\"display\":\"part of the resource is removed\"}]}}";
+        private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"698d54f0494528a759f19c8e87a9f99e75a5881b9267ee3926bcf62c992d84ba\",\"meta\":{\"security\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/v3-ObservationValue\",\"code\":\"REDACTED\",\"display\":\"part of the resource is removed\"}]}}";
     }
 }

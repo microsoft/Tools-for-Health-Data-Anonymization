@@ -554,6 +554,7 @@
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,
     "enableResourceIdTransformation": true,
+    "resourceIdHashKey": "",
     "restrictedZipCodeTabulationAreas": [
       "036",
       "059",

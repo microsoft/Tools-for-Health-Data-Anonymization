@@ -27,6 +27,9 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         [DataMember(Name = "enableResourceIdTransformation")]
         public bool EnableResourceIdTransformation { get; set; }
 
+        [DataMember(Name = "resourceIdHashKey")]
+        public string ResourceIdHashKey { get; set; }
+
         public string DateShiftKeyPrefix { get; set; }
     }
 }

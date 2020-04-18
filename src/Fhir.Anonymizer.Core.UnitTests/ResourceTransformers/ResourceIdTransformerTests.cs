@@ -11,7 +11,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.ResourceTransformers
     public class ResourceIdTransformerTests
     {
         private ElementNode _testConditionNode;
-        private readonly ResourceIdTransformer _idTransformer = new ResourceIdTransformer();
+        private readonly ResourceIdTransformer _idTransformer = new ResourceIdTransformer("123");
         public ResourceIdTransformerTests()
         {
             _testConditionNode = ElementNode.
@@ -20,30 +20,30 @@ namespace Fhir.Anonymizer.Core.UnitTests.ResourceTransformers
 
         public static IEnumerable<object[]> GetLiteralReferenceData()
         {
-            yield return new string[] { "Patient/example", "Patient/50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c" };
+            yield return new string[] { "Patient/example", "Patient/698d54f0494528a759f19c8e87a9f99e75a5881b9267ee3926bcf62c992d84ba" };
             yield return new string[] { "#", "#" }; // Internal reference to container
-            yield return new string[] { "#p1", "#f64551fcd6f07823cb87971cfb91446425da18286b3ab1ef935e0cbd7a69f68a" };
-            yield return new string[] { "http://fhir.hl7.org/svc/StructureDefinition/c8973a22-2b5b-4e76-9c66-00639c99e61b", "http://fhir.hl7.org/svc/StructureDefinition/fc078fc8fcc2ee52c2b151f722613cd3c4bdf28e9b17d082630d3c206c363613" };
-            yield return new string[] { "http://example.org/fhir/Observation/apo89654/_history/2", "http://example.org/fhir/Observation/c6f2a060732f93e17aa7d213dde046eda81be66157babac462bdfe0d6054764c/_history/2" };
-            yield return new string[] { "urn:uuid:c757873d-ec9a-4326-a141-556f43239520", "urn:uuid:1b390ce369c88527d1cc8bc1b5091fe82fde53c063f03df23531ca02b99ce5af" };
-            yield return new string[] { "urn:oid:1.2.3.4.5", "urn:oid:b8b9f26c0d51e56b892f8ecdc61968867eb1e1da1bcdcc05f8b7d2597147a2e2" };
+            yield return new string[] { "#p1", "#a10e6bee4fbeb6a7804153c25688dd4dd7b9c2a005417136026350fc33ac609f" };
+            yield return new string[] { "http://fhir.hl7.org/svc/StructureDefinition/c8973a22-2b5b-4e76-9c66-00639c99e61b", "http://fhir.hl7.org/svc/StructureDefinition/b0ff9c939b3507a79e2ae3d2d3b595d62819b9b8f6ef10d4099b3058d902642f" };
+            yield return new string[] { "http://example.org/fhir/Observation/apo89654/_history/2", "http://example.org/fhir/Observation/b1e85ca33baf76575ad28588af85b8f10c0dd40e9ed8cd57cdb7ae94ccd75695/_history/2" };
+            yield return new string[] { "urn:uuid:c757873d-ec9a-4326-a141-556f43239520", "urn:uuid:24970eb3f915e516a2b5241c0d6979097a6357a13b89612c6a54b8ab5479df34" };
+            yield return new string[] { "urn:oid:1.2.3.4.5", "urn:oid:0543fb50485f58a47073f51aad1677607aec031c2c83c25ee7b040ade95cfbcc" };
         }
 
         public static IEnumerable<object[]> GetResourceIdData()
         {
-            yield return new string[] { "example", "50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c" };
-            yield return new string[] { "p1", "f64551fcd6f07823cb87971cfb91446425da18286b3ab1ef935e0cbd7a69f68a" };
-            yield return new string[] { "c8973a22-2b5b-4e76-9c66-00639c99e61b", "fc078fc8fcc2ee52c2b151f722613cd3c4bdf28e9b17d082630d3c206c363613" };
-            yield return new string[] { "c757873d-ec9a-4326-a141-556f43239520", "1b390ce369c88527d1cc8bc1b5091fe82fde53c063f03df23531ca02b99ce5af" };
-            yield return new string[] { "1.2.3.4.5", "b8b9f26c0d51e56b892f8ecdc61968867eb1e1da1bcdcc05f8b7d2597147a2e2" };
+            yield return new string[] { "example", "698d54f0494528a759f19c8e87a9f99e75a5881b9267ee3926bcf62c992d84ba" };
+            yield return new string[] { "p1", "a10e6bee4fbeb6a7804153c25688dd4dd7b9c2a005417136026350fc33ac609f" };
+            yield return new string[] { "c8973a22-2b5b-4e76-9c66-00639c99e61b", "b0ff9c939b3507a79e2ae3d2d3b595d62819b9b8f6ef10d4099b3058d902642f" };
+            yield return new string[] { "c757873d-ec9a-4326-a141-556f43239520", "24970eb3f915e516a2b5241c0d6979097a6357a13b89612c6a54b8ab5479df34" };
+            yield return new string[] { "1.2.3.4.5", "0543fb50485f58a47073f51aad1677607aec031c2c83c25ee7b040ade95cfbcc" };
         }
 
         [Fact]
         public void GivenAElementNode_WhenTransformingId_ResourceIdsShouldBeTransformed()
         {
             _idTransformer.Transform(_testConditionNode);
-            Assert.Equal("50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c", _testConditionNode.Select("Condition.id").First().Value.ToString());
-            Assert.Equal("#f64551fcd6f07823cb87971cfb91446425da18286b3ab1ef935e0cbd7a69f68a", _testConditionNode.Select("Condition.subject.reference").First().Value.ToString());
+            Assert.Equal("698d54f0494528a759f19c8e87a9f99e75a5881b9267ee3926bcf62c992d84ba", _testConditionNode.Select("Condition.id").First().Value.ToString());
+            Assert.Equal("#a10e6bee4fbeb6a7804153c25688dd4dd7b9c2a005417136026350fc33ac609f", _testConditionNode.Select("Condition.subject.reference").First().Value.ToString());
         }
 
         [Theory]

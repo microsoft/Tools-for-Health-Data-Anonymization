@@ -25,7 +25,7 @@ namespace Fhir.Anonymizer.Core
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly ResourceValidator _validator = new ResourceValidator();
         private readonly AnonymizerConfigurationManager _configurationManger;
-        private readonly ResourceIdTransformer _idTransformer = new ResourceIdTransformer();
+        private readonly ResourceIdTransformer _idTransformer;
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
 
         public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath)) 
@@ -36,6 +36,7 @@ namespace Fhir.Anonymizer.Core
         {
             _configurationManger = configurationManager;
             _processors = new Dictionary<string, IAnonymizerProcessor>();
+            _idTransformer = new ResourceIdTransformer(_configurationManger.GetParameterConfiguration().ResourceIdHashKey);
             InitializeProcessors(_configurationManger);
             _logger.LogDebug("AnonymizerEngine initialized successfully.");
         }

@@ -14,7 +14,7 @@ namespace Fhir.Anonymizer.Core.ResourceTransformers
     {
         private const string InternalReferencePrefix = "#";
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<ResourceIdTransformer>();
-
+        public string resourceIdHashKey { get; set; } = string.Empty;
         // literal reference can be absolute or relative url, oid, or uuid.
         private readonly List<Regex> _literalReferenceRegexes = new List<Regex>
         {
@@ -27,6 +27,11 @@ namespace Fhir.Anonymizer.Core.ResourceTransformers
             // Regex for uuid reference https://www.hl7.org/fhir/datatypes.html#uuid
             new Regex(@"urn:uuid:(?<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})")
         };
+
+        public ResourceIdTransformer(string hashKey)
+        {
+            resourceIdHashKey = hashKey;
+        }
 
         public void Transform(ElementNode node)
         {
@@ -60,7 +65,7 @@ namespace Fhir.Anonymizer.Core.ResourceTransformers
 
         public string TransformResourceId(string resourceId)
         {
-            return HashUtility.GetResourceIdHash(resourceId);
+            return HashUtility.GetResourceIdHash(resourceId, resourceIdHashKey);
         }
 
         public string TransformIdFromReference(string reference)
