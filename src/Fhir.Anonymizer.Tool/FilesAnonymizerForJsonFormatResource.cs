@@ -14,33 +14,26 @@ namespace Fhir.Anonymizer.Tool
     {
         private string _inputFolder;
         private string _outputFolder;
-        private bool _isRecursive;
-        private bool _validateInput;
-        private bool _validateOutput;
         private string _configFilePath;
-        private bool _skipExistedFile;
+
+        private AnonymizationToolOptions _options;
 
         public FilesAnonymizerForJsonFormatResource(
             string configFilePath,
             string inputFolder,
             string outputFolder,
-            bool isRecursive,
-            bool validateInput,
-            bool validateOutput,
-            bool skipExistedFile)
+            AnonymizationToolOptions options)
         {
             _inputFolder = inputFolder;
             _outputFolder = outputFolder;
-            _isRecursive = isRecursive;
-            _validateInput = validateInput;
-            _validateOutput = validateOutput;
             _configFilePath = configFilePath;
-            _skipExistedFile = skipExistedFile;
+
+            _options = options;
         }
 
         public async Task AnonymizeAsync()
         {
-            var directorySearchOption = _isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+            var directorySearchOption = _options.IsRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
             var resourceFileList = Directory.EnumerateFiles(_inputFolder, "*.json", directorySearchOption).ToList();
             Console.WriteLine($"Find {resourceFileList.Count()} json resource files in '{_inputFolder}'.");
 
@@ -85,13 +78,13 @@ namespace Fhir.Anonymizer.Tool
         public async Task<string> FileAnonymize(string fileName)
         {
             var resourceOutputFileName = GetResourceOutputFileName(fileName, _inputFolder, _outputFolder);
-            if (_isRecursive)
+            if (_options.IsRecursive)
             {
                 var resourceOutputFolder = Path.GetDirectoryName(resourceOutputFileName);
                 Directory.CreateDirectory(resourceOutputFolder);
             }
 
-            if (_skipExistedFile && File.Exists(resourceOutputFileName))
+            if (_options.SkipExistedFile && File.Exists(resourceOutputFileName))
             {
                 Console.WriteLine($"Skip processing on file {fileName}.");
                 return string.Empty;
@@ -104,8 +97,8 @@ namespace Fhir.Anonymizer.Tool
                 var settings = new AnonymizerSettings()
                 {
                     IsPrettyOutput = true,
-                    ValidateInput = _validateInput,
-                    ValidateOutput = _validateOutput
+                    ValidateInput = _options.ValidateInput,
+                    ValidateOutput = _options.ValidateOutput
                 };
                 var resourceResult = engine.AnonymizeJson(resourceJson, settings);
 
