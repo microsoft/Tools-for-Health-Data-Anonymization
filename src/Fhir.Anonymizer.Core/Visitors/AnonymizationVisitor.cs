@@ -101,7 +101,7 @@ namespace Fhir.Anonymizer.Core.Visitors
                 {
                     foreach (var matchNode in processRecord.Value)
                     {
-                        _logger.LogDebug($"[{resourceId}]: Rule {rule.Path} matches {matchNode.Location} and perform operation {processRecord.Key}");
+                        _logger.LogDebug($"[{resourceId}]: Rule '{rule.Path}' matches '{matchNode.Location}' and perform operation '{processRecord.Key}'");
                     }
                 }
             }
