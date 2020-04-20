@@ -86,6 +86,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
                 }
             };
             var result = new ProcessResult();
+            result.AddProcessRecord(AnonymizationOperations.Redact, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
             resourceNode.AddSecurityTag(result);
