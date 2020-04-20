@@ -1,12 +1,9 @@
-﻿using Fhir.Anonymizer.Core.Extensions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
-using Hl7.Fhir.Specification;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.Extensions
@@ -55,6 +52,28 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
             Assert.Equal(2, resource.Meta.Security.Count);
             Assert.Equal("MASKED", resource.Meta.Security[0].Code);
             Assert.Equal(SecurityLabels.REDACT.Code, resource.Meta.Security[1].Code);
+        }
+
+        [Fact]
+        public void GivenAResourceWithVersionId_WhenTryAddSecurityLabels_VersionIdShouldBeKept()
+        {
+            var resource = new Patient()
+            {
+                Meta = new Meta()
+                {
+                    VersionId = "Test"
+                }
+            };
+            var result = new ProcessResult()
+            {
+                IsRedacted = true
+            };
+
+            var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
+            resourceNode.AddSecurityTag(result);
+            resource = resourceNode.ToPoco<Patient>();
+
+            Assert.Equal("Test", resource.Meta.VersionId);
         }
 
         [Fact]

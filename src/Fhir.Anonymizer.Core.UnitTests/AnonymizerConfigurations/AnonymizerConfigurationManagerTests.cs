@@ -38,10 +38,14 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
         public void GivenAValidConfig_WhenCreateAnonymizerConfigurationManager_ConfigurationShouldBeLoaded(string configFilePath)
         {
             var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
-            var patientRules = configurationManager.GetPathRulesByResourceType("Patient");
-            Assert.True(patientRules.Any());
-            var typeRules = configurationManager.GetTypeRules();
-            Assert.True(typeRules.Any());
+            var fhirRules = configurationManager.FhirPathRules;
+            Assert.True(fhirRules.Any());
+            fhirRules = configurationManager.FhirPathRules;
+            Assert.Single(configurationManager.FhirPathRules.Where(r => "Patient".Equals(r.ResourceType)));
+            Assert.Single(configurationManager.FhirPathRules.Where(r => "TestResource".Equals(r.ResourceType)));
+            Assert.Single(configurationManager.FhirPathRules.Where(r => string.IsNullOrEmpty(r.ResourceType)));
+            Assert.Single(configurationManager.FhirPathRules.Where(r => "Resource".Equals(r.ResourceType)));
+
             var parameters = configurationManager.GetParameterConfiguration();
             Assert.True(!string.IsNullOrEmpty(parameters.DateShiftKey));
         }

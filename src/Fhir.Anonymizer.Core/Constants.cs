@@ -19,7 +19,6 @@ namespace Fhir.Anonymizer.Core
         internal const string ContainedNodeName = "contained";
         internal const string EntryNodeName = "entry";
         internal const string EntryResourceNodeName = "resource";
-        internal const string ResourceNodeName = "resource";
 
         internal const string PathKey = "path";
         internal const string MethodKey = "method";

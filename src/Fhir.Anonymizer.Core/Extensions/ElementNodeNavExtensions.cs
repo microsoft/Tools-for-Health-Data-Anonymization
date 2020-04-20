@@ -10,7 +10,7 @@ namespace Fhir.Anonymizer.Core.Extensions
         public static List<ElementNode> GetEntryResourceChildren(this ElementNode node)
         {
             return node?.Children(Constants.EntryNodeName)
-                    .Select(entry => entry?.Children(Constants.ResourceNodeName).FirstOrDefault())
+                    .Select(entry => entry?.Children(Constants.EntryResourceNodeName).FirstOrDefault())
                     .Where(resource => resource != null)
                     .Cast<ElementNode>()
                     .ToList();
@@ -21,7 +21,7 @@ namespace Fhir.Anonymizer.Core.Extensions
             return node?.Children(Constants.ContainedNodeName).Cast<ElementNode>().ToList();
         }
 
-        public static IEnumerable<ElementNode> ResourceDescendants(this ElementNode node)
+        public static IEnumerable<ElementNode> ResourceDescendantsWithoutSubResource(this ElementNode node)
         {
             foreach (var child in node.Children().Cast<ElementNode>())
             {
@@ -33,7 +33,7 @@ namespace Fhir.Anonymizer.Core.Extensions
 
                 yield return child;
 
-                foreach (var n in child.ResourceDescendants().Cast<ElementNode>())
+                foreach (var n in child.ResourceDescendantsWithoutSubResource())
                 {
                     yield return n;
                 }
@@ -46,7 +46,7 @@ namespace Fhir.Anonymizer.Core.Extensions
             {
                 yield return node;
 
-                foreach (var descendant in node.ResourceDescendants())
+                foreach (var descendant in node.ResourceDescendantsWithoutSubResource())
                 {
                     yield return descendant;
                 }

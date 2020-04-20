@@ -18,7 +18,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
             {
                 if (!rule.ContainsKey(Constants.PathKey) || !rule.ContainsKey(Constants.MethodKey))
                 {
-                    throw new AnonymizerConfigurationErrorsException("Miss path or method in Fhir path rule config.");
+                    throw new AnonymizerConfigurationErrorsException("Missing path or method in Fhir path rule config.");
                 }
 
                 // Grammar check on FHIR path

@@ -19,7 +19,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
             patient.Name.Add(new HumanName() { Given = new string[] { "Test" } });
 
             var testNodes = ElementNode.FromElement(patient.ToTypedElement());
-            var result = testNodes.ResourceDescendants().Select(e => e.Location).ToList();
+            var result = testNodes.ResourceDescendantsWithoutSubResource().Select(e => e.Location).ToList();
 
             Assert.Equal(3, result.Count());
             Assert.Contains("Patient.name[0].given[0]", result);
@@ -39,7 +39,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
             condition.Contained.Add(patient);
             
             var testNodes = ElementNode.FromElement(condition.ToTypedElement());
-            var result = testNodes.ResourceDescendants().Select(e => e.Location).ToList();
+            var result = testNodes.ResourceDescendantsWithoutSubResource().Select(e => e.Location).ToList();
 
             Assert.Equal(2, result.Count());
             Assert.Contains("Condition.text[0]", result);

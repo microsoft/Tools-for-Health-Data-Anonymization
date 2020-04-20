@@ -24,23 +24,33 @@ namespace Fhir.Anonymizer.Core.Extensions
             return node;
         }
 
-        public static void RemoveNullChildren(this ElementNode node)
+        // Remove null children of current node, and return true => current node is null
+        public static bool RemoveNullChildren(this ElementNode node)
         {
             if (node == null)
             {
-                return;
+                return true;
             }
 
             var children = node.Children().Cast<ElementNode>().ToList();
             foreach (var child in children)
             {
-                RemoveNullChildren(child);
+                // Remove child if it is null => return true
+                if (RemoveNullChildren(child))
+                {
+                    node.Remove(child);
+                }
             }
 
-            if (!node.Children().Any() && node.Value == null && !Enum.TryParse<ResourceType>(node.InstanceType, true, out _))
+            bool currentNodeIsEmpty = !node.Children().Any() && node.Value == null;
+            bool currentNodeIsFhirResource = node.IsFhirResource();
+            if (currentNodeIsEmpty && !currentNodeIsFhirResource)
             {
-                node.Parent.Remove(node);
-                return;
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 

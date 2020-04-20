@@ -12,7 +12,6 @@ namespace Fhir.Anonymizer.Core
     {
         private readonly AnonymizerConfigurationValidator _validator = new AnonymizerConfigurationValidator();
         private readonly AnonymizerConfiguration _configuration;
-        private readonly Dictionary<string, IEnumerable<AnonymizerRule>> _resourcePathRules;
 
         public AnonymizationFhirPathRule[] FhirPathRules { get; private set; } = null;
 
@@ -24,19 +23,6 @@ namespace Fhir.Anonymizer.Core
             _configuration = configuration;
 
             FhirPathRules = _configuration.FhirPathRules.Select(entry => AnonymizationFhirPathRule.CreateAnonymizationFhirPathRule(entry)).ToArray();
-
-            #region deprecated v1 config
-            if (_configuration.PathRules != null)
-            {
-                _resourcePathRules = _configuration.PathRules.Where(entry => IsResourcePathRule(entry.Key))
-                    .GroupBy(entry => ExtractResourceTypeFromPath(entry.Key))
-                    .ToDictionary(group => group.Key, group => group.Select(item => new AnonymizerRule(item.Key, item.Value, AnonymizerRuleType.PathRule, item.Key)));
-            }
-            else
-            {
-                _resourcePathRules = new Dictionary<string, IEnumerable<AnonymizerRule>>();
-            }
-            #endregion
         }
 
         public static AnonymizerConfigurationManager CreateFromConfigurationFile(string configFilePath)
@@ -63,20 +49,6 @@ namespace Fhir.Anonymizer.Core
             }
         }
 
-        public IEnumerable<AnonymizerRule> GetPathRulesByResourceType(string resourceType)
-        {
-            if (string.IsNullOrEmpty(resourceType) || !_resourcePathRules.ContainsKey(resourceType))
-            {
-                return new List<AnonymizerRule>();
-            }
-            return _resourcePathRules[resourceType];
-        }
-
-        public Dictionary<string, string> GetTypeRules()
-        {
-            return _configuration.TypeRules;
-        }
-
         public ParameterConfiguration GetParameterConfiguration()
         {
             return _configuration.ParameterConfiguration;
@@ -86,17 +58,5 @@ namespace Fhir.Anonymizer.Core
         {
             _configuration.ParameterConfiguration.DateShiftKeyPrefix = prefix;
         }
-
-        private bool IsResourcePathRule(string path)
-        {
-            return !string.IsNullOrEmpty(path) && char.IsUpper(path.First());
-        }
-
-        private string ExtractResourceTypeFromPath(string path)
-        {
-            var dotIndex = path.IndexOf('.');
-            return dotIndex == -1 ? string.Empty : path.Substring(0, dotIndex);
-        }
-
     }
 }

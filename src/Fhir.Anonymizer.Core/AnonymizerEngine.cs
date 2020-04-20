@@ -69,7 +69,7 @@ namespace Fhir.Anonymizer.Core
 
         public Resource AnonymizeResource(Resource resource, AnonymizerSettings settings = null)
         {
-            EnsureArg.IsNotNull(resource);
+            EnsureArg.IsNotNull(resource, nameof(resource));
 
             ValidateInput(settings, resource);
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
