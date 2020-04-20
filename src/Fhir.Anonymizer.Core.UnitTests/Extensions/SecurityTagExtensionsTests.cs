@@ -2,6 +2,7 @@
 using System.Linq;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
+using Fhir.Anonymizer.Core.Processors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Xunit;
@@ -14,10 +15,8 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
         public void GivenAResourceWithoutSecurityLabels_WhenTryAddSecurityLabels_SecurityLabelsShouldBeAdded()
         {
             var resource = new Patient();
-            var result = new ProcessResult()
-            {
-                IsRedacted = true
-            };
+            var result = new ProcessResult();
+            result.AddProcessRecord(AnonymizationOperations.Redact, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
             resourceNode.AddSecurityTag(result);
@@ -40,10 +39,8 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
                     }
                 }
             };
-            var result = new ProcessResult()
-            {
-                IsRedacted = true
-            };
+            var result = new ProcessResult();
+            result.AddProcessRecord(AnonymizationOperations.Redact, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
             resourceNode.AddSecurityTag(result);
@@ -64,10 +61,9 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
                     VersionId = "Test"
                 }
             };
-            var result = new ProcessResult()
-            {
-                IsRedacted = true
-            };
+            var result = new ProcessResult();
+
+            result.AddProcessRecord(AnonymizationOperations.Redact, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
             resourceNode.AddSecurityTag(result);
@@ -89,10 +85,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
                     }
                 }
             };
-            var result = new ProcessResult()
-            {
-                IsRedacted = true
-            };
+            var result = new ProcessResult();
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
             resourceNode.AddSecurityTag(result);
@@ -106,12 +99,11 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
         public void GivenAResourceWithNoSecurityLabels_WhenTryAddMultipleSecurityLabels_SecurityLabelsShouldBeAddedAgain()
         {
             var resource = new Patient();
-            var result = new ProcessResult()
-            {
-                IsRedacted = true,
-                IsAbstracted = true,
-                IsPerturbed = true
-            };
+            var result = new ProcessResult();
+
+            result.AddProcessRecord(AnonymizationOperations.Redact, ElementNode.ForPrimitive(1));
+            result.AddProcessRecord(AnonymizationOperations.Abstract, ElementNode.ForPrimitive(1));
+            result.AddProcessRecord(AnonymizationOperations.Perturb, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
             resourceNode.AddSecurityTag(result);
@@ -137,12 +129,11 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
                     }
                 }
             };
-            var result = new ProcessResult()
-            {
-                IsRedacted = true,
-                IsAbstracted = true,
-                IsPerturbed = true
-            };
+            var result = new ProcessResult();
+
+            result.AddProcessRecord(AnonymizationOperations.Redact, ElementNode.ForPrimitive(1));
+            result.AddProcessRecord(AnonymizationOperations.Abstract, ElementNode.ForPrimitive(1));
+            result.AddProcessRecord(AnonymizationOperations.Perturb, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
             resourceNode.AddSecurityTag(result);

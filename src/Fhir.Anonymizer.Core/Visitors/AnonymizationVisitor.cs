@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Processors;
 using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Specification;
+using Hl7.Fhir.Model;
 using Hl7.FhirPath;
+using Microsoft.Extensions.Logging;
 
 namespace Fhir.Anonymizer.Core.Visitors
 {
@@ -19,6 +19,7 @@ namespace Fhir.Anonymizer.Core.Visitors
         private Dictionary<string, IAnonymizerProcessor> _processors;
         private HashSet<ElementNode> _visitedNodes = new HashSet<ElementNode>();
         private Stack<Tuple<ElementNode, ProcessResult>> _contextStack = new Stack<Tuple<ElementNode, ProcessResult>>();
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizationVisitor>();
 
         public bool AddSecurityTag { get; set; } = true;
 
@@ -72,6 +73,7 @@ namespace Fhir.Anonymizer.Core.Visitors
 
             foreach (var rule in resourceSpecificAndGeneralRules)
             {
+                ProcessResult resultOnRule = new ProcessResult();
                 string method = rule.Method.ToUpperInvariant();
                 if (!_processors.ContainsKey(method))
                 {
@@ -80,11 +82,29 @@ namespace Fhir.Anonymizer.Core.Visitors
 
                 foreach (var matchNode in node.Select(rule.Expression).Cast<ElementNode>())
                 {
-                    result.Update(ProcessNodeRecursive(matchNode, _processors[method], _visitedNodes));
+                    resultOnRule.Update(ProcessNodeRecursive(matchNode, _processors[method], _visitedNodes));
                 }
+                LogProcessResult(node, rule, resultOnRule);
+
+                result.Update(resultOnRule);
             }
 
             return result;
+        }
+
+        private void LogProcessResult(ElementNode node, AnonymizationFhirPathRule rule, ProcessResult resultOnRule)
+        {
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                string resourceId = node.GetNodeId();
+                foreach (var processRecord in resultOnRule.ProcessRecords)
+                {
+                    foreach (var matchNode in processRecord.Value)
+                    {
+                        _logger.LogDebug($"[{resourceId}]: Rule {rule.Path} matches {matchNode.Location} and perform operation {processRecord.Key}");
+                    }
+                }
+            }
         }
 
         private IEnumerable<AnonymizationFhirPathRule> GetRulesByType(string typeString)

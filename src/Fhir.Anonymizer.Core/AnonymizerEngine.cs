@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using EnsureThat;
 using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Processors;
 using Fhir.Anonymizer.Core.Validation;
-using Fhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
-using Hl7.Fhir.Specification;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
 
@@ -75,7 +71,7 @@ namespace Fhir.Anonymizer.Core
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
             var anonymizedResource = resourceNode.Anonymize(_rules, _processors).ToPoco<Resource>();
             ValidateOutput(settings, anonymizedResource);
-
+           
             return anonymizedResource;
         }
 

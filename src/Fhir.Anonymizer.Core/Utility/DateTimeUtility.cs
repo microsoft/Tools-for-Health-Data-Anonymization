@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
+using Fhir.Anonymizer.Core.Processors;
 using Hl7.Fhir.ElementModel;
 
 namespace Fhir.Anonymizer.Core.Utility
@@ -49,7 +50,7 @@ namespace Fhir.Anonymizer.Core.Utility
                 node.Value = null;
             }
 
-            processResult.IsRedacted = true;
+            processResult.AddProcessRecord(AnonymizationOperations.Redact, node);
             return processResult;
         }
 
@@ -75,7 +76,7 @@ namespace Fhir.Anonymizer.Core.Utility
                 node.Value = null;
             }
 
-            processResult.IsRedacted = true;
+            processResult.AddProcessRecord(AnonymizationOperations.Redact, node);
             return processResult;
         }
 
@@ -99,7 +100,8 @@ namespace Fhir.Anonymizer.Core.Utility
                 node.Value = null;
             }
 
-            processResult.IsRedacted = true;
+            processResult.AddProcessRecord(AnonymizationOperations.Redact, node);
+
             return processResult;
         }
 
@@ -116,7 +118,7 @@ namespace Fhir.Anonymizer.Core.Utility
             {
                 int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
-                processResult.IsPerturbed = true;
+                processResult.AddProcessRecord(AnonymizationOperations.Perturb, node);
             }
             else
             {
@@ -155,7 +157,7 @@ namespace Fhir.Anonymizer.Core.Utility
                 {
                     node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
                 }
-                processResult.IsPerturbed = true;
+                processResult.AddProcessRecord(AnonymizationOperations.Perturb, node);
             }
             else
             {

@@ -61,7 +61,7 @@ namespace Fhir.Anonymizer.Core.Extensions
                 return;
             }
 
-            if (!result.IsAbstracted && !result.IsPerturbed && !result.IsRedacted)
+            if (result.ProcessRecords.Count == 0)
             {
                 return;
             }
