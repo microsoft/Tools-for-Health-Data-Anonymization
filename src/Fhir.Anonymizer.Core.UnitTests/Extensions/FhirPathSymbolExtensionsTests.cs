@@ -8,7 +8,7 @@ using Hl7.Fhir.Model;
 using Hl7.FhirPath;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
+namespace Fhir.Anonymizer.Core.UnitTests.Extensions
 {
     public class FhirPathSymbolExtensionsTests
     {

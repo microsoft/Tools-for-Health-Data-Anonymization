@@ -44,7 +44,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void Given2ConflictRules_WhenProcess_SecondRuleShouldBeOverride()
+        public void Given2ConflictRules_WhenProcess_SecondRuleShouldBeOverridden()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {

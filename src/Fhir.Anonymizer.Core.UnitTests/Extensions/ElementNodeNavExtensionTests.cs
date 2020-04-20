@@ -7,7 +7,7 @@ using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.ExtensionTests
+namespace Fhir.Anonymizer.Core.UnitTests.Extensions
 {
     public class ElementNodeNavExtensionTests
     {

@@ -1,7 +1,7 @@
 ﻿{
   "fhirPathRules": [
     {"path": "nodesByType('Extension')", "method": "redact"},
-
+    
     {"path": "Organization.identifier", "method": "keep"},
     {"path": "Organization.telecom", "method": "keep"},
     {"path": "Organization.address", "method": "keep"},

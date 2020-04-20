@@ -71,7 +71,7 @@ namespace Fhir.Anonymizer.Core.Extensions
 
         public static bool IsFhirResource(this ElementNode node)
         {
-            return node.Definition?.IsResource ?? false;
+            return node != null && (node.Definition?.IsResource ?? false);
         }
 
         public static string GetFhirPath(this ElementNode node)
@@ -87,7 +87,7 @@ namespace Fhir.Anonymizer.Core.Extensions
 
         public static ElementNode GetMeta(this ElementNode node)
         {
-            return node.Children("meta").Cast<ElementNode>().FirstOrDefault();
+            return node?.Children("meta").Cast<ElementNode>().FirstOrDefault();
         }
     }
 }
