@@ -251,6 +251,7 @@ Here is a sample configuration:
   "parameters": {
     "dateShiftKey": "",
     "enablePartialAgesForRedact": true
+  }
 }
 ```
 
