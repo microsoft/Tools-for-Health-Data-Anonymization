@@ -44,6 +44,30 @@ namespace Fhir.Anonymizer.Core.UnitTests
         }
 
         [Fact]
+        public void GivenAPatientWIthOnlyId_WhenProcess_NodeShouldBeRedact()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Patient.id", "id", "Patient", "redact", AnonymizerRuleType.FhirPathRule, "Patient.id"),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var patient = new Patient();
+            patient.Id = "Test";
+            var patientNode = ElementNode.FromElement(patient.ToTypedElement());
+            patientNode.Accept(visitor);
+            patientNode.RemoveNullChildren();
+
+            var patientId = patientNode.Select("Patient.id").FirstOrDefault();
+            Assert.Null(patientId);
+
+            patient = patientNode.ToPoco<Patient>();
+            Assert.Single(patient.Meta.Security);
+            Assert.Contains(SecurityLabels.REDACT.Code, patient.Meta.Security.Select(s => s.Code));
+        }
+
+        [Fact]
         public void Given2ConflictRules_WhenProcess_SecondRuleShouldBeOverridden()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
@@ -118,6 +142,30 @@ namespace Fhir.Anonymizer.Core.UnitTests
             var personCity = bundleNode.Select("Bundle.entry[0].resource[0].address[0].city[0]").FirstOrDefault();
 
             Assert.Null(personCity);
+        }
+
+        [Fact]
+        public void GivenAResourceTypeRuleMatchBundleEntryNode_WhenProcess_NodesInBundleShouldBeRedact()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Person", "Person", "Person", "redact", AnonymizerRuleType.FhirPathRule, "Person.address"),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var person = CreateTestPerson();
+            var bundle = new Bundle();
+            bundle.AddResourceEntry(person, "http://example.org/fhir/Person/1");
+
+            var bundleNode = ElementNode.FromElement(bundle.ToTypedElement());
+            bundleNode.Accept(visitor);
+            bundleNode.RemoveNullChildren();
+            person = bundleNode.Select("Bundle.entry[0].resource[0]").FirstOrDefault().ToPoco<Person>();
+
+            Assert.NotNull(person);
+            Assert.NotNull(person.Meta);
+            Assert.Null(person.Active);
         }
 
         [Fact]

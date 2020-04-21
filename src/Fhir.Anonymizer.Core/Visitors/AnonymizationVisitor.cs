@@ -80,7 +80,25 @@ namespace Fhir.Anonymizer.Core.Visitors
                     continue;
                 }
 
-                foreach (var matchNode in node.Select(rule.Expression).Cast<ElementNode>())
+                IEnumerable<ElementNode> matchNodes;
+                if (rule.IsResourceTypeRule)
+                {
+                    /** 
+                     * Special case handling:
+                     * Senario: FHIR path only contains resourceType: Patient, Resource. 
+                     * Sample AnonymizationFhirPathRule: { "path": "Patient", "method": "keep" }
+                     * 
+                     * Current FHIR path lib do not support navigate such ResourceType FHIR path from resource in bundle.
+                     * Example: navigate with FHIR path "Patient" from "Bundle.entry[0].resource[0]" is not support
+                     */
+                    matchNodes = new List<ElementNode>() { node };
+                }
+                else
+                {
+                    matchNodes = node.Select(rule.Expression).Cast<ElementNode>();
+                }
+                
+                foreach (var matchNode in matchNodes)
                 {
                     resultOnRule.Update(ProcessNodeRecursive(matchNode, _processors[method], _visitedNodes));
                 }

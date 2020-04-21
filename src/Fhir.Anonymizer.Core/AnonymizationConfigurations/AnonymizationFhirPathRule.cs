@@ -15,6 +15,9 @@ namespace Fhir.Anonymizer.Core.AnonymizationConfigurations
 
         public string ResourceType { get; private set; }
 
+        // Path is same to the resource type
+        public bool IsResourceTypeRule { get { return Path.Equals(ResourceType);  } }
+
         public static AnonymizationFhirPathRule CreateAnonymizationFhirPathRule(Dictionary<string, string> config)
         {
             if (config == null)
