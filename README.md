@@ -236,31 +236,29 @@ Example usage to anonymize FHIR resource files in a folder:
 
 ## Configuration file format
 
-The configuration is specified in JSON format. It has three high-level sections. Two of these sections, namely _pathRules_, and _typeRules_ are meant to specify de-identification methods for data elements. De-identification configuration specified in the _pathRules_ section override the corresponding configurations in the _typeRules_ section. The third section named _parameters_ affect global behavior.
+The configuration is specified in JSON format. It has two high-level sections. One of these sections, namely _fhirPathRules_ is meant to specify de-identification methods for data elements. The second section named _parameters_ affect global behavior.
 
 Here is a sample configuration:
 
 ```json
 {
-  "pathRules": {
-    "Patient.address.state": "keep",
-    "Patient.address.country": "redact"
-  },
-  "typeRules": {
-    "date": "dateShift",
-    "Address": "redact"
-  },
+  "fhirPathRules": [
+    {"path": "nodesByType('Extension')", "method": "redact"},
+    {"path": "Organization.identifier", "method": "keep"},
+    {"path": "nodesByType('Address').country", "method": "keep"},
+    {"path": "Group.name", "method": "redact"}
+  ],
   "parameters": {
     "dateShiftKey": "",
     "enablePartialAgesForRedact": true
 }
 ```
 
-### Path Rules
-Path rules are key-value pairs that can be used to specify the de-identification methods for individual elements. Ex:
+### FHIR Path Rules
+FHIR path rules can be used to specify the de-identification methods for individual elements. Ex:
 
 ```json
-"Patient.address.state": "keep"
+{"path": "Organization.identifier", "method": "keep"}
 ```
 The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax. The method can be one from the following table.
 
@@ -270,19 +268,9 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |redact|All elements| Removes the element. See the parameters section below to handle special cases.|
 |dateShift|Elements of type date, dateTime, and instant | Shifts the value using the [Date-shift algorithm](#date-shift-algorithm).
 
-### Type Rules
-Type rules are key-value pairs that can be used to specify the de-identification methods at the datatype level. Ex:
-
-```json
-"date": "dateShift"
-```
-The datatypes can be any of the [FHIR datatypes](https://www.hl7.org/fhir/datatypes.html). The method can be one from the following table.
-
-|Method| Applicable to | Description
-| ----- | ----- | ----- |
-|keep|All datatypes | Retains the value as is. |
-|redact|All datatypes| Removes the element. See the parameters section below to handle special cases. |
-|dateShift|date, dateTime, and instant datatypes | Shifts the value using the [Date-shift algorithm](#date-shift-algorithm).
+2 extension methods can be used in FHIR path rule to simplify the FHIR path:
+- nodesByType('_typename_'): return descendants of type '_typename_', nodes in bundle resource and contained list would be excluded. 
+- nodesByName('_name_'): return descendants of node name '_name_', nodes in bundle resource and contained list would be excluded. 
 
 ### Parameters
 Parameters affect the de-identification methods specified in the type rules and path rules. 
