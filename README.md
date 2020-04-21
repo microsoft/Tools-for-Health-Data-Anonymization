@@ -255,7 +255,7 @@ Here is a sample configuration:
 ```
 
 ### FHIR Path Rules
-FHIR path rules can be used to specify the de-identification methods for individual elements. Ex:
+FHIR path rules can be used to specify the de-identification methods for individual elements as well as elements of specific data types. Ex:
 
 ```json
 {"path": "Organization.identifier", "method": "keep"}
@@ -268,12 +268,12 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |redact|All elements| Removes the element. See the parameters section below to handle special cases.|
 |dateShift|Elements of type date, dateTime, and instant | Shifts the value using the [Date-shift algorithm](#date-shift-algorithm).
 
-2 extension methods can be used in FHIR path rule to simplify the FHIR path:
-- nodesByType('_typename_'): return descendants of type '_typename_', nodes in bundle resource and contained list would be excluded. 
-- nodesByName('_name_'): return descendants of node name '_name_', nodes in bundle resource and contained list would be excluded. 
+Two extension methods can be used in FHIR path rule to simplify the FHIR path:
+- nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
+- nodesByName('_name_'): return descendants of node name '_name_'. Nodes in bundle resource and contained list will be excluded. 
 
 ### Parameters
-Parameters affect the de-identification methods specified in the type rules and path rules. 
+Parameters affect the de-identification methods specified in the FHIR path rules. 
 
 |Method| Parameter | Affected fields | Valid values | Default value | Description
 | ----- | ----- | ----- | ----- | ----- | ----- |
