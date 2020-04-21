@@ -33,7 +33,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 
         private static void TransformTypeRulesToPathRules(ElementNode node, Dictionary<string, string> typeRules, List<AnonymizerRule> rules, HashSet<string> rulePaths, HashSet<string> generatedTypePaths)
         {
-            if (node.IsContainedNode() || node.IsEntryNode())
+            if (node.IsContainedNode() || node.IsEntryResourceNode())
             {
                 return;
             }
