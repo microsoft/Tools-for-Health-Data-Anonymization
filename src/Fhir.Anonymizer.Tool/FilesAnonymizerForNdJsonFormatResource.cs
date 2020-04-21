@@ -14,32 +14,26 @@ namespace Fhir.Anonymizer.Tool
     {
         private string _inputFolder;
         private string _outputFolder;
-        private bool _isRecursive;
-        private bool _validateInput;
-        private bool _validateOutput;
         private string _configFilePath;
+        private AnonymizationToolOptions _options;
 
         public FilesAnonymizerForNdJsonFormatResource(
             string configFilePath,
             string inputFolder,
             string outputFolder,
-            bool isRecursive,
-            bool validateInput,
-            bool validateOutput)
+            AnonymizationToolOptions options)
         {
             _inputFolder = inputFolder;
             _outputFolder = outputFolder;
-            _isRecursive = isRecursive;
-            _validateInput = validateInput;
-            _validateOutput = validateOutput;
             _configFilePath = configFilePath;
 
+            _options = options;
             AnonymizerEngine.InitFhirPathExtensionSymbols();
         }
 
         public async Task AnonymizeAsync()
         {
-            var directorySearchOption = _isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+            var directorySearchOption = _options.IsRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
             var bulkResourceFileList = Directory.EnumerateFiles(_inputFolder, "*.ndjson", directorySearchOption).ToList();
             Console.WriteLine($"Find {bulkResourceFileList.Count()} bulk data resource files in '{_inputFolder}'.");
 
@@ -48,17 +42,32 @@ namespace Fhir.Anonymizer.Tool
                 Console.WriteLine($"Processing {bulkResourceFileName}");
 
                 var bulkResourceOutputFileName = GetResourceOutputFileName(bulkResourceFileName, _inputFolder, _outputFolder);
-                if (_isRecursive)
+                var tempBulkResourceOutputFileName = GetTempFileName(bulkResourceOutputFileName);
+                if (_options.IsRecursive)
                 {
                     var resourceOutputFolder = Path.GetDirectoryName(bulkResourceOutputFileName);
                     Directory.CreateDirectory(resourceOutputFolder);
+                }
+
+                if (_options.SkipExistedFile && File.Exists(bulkResourceOutputFileName))
+                {
+                    Console.WriteLine($"Skip processing on file {bulkResourceOutputFileName}.");
+                    continue;
+                }
+                else
+                {
+                    if (File.Exists(bulkResourceOutputFileName))
+                    {
+                        Console.WriteLine($"Remove existed target file {bulkResourceOutputFileName}.");
+                        File.Delete(bulkResourceOutputFileName);
+                    }
                 }
 
                 int completedCount = 0;
                 int failedCount = 0;
                 int consumeCompletedCount = 0;
                 using (FileStream inputStream = new FileStream(bulkResourceFileName, FileMode.Open))
-                using (FileStream outputStream = new FileStream(bulkResourceOutputFileName, FileMode.Create))
+                using (FileStream outputStream = new FileStream(tempBulkResourceOutputFileName, FileMode.Create))
                 {
                     using FhirStreamReader reader = new FhirStreamReader(inputStream);
                     using FhirStreamConsumer consumer = new FhirStreamConsumer(outputStream);
@@ -70,8 +79,8 @@ namespace Fhir.Anonymizer.Tool
                             var settings = new AnonymizerSettings()
                             {
                                 IsPrettyOutput = false,
-                                ValidateInput = _validateInput,
-                                ValidateOutput = _validateOutput
+                                ValidateInput = _options.ValidateInput,
+                                ValidateOutput = _options.ValidateOutput
                             };
                             return engine.AnonymizeJson(content, settings);
                         }
@@ -98,11 +107,21 @@ namespace Fhir.Anonymizer.Tool
                         Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {failedCount} Process failed. {consumeCompletedCount} Consume completed.");
                     };
 
-                    await executor.ExecuteAsync(CancellationToken.None, false, progress).ConfigureAwait(false);
+                    await executor.ExecuteAsync(CancellationToken.None, true, progress).ConfigureAwait(false);
                 }
+
+                // Rename file name after success process
+                File.Move(tempBulkResourceOutputFileName, bulkResourceOutputFileName);
 
                 Console.WriteLine($"Finished processing '{bulkResourceFileName}'!");
             }
+        }
+
+        private string GetTempFileName(string pathFileName)
+        {
+            string directory = Path.GetDirectoryName(pathFileName);
+
+            return Path.Combine(directory, $"{Guid.NewGuid():N}");
         }
 
         private string GetResourceOutputFileName(string fileName, string inputFolder, string outputFolder)

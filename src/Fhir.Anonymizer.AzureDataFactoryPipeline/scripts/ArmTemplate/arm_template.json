@@ -106,7 +106,11 @@
                             "folderPath": "[concat(parameters('sourceStorageActivityApplicationContainer'), '/AdfApplication')]",
                             "extendedProperties": {
                                 "sourceConnectionString": "[parameters('sourceStorageLinkedService_connectionString')]",
-                                "destinationConnectionString": "[parameters('destinationStorageLinkedService_connectionString')]"
+                                "destinationConnectionString": "[parameters('destinationStorageLinkedService_connectionString')]",
+                                "skipExistedBlob": {
+                                    "value": "@pipeline().parameters.skipExistedBlob",
+                                    "type": "Expression"
+                                }
                             },
                             "referenceObjects": {
                                 "linkedServices": [
@@ -141,6 +145,12 @@
                         }
                     }
                 ],
+                "parameters": {
+                    "skipExistedBlob": {
+                        "type": "bool",
+                        "defaultValue": false
+                    }
+                },
                 "annotations": []
             },
             "dependsOn": [
