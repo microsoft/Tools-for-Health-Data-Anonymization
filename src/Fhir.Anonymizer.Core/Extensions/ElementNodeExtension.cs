@@ -57,13 +57,6 @@ namespace Fhir.Anonymizer.Core.Extensions
             return node != null && string.Equals(node.Name, Constants.ContainedNodeName, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static bool IsEntryResourceNode(this ElementNode node)
-        {
-            return node != null
-                && string.Equals(node.Name, Constants.EntryResourceNodeName, StringComparison.InvariantCultureIgnoreCase)
-                && string.Equals(node.Parent?.Name, Constants.EntryNodeName, StringComparison.InvariantCultureIgnoreCase);
-        }
-
         public static bool HasContainedNode(this ElementNode node)
         {
             return node != null && node.Children(Constants.ContainedNodeName).Any();
