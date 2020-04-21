@@ -236,7 +236,7 @@ Example usage to anonymize FHIR resource files in a folder:
 
 ## Configuration file format
 
-The configuration is specified in JSON format. It has two high-level sections. One of these sections, namely _fhirPathRules_ is meant to specify de-identification methods for data elements. The second section named _parameters_ affect global behavior.
+The configuration is specified in JSON format. It has two high-level sections. One of these sections, namely _fhirPathRules_ is meant to specify de-identification methods for data elements. The second section named _parameters_ affects global behavior.
 
 Here is a sample configuration:
 
