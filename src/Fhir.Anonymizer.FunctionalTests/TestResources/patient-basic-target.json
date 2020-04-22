@@ -28,10 +28,7 @@
   ],
   "active": true,
   "name": [
-    { "use": "official" },
-    { "use": "usual" },
     {
-      "use": "maiden",
       "period": {
         "end": "2002"
       }
@@ -49,7 +46,6 @@
   "_birthDate": {
     "extension": [
       {
-        "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime",
         "valueDateTime": "2000-02-11T00:00:00-01:00"
       }
     ]
@@ -61,21 +57,6 @@
       "postalCode": "12300",
       "period": {
         "start": "2000-02-11"
-      }
-    },
-    {
-      "use": "home",
-      "type": "both",
-      "text": "123 Test St Test1, Test2, Test3 1234",
-      "line": [
-        "123 Test St"
-      ],
-      "city": "KeepTest",
-      "district": "TestRegion",
-      "state": "TestState",
-      "postalCode": "12345",
-      "period": {
-        "start": "2000-01-01"
       }
     }
   ],

@@ -2,7 +2,6 @@
 using System.Linq;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
-using Fhir.Anonymizer.Core.Processors;
 using Hl7.Fhir.ElementModel;
 
 namespace Fhir.Anonymizer.Core.Utility
@@ -30,12 +29,12 @@ namespace Fhir.Anonymizer.Core.Utility
                 {
                     node.Value = $"{node.Value.ToString().Substring(0, s_initialDigitsCount)}{new string(s_replacementDigit, node.Value.ToString().Length - s_initialDigitsCount)}";
                 }
-                processResult.AddProcessRecord(AnonymizationOperations.Abstract, node);
+                processResult.IsAbstracted = true;
             }
             else
             {
                 node.Value = null;
-                processResult.AddProcessRecord(AnonymizationOperations.Redact, node);
+                processResult.IsRedacted = true;
             }
 
             return processResult;

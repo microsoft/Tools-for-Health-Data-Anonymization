@@ -23,10 +23,13 @@
     <None Update="TestConfigurations\configuration-miss-rules.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestConfigurations\configuration-invalid-fhirpath.json">
+    <None Update="TestConfigurations\configuration-unsupported-method.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestConfigurations\configuration-unsupported-method.json">
+    <None Update="TestConfigurations\configuration-unsupported-path.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestConfigurations\configuration-unsupported-type.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="TestConfigurations\configuration-test-sample.json">

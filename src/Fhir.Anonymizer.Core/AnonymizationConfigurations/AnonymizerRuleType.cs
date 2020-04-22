@@ -2,6 +2,7 @@
 {
     public enum AnonymizerRuleType
     {
-        FhirPathRule
+        PathRule,
+        TypeRule
     }
 }
