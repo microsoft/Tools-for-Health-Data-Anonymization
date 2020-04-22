@@ -17,12 +17,20 @@
       "method": "keep"
     },
     {
+      "path": "Patient.id",
+      "method": "cryptoHash"
+    },
+    {
       "path": "Patient.generalPractitioner",
       "method": "redact"
     },
     {
       "path": "Patient.link.other",
       "method": "redact"
+    },
+    {
+      "path": "Observation.subject",
+      "method": "cryptoHash"
     },
     {
       "path": "nodesByType('date')",
@@ -67,6 +75,7 @@
   ],
   "parameters": {
     "dateShiftKey": "123",
+    "cryptoHashKey": "123",
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,

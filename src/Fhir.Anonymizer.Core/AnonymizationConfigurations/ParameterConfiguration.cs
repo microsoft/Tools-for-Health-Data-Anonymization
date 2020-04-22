@@ -12,6 +12,9 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         [DataMember(Name = "dateShiftScope")]
         public DateShiftScope DateShiftScope { get; set; }
 
+        [DataMember(Name = "cryptoHashKey")]
+        public string CryptoHashKey { get; set; }
+
         [DataMember(Name = "enablePartialAgesForRedact")]
         public bool EnablePartialAgesForRedact { get; set; }
 

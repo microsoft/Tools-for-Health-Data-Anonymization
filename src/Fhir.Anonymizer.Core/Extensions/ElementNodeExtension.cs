@@ -47,6 +47,11 @@ namespace Fhir.Anonymizer.Core.Extensions
             return node != null && string.Equals(node.Name, Constants.PostalCodeNodeName, StringComparison.InvariantCultureIgnoreCase);
         }
 
+        public static bool IsReferenceNode(this ElementNode node)
+        {
+            return node != null && string.Equals(node.Name, Constants.ReferenceNodeName, StringComparison.InvariantCultureIgnoreCase);
+        }
+
         public static bool IsEntryNode(this ElementNode node)
         {
             return node != null && string.Equals(node.Name, Constants.EntryNodeName, StringComparison.InvariantCultureIgnoreCase);

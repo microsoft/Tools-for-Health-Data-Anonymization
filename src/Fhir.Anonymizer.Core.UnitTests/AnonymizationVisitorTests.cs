@@ -44,6 +44,30 @@ namespace Fhir.Anonymizer.Core.UnitTests
         }
 
         [Fact]
+        public void GivenACryptoHashRule_WhenProcess_NodeShouldBeHashed()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Patient.address", "address", "Patient", "cryptoHash", AnonymizerRuleType.FhirPathRule, "Patient.address"),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var patient = CreateTestPatient();
+            var patientNode = ElementNode.FromElement(patient.ToTypedElement());
+            patientNode.Accept(visitor);
+            patientNode.RemoveNullChildren();
+
+            var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
+            Assert.Equal("", patientAddress.Value.ToString());
+
+            patient = patientNode.ToPoco<Patient>();
+            Assert.Single(patient.Meta.Security);
+            Assert.Contains(SecurityLabels.REDACT.Code, patient.Meta.Security.Select(s => s.Code));
+        }
+
+
+        [Fact]
         public void GivenAPatientWIthOnlyId_WhenProcess_NodeShouldBeRedact()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
@@ -311,11 +335,13 @@ namespace Fhir.Anonymizer.Core.UnitTests
             KeepProcessor keepProcessor = new KeepProcessor();
             RedactProcessor redactProcessor = new RedactProcessor(false, false, false, null);
             DateShiftProcessor dateShiftProcessor = new DateShiftProcessor("123", "123", false);
+            CryptoHashProcessor cryptoHashProcessor = new CryptoHashProcessor("123");
             Dictionary<string, IAnonymizerProcessor> processors = new Dictionary<string, IAnonymizerProcessor>()
             {
                 { "KEEP", keepProcessor},
                 { "REDACT", redactProcessor},
-                { "DATESHIFT", dateShiftProcessor}
+                { "DATESHIFT", dateShiftProcessor},
+                { "CRYPTOHASH", cryptoHashProcessor}
             };
 
             return processors;

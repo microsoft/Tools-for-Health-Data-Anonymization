@@ -16,7 +16,7 @@
       "fullUrl": "http://example.org/fhir/Patient/23",
       "resource": {
         "resourceType": "Patient",
-        "id": "23",
+        "id": "c846593cc9ec1e3a2126c5aa321f8e1c2246f976ffd8f1b9c0fe75a1e26c985d",
         "name": [
           { "use": "official" }
         ],
@@ -71,7 +71,7 @@
           ]
         },
         "subject": {
-          "reference": "Patient/23"
+          "reference": "Patient/c846593cc9ec1e3a2126c5aa321f8e1c2246f976ffd8f1b9c0fe75a1e26c985d"
         }
       }
     }

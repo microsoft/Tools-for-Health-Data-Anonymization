@@ -20,12 +20,20 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
             {
                 ParameterConfiguration = new ParameterConfiguration
                 {
-                    DateShiftKey = Guid.NewGuid().ToString("N")
+                    DateShiftKey = Guid.NewGuid().ToString("N"),
+                    CryptoHashKey = Guid.NewGuid().ToString("N")
                 };
+                return;
             }
-            else if (string.IsNullOrEmpty(ParameterConfiguration.DateShiftKey))
+            
+            if (string.IsNullOrEmpty(ParameterConfiguration.DateShiftKey))
             {
                 ParameterConfiguration.DateShiftKey = Guid.NewGuid().ToString("N");
+            }
+
+            if (string.IsNullOrEmpty(ParameterConfiguration.CryptoHashKey))
+            {
+                ParameterConfiguration.CryptoHashKey = Guid.NewGuid().ToString("N");
             }
         }
     }

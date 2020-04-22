@@ -16,6 +16,7 @@ namespace Fhir.Anonymizer.Core
 
         // NodeName constants
         internal const string PostalCodeNodeName = "postalCode";
+        internal const string ReferenceNodeName = "reference";
         internal const string ContainedNodeName = "contained";
         internal const string EntryNodeName = "entry";
         internal const string EntryResourceNodeName = "resource";
