@@ -29,7 +29,7 @@ namespace Fhir.Anonymizer.FunctionalTests
         }
 
         [Fact]
-        public void GivenAPatientResourceWithSpecialContents_WhenAnonymizing_ThenRedactedJsonShouldBeReturned()
+        public void GivenAPatientResourceWithSpecialContents_WhenAnonymizing_ThenAnonymizedJsonShouldBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "common-config.json"));
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-special-content.json"), ResourceTestsFile("patient-special-content-target.json"));
