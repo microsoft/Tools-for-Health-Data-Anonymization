@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using Fhir.Anonymizer.Core;
-using Hl7.Fhir.Model;
-using Hl7.Fhir.Serialization;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -22,12 +20,7 @@ namespace Fhir.Anonymizer.FunctionalTests
 
         private static string Standardize(string jsonContent)
         {
-            var resource = new FhirJsonParser().Parse<Resource>(jsonContent);
-            FhirJsonSerializationSettings serializationSettings = new FhirJsonSerializationSettings
-            {
-                Pretty = true
-            };
-            return resource.ToJson(serializationSettings);
+            return JsonConvert.SerializeObject(JsonConvert.DeserializeObject(jsonContent));
         }
     }
 }

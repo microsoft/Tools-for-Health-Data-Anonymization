@@ -17,16 +17,6 @@
             "system": "http://example.org/ids",
             "value": "1234567"
           }
-        ],
-        "name": [
-          {
-            "use": "official",
-            "family": "Family",
-            "given": [
-              "GivenFirst",
-              "GivenSecond"
-            ]
-          }
         ]
       }
     },

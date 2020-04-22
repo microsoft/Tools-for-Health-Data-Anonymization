@@ -7,9 +7,5 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         public AnonymizerConfigurationErrorsException(string message) : base(message)
         {
         }
-
-        public AnonymizerConfigurationErrorsException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
     }
 }

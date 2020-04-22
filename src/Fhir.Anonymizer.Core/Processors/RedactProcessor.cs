@@ -53,9 +53,10 @@ namespace Fhir.Anonymizer.Core.Processors
             else
             {
                 node.Value = null;
-                ProcessResult result = new ProcessResult();
-                result.AddProcessRecord(AnonymizationOperations.Redact, node);
-                return result;
+                return new ProcessResult()
+                {
+                    IsRedacted = true
+                };
             }
         }
     }

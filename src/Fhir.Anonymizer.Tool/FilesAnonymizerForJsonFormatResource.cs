@@ -27,9 +27,8 @@ namespace Fhir.Anonymizer.Tool
             _inputFolder = inputFolder;
             _outputFolder = outputFolder;
             _configFilePath = configFilePath;
-            _options = options;
 
-            AnonymizerEngine.InitializeFhirPathExtensionSymbols();
+            _options = options;
         }
 
         public async Task AnonymizeAsync()

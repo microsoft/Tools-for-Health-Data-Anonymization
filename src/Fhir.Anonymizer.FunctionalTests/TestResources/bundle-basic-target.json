@@ -17,9 +17,6 @@
       "resource": {
         "resourceType": "Patient",
         "id": "23",
-        "name": [
-          { "use": "official" }
-        ],
         "meta": {
           "security": [
             {
