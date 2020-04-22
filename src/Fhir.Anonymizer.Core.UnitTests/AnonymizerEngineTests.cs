@@ -8,7 +8,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
     {
         public AnonymizerEngineTests()
         {
-            AnonymizerEngine.InitFhirPathExtensionSymbols();
+            AnonymizerEngine.InitializeFhirPathExtensionSymbols();
         }
 
         [Fact]

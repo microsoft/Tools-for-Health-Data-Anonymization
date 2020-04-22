@@ -253,7 +253,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
         {
             // Increase connection limit of single endpoint: 2 => 128
             System.Net.ServicePointManager.DefaultConnectionLimit = 128;
-            AnonymizerEngine.InitFhirPathExtensionSymbols();
+            AnonymizerEngine.InitializeFhirPathExtensionSymbols();
 
             var input = LoadActivityInput();
             await AnonymizeDataset(input, force).ConfigureAwait(false);
