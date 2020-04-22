@@ -1,4 +1,8 @@
-﻿namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
+﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizerRule
     {
