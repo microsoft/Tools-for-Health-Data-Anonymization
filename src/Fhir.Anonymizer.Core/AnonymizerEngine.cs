@@ -23,7 +23,7 @@ namespace Fhir.Anonymizer.Core
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
         private readonly AnonymizationFhirPathRule[] _rules;
 
-        public static void InitFhirPathExtensionSymbols()
+        public static void InitializeFhirPathExtensionSymbols()
         {
             FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
         }
