@@ -105,6 +105,21 @@
       "period": {
         "start": "2000-01-01"
       }
+    },
+    {
+      "use": "home",
+      "type": "both",
+      "text": "123 Test St Test1, Test2, Test3 1234",
+      "line": [
+        "123 Test St"
+      ],
+      "city": "KeepTest",
+      "district": "TestRegion",
+      "state": "TestState",
+      "postalCode": "12345",
+      "period": {
+        "start": "2000-01-01"
+      }
     }
   ],
   "contact": [

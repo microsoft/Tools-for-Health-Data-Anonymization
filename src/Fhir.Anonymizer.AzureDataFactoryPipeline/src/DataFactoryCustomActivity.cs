@@ -44,6 +44,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
             dynamic activity = JsonConvert.DeserializeObject(File.ReadAllText(_activityConfigurationFile));
             var sourceConnectionString = (string)activity.typeProperties.extendedProperties.sourceConnectionString;
             var destinationConnectionString = (string)activity.typeProperties.extendedProperties.destinationConnectionString;
+            bool skipExistedFile = (bool)activity.typeProperties.extendedProperties.skipExistedBlob;
 
             return new ActivityInputData
             {
@@ -52,7 +53,8 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 DestinationContainerName = destinationContainerName,
                 DestinationFolderPath = destinationFolderPath,
                 SourceStorageConnectionString = sourceConnectionString,
-                DestinationStorageConnectionString = destinationConnectionString
+                DestinationStorageConnectionString = destinationConnectionString,
+                SkipExistedFile = skipExistedFile
             };
         }
 
@@ -87,6 +89,12 @@ namespace Fhir.Anonymizer.DataFactoryTool
 
                 var inputBlobClient = new BlobClient(inputData.SourceStorageConnectionString, inputContainer.Name, blob.Name, BlobClientOptions.Value);
                 var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainer.Name, outputBlobName, BlobClientOptions.Value);
+                if (inputData.SkipExistedFile && await outputBlobClient.ExistsAsync().ConfigureAwait(false))
+                {
+                    Console.WriteLine($"[{blob.Name}]：'{outputBlobName}' already exist. Skip");
+                    return string.Empty;
+                }
+                
                 await outputBlobClient.DeleteIfExistsAsync().ConfigureAwait(false);
 
                 await AnonymizeSingleBlobInJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name, inputBlobPrefix).ConfigureAwait(false);
@@ -109,15 +117,23 @@ namespace Fhir.Anonymizer.DataFactoryTool
                 {
                     continue;
                 }
-                
+
                 string outputBlobName = GetOutputBlobName(blob.Name, inputBlobPrefix, outputBlobPrefix);
                 Console.WriteLine($"[{blob.Name}]：Processing... output to container '{outputContainer.Name}'");
 
                 var inputBlobClient = new BlobClient(inputData.SourceStorageConnectionString, inputContainer.Name, blob.Name, BlobClientOptions.Value);
                 var outputBlobClient = new BlockBlobClient(inputData.DestinationStorageConnectionString, outputContainer.Name, outputBlobName, BlobClientOptions.Value);
-                await outputBlobClient.DeleteIfExistsAsync().ConfigureAwait(false);
+                
 
-                await AnonymizeSingleBlobInNdJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name, inputBlobPrefix);
+                if (inputData.SkipExistedFile && await outputBlobClient.ExistsAsync().ConfigureAwait(false))
+                {
+                    Console.WriteLine($"[{blob.Name}]：'{outputBlobName}' already exist. Skip");
+                }
+                else
+                {
+                    await outputBlobClient.DeleteIfExistsAsync().ConfigureAwait(false);
+                    await AnonymizeSingleBlobInNdJsonFormatAsync(inputBlobClient, outputBlobClient, blob.Name, inputBlobPrefix);
+                }
             }
         }
 
@@ -237,6 +253,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
         {
             // Increase connection limit of single endpoint: 2 => 128
             System.Net.ServicePointManager.DefaultConnectionLimit = 128;
+            AnonymizerEngine.InitializeFhirPathExtensionSymbols();
 
             var input = LoadActivityInput();
             await AnonymizeDataset(input, force).ConfigureAwait(false);
