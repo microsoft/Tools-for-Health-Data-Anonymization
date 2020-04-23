@@ -13,12 +13,12 @@ namespace Fhir.Anonymizer.Core.Processors
     public class CryptoHashProcessor : IAnonymizerProcessor
     {
         private readonly string _cryptoHashKey;
-        private readonly Func<string, string> _transformation;
+        private readonly Func<string, string> _cryptoHashFunction;
 
         public CryptoHashProcessor(string cryptoHashKey)
         {
             _cryptoHashKey = cryptoHashKey;
-            _transformation = (input) => CryptoHashUtility.ComputeHmacSHA256Hash(input, _cryptoHashKey);
+            _cryptoHashFunction = (input) => CryptoHashUtility.ComputeHmacSHA256Hash(input, _cryptoHashKey);
         }
 
         public ProcessResult Process(ElementNode node)
@@ -32,15 +32,15 @@ namespace Fhir.Anonymizer.Core.Processors
             // Hash the id part for "Reference.reference" node and hash whole value for other node types
             if (node.IsReferenceNode())
             {
-                var newReference = ReferenceUtility.TransformReferenceId(node.Value.ToString(), _transformation);
+                var newReference = ReferenceUtility.TransformReferenceId(node.Value.ToString(), _cryptoHashFunction);
                 node.Value = newReference;
             }
             else
             {
-                node.Value = _transformation(node.Value.ToString());
+                node.Value = _cryptoHashFunction(node.Value.ToString());
             }
 
-            processResult.AddProcessRecord(AnonymizationOperations.CrytoHash, node);
+            processResult.AddProcessRecord(AnonymizationOperations.CryptoHash, node);
             return processResult;
         }
 

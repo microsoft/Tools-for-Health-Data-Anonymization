@@ -8,7 +8,6 @@ namespace Fhir.Anonymizer.FunctionalTests
 {
     public class ResourceTests
     {
-        private AnonymizerEngine engine;
         public ResourceTests()
         {
             FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();

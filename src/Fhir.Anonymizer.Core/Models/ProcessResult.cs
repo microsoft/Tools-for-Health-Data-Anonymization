@@ -23,11 +23,11 @@ namespace Fhir.Anonymizer.Core.Models
             }
         }
 
-        public bool IsCrytoHash
+        public bool IsCryptoHashed
         {
             get
             {
-                return ProcessRecords.ContainsKey(AnonymizationOperations.CrytoHash);
+                return ProcessRecords.ContainsKey(AnonymizationOperations.CryptoHash);
             }
         }
 

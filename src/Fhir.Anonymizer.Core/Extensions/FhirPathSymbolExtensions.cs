@@ -12,8 +12,15 @@ namespace Fhir.Anonymizer.Core.Extensions
         {
             lock (_lock)
             {
-                t.Add("nodesByType", (IEnumerable<ITypedElement> f, string typeName) => NodesByType(f, typeName), doNullProp: true);
-                t.Add("nodesByName", (IEnumerable<ITypedElement> f, string name) => NodesByName(f, name), doNullProp: true);
+                if (t.Filter("nodesByType", 2).Count() == 0)
+                {
+                    t.Add("nodesByType", (IEnumerable<ITypedElement> f, string typeName) => NodesByType(f, typeName), doNullProp: true);
+                }
+
+                if (t.Filter("nodesByName", 2).Count() == 0)
+                {
+                    t.Add("nodesByName", (IEnumerable<ITypedElement> f, string name) => NodesByName(f, name), doNullProp: true);
+                }
             }
 
             return t;

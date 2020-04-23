@@ -9,6 +9,6 @@ namespace Fhir.Anonymizer.Core.Processors
         public const string Redact = "REDACT";
         public const string Abstract = "ABSTRACT";
         public const string Perturb = "PERTURB";
-        public const string CrytoHash = "CRYTOHASH";
+        public const string CryptoHash = "CRYPTOHASH";
     }
 }
