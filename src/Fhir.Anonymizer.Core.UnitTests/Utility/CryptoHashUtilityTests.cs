@@ -13,6 +13,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Utility
             yield return new object[] { string.Empty, string.Empty }; 
             yield return new object[] { "abc", "8f16771f9f8851b26f4d460fa17de93e2711c7e51337cb8a608a0f81e1c1b6ae" };
             yield return new object[] { "&*^%$@()=-,/", "33f6f7d6b3602bf5354dcb4b8d988982602349355f50f86798d8ce1ffd61521b" };
+            yield return new object[] { "ÆŊŋßſ♫∅", "1a94823f0a0f00a4b1ca771c3446dc5e17958f4dae3588ace2bca8a843eb63d9" };
             yield return new object[] { "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()=-",
                 "352b5a4af5adb81fa616c2a5b5c492d0b0b544c188a9aa003767a2b5efbd1478" };
         }
