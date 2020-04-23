@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Fhir.Anonymizer.Tool": {
-      "commandName": "Project",
-      "commandLineArgs": "-i D:\\data\\fhir -o D:\\data\\fhir\\result"
-    }
-  }
-}
