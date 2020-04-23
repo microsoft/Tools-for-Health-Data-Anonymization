@@ -40,7 +40,7 @@ namespace Fhir.Anonymizer.Core.Processors
                 node.Value = _transformation(node.Value.ToString());
             }
 
-            processResult.AddProcessRecord(AnonymizationOperations.CrypoHash, node);
+            processResult.AddProcessRecord(AnonymizationOperations.CrytoHash, node);
             return processResult;
         }
 

@@ -17,20 +17,12 @@
       "method": "keep"
     },
     {
-      "path": "Patient.id",
-      "method": "cryptoHash"
-    },
-    {
       "path": "Patient.generalPractitioner",
       "method": "redact"
     },
     {
       "path": "Patient.link.other",
       "method": "redact"
-    },
-    {
-      "path": "Observation.subject",
-      "method": "cryptoHash"
     },
     {
       "path": "nodesByType('date')",
@@ -70,6 +62,18 @@
     },
     {
       "path": "nodesByType('Narrative')",
+      "method": "redact"
+    },
+    {
+      "path": "Patient.id",
+      "method": "cryptoHash"
+    },
+    {
+      "path": "Observation.subject",
+      "method": "cryptoHash"
+    },
+    {
+      "path": "Bundle.entry.fullUrl",
       "method": "redact"
     }
   ],

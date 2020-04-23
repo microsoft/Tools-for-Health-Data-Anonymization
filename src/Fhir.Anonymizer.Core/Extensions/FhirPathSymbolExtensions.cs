@@ -7,10 +7,14 @@ namespace Fhir.Anonymizer.Core.Extensions
 {
     public static class FhirPathSymbolExtensions
     {
+        private static object _lock = new object();
         public static SymbolTable AddExtensionSymbols(this SymbolTable t)
         {
-            t.Add("nodesByType", (IEnumerable<ITypedElement> f, string typeName) => NodesByType(f, typeName), doNullProp: true);
-            t.Add("nodesByName", (IEnumerable<ITypedElement> f, string name) => NodesByName(f, name), doNullProp: true);
+            lock (_lock)
+            {
+                t.Add("nodesByType", (IEnumerable<ITypedElement> f, string typeName) => NodesByType(f, typeName), doNullProp: true);
+                t.Add("nodesByName", (IEnumerable<ITypedElement> f, string name) => NodesByName(f, name), doNullProp: true);
+            }
 
             return t;
         }

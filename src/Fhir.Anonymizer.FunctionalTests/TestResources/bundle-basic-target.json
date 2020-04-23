@@ -7,13 +7,17 @@
         "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
         "code": "REDACTED",
         "display": "part of the resource is removed"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "exact value is transformed with a hash function"
       }
     ]
   },
   "type": "collection",
   "entry": [
     {
-      "fullUrl": "http://example.org/fhir/Patient/23",
       "resource": {
         "resourceType": "Patient",
         "id": "c846593cc9ec1e3a2126c5aa321f8e1c2246f976ffd8f1b9c0fe75a1e26c985d",
@@ -26,13 +30,17 @@
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
               "code": "REDACTED",
               "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
             }
           ]
         }
       }
     },
     {
-      "fullUrl": "urn:uuid:04121321-4af5-424c-a0e1-ed3aab1c349d",
       "resource": {
         "resourceType": "Patient",
         "meta": {
@@ -47,7 +55,6 @@
       }
     },
     {
-      "fullUrl": "http://example.org/fhir/Observation/123",
       "resource": {
         "resourceType": "Observation",
         "id": "123",
@@ -57,6 +64,11 @@
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
               "code": "REDACTED",
               "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
             }
           ]
         },

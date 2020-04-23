@@ -27,6 +27,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Utility
         public static IEnumerable<object[]> GetUnknownReferenceData()
         {
             yield return new object[] { "034AB16", "@ID" };
+            yield return new object[] { "Patient/AbcŴΉЙ", "@ID" };
             yield return new object[] { "http://fhir.hl7.org/svc/StructureDefinitionTest/c8973a22-2b5b-4e76-9c66-00639c99e61b",
                 "@ID" };
             yield return new object[] { "ftp://fhir.hl7.org/svc/StructureDefinition/c8973a22-2b5b-4e76-9c66-00639c99e61b",

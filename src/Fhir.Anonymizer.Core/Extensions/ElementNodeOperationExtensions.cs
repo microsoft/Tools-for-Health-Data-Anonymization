@@ -81,6 +81,12 @@ namespace Fhir.Anonymizer.Core.Extensions
                 meta.Security.Add(SecurityLabels.ABSTRED);
             }
 
+            if (result.IsCrytoHash && !meta.Security.Any(x =>
+                string.Equals(x.Code, SecurityLabels.CRYTOHASH.Code, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                meta.Security.Add(SecurityLabels.CRYTOHASH);
+            }
+
             if (result.IsPerturbed && !meta.Security.Any(x =>
                 string.Equals(x.Code, SecurityLabels.PERTURBED.Code, StringComparison.InvariantCultureIgnoreCase)))
             {

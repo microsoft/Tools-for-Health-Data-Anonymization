@@ -58,12 +58,12 @@ namespace Fhir.Anonymizer.Core.UnitTests
             patientNode.Accept(visitor);
             patientNode.RemoveNullChildren();
 
-            var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
-            Assert.Equal("", patientAddress.Value.ToString());
+            var patientAddress = patientNode.Select("Patient.address[0].city").FirstOrDefault();
+            Assert.Equal("c4321653de997f3029d2efa38dd4baa6c9c2f6bd67b8a52be789f157f8b286ce", patientAddress.Value.ToString());
 
             patient = patientNode.ToPoco<Patient>();
             Assert.Single(patient.Meta.Security);
-            Assert.Contains(SecurityLabels.REDACT.Code, patient.Meta.Security.Select(s => s.Code));
+            Assert.Contains(SecurityLabels.CRYTOHASH.Code, patient.Meta.Security.Select(s => s.Code));
         }
 
 
