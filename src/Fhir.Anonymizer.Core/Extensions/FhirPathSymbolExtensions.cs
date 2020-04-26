@@ -10,8 +10,10 @@ namespace Fhir.Anonymizer.Core.Extensions
         private static object _lock = new object();
         public static SymbolTable AddExtensionSymbols(this SymbolTable t)
         {
+            // Add lock here to ensure thread safety when modifying a symbol table
             lock (_lock)
             {
+                // Check whether extension method already exists
                 if (t.Filter("nodesByType", 2).Count() == 0)
                 {
                     t.Add("nodesByType", (IEnumerable<ITypedElement> f, string typeName) => NodesByType(f, typeName), doNullProp: true);
