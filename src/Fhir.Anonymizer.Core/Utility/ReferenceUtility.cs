@@ -42,7 +42,7 @@ namespace Fhir.Anonymizer.Core.Utility
                 {
                     var group = match.Groups["id"];
                     var newId = transformation(group.Value);
-                    var newReference = regex.Replace(reference, "${prefix}" + newId + "${suffix}");
+                    var newReference = $"{match.Groups["prefix"].Value}{newId}{match.Groups["suffix"].Value}";
 
                     return newReference;
                 }
