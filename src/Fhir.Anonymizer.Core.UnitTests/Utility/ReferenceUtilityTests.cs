@@ -17,7 +17,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Utility
                 "http://fhir.hl7.org/svc/StructureDefinition/@ID" };
             yield return new object[] { "http://example.org/fhir/Observation/apo89654/_history/2", 
                 "http://example.org/fhir/Observation/@ID/_history/2" };
-            yield return new object[] { "urn:uuid:c757873d-ec9a-4326-a141-556f43239520",
+            yield return new object[] { "urn:uuid:C757873D-EC9A-4326-A141-556F43239520",
                 "urn:uuid:@ID" };
             yield return new object[] { "urn:oid:1.2.3.4.5",
                 "urn:oid:@ID" };

@@ -11,13 +11,13 @@ namespace Fhir.Anonymizer.Core.Utility
         private static readonly List<Regex> _literalReferenceRegexes = new List<Regex>
         {
             // Regex for absolute or relative url reference, https://www.hl7.org/fhir/references.html#literal
-            new Regex(@"^((http|https)://([A-Za-z0-9\\\/\.\:\%\$])*)?("
+            new Regex(@"^(?<prefix>((http|https)://([A-Za-z0-9\\\/\.\:\%\$])*)?("
                 + String.Join("|", ModelInfo.SupportedResources)
-                + @")\/(?<id>[A-Za-z0-9\-\.]{1,64})(\/_history\/[A-Za-z0-9\-\.]{1,64})?$"),
+                + @")\/)(?<id>[A-Za-z0-9\-\.]{1,64})(?<suffix>\/_history\/[A-Za-z0-9\-\.]{1,64})?$"),
             // Regex for oid reference https://www.hl7.org/fhir/datatypes.html#oid
-            new Regex(@"^urn:oid:(?<id>[0-2](\.(0|[1-9][0-9]*))+)$"),
+            new Regex(@"^(?<prefix>urn:oid:)(?<id>[0-2](\.(0|[1-9][0-9]*))+)(?<suffix>)$"),
             // Regex for uuid reference https://www.hl7.org/fhir/datatypes.html#uuid
-            new Regex(@"^urn:uuid:(?<id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$")
+            new Regex(@"^(?<prefix>urn:uuid:)(?<id>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})(?<suffix>)$")
         };
 
         public static string TransformReferenceId(string reference, Func<string, string> transformation)
@@ -42,10 +42,7 @@ namespace Fhir.Anonymizer.Core.Utility
                 {
                     var group = match.Groups["id"];
                     var newId = transformation(group.Value);
-                    var newReference = $"{reference.Substring(0, group.Index)}{newId}";
-                    // add reference suffix if exists (\/_history\/[A-Za-z0-9\-\.]{1,64})?
-                    var suffixIndex = group.Index + group.Length;
-                    newReference += reference.Substring(suffixIndex);
+                    var newReference = regex.Replace(reference, "${prefix}" + newId + "${suffix}");
 
                     return newReference;
                 }

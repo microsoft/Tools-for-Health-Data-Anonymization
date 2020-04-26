@@ -30,7 +30,7 @@ namespace Fhir.Anonymizer.Core.Processors
             }
 
             // Hash the id part for "Reference.reference" node and hash whole value for other node types
-            if (node.IsReferenceNode())
+            if (node.IsReferenceStringNode())
             {
                 var newReference = ReferenceUtility.TransformReferenceId(node.Value.ToString(), _cryptoHashFunction);
                 node.Value = newReference;

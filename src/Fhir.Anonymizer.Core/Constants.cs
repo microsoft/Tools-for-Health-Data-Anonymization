@@ -13,10 +13,11 @@ namespace Fhir.Anonymizer.Core
         internal const string InstantTypeName = "instant";
         internal const string AgeTypeName = "Age";
         internal const string BundleTypeName = "Bundle";
+        internal const string ReferenceTypeName = "Reference";
 
         // NodeName constants
         internal const string PostalCodeNodeName = "postalCode";
-        internal const string ReferenceNodeName = "reference";
+        internal const string ReferenceStringNodeName = "reference";
         internal const string ContainedNodeName = "contained";
         internal const string EntryNodeName = "entry";
         internal const string EntryResourceNodeName = "resource";

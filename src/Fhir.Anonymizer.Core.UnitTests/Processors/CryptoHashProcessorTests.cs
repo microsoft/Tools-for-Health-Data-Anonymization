@@ -42,7 +42,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
 
         [Theory]
         [MemberData(nameof(GetNonReferenceNodesForCryptoHash))]
-        public void GivenANonReferenceNode_WhenCryptoHash_PartlyHashedNodeShouldBeReturned(Element element, string expectedValue)
+        public void GivenANonReferenceNode_WhenCryptoHash_HashedNodeShouldBeReturned(Element element, string expectedValue)
         {
             var processor = new CryptoHashProcessor(TestHashKey);
             var node = CreateNodeFromElement(element);
