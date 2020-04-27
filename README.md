@@ -35,7 +35,7 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 
 * Support anonymization of FHIR R4 data in json as well as ndjson format.
 * Configuration of the data elements that need to be de-identified 
-* Configuration of the de-identification method for each data element (keeping, redacting, or Date-shifting) 
+* Configuration of the de-identification method for each data element (keeping, redacting, Date-shifting or Crypto-hashing) 
 * Ability to create Azure Data Factory to support de-identification of the data flows.  
 * Ability to run the tool on premise to de-identify a dataset locally 
 
@@ -246,10 +246,13 @@ Here is a sample configuration:
     {"path": "nodesByType('Extension')", "method": "redact"},
     {"path": "Organization.identifier", "method": "keep"},
     {"path": "nodesByType('Address').country", "method": "keep"},
+    {"path": "Resource.id", "method": "cryptoHash"},
+    {"path": "nodesByType('Reference').reference", "method": "cryptoHash"},
     {"path": "Group.name", "method": "redact"}
   ],
   "parameters": {
     "dateShiftKey": "",
+    "cryptoHashKey": "",
     "enablePartialAgesForRedact": true
   }
 }
@@ -268,6 +271,7 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |keep|All elements| Retains the value as is. |
 |redact|All elements| Removes the element. See the parameters section below to handle special cases.|
 |dateShift|Elements of type date, dateTime, and instant | Shifts the value using the [Date-shift algorithm](#date-shift-algorithm).
+|cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
 
 Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
@@ -280,6 +284,7 @@ Parameters affect the de-identification methods specified in the FHIR path rules
 | ----- | ----- | ----- | ----- | ----- | ----- |
 | dateShift |dateShiftKey|date, dateTime, instant fields| string|A randomly generated string|This key is used to generate date-shift amount in the [Date-shift algorithm](#date-shift-algorithm). 
 | dateShift |dateShiftScope|date, dateTime, instant fields| resource, file, folder | resource | This parameter is used to select date-shift scope. Dates within the same scope will be shifted the same amount. Please provide dateShiftKey together with it. |
+| cryptoHash |cryptoHashKey|All hashing fields| string|A randomly generated string|This key is used for HMAC-SHA256 algorithm in [Crypto-hash method](#Crypto-hash-method). 
 | redact | enablePartialAgesForRedact |Age fields | boolean | false | If the value is set to **true**, only age values over 89 will be redacted. |
 | redact | enablePartialDatesForRedact  | date, dateTime, instant fields | boolean | false | If the value is set to **true**, date, dateTime, instant will keep year if indicative age is not over 89. |
 | redact | enablePartialZipCodesForRedact  | Zip Code fields | boolean | false | If the value is set to **true**, Zip Code will be redacted as per the HIPAA Safe Harbor rule. |
@@ -310,6 +315,11 @@ You can specify dateShift as a de-identification method in the configuration fil
 1. If the input date/dateTime/instant value does not contain an exact day, for example dates with only a year ("yyyy") or only a year and month ("yyyy-MM"), the date cannot be shifted and redaction will be applied.
 2. If the input date/dateTime/instant value is indicative of age over 89, it will be redacted (including year) according to HIPAA Safe Harbor Method.
 3. If the input dateTime/instant value contains time, time will be redacted. Time zone will keep unchanged.
+
+## Crypto-hash method
+You can specify the crypto-hash method in the configuration file. We use HMAC-SHA256 algorithm, which outputs a Hex encoded representation of the hashed output (for example, ```a3c024f01cccb3b63457d848b0d2f89c1f744a3d```). Considering anonymization output conformance, we recommend you not to specify crypto hash method for FHIR elements with special format requirements like *date*, *datetime*, *url*, etc.
+
+A typical scenario is to replace resource ids across FHIR resources via crypto hashing. With a specific hash key, same resource ids that reside in resources and references will be hashed to a same value. There is a special case when crypto hashing a [literal reference](https://www.hl7.org/fhir/references.html#literal) element. We capture and transform only the id part from a reference, for example, reference ```Patient/123``` will be hashed to ```Patient/a3c024f01cccb3b63457d848b0d2f89c1f744a3d```. In this way, you can easily resolve references across anonymized FHIR resources.
 
 # Resources
 
