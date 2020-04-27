@@ -193,6 +193,7 @@
   "parameters": {
     "dateShiftKey": "",
     "dateShiftScope": "resource",
+    "cryptoHashKey": "",
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,

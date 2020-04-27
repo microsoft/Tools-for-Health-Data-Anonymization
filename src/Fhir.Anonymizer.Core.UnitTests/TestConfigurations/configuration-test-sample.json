@@ -19,6 +19,7 @@
   ],
   "parameters": {
     "dateShiftKey": "",
+    "cryptoHashKey": "",
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,
