@@ -34,6 +34,11 @@ namespace Fhir.Anonymizer.Core.Processors
 
         public ProcessResult Process(ElementNode node)
         {
+            if (string.IsNullOrEmpty(node?.Value?.ToString()))
+            {
+                return new ProcessResult();
+            }
+
             if (node.IsDateNode())
             {
                 return DateTimeUtility.RedactDateNode(node, EnablePartialDatesForRedact);
