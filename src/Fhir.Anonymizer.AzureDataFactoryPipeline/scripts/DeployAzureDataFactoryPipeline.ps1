@@ -270,6 +270,12 @@ if ($ResourceGroupName -eq "")
     $ResourceGroupName = "$($userConfig.dataFactoryName)resourcegroup"
 }
 
+# Optional, select Azure Subscription by Id if you don't want to use your default subscription
+if ($SubscriptionId)
+{
+    Get-AzSubscription -SubscriptionId $SubscriptionId | Set-AzContext
+}
+
 Write-Host "Use resource group: $ResourceGroupName"
 Get-AzResourceGroup -Name $ResourceGroupName -ErrorVariable notPresent -ErrorAction SilentlyContinue
 if ($notPresent)
@@ -285,12 +291,6 @@ else
 $appFolder = "AdfApplication"
 $appName = "Fhir.Anonymizer.AzureDataFactoryPipeline"
 $adfPipelineName = "AdfAnonymizerPipeline"
-
-# Optional, select Azure Subscription by Id if you don't want to use your default subscription
-if ($SubscriptionId)
-{
-    Get-AzSubscription -SubscriptionId $SubscriptionId | Set-AzContext
-}
 
 if (!$RunPipelineOnly) 
 {
