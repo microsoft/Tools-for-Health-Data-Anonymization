@@ -23,7 +23,7 @@
 
 FHIR Tools for Anonymization is an open-source project that helps anonymize healthcare [FHIR](https://www.hl7.org/fhir/) data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The project released to open source on Friday, March 6th, 2020.
 
-The core engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings to anonymize the data. The project includes a [command-line tool](#fhir-anonymizer-command-line-tool) that can be used on-premises or in the cloud to anonymize data. It also comes with a [tutorial](#anonymize-fhir-data-using-azure-data-factory) and script to create an ADF pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
+The core engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings to anonymize the data. The project includes a [command-line tool](#the-command-line-tool) that can be used on-premises or in the cloud to anonymize data. It also comes with a [tutorial](#anonymize-fhir-data-using-azure-data-factory) and script to create an ADF pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
 
 This repo contains a [safe harbor configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method) to help de-identify 17 data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
 
@@ -33,11 +33,11 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 
 ## Features
 
-* Support anonymization of FHIR R4 data in json as well as ndjson format.
+* Support anonymization of FHIR R4 data in json as well as ndjson format
 * Configuration of the data elements that need to be de-identified 
 * Configuration of the de-identification method for each data element (keeping, redacting, Date-shifting, or Crypto-hashing) 
-* Ability to create Azure Data Factory to support de-identification of the data flows.  
-* Ability to run the tool on premise to de-identify a dataset locally 
+* Ability to create Azure Data Factory to support de-identification of the data flows 
+* Ability to run the tool on premise to de-identify a dataset locally
 
 # Quickstarts
 
