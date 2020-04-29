@@ -104,7 +104,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
 
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor);
+            patientNode.Accept(visitor); 
             string patientCity = patientNode.Select("Patient.address[0].city").First().Value.ToString();
             string patientCountry = patientNode.Select("Patient.address[0].country").First().Value.ToString();
 
