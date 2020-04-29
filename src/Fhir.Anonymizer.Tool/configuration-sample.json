@@ -11,6 +11,8 @@
     {"path": "nodesByType('Address').country", "method": "keep"},
     {"path": "nodesByType('Address').state", "method": "keep"},
 
+    {"path": "Resource.id", "method": "cryptoHash"},
+    {"path": "Bundle.entry.fullUrl", "method": "redact"},
     {"path": "PractitionerRole.notAvailable.description", "method": "redact"},
     {"path": "PractitionerRole.availabilityExceptions", "method": "redact"},
     {"path": "Group.name", "method": "redact"},
@@ -175,6 +177,7 @@
     {"path": "nodesByType('ContactDetail').name", "method": "redact"},
     {"path": "nodesByType('Identifier').value", "method": "redact"},
     {"path": "nodesByType('Reference').display", "method": "redact"},
+    {"path": "nodesByType('Reference').reference", "method": "cryptoHash"},
 
     {"path": "nodesByType('Narrative')", "method": "redact"},
     {"path": "nodesByType('base64Binary')", "method": "redact"},
@@ -190,6 +193,7 @@
   "parameters": {
     "dateShiftKey": "",
     "dateShiftScope": "resource",
+    "cryptoHashKey": "",
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,

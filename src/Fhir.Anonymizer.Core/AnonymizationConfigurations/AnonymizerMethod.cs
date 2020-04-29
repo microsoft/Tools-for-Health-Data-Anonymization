@@ -4,6 +4,7 @@
     {
         Redact,
         DateShift,
+        CryptoHash,
         Keep
     }
 }

@@ -1,4 +1,4 @@
-﻿{
+{
   "fhirPathRules": [
     {
       "path": "Patient.nodesByType('HumanName').use",
@@ -26,15 +26,15 @@
     },
     {
       "path": "nodesByType('date')",
-      "method": "dateShift"
+      "method": "redact"
     },
     {
       "path": "nodesByType('dateTime')",
-      "method": "dateShift"
+      "method": "redact"
     },
     {
       "path": "nodesByType('instant')",
-      "method": "dateShift"
+      "method": "redact"
     },
     {
       "path": "nodesByType('Identifier')",
@@ -78,11 +78,10 @@
     }
   ],
   "parameters": {
-    "dateShiftKey": "123",
     "cryptoHashKey": "123",
-    "enablePartialAgesForRedact": true,
-    "enablePartialDatesForRedact": true,
-    "enablePartialZipCodesForRedact": true,
+    "enablePartialAgesForRedact": false,
+    "enablePartialDatesForRedact": false,
+    "enablePartialZipCodesForRedact": false,
     "restrictedZipCodeTabulationAreas": [
       "036",
       "059",

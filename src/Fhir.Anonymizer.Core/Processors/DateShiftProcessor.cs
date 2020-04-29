@@ -28,6 +28,12 @@ namespace Fhir.Anonymizer.Core.Processors
 
         public ProcessResult Process(ElementNode node)
         {
+            var processResult = new ProcessResult();
+            if (string.IsNullOrEmpty(node?.Value?.ToString()))
+            {
+                return processResult;
+            }
+
             if (node.IsDateNode())
             {
                 return DateTimeUtility.ShiftDateNode(node, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
@@ -37,7 +43,7 @@ namespace Fhir.Anonymizer.Core.Processors
                 return DateTimeUtility.ShiftDateTimeAndInstantNode(node, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
             }
 
-            return new ProcessResult();
+            return processResult;
         }
     }
 }

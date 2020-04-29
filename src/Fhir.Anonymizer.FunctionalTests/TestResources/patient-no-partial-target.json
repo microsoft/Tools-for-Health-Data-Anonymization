@@ -10,63 +10,24 @@
       },
       {
         "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
-        "code": "ABSTRED",
-        "display": "exact value is replaced with a range"
-      },
-      {
-        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
         "code": "CRYTOHASH",
         "display": "exact value is transformed with a hash function"
-      },
-      {
-        "code": "PERTURBED",
-        "display": "exact value is replaced with another exact value"
       }
     ]
   },
-  "identifier": [
-    {
-      "period": {
-        "start": "2001-02-11"
-      }
-    }
-  ],
   "active": true,
   "name": [
     { "use": "official" },
     { "use": "usual" },
     {
-      "use": "maiden",
-      "period": {
-        "end": "2002"
-      }
-    }
-  ],
-  "telecom": [
-    {
-      "period": {
-        "end": "2014"
-      }
+      "use": "maiden"
     }
   ],
   "gender": "male",
-  "birthDate": "2000-02-11",
-  "_birthDate": {
-    "extension": [
-      {
-        "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime",
-        "valueDateTime": "2000-02-11T00:00:00-01:00"
-      }
-    ]
-  },
   "deceasedBoolean": false,
   "address": [
     {
-      "state": "TestState",
-      "postalCode": "12300",
-      "period": {
-        "start": "2000-02-11"
-      }
+      "state": "TestState"
     },
     {
       "use": "home",
@@ -97,16 +58,9 @@
         }
       ],
       "address": {
-        "state": "TestState",
-        "postalCode": "54300",
-        "period": {
-          "start": "2001-02-11"
-        }
+        "state": "TestState"
       },
-      "gender": "female",
-      "period": {
-        "start": "2005"
-      }
+      "gender": "female"
     }
   ],
   "managingOrganization": {

@@ -37,21 +37,21 @@ namespace Fhir.Anonymizer.FunctionalTests
         [Fact]
         public void GivenAResourceWithContained_WhenRedactAll_ThenRedactedJsonShouldBeReturned()
         {
-            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "redact-all.json"));
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "redact-all-config.json"));
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, CollectionResourceTestsFile("contained-basic.json"), CollectionResourceTestsFile("contained-redact-all-target.json"));
         }
 
         [Fact]
         public void GivenABundleResource_WhenRedactAll_ThenRedactedJsonShouldBeReturned()
         {
-            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "redact-all.json"));
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "redact-all-config.json"));
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, CollectionResourceTestsFile("bundle-basic.json"), CollectionResourceTestsFile("bundle-redact-all-target.json"));
         }
 
         [Fact]
         public void GivenABundleResourceWithContainedInside_WhenRedactAll_ThenRedactedJsonShouldBeReturned()
         {
-            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "redact-all.json"));
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "redact-all-config.json"));
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, CollectionResourceTestsFile("contained-in-bundle.json"), CollectionResourceTestsFile("contained-in-bundle-redact-all-target.json"));
         }
 
