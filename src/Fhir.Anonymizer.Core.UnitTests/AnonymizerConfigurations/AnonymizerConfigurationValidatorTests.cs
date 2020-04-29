@@ -13,9 +13,8 @@ namespace Fhir.Anonymizer.Core.UnitTests
         public static IEnumerable<object[]> GetInvalidConfigs()
         {
             yield return new object[] { "./TestConfigurations/configuration-miss-rules.json" };
-            yield return new object[] { "./TestConfigurations/configuration-unsupported-path.json" };
-            yield return new object[] { "./TestConfigurations/configuration-unsupported-type.json" };
             yield return new object[] { "./TestConfigurations/configuration-unsupported-method.json" };
+            yield return new object[] { "./TestConfigurations/configuration-invalid-fhirpath.json" };
         }
 
         [Theory]

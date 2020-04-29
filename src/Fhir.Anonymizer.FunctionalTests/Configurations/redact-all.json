@@ -1,0 +1,8 @@
+﻿{
+  "fhirPathRules": [
+    {
+      "path": "Resource",
+      "method": "redact"
+    }
+  ]
+}

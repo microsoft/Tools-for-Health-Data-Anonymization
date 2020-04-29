@@ -1,0 +1,8 @@
+﻿{
+  "fhirPathRules": [
+    {
+      "path": "invalid()",
+      "method": "redact"
+    }
+  ]
+}
