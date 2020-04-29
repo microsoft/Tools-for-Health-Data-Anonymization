@@ -15,7 +15,7 @@ namespace Fhir.Anonymizer.Core.Utility
         public static ProcessResult RedactPostalCode(ElementNode node, bool enablePartialZipCodesForRedact = false, List<string> restrictedZipCodeTabulationAreas = null)
         {
             var processResult = new ProcessResult();
-            if (!node.IsPostalCodeNode())
+            if (!node.IsPostalCodeNode() || string.IsNullOrEmpty(node?.Value?.ToString()))
             {
                 return processResult;
             }

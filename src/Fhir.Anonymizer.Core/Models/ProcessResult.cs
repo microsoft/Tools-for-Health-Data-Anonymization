@@ -23,6 +23,14 @@ namespace Fhir.Anonymizer.Core.Models
             }
         }
 
+        public bool IsCryptoHashed
+        {
+            get
+            {
+                return ProcessRecords.ContainsKey(AnonymizationOperations.CryptoHash);
+            }
+        }
+
         public bool IsPerturbed 
         { 
             get 

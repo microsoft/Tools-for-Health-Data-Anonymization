@@ -8,7 +8,6 @@ namespace Fhir.Anonymizer.FunctionalTests
 {
     public class ResourceTests
     {
-        private AnonymizerEngine engine;
         public ResourceTests()
         {
             FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
@@ -24,7 +23,7 @@ namespace Fhir.Anonymizer.FunctionalTests
         [Fact]
         public void GivenAPatientResource_WhenRedactAll_ThenRedactedJsonShouldBeReturned()
         {
-            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "redact-all.json"));
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "redact-all-config.json"));
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-basic.json"), ResourceTestsFile("patient-redact-all-target.json"));
         }
 
@@ -33,6 +32,20 @@ namespace Fhir.Anonymizer.FunctionalTests
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "common-config.json"));
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-special-content.json"), ResourceTestsFile("patient-special-content-target.json"));
+        }
+
+        [Fact]
+        public void GivenAPatientResourceWithNullDatetime_WhenAnonymizing_ThenAnonymizedJsonShouldBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "common-config.json"));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-null-date.json"), ResourceTestsFile("patient-null-date-target.json"));
+        }
+
+        [Fact]
+        public void GivenAPatientResource_WhenAnonymizingWithNoPartialRedactConfig_ThenAnonymizedJsonShouldBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "common-no-partial-config.json"));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-no-partial.json"), ResourceTestsFile("patient-no-partial-target.json"));
         }
 
         private string ResourceTestsFile(string fileName)

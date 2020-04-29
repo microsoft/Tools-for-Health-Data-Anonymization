@@ -13,7 +13,6 @@
   "type": "collection",
   "entry": [
     {
-      "fullUrl": "http://example.org/fhir/Condition/123",
       "resource": {
         "resourceType": "Condition",
         "meta": {

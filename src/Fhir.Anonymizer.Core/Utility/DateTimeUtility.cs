@@ -31,7 +31,7 @@ namespace Fhir.Anonymizer.Core.Utility
         public static ProcessResult RedactDateNode(ElementNode node, bool enablePartialDatesForRedact = false)
         {
             var processResult = new ProcessResult();
-            if (!node.IsDateNode())
+            if (!node.IsDateNode() || string.IsNullOrEmpty(node?.Value?.ToString()))
             {
                 return processResult;
             }
@@ -57,7 +57,8 @@ namespace Fhir.Anonymizer.Core.Utility
         public static ProcessResult RedactDateTimeAndInstantNode(ElementNode node, bool enablePartialDatesForRedact = false)
         {
             var processResult = new ProcessResult();
-            if (!node.IsDateTimeNode() && !node.IsInstantNode())
+            if ((!node.IsDateTimeNode() && !node.IsInstantNode()) ||
+                string.IsNullOrEmpty(node?.Value?.ToString()))
             {
                 return processResult;
             }
@@ -83,7 +84,7 @@ namespace Fhir.Anonymizer.Core.Utility
         public static ProcessResult RedactAgeDecimalNode(ElementNode node, bool enablePartialAgesForRedact = false)
         {
             var processResult = new ProcessResult();
-            if (!node.IsAgeDecimalNode())
+            if (!node.IsAgeDecimalNode() || string.IsNullOrEmpty(node?.Value?.ToString()))
             {
                 return processResult;
             }
@@ -108,7 +109,7 @@ namespace Fhir.Anonymizer.Core.Utility
         public static ProcessResult ShiftDateNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
         {
             var processResult = new ProcessResult();
-            if (!node.IsDateNode())
+            if (!node.IsDateNode() || string.IsNullOrEmpty(node?.Value?.ToString()))
             {
                 return processResult;
             }
@@ -131,7 +132,8 @@ namespace Fhir.Anonymizer.Core.Utility
         public static ProcessResult ShiftDateTimeAndInstantNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
         {
             var processResult = new ProcessResult();
-            if (!node.IsDateTimeNode() && !node.IsInstantNode())
+            if ((!node.IsDateTimeNode() && !node.IsInstantNode()) ||
+                string.IsNullOrEmpty(node?.Value?.ToString()))
             {
                 return processResult;
             }
