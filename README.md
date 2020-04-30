@@ -226,6 +226,7 @@ The command-line tool can be used to anonymize a folder containing FHIR resource
 | -b | bulkData | Optional| false | Resource file is in bulk data format (.ndjson). |
 | -r | recursive | Optional | false | Process resource files in input folder recursively. |
 | -v | verbose | Optional | false | Provide additional details during processing. |
+| -s | skip | Optional | false | Skip files that are already present in the destination folder. |
 | --validateInput | validateInput | Optional | false | Validate input resources against structure, cardinality and most value domains in FHIR specification. Detailed report can be found in verbose log. |
 | --validateOutput | validateOutput | Optional | false | Validate anonymized resources against structure, cardinality and most value domains in FHIR specification. Detailed report can be found in verbose log. |
 
