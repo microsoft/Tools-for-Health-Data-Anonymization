@@ -203,7 +203,7 @@ Out of the 18 identifier types mentioned in HIPAA Safe Harbor method (2)(i), thi
 
 This configuration file is provided in a best-effort manner. We **strongly** recommend that you review the HIPAA guidelines as well as the implementation of this project before using it for you anonymization requirements. 
 
-The safe harbor configuration file can be accessed [here](samples/configs/safe-harbor-config.json).
+The safe harbor configuration file can be accessed [here](src/Fhir.Anonymizer.Tool/configuration-sample.json).
 
 # Concepts
 
