@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fhir.Anonymizer.Core\Fhir.Anonymizer.Core.csproj" />
+    <ProjectReference Include="..\Fhir.Anonymizer.Core.R4\Fhir.Anonymizer.Core.R4.csproj" />
   </ItemGroup>
 
   <ItemGroup>

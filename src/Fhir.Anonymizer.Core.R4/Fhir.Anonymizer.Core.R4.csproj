@@ -14,4 +14,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
+  <Import Project="..\Fhir.Anonymizer.Core\Fhir.Anonymizer.Core.projitems" Label="Shared" />
+
 </Project>

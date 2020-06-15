@@ -14,10 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Fhir.Anonymizer.AzureDataFactoryPipeline\Fhir.Anonymizer.AzureDataFactoryPipeline.csproj" />
-    <ProjectReference Include="..\Fhir.Anonymizer.Core\Fhir.Anonymizer.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\Fhir.Anonymizer.Core.R4\Fhir.Anonymizer.Core.R4.csproj" />
   </ItemGroup>
 
 </Project>

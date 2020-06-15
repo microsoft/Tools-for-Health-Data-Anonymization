@@ -3,13 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Core", "src\Fhir.Anonymizer.Core\Fhir.Anonymizer.Core.csproj", "{43E6C0A6-F03C-4ACD-B68B-55FCFA97C93E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Core.UnitTests", "src\Fhir.Anonymizer.Core.UnitTests\Fhir.Anonymizer.Core.UnitTests.csproj", "{08B785F3-48A8-4D46-AA6B-940D569F218C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.FunctionalTests", "src\Fhir.Anonymizer.FunctionalTests\Fhir.Anonymizer.FunctionalTests.csproj", "{3B599522-9110-4822-BF2C-6ED469412C0D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Tool", "src\Fhir.Anonymizer.Tool\Fhir.Anonymizer.Tool.csproj", "{63F80DFB-8828-45EF-B180-FBC6B9F47183}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.AzureDataFactoryPipeline\Fhir.Anonymizer.AzureDataFactoryPipeline.csproj", "{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}"
 EndProject
@@ -20,16 +16,32 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Tool.Stu3", "src\Fhir.Anonymizer.Tool.Stu3\Fhir.Anonymizer.Tool.Stu3.csproj", "{A5A23826-AE2A-492A-80C1-49B4ADE4C421}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Tool.R4", "src\Fhir.Anonymizer.Tool.R4\Fhir.Anonymizer.Tool.R4.csproj", "{41488618-889D-4EB1-8FD3-1590CBD1EDEC}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Tool", "src\Fhir.Anonymizer.Tool\Fhir.Anonymizer.Tool.shproj", "{EA63799B-0F6E-40A3-8188-EC3013D9BA5A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Core.R4", "src\Fhir.Anonymizer.Core.R4\Fhir.Anonymizer.Core.R4.csproj", "{821866BD-BD0E-45A9-BD86-2D236E5FCF1D}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Core", "src\Fhir.Anonymizer.Core\Fhir.Anonymizer.Core.shproj", "{7DEE1D2D-8624-41FB-87F4-893B6E563350}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Core.Stu3", "src\Fhir.Anonymizer.Core.Stu3\Fhir.Anonymizer.Core.Stu3.csproj", "{2A477A8B-4902-4F34-A66B-563B935F0019}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\Fhir.Anonymizer.Core\Fhir.Anonymizer.Core.projitems*{2a477a8b-4902-4f34-a66b-563b935f0019}*SharedItemsImports = 5
+		src\Fhir.Anonymizer.Tool\Fhir.Anonymizer.Tool.projitems*{41488618-889d-4eb1-8fd3-1590cbd1edec}*SharedItemsImports = 5
+		src\Fhir.Anonymizer.Core\Fhir.Anonymizer.Core.projitems*{7dee1d2d-8624-41fb-87f4-893b6e563350}*SharedItemsImports = 13
+		src\Fhir.Anonymizer.Core\Fhir.Anonymizer.Core.projitems*{821866bd-bd0e-45a9-bd86-2d236e5fcf1d}*SharedItemsImports = 5
+		src\Fhir.Anonymizer.Tool\Fhir.Anonymizer.Tool.projitems*{a5a23826-ae2a-492a-80c1-49b4ade4c421}*SharedItemsImports = 5
+		src\Fhir.Anonymizer.Tool\Fhir.Anonymizer.Tool.projitems*{ea63799b-0f6e-40a3-8188-ec3013d9ba5a}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{43E6C0A6-F03C-4ACD-B68B-55FCFA97C93E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43E6C0A6-F03C-4ACD-B68B-55FCFA97C93E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43E6C0A6-F03C-4ACD-B68B-55FCFA97C93E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43E6C0A6-F03C-4ACD-B68B-55FCFA97C93E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{08B785F3-48A8-4D46-AA6B-940D569F218C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{08B785F3-48A8-4D46-AA6B-940D569F218C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08B785F3-48A8-4D46-AA6B-940D569F218C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -38,10 +50,6 @@ Global
 		{3B599522-9110-4822-BF2C-6ED469412C0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B599522-9110-4822-BF2C-6ED469412C0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B599522-9110-4822-BF2C-6ED469412C0D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{63F80DFB-8828-45EF-B180-FBC6B9F47183}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{63F80DFB-8828-45EF-B180-FBC6B9F47183}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{63F80DFB-8828-45EF-B180-FBC6B9F47183}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{63F80DFB-8828-45EF-B180-FBC6B9F47183}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BA1925A-DB5A-47A7-8D91-2E4DC51F24D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -50,6 +58,22 @@ Global
 		{778BB8FF-5AB5-4E93-81E2-23729865FD1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{778BB8FF-5AB5-4E93-81E2-23729865FD1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{778BB8FF-5AB5-4E93-81E2-23729865FD1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5A23826-AE2A-492A-80C1-49B4ADE4C421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5A23826-AE2A-492A-80C1-49B4ADE4C421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5A23826-AE2A-492A-80C1-49B4ADE4C421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5A23826-AE2A-492A-80C1-49B4ADE4C421}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41488618-889D-4EB1-8FD3-1590CBD1EDEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41488618-889D-4EB1-8FD3-1590CBD1EDEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41488618-889D-4EB1-8FD3-1590CBD1EDEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41488618-889D-4EB1-8FD3-1590CBD1EDEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{821866BD-BD0E-45A9-BD86-2D236E5FCF1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{821866BD-BD0E-45A9-BD86-2D236E5FCF1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{821866BD-BD0E-45A9-BD86-2D236E5FCF1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{821866BD-BD0E-45A9-BD86-2D236E5FCF1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A477A8B-4902-4F34-A66B-563B935F0019}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A477A8B-4902-4F34-A66B-563B935F0019}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A477A8B-4902-4F34-A66B-563B935F0019}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A477A8B-4902-4F34-A66B-563B935F0019}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

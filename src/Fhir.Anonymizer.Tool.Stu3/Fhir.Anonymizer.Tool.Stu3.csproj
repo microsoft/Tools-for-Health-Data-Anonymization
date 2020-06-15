@@ -11,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fhir.Anonymizer.Core\Fhir.Anonymizer.Core.R4.csproj" />
+    <ProjectReference Include="..\Fhir.Anonymizer.Core.Stu3\Fhir.Anonymizer.Core.Stu3.csproj" />
   </ItemGroup>
+
+  <Import Project="..\Fhir.Anonymizer.Tool\Fhir.Anonymizer.Tool.projitems" Label="Shared" />
 
 </Project>
