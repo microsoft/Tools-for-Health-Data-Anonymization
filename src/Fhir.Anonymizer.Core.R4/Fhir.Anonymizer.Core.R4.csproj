@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>Fhir.Anonymizer.Core</AssemblyName>
-    <RootNamespace>Fhir.Anonymizer.Core</RootNamespace>
+    <AssemblyName>Fhir.Anonymizer.Core.R4</AssemblyName>
+    <RootNamespace>Fhir.Anonymizer.Core.R4</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
