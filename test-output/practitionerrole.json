@@ -1,0 +1,98 @@
+{
+  "resourceType": "PractitionerRole",
+  "id": "abcffa1815e5babc92b448b5073418e2bdf5fec9260273d6936c90bd056c25ea",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "part of the resource is removed"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "exact value is transformed with a hash function"
+      },
+      {
+        "code": "PERTURBED",
+        "display": "exact value is replaced with another exact value"
+      }
+    ]
+  },
+  "identifier": [
+    {
+      "system": "http://www.acme.org/practitioners"
+    }
+  ],
+  "active": true,
+  "period": {
+    "start": "2012-01-30",
+    "end": "2012-04-29"
+  },
+  "practitioner": {
+    "reference": "Practitioner/abcffa1815e5babc92b448b5073418e2bdf5fec9260273d6936c90bd056c25ea"
+  },
+  "organization": {
+    "reference": "Organization/bfe6d75fe9193eb665a07da65ddb7b431b0476679c991183e341e09824619b80"
+  },
+  "code": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0286"
+        }
+      ]
+    }
+  ],
+  "specialty": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct"
+        }
+      ]
+    }
+  ],
+  "location": [
+    {
+      "reference": "Location/1f2ebd21359223edb5ccfc02683550be4ffb72a191cafd87bcd56e93af478e7a"
+    }
+  ],
+  "healthcareService": [
+    {
+      "reference": "HealthcareService/abcffa1815e5babc92b448b5073418e2bdf5fec9260273d6936c90bd056c25ea"
+    }
+  ],
+  "availableTime": [
+    {
+      "daysOfWeek": [
+        "mon",
+        "tue",
+        "wed"
+      ],
+      "availableStartTime": "09:00:00",
+      "availableEndTime": "16:30:00"
+    },
+    {
+      "daysOfWeek": [
+        "thu",
+        "fri"
+      ],
+      "availableStartTime": "09:00:00",
+      "availableEndTime": "12:00:00"
+    }
+  ],
+  "notAvailable": [
+    {
+      "during": {
+        "start": "2017-05-30",
+        "end": "2017-06-18"
+      }
+    }
+  ],
+  "endpoint": [
+    {
+      "reference": "Endpoint/abcffa1815e5babc92b448b5073418e2bdf5fec9260273d6936c90bd056c25ea"
+    }
+  ]
+}

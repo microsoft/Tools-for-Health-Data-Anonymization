@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>8918ce75-f36e-4cb4-8232-12024a1e41ac</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Fhir.Anonymizer.Shared.Core</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizationFhirPathRule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerConfigurationErrorsException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerConfigurationValidator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerRule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerRuleType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\DateShiftScope.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\ParameterConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerLogging.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeNavExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeOperationExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeVisitorExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\FhirPathSymbolExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ProcessResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SecurityLabels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\BatchAnonymizeProgressDetail.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirEnumerableReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirPartitionedExecutor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirStreamConsumer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirStreamReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\IFhirDataConsumer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\IFhirDataReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\AnonymizationOperations.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\CryptoHashProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\DateShiftProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\IAnonymizerProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\KeepProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\CryptoHashUtility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\DateTimeUtility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\PostalCodeUtility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\ReferenceUtility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Validation\AttributeValidator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Validation\ResourceNotValidException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Validation\ResourceValidator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Visitors\AbstractElementNodeVisitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Visitors\AnonymizationVisitor.cs" />
+  </ItemGroup>
+</Project>

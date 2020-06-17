@@ -1,0 +1,18 @@
+﻿{
+  "resourceType": "Condition",
+  "contained": [
+    {
+      "resourceType": "Practitioner",
+      "id": "p1",
+      "name": [
+        {
+          "family": "Person",
+          "given": [ "Patricia" ]
+        }
+      ]
+    }
+  ],
+  "subject": {
+    "reference": "#p1"
+  }
+}
