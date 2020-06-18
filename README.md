@@ -237,7 +237,7 @@ Example usage to anonymize FHIR resource files in a folder:
 
 ## Configuration file format
 
-The configuration is specified in JSON format. It has two high-level sections. One of these sections, namely _fhirPathRules_ is meant to specify de-identification methods for data elements. The second section named _parameters_ affects global behavior.
+The configuration is specified in JSON format. It has two high-level sections. One of these sections, namely _fhirPathRules_ is meant to specify de-identification methods for data elements. The second section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file.
 
 Here is a sample configuration:
 
@@ -291,6 +291,28 @@ Parameters affect the de-identification methods specified in the FHIR path rules
 | redact | enablePartialZipCodesForRedact  | Zip Code fields | boolean | false | If the value is set to **true**, Zip Code will be redacted as per the HIPAA Safe Harbor rule. |
 | redact | restrictedZipCodeTabulationAreas  | Zip Code fields | a JSON array | empty array | This configuration is used only if enablePartialZipCodesForRedact is set to **true**. This field contains the list of zip codes for which the first 3 digits will be converted to 0. As per the HIPAA Safe Harbor, this list will have the Zip Codes  having population less than 20,000 people. |
 
+### Sample rules using FHIRPath
+
+To retain country as well as state values of Address data type
+```json
+{"path": "nodesByType('Address').country | nodesByType('Address').state", "method": "keep"}
+```
+
+To date-shift date, dateTime, and instant data types
+```json
+{"path": "nodesByType('date') | nodesByType('dateTime') | nodesByType('instant')", "method": "dateshift"}
+```
+
+To redact the home-use Contact point
+```json
+{"path": "nodesByType('ContactPoint').where(use='home')","method": "redact"}
+```
+
+To generate hash of Resource Id
+```json
+{"path": "Resource.id", "method": "cryptoHash"}
+```
+
 ## Date-shift algorithm
 You can specify dateShift as a de-identification method in the configuration file. With this method, the input date/dateTime/instant value will be shifted within a 100-day differential. The following algorithm is used to shift the target dates:
 
@@ -326,6 +348,7 @@ A typical scenario is to replace resource ids across FHIR resources via crypto h
 
 ## Current limitations
 1. We only support FHIR data in R4, JSON format. Support for XML and STU 3 is planned.
+2. De-identification of fields within Extensions is not supported. 
 
 ## FAQ
 ### How can we use FHIR Tools for Anonymization to anonymize HL7 v2.x data
