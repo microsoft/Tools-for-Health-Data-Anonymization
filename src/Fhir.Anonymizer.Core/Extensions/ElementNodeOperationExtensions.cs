@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Processors;
@@ -15,10 +16,10 @@ namespace Fhir.Anonymizer.Core.Extensions
     {
         private static readonly PocoStructureDefinitionSummaryProvider s_provider = new PocoStructureDefinitionSummaryProvider();
 
-        public static ElementNode Anonymize(this ElementNode node, AnonymizationFhirPathRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
+        public static async Task<ElementNode> Anonymize(this ElementNode node, AnonymizationFhirPathRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
         {
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, processors);
-            node.Accept(visitor);
+            await node.Accept(visitor);
             node.RemoveNullChildren();
 
             return node;

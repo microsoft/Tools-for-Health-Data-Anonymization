@@ -101,7 +101,7 @@ namespace Fhir.Anonymizer.Tool
                     ValidateInput = _options.ValidateInput,
                     ValidateOutput = _options.ValidateOutput
                 };
-                var resourceResult = engine.AnonymizeJson(resourceJson, settings);
+                var resourceResult = await engine.AnonymizeJson(resourceJson, settings);
 
                 await File.WriteAllTextAsync(resourceOutputFileName, resourceResult).ConfigureAwait(false);
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
@@ -29,11 +30,11 @@ namespace Fhir.Anonymizer.Core.Visitors
             _processors = processors;
         }
 
-        public override bool Visit(ElementNode node)
+        public override async Task<bool> Visit(ElementNode node)
         {
             if (node.IsFhirResource())
             {
-                ProcessResult result = ProcessResourceNode(node);
+                ProcessResult result = await ProcessResourceNode(node);
                 _contextStack.Push(new Tuple<ElementNode, ProcessResult>(node, result));
             }
 
@@ -65,7 +66,7 @@ namespace Fhir.Anonymizer.Core.Visitors
             }
         }
 
-        private ProcessResult ProcessResourceNode(ElementNode node)
+        private async Task<ProcessResult> ProcessResourceNode(ElementNode node)
         {
             ProcessResult result = new ProcessResult();
             string typeString = node.InstanceType;
@@ -100,7 +101,7 @@ namespace Fhir.Anonymizer.Core.Visitors
                 
                 foreach (var matchNode in matchNodes)
                 {
-                    resultOnRule.Update(ProcessNodeRecursive(matchNode, _processors[method], _visitedNodes));
+                    resultOnRule.Update(await ProcessNodeRecursive(matchNode, _processors[method], _visitedNodes));
                 }
                 LogProcessResult(node, rule, resultOnRule);
 
@@ -133,7 +134,7 @@ namespace Fhir.Anonymizer.Core.Visitors
                                     || string.Equals(Constants.GeneralDomainResourceType, r.ResourceType));
         }
 
-        public ProcessResult ProcessNodeRecursive(ElementNode node, IAnonymizerProcessor processor, HashSet<ElementNode> visitedNodes)
+        public async Task<ProcessResult> ProcessNodeRecursive(ElementNode node, IAnonymizerProcessor processor, HashSet<ElementNode> visitedNodes)
         {
             ProcessResult result = new ProcessResult();
             if (visitedNodes.Contains(node))
@@ -141,7 +142,7 @@ namespace Fhir.Anonymizer.Core.Visitors
                 return result;
             }
             
-            result = processor.Process(node);
+            result = await processor.Process(node);
             visitedNodes.Add(node);
 
             foreach (var child in node.Children().Cast<ElementNode>())
@@ -151,7 +152,7 @@ namespace Fhir.Anonymizer.Core.Visitors
                     continue;
                 }
 
-                result.Update(ProcessNodeRecursive(child, processor, visitedNodes));
+                result.Update(await ProcessNodeRecursive(child, processor, visitedNodes));
             }
 
             return result;

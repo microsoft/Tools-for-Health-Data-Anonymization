@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
@@ -86,7 +87,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
                 _result = result;
             }
 
-            public override bool Visit(ElementNode node)
+            public override async Task<bool> Visit(ElementNode node)
             {
                 _result.Add(node.Location);
                 return true;

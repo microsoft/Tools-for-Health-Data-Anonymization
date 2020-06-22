@@ -12,23 +12,23 @@ namespace Fhir.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void GivenIsPrettyOutputSetTrue_WhenAnonymizeJson_PrettyJsonOutputShouldBeReturned()
+        public async void GivenIsPrettyOutputSetTrue_WhenAnonymizeJson_PrettyJsonOutputShouldBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-test-sample.json"));
             var settings = new AnonymizerSettings()
             {
                 IsPrettyOutput = true
             };
-            var result = engine.AnonymizeJson(TestPatientSample, settings);
+            var result = await engine.AnonymizeJson(TestPatientSample, settings);
             Assert.Equal(PrettyOutputTarget, result);
         }
 
         [Fact]
-        public void GivenIsPrettyOutputSetFalse_WhenAnonymizeJson_OneLineJsonOutputShouldBeReturned()
+        public async void GivenIsPrettyOutputSetFalse_WhenAnonymizeJson_OneLineJsonOutputShouldBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-test-sample.json"));
 
-            var result = engine.AnonymizeJson(TestPatientSample);
+            var result = await engine.AnonymizeJson(TestPatientSample);
             Assert.Equal(OneLineOutputTarget, result);
         }
 

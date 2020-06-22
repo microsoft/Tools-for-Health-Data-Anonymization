@@ -10,12 +10,12 @@ namespace Fhir.Anonymizer.FunctionalTests
 {
     public static class FunctionalTestUtility
     {
-        public static void VerifySingleJsonResourceFromFile(AnonymizerEngine engine, string testFile, string targetFile)
+        public static async void VerifySingleJsonResourceFromFile(AnonymizerEngine engine, string testFile, string targetFile)
         {
             Console.WriteLine($"VerifySingleJsonResourceFromFile. TestFile: {testFile}, TargetFile: {targetFile}");
             string testContent = File.ReadAllText(testFile);
             string targetContent = File.ReadAllText(targetFile);
-            string resultAfterAnonymize = engine.AnonymizeJson(testContent);
+            string resultAfterAnonymize = await engine.AnonymizeJson(testContent);
 
             Assert.Equal(Standardize(targetContent), Standardize(resultAfterAnonymize));
         } 

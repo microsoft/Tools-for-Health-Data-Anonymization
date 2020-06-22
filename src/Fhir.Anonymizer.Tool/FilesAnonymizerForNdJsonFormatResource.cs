@@ -72,7 +72,7 @@ namespace Fhir.Anonymizer.Tool
                     using FhirStreamReader reader = new FhirStreamReader(inputStream);
                     using FhirStreamConsumer consumer = new FhirStreamConsumer(outputStream);
                     var engine = AnonymizerEngine.CreateWithFileContext(_configFilePath, bulkResourceFileName, _inputFolder);
-                    Func<string, string> anonymizeFunction = (content) =>
+                    Func<string, Task<string>> anonymizeFunction = async (content) =>
                     {
                         try
                         {
@@ -82,7 +82,7 @@ namespace Fhir.Anonymizer.Tool
                                 ValidateInput = _options.ValidateInput,
                                 ValidateOutput = _options.ValidateOutput
                             };
-                            return engine.AnonymizeJson(content, settings);
+                            return await engine.AnonymizeJson(content, settings);
                         }
                         catch (Exception ex)
                         {

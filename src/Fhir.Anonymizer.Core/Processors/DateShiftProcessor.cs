@@ -2,6 +2,7 @@ using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Utility;
 using Hl7.Fhir.ElementModel;
+using System.Threading.Tasks;
 
 namespace Fhir.Anonymizer.Core.Processors
 {
@@ -26,7 +27,7 @@ namespace Fhir.Anonymizer.Core.Processors
             return new DateShiftProcessor(parameters.DateShiftKey, parameters.DateShiftKeyPrefix, parameters.EnablePartialDatesForRedact);
         }
 
-        public ProcessResult Process(ElementNode node)
+        public async Task<ProcessResult> Process(ElementNode node)
         {
             var processResult = new ProcessResult();
             if (string.IsNullOrEmpty(node?.Value?.ToString()))

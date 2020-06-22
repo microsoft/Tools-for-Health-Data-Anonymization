@@ -161,7 +161,7 @@ namespace Fhir.Anonymizer.DataFactoryTool
                     {
                         IsPrettyOutput = true
                     };
-                    string output = engine.AnonymizeJson(input, settings);
+                    string output = await engine.AnonymizeJson(input, settings);
 
                     using (MemoryStream outputStream = new MemoryStream(reader.CurrentEncoding.GetBytes(output)))
                     {
@@ -199,11 +199,11 @@ namespace Fhir.Anonymizer.DataFactoryTool
             FhirStreamReader reader = new FhirStreamReader(inputStream);
             FhirBlobConsumer consumer = new FhirBlobConsumer(outputBlobClient);
             var engine = AnonymizerEngine.CreateWithFileContext(_configFile, blobName, inputFolderPrefix);
-            Func<string, string> anonymizerFunction = (item) =>
+            Func<string, Task<string>> anonymizerFunction = async (item) =>
             {
                 try
                 {
-                    return engine.AnonymizeJson(item);
+                    return await engine.AnonymizeJson(item);
                 }
                 catch (Exception ex)
                 {

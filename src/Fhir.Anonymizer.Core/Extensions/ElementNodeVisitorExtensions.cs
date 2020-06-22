@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using Fhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
 
@@ -7,9 +8,9 @@ namespace Fhir.Anonymizer.Core.Extensions
 {
     public static class ElementNodeVisitorExtensions
     {
-        public static void Accept(this ElementNode node, AbstractElementNodeVisitor visitor)
+        public static async Task Accept(this ElementNode node, AbstractElementNodeVisitor visitor)
         {
-            bool shouldVisitChild = visitor.Visit(node);
+            bool shouldVisitChild = await visitor.Visit(node);
 
             if (shouldVisitChild)
             {

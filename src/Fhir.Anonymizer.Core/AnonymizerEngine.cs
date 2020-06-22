@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using EnsureThat;
 using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
@@ -63,24 +64,24 @@ namespace Fhir.Anonymizer.Core
             return new AnonymizerEngine(configurationManager);
         }
 
-        public Resource AnonymizeResource(Resource resource, AnonymizerSettings settings = null)
+        public async Task<Resource> AnonymizeResource(Resource resource, AnonymizerSettings settings = null)
         {
             EnsureArg.IsNotNull(resource, nameof(resource));
 
             ValidateInput(settings, resource);
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
-            var anonymizedResource = resourceNode.Anonymize(_rules, _processors).ToPoco<Resource>();
+            var anonymizedResource = (await resourceNode.Anonymize(_rules, _processors)).ToPoco<Resource>();
             ValidateOutput(settings, anonymizedResource);
            
             return anonymizedResource;
         }
 
-        public string AnonymizeJson(string json, AnonymizerSettings settings = null)
+        public async Task<string> AnonymizeJson(string json, AnonymizerSettings settings = null)
         {
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));
 
             var resource = _parser.Parse<Resource>(json);
-            Resource anonymizedResource = AnonymizeResource(resource, settings);
+            Resource anonymizedResource = await AnonymizeResource(resource, settings);
 
             FhirJsonSerializationSettings serializationSettings = new FhirJsonSerializationSettings
             {
@@ -111,6 +112,8 @@ namespace Fhir.Anonymizer.Core
             _processors[AnonymizerMethod.Redact.ToString().ToUpperInvariant()] = RedactProcessor.Create(configurationManager);
             _processors[AnonymizerMethod.CryptoHash.ToString().ToUpperInvariant()] = new CryptoHashProcessor(configurationManager.GetParameterConfiguration().CryptoHashKey);
             _processors[AnonymizerMethod.Keep.ToString().ToUpperInvariant()] = new KeepProcessor();
+            _processors[AnonymizerMethod.Keep.ToString().ToUpperInvariant()] = new KeepProcessor();
+            _processors[AnonymizerMethod.TextAnalytic.ToString().ToUpperInvariant()] = new TextAnalyticProcessor();
         }
     }
 }
