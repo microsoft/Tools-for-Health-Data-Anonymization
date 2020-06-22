@@ -1,0 +1,77 @@
+{
+  "resourceType": "Patient",
+  "id": "46d8d7e7593c7feb9061ef4dcefcf4783d3c0621510bb836204fd939e759387a",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "part of the resource is removed"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "exact value is transformed with a hash function"
+      },
+      {
+        "code": "PERTURBED",
+        "display": "exact value is replaced with another exact value"
+      }
+    ]
+  },
+  "identifier": [
+    {
+      "system": "http://www.maroondah.vic.gov.au/AnimalRegFees.aspx",
+      "period": {
+        "start": "2010-04-30"
+      }
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "use": "usual"
+    }
+  ],
+  "gender": "female",
+  "birthDate": "2010-02-20",
+  "contact": [
+    {
+      "relationship": [
+        {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/v2/0131"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "animal": {
+    "species": {
+      "coding": [
+        {
+          "system": "http://hl7.org/fhir/animal-species"
+        }
+      ]
+    },
+    "breed": {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct"
+        },
+        {
+          "system": "http://hl7.org/fhir/animal-breed"
+        }
+      ]
+    },
+    "genderStatus": {
+      "coding": [
+        {
+          "system": "http://hl7.org/fhir/animal-genderstatus"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "resourceType": "Patient",
+  "id": "d134ba00886449076166592084464d498ebe53706b59b6000a738d4bffb0546a",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "part of the resource is removed"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "ABSTRED",
+        "display": "exact value is replaced with a range"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "exact value is transformed with a hash function"
+      },
+      {
+        "code": "PERTURBED",
+        "display": "exact value is replaced with another exact value"
+      }
+    ]
+  },
+  "identifier": [
+    {
+      "use": "usual",
+      "type": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/v2/0203"
+          }
+        ]
+      },
+      "system": "urn:oid:1.2.36.146.595.217.0.1",
+      "period": {
+        "start": "2001-05-20"
+      }
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "use": "official"
+    },
+    {
+      "use": "usual"
+    },
+    {
+      "use": "maiden",
+      "period": {
+        "end": "2002"
+      }
+    }
+  ],
+  "telecom": [
+    {
+      "period": {
+        "end": "2014"
+      }
+    }
+  ],
+  "gender": "male",
+  "birthDate": "1975-01-08",
+  "_birthDate": {
+    "extension": [
+      {
+        "valueDateTime": "1974"
+      }
+    ]
+  },
+  "deceasedBoolean": false,
+  "address": [
+    {
+      "state": "Vic",
+      "postalCode": "3990",
+      "period": {
+        "start": "1975-01-08"
+      }
+    }
+  ],
+  "contact": [
+    {
+      "relationship": [
+        {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/v2/0131"
+            }
+          ]
+        }
+      ],
+      "address": {
+        "state": "Vic",
+        "postalCode": "3990",
+        "period": {
+          "start": "1975-01-08"
+        }
+      },
+      "gender": "female",
+      "period": {
+        "start": "2012"
+      }
+    }
+  ],
+  "managingOrganization": {
+    "reference": "Organization/9400891ae111f2b41e57a96d587e6872f11e9380a005ff16ea9e1b8b0e234922"
+  }
+}

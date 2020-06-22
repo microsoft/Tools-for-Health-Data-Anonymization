@@ -1,0 +1,46 @@
+{
+  "resourceType": "Patient",
+  "id": "8bbf60d87dc04f866bc20689dc76e4d37890b2ef31ccc259a550d0de7b964af3",
+  "meta": {
+    "lastUpdated": "2012-05-15T00:00:00+00:00",
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "part of the resource is removed"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "exact value is transformed with a hash function"
+      },
+      {
+        "code": "PERTURBED",
+        "display": "exact value is replaced with another exact value"
+      }
+    ]
+  },
+  "identifier": [
+    {
+      "type": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/v2/0203"
+          }
+        ]
+      },
+      "system": "http://hl7.org/fhir/sid/us-ssn"
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "use": "official"
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1973-05-17",
+  "managingOrganization": {
+    "reference": "Organization/b6c0a2831db7ffc667a57b9b539f90b03e25427c1739eb904964736e3bbbdf54"
+  }
+}

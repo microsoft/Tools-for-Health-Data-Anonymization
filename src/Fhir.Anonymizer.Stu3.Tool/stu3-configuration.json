@@ -5,12 +5,14 @@
     {"path": "Organization.identifier", "method": "keep"},
     {"path": "Organization.telecom", "method": "keep"},
     {"path": "Organization.address", "method": "keep"},
-    {"path": "OrganizationAffiliation.identifier", "method": "keep"},
-    {"path": "OrganizationAffiliation.telecom", "method": "keep"},
+    //{"path": "OrganizationAffiliation.identifier", "method": "keep"},    delete
+    //{"path": "OrganizationAffiliation.telecom", "method": "keep"},       delete
     {"path": "nodesByType('HumanName').use", "method": "keep"},
     {"path": "nodesByType('Address').country", "method": "keep"},
     {"path": "nodesByType('Address').state", "method": "keep"},
-
+    {"path": "Resource.animal","method": "keep"}, ///Newadd
+    {"path": "Patient.where(animal.exists()).name", "method": "keep"}, ///Newadd 
+    
     {"path": "Resource.id", "method": "cryptoHash"},
     {"path": "Bundle.entry.fullUrl", "method": "redact"},
     {"path": "PractitionerRole.notAvailable.description", "method": "redact"},
@@ -169,10 +171,11 @@
     {"path": "InsurancePlan.coverage.benefit.requirement", "method": "redact"},
     {"path": "InsurancePlan.plan.generalCost.comment", "method": "redact"},
     {"path": "HealthcareService.comment", "method": "redact"},  ///Newadd 
+    {"path": "HealthcareService.extraDetails", "method": "redact"}, ///Newadd 
+    {"path": "HealthcareService.eligibilityNote", "method": "redact"},  ///Newadd 
+    {"path": "HealthcareService.programName", "method": "redact"},  ///Newadd 
     {"path": "HealthcareService.availabilityExceptions", "method": "redact"}, ///Newadd 
-    {"path": "HealthcareService.extraDetails", "method": "redact"}, ///Newadd
-    {"path": "HealthcareService.eligibility.comment", "method": "redact"}, ///Newadd
-    {"path": "HealthcareService.notAvaliable.description", "method": "redact"}, ///Newadd
+    {"path": "HealthcareService.notAvaliable.description", "method": "redact"},
     
     {"path": "nodesByType('Attachment').title", "method": "redact"},
     {"path": "nodesByType('Attachment').url", "method": "redact"},
@@ -219,4 +222,4 @@
       "893"
     ]
   }
-}
+}    

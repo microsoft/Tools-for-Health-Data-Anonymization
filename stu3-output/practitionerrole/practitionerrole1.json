@@ -1,0 +1,671 @@
+{
+  "resourceType": "Bundle",
+  "id": "7d951421cdbfeca21dc4af4fe76dd58e842bfaef43898f0f8ad33df6e3b46cfe",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "part of the resource is removed"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "exact value is transformed with a hash function"
+      },
+      {
+        "code": "PERTURBED",
+        "display": "exact value is replaced with another exact value"
+      }
+    ]
+  },
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "0d84439a939f04876f6102d7aec50f44eadbb0e74566c96adfb352d0ed2f0dbc",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/73c1ad836963a75759625c8887d95c9ba2607412330191fe12226cb0e5a4aaf1"
+        },
+        "organization": {
+          "reference": "Organization/c3f0782f1fce96f9f2d0e358b0994738c71dcac9d62ba937ee51cfcea6d04b72"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "719d06ba33d7a0d4e517ea2b6d01d8eda980e4fe282ecabc257509f214002bce",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            },
+            {
+              "code": "PERTURBED",
+              "display": "exact value is replaced with another exact value"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://example.org/role-identifier"
+          }
+        ],
+        "period": {
+          "start": "2011-12-15",
+          "end": "2012-03-14"
+        },
+        "practitioner": {
+          "reference": "Practitioner/1ee7ce0db277bb79c90e57f5825aa24325855dad410d4f0702942aee4f5bb1c9"
+        },
+        "organization": {
+          "reference": "Organization/c3f0782f1fce96f9f2d0e358b0994738c71dcac9d62ba937ee51cfcea6d04b72"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/v2/0286"
+              }
+            ]
+          }
+        ],
+        "location": [
+          {
+            "reference": "Location/8ebe676d224e17b583b6712d8f18d837a30b87bac7dfaa8a559273bda5acb3ee"
+          }
+        ],
+        "healthcareService": [
+          {
+            "reference": "HealthcareService/1ee7ce0db277bb79c90e57f5825aa24325855dad410d4f0702942aee4f5bb1c9"
+          }
+        ],
+        "endpoint": [
+          {
+            "reference": "Endpoint/1ee7ce0db277bb79c90e57f5825aa24325855dad410d4f0702942aee4f5bb1c9"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "8d1e103cd621afdbb66f732fff45f990556e9449bb3d22ab70c0ac82452954ec",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            },
+            {
+              "code": "PERTURBED",
+              "display": "exact value is replaced with another exact value"
+            }
+          ]
+        },
+        "period": {
+          "start": "2011-12-15"
+        },
+        "practitioner": {
+          "reference": "Practitioner/1ee7ce0db277bb79c90e57f5825aa24325855dad410d4f0702942aee4f5bb1c9"
+        },
+        "organization": {
+          "reference": "Organization/0b848879383af68f3cbec5dc1bbdef781fc7ff00b5d5b7e41c97cf65f36e65f5"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "47093b74629c10407c87f5f708fedfd6fc9f850d21404f2a63c4aa0565f749c3",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            },
+            {
+              "code": "PERTURBED",
+              "display": "exact value is replaced with another exact value"
+            }
+          ]
+        },
+        "period": {
+          "start": "2016-06-14",
+          "end": "2017-06-13"
+        },
+        "practitioner": {
+          "reference": "Practitioner/1ee7ce0db277bb79c90e57f5825aa24325855dad410d4f0702942aee4f5bb1c9"
+        },
+        "organization": {
+          "reference": "Organization/0b848879383af68f3cbec5dc1bbdef781fc7ff00b5d5b7e41c97cf65f36e65f5"
+        },
+        "availableTime": [
+          {
+            "daysOfWeek": [
+              "sat",
+              "sun"
+            ],
+            "allDay": true
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "64c3fcdfeae27b59b068079dac6db57513529551f16e6403acd35b65d0e3e373",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/3aecb2dcc2efeed5835c6cd6499928c833a558f62f40a25600397889e18811cb"
+        },
+        "organization": {
+          "reference": "Organization/c3f0782f1fce96f9f2d0e358b0994738c71dcac9d62ba937ee51cfcea6d04b72"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "1636af21772cd5b77d165828462834246ddf97cab88c54763c4065d26e0101c6",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/fc6aa56231ac7afbf4284314081dad538b1cc487277fd6d9e9d6fc4059031c15"
+        },
+        "organization": {
+          "reference": "Organization/c3f0782f1fce96f9f2d0e358b0994738c71dcac9d62ba937ee51cfcea6d04b72"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "0e9f1243a573a607527de1f8e0264aef50f16f4ab908cdec8f5bdbf117bb5eb2",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/06f797edf7842d4a6c289db35c6727b296f5a6de9f5ae931843762b8e44bea8e"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "dee0f236b3e550261a0c4220cae7578ed6f564585d1fb686ee5bf395e621e3ad",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/3bf43a8858244262aa1f8cd6eb6d62c84d3186b8e105a0644a17de4856e8aa36"
+        },
+        "organization": {
+          "reference": "Organization/05ca57b9c0cfb276ac923263f694269ce44d0c6eea5df36af02077fb01ea8a41"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "26e56dde59197eb8ead2d108e87ce376e174b7f959f21c7189c778458037312b",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/05ca57b9c0cfb276ac923263f694269ce44d0c6eea5df36af02077fb01ea8a41"
+        },
+        "organization": {
+          "reference": "Organization/05ca57b9c0cfb276ac923263f694269ce44d0c6eea5df36af02077fb01ea8a41"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "2faad7bc5279fbe6b16c6c62a87febae73ca04cd96ba60009fc9a51a85952c80",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/251da626c1390b89405b5b0adce9b7cea630723b6ff7d2b1952323e20bf82cd5"
+        },
+        "organization": {
+          "reference": "Organization/05ca57b9c0cfb276ac923263f694269ce44d0c6eea5df36af02077fb01ea8a41"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "94b36d2cea4ea32837f13f2f1ffe5bcaae65edbe76aeb9b6ee8fb8e0e53b2eea",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/a2421087e608d664b97eb88d46bb3075883166f93ed7ab7e38cb1899107b53f7"
+        },
+        "organization": {
+          "reference": "Organization/c3f0782f1fce96f9f2d0e358b0994738c71dcac9d62ba937ee51cfcea6d04b72"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "dbbb0da9124d6140c3ed0e3b0b009478aec2a7480d282127ac395b25653dd551",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/8c4f70b5898fcf0eee3e0fc45f77b97b17090fbc6532fffe70ea03933d11f670"
+        },
+        "organization": {
+          "reference": "Organization/c3f0782f1fce96f9f2d0e358b0994738c71dcac9d62ba937ee51cfcea6d04b72"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "66771224e8c8c090ea3c9529a19fd8435987bf3b894322ff516c5e625dca636b",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/c3f0782f1fce96f9f2d0e358b0994738c71dcac9d62ba937ee51cfcea6d04b72"
+        },
+        "organization": {
+          "reference": "Organization/c3f0782f1fce96f9f2d0e358b0994738c71dcac9d62ba937ee51cfcea6d04b72"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "47b9d63c9274b671248f027ac0829bf297a3a5a2358e7f55a3fe97c6b485a150",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/7287155e88a5b24280468c1a86c4279fdf091af5e66edc629eeeaed04be47288"
+        },
+        "organization": {
+          "reference": "Organization/c3f0782f1fce96f9f2d0e358b0994738c71dcac9d62ba937ee51cfcea6d04b72"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "urn:oid:2.16.840.1.113883.2.4.15.111"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "741fa8e09b67719c502622697e320ff8611df009b08c89176b887c854d7e978d",
+        "meta": {
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "Practitioner/3e58cd38b462697c7250f4252d45f12b29de2c26976e2af46e1fcb8c2796a878"
+        },
+        "organization": {
+          "reference": "Organization/05ca57b9c0cfb276ac923263f694269ce44d0c6eea5df36af02077fb01ea8a41"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

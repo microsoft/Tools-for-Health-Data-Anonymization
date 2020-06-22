@@ -1,0 +1,70 @@
+{
+  "resourceType": "Patient",
+  "id": "43c45c9b4889584248a5c5e5aaa911e9843a6fe3a3374272965aa96c3e60cd7d",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "part of the resource is removed"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "exact value is transformed with a hash function"
+      }
+    ]
+  },
+  "identifier": [
+    {
+      "use": "usual",
+      "type": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/v2/0203"
+          }
+        ]
+      },
+      "system": "urn:oid:0.1.2.3.4.5.6.7"
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "use": "official"
+    }
+  ],
+  "gender": "male",
+  "photo": [
+    {
+      "contentType": "image/gif"
+    }
+  ],
+  "contact": [
+    {
+      "relationship": [
+        {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/v2/0131"
+            }
+          ]
+        }
+      ],
+      "organization": {
+        "reference": "Organization/32878a1a57e7f1b3d8d282b1b3732da397591dcbd4bb751cb751212f38c53acc"
+      }
+    }
+  ],
+  "managingOrganization": {
+    "reference": "Organization/32878a1a57e7f1b3d8d282b1b3732da397591dcbd4bb751cb751212f38c53acc"
+  },
+  "link": [
+    {
+      "other": {
+        "reference": "Patient/87a7e9a1ba09ddac9fed20dd1aea7f164848ffa5a9203fa4ad5678c4c1a21e66"
+      },
+      "type": "seealso"
+    }
+  ]
+}
