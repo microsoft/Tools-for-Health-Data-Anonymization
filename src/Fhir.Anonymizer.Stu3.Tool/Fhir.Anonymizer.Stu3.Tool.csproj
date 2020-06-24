@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="stu3-configuration-patient.json">
+    <None Update="stu3-configuration.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

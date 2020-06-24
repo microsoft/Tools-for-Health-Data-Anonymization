@@ -23,6 +23,7 @@
     {"path": "Location.alias", "method": "redact"},
     {"path": "Location.description", "method": "redact"},
     {"path": "Location.position", "method": "redact"},
+    {"path": "Location.availabilityExceptions", "method": "redact"}, ///Newadded
     {"path": "Device.udiCarrier", "method": "redact"},
     {"path": "Device.distinctIdentifier", "method": "redact"},
     {"path": "Device.serialNumber", "method": "redact"},
@@ -173,6 +174,7 @@
     {"path": "HealthcareService.extraDetails", "method": "redact"}, ///Newadd
     {"path": "HealthcareService.eligibility.comment", "method": "redact"}, ///Newadd
     {"path": "HealthcareService.notAvaliable.description", "method": "redact"}, ///Newadd
+    
     
     {"path": "nodesByType('Attachment').title", "method": "redact"},
     {"path": "nodesByType('Attachment').url", "method": "redact"},
