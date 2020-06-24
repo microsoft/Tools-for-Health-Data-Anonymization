@@ -14,6 +14,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             yield return new object[] { "98052" };
             yield return new object[] { "10104" };
             yield return new object[] { "00000" };
+            yield return new object[] { "98028-1830" };
         }
 
         public static IEnumerable<object[]> GetPostalCodeDataForPartialRedact()
@@ -22,6 +23,8 @@ namespace Fhir.Anonymizer.Core.UnitTests
             yield return new object[] { "10104", "10100" };
             yield return new object[] { "20301", "00000" };
             yield return new object[] { "55602", "00000" };
+            yield return new object[] { "98028-1830", "98000-0000" };
+            yield return new object[] { "20301-1830", "00000-0000" };
         }
 
         [Theory]
