@@ -44,13 +44,18 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Tool
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Tool.UnitTests", "src\Fhir.Anonymizer.Shared.Tool.UnitTests\Fhir.Anonymizer.Shared.Tool.UnitTests.shproj", "{C51864C3-82FA-4B4D-A53A-02080ED96E95}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.FunctionalTests", "src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.shproj", "{19E3E7A2-17A6-4708-B9F2-04A2C9968C83}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Fhir.Anonymizer.Shared.Tool\Fhir.Anonymizer.Shared.Tool.projitems*{140255c7-6c80-4a3c-a248-ae8cdfdcf907}*SharedItemsImports = 13
 		src\Fhir.Anonymizer.Shared.Tool.UnitTests\Fhir.Anonymizer.Shared.Tool.UnitTests.projitems*{16871252-b69a-4eec-a19d-02dce5da625c}*SharedItemsImports = 5
+		src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.projitems*{19e3e7a2-17a6-4708-b9f2-04a2c9968c83}*SharedItemsImports = 13
 		src\Fhir.Anonymizer.Shared.Tool\Fhir.Anonymizer.Shared.Tool.projitems*{2b5e15e5-1d3f-4de8-b1b3-c6a60d0b977d}*SharedItemsImports = 5
+		src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.projitems*{37241a6c-0897-4837-b845-10a54f1b3c7c}*SharedItemsImports = 5
 		src\Fhir.Anonymizer.Shared.Core.UnitTest\Fhir.Anonymizer.Shared.Core.UnitTest.projitems*{3f277aa6-5ad7-4e13-8a2c-b112d1cecde1}*SharedItemsImports = 5
 		src\Fhir.Anonymizer.Shared.Tool\Fhir.Anonymizer.Shared.Tool.projitems*{40de1afb-01c2-4e93-b267-3c9b70d5048b}*SharedItemsImports = 5
+		src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.projitems*{6919ce19-56bc-4ec9-a16e-111401607daf}*SharedItemsImports = 5
 		src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.projitems*{71945966-a531-466c-8c66-6c6eba591832}*SharedItemsImports = 5
 		src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.projitems*{8918ce75-f36e-4cb4-8232-12024a1e41ac}*SharedItemsImports = 13
 		src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.projitems*{96456150-db43-4970-9e22-7003516fa05e}*SharedItemsImports = 5
@@ -125,12 +130,15 @@ Global
 		{40DE1AFB-01C2-4E93-B267-3C9B70D5048B} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{D1652619-9BBC-4E04-B001-328E33AC9398} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{16871252-B69A-4EEC-A19D-02DCE5DA625C} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{37241A6C-0897-4837-B845-10A54F1B3C7C} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
+		{6919CE19-56BC-4EC9-A16E-111401607DAF} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
 		{786E4AF9-F95D-441A-B5B0-329C616AA2E8} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{36DDE457-BEEE-4182-B91B-8262156B4147} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{8918CE75-F36E-4CB4-8232-12024A1E41AC} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
 		{F7A47FD1-BD24-41A6-B3C6-2DD062523271} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
 		{140255C7-6C80-4A3C-A248-AE8CDFDCF907} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{C51864C3-82FA-4B4D-A53A-02080ED96E95} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{19E3E7A2-17A6-4708-B9F2-04A2C9968C83} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19A940B3-FA97-4729-AC91-EE68070BCFC1}

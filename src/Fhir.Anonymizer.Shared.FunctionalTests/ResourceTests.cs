@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Fhir.Anonymizer.Core;
 using Fhir.Anonymizer.Core.Extensions;
 using Hl7.FhirPath;
 using Xunit;
+
 
 namespace Fhir.Anonymizer.FunctionalTests
 {
@@ -12,7 +14,8 @@ namespace Fhir.Anonymizer.FunctionalTests
         {
             FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
         }
-
+        
+       
         [Fact]
         public void GivenAPatientResource_WhenAnonymizing_ThenAnonymizedJsonShouldBeReturned()
         {

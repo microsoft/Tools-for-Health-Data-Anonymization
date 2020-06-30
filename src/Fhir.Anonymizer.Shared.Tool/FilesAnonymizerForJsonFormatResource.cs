@@ -15,7 +15,6 @@ namespace Fhir.Anonymizer.Tool
         private string _inputFolder;
         private string _outputFolder;
         private string _configFilePath;
-
         private AnonymizationToolOptions _options;
 
         public FilesAnonymizerForJsonFormatResource(

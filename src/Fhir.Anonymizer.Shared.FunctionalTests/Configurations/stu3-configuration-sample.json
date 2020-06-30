@@ -206,9 +206,9 @@
     {"path": "nodesByType('ContactPoint')", "method": "redact"}
   ],
   "parameters": {
-    "dateShiftKey": "",
+    "dateShiftKey": "123",
     "dateShiftScope": "resource",
-    "cryptoHashKey": "",
+    "cryptoHashKey": "123",
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,

@@ -45,6 +45,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
             Assert.Single(configurationManager.FhirPathRules.Where(r => "TestResource".Equals(r.ResourceType)));
             Assert.Single(configurationManager.FhirPathRules.Where(r => string.IsNullOrEmpty(r.ResourceType)));
             Assert.Single(configurationManager.FhirPathRules.Where(r => "Resource".Equals(r.ResourceType)));
+            Assert.Single(configurationManager.FhirPathRules.Where(r => "Device".Equals(r.ResourceType)));
 
             var parameters = configurationManager.GetParameterConfiguration();
             Assert.True(!string.IsNullOrEmpty(parameters.DateShiftKey));

@@ -5,13 +5,12 @@
     {"path": "Organization.identifier", "method": "keep"},
     {"path": "Organization.telecom", "method": "keep"},
     {"path": "Organization.address", "method": "keep"},
-    //{"path": "OrganizationAffiliation.identifier", "method": "keep"},    delete
-    //{"path": "OrganizationAffiliation.telecom", "method": "keep"},       delete
+    {"path": "OrganizationAffiliation.identifier", "method": "keep"},
+    {"path": "OrganizationAffiliation.telecom", "method": "keep"},
     {"path": "nodesByType('HumanName').use", "method": "keep"},
     {"path": "nodesByType('Address').country", "method": "keep"},
     {"path": "nodesByType('Address').state", "method": "keep"},
-     
-    
+
     {"path": "Resource.id", "method": "cryptoHash"},
     {"path": "Bundle.entry.fullUrl", "method": "redact"},
     {"path": "PractitionerRole.notAvailable.description", "method": "redact"},
@@ -24,21 +23,22 @@
     {"path": "Location.alias", "method": "redact"},
     {"path": "Location.description", "method": "redact"},
     {"path": "Location.position", "method": "redact"},
-    {"path": "Device.udi", "method": "redact"}, //modified
-    //{"path": "Device.distinctIdentifier", "method": "redact"},
-    //{"path": "Device.serialNumber", "method": "redact"},
-    //{"path": "Device.deviceName", "method": "redact"},
+    {"path": "Location.availabilityExceptions", "method": "redact"}, ///Newadded
+    {"path": "Device.udiCarrier", "method": "redact"},
+    {"path": "Device.distinctIdentifier", "method": "redact"},
+    {"path": "Device.serialNumber", "method": "redact"},
+    {"path": "Device.deviceName", "method": "redact"},
     {"path": "Task.description", "method": "redact"},
     {"path": "Task.input.value", "method": "redact"},
     {"path": "Task.output.value", "method": "redact"},
     {"path": "Appointment.description", "method": "redact"},
     {"path": "Appointment.comment", "method": "redact"},
-    //{"path": "Appointment.patientInstruction", "method": "redact"},
+    {"path": "Appointment.patientInstruction", "method": "redact"},
     {"path": "AppointmentResponse.comment", "method": "redact"},
     {"path": "Schedule.comment", "method": "redact"},
     {"path": "Slot.comment", "method": "redact"},
-    //{"path": "VerificationResult.attestation.sourceIdentityCertificate", "method": "redact"},
-    //{"path": "VerificationResult.attestation.proxyIdentityCertificate", "method": "redact"},
+    {"path": "VerificationResult.attestation.sourceIdentityCertificate", "method": "redact"},
+    {"path": "VerificationResult.attestation.proxyIdentityCertificate", "method": "redact"},
     {"path": "List.title", "method": "redact"},
     {"path": "Library.publisher", "method": "redact"},
     {"path": "Library.usage", "method": "redact"},
@@ -169,21 +169,13 @@
     {"path": "InsurancePlan.alias", "method": "redact"},
     {"path": "InsurancePlan.coverage.benefit.requirement", "method": "redact"},
     {"path": "InsurancePlan.plan.generalCost.comment", "method": "redact"},
-    {"path": "Resource.animal","method": "keep"}, ///Newadd
-    {"path": "Patient.where(animal.exists()).name", "method": "keep"}, ///Newadd
     {"path": "HealthcareService.comment", "method": "redact"},  ///Newadd 
-    {"path": "HealthcareService.extraDetails", "method": "redact"}, ///Newadd 
-    {"path": "HealthcareService.eligibilityNote", "method": "redact"},  ///Newadd 
-    {"path": "HealthcareService.programName", "method": "redact"},  ///Newadd 
     {"path": "HealthcareService.availabilityExceptions", "method": "redact"}, ///Newadd 
-    {"path": "HealthcareService.notAvaliable.description", "method": "redact"},  ///Newadd
-    {"path": "DeviceComponent.ProductionSpecification.productionSpec", "method" : "redact"}, ///Newadd
-    {"path": "Task.definitionUri","method": "redact" }, ///Newadd
-    { "path": "ProcessRequest.reference", "method": "redact" },  ///Newadd
-    { "path": "ProcessResponse.disposition", "method": "redact" },   ///Newadd
-    { "path": "ProcessResponse.processNote.text", "method": "redact" },  ///Newadd
-
-    {"path": "nodesByType('Contributor').name", "method": "redact"},  ///Newadd
+    {"path": "HealthcareService.extraDetails", "method": "redact"}, ///Newadd
+    {"path": "HealthcareService.eligibility.comment", "method": "redact"}, ///Newadd
+    {"path": "HealthcareService.notAvaliable.description", "method": "redact"}, ///Newadd
+    
+    
     {"path": "nodesByType('Attachment').title", "method": "redact"},
     {"path": "nodesByType('Attachment').url", "method": "redact"},
     {"path": "nodesByType('CodeableConcept').text", "method": "redact"},
@@ -206,9 +198,9 @@
     {"path": "nodesByType('ContactPoint')", "method": "redact"}
   ],
   "parameters": {
-    "dateShiftKey": "",
+    "dateShiftKey": "123",
     "dateShiftScope": "resource",
-    "cryptoHashKey": "",
+    "cryptoHashKey": "123",
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,
@@ -229,4 +221,4 @@
       "893"
     ]
   }
-}    
+}
