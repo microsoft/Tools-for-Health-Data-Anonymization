@@ -61,7 +61,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             Assert.Equal(expectedValue, referenceNode.Value);
         }
 
-        public static ElementNode CreateNodeFromElement(Element element)
+        private static ElementNode CreateNodeFromElement(Element element)
         {
             return ElementNode.FromElement(element.ToTypedElement());
         }
