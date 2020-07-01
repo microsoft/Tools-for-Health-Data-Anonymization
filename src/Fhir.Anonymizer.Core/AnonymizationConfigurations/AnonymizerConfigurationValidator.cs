@@ -63,28 +63,15 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
             if (validSizes == null) return false;
             for (i = 0; i < validSizes.Length; i++)
             {
-                if (validSizes[i].SkipSize == 0)
+                for (j = validSizes[i].MinSize; j <= validSizes[i].MaxSize; j += validSizes[i].SkipSize)
                 {
-                    // assume MinSize = MaxSize
-                    if (validSizes[i].MinSize == bitLength)
+                    if (j == bitLength)
                     {
                         return true;
                     }
                 }
-                else
-                {
-                    for (j = validSizes[i].MinSize; j <= validSizes[i].MaxSize; j += validSizes[i].SkipSize)
-                    {
-                        if (j == bitLength)
-                        {
-                            return true;
-                        }
-                    }
-                }
             }
-
             return false;
         }
-
     }
 }

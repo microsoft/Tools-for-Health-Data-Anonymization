@@ -29,7 +29,6 @@ namespace Fhir.Anonymizer.Core.Processors
             _logger.LogDebug($"Fhir value '{input}' at '{node.Location}' is encrypted to '{node.Value}'.");
 
             processResult.AddProcessRecord(AnonymizationOperations.Encrypt, node);
-
             return processResult;
         }
     }
