@@ -16,6 +16,4 @@
     <ProjectReference Include="..\Fhir.Anonymizer.R4.AzureDataFactoryPipeline\Fhir.Anonymizer.R4.AzureDataFactoryPipeline.csproj" />
   </ItemGroup>
 
-  <Import Project="..\Fhir.Anonymizer.Shared.Tool.UnitTests\Fhir.Anonymizer.Shared.Tool.UnitTests.projitems" Label="Shared" />
-
 </Project>
