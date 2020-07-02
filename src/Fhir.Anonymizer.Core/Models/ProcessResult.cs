@@ -31,6 +31,14 @@ namespace Fhir.Anonymizer.Core.Models
             }
         }
 
+        public bool IsMasked
+        {
+            get
+            {
+                return ProcessRecords.ContainsKey(AnonymizationOperations.Masked);
+            }
+        }
+
         public bool IsPerturbed 
         { 
             get 
