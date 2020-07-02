@@ -112,7 +112,7 @@
     {"path": "CoverageEligibilityResponse.insurance.item.benefit.used", "method": "redact"},
     {"path": "CoverageEligibilityResponse.preAuthRef", "method": "redact"},
     {"path": "EnrollmentResponse.disposition", "method": "redact"},
-    {"path": "Claim.supportingInfo.value", "method": "redact"},
+    //{"path": "Claim.supportingInfo.value", "method": "redact"},
     {"path": "Claim.insurance.businessArrangement", "method": "redact"},
     {"path": "Claim.insurance.preAuthRef", "method": "redact"},
     {"path": "ClaimResponse.disposition", "method": "redact"},
@@ -174,7 +174,7 @@
     {"path": "HealthcareService.extraDetails", "method": "redact"}, ///Newadd
     {"path": "HealthcareService.eligibility.comment", "method": "redact"}, ///Newadd
     {"path": "HealthcareService.notAvaliable.description", "method": "redact"}, ///Newadd
-    
+    {"path": "Claim.information.value", "method": "redact"}
     
     {"path": "nodesByType('Attachment').title", "method": "redact"},
     {"path": "nodesByType('Attachment').url", "method": "redact"},

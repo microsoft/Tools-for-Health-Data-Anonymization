@@ -10,7 +10,7 @@
     {"path": "nodesByType('HumanName').use", "method": "keep"},
     {"path": "nodesByType('Address').country", "method": "keep"},
     {"path": "nodesByType('Address').state", "method": "keep"},
-     
+    {"path": "Resource.animal","method": "keep"}, ///Newadd
     
     {"path": "Resource.id", "method": "cryptoHash"},
     {"path": "Bundle.entry.fullUrl", "method": "redact"},
@@ -18,6 +18,12 @@
     {"path": "PractitionerRole.availabilityExceptions", "method": "redact"},
     {"path": "Group.name", "method": "redact"},
     {"path": "Group.characteristic.value", "method": "redact"},
+    {"path": "HealthcareService.comment", "method": "redact"},  ///Newadd 
+    {"path": "HealthcareService.extraDetails", "method": "redact"}, ///Newadd 
+    {"path": "HealthcareService.eligibilityNote", "method": "redact"},  ///Newadd 
+    {"path": "HealthcareService.programName", "method": "redact"},  ///Newadd 
+    {"path": "HealthcareService.availabilityExceptions", "method": "redact"}, ///Newadd 
+    {"path": "HealthcareService.notAvaliable.description", "method": "redact"},  ///Newadd
     {"path": "Endpoint.name", "method": "redact"},
     {"path": "Endpoint.address", "method": "redact"},
     {"path": "Location.name", "method": "redact"},
@@ -28,6 +34,8 @@
     //{"path": "Device.distinctIdentifier", "method": "redact"},
     //{"path": "Device.serialNumber", "method": "redact"},
     //{"path": "Device.deviceName", "method": "redact"},
+    {"path": "DeviceComponent.ProductionSpecification.productionSpec", "method" : "redact"}, ///Newadd
+    {"path": "Task.definitionUri","method": "redact" }, ///??????????
     {"path": "Task.description", "method": "redact"},
     {"path": "Task.input.value", "method": "redact"},
     {"path": "Task.output.value", "method": "redact"},
@@ -39,6 +47,9 @@
     {"path": "Slot.comment", "method": "redact"},
     //{"path": "VerificationResult.attestation.sourceIdentityCertificate", "method": "redact"},
     //{"path": "VerificationResult.attestation.proxyIdentityCertificate", "method": "redact"},
+    { "path": "ProcessRequest.reference", "method": "redact" },  ///Newadd
+    { "path": "ProcessResponse.disposition", "method": "redact" },   ///Newadd
+    { "path": "ProcessResponse.processNote.text", "method": "redact" },  ///Newadd
     {"path": "List.title", "method": "redact"},
     {"path": "Library.publisher", "method": "redact"},
     {"path": "Library.usage", "method": "redact"},
@@ -101,22 +112,39 @@
     {"path": "CommunicationRequest.payload", "method": "redact"},
     {"path": "Coverage.subscriberId", "method": "redact"},
     {"path": "Coverage.dependent", "method": "redact"},
-    {"path": "Coverage.class.value", "method": "redact"},
-    {"path": "Coverage.class.name", "method": "redact"},
+    //{"path": "Coverage.class.value", "method": "redact"},
+    //{"path": "Coverage.class.name", "method": "redact"},
     {"path": "Coverage.network", "method": "redact"},
-    {"path": "CoverageEligibilityRequest.insurance.businessArrangement", "method": "redact"},
-    {"path": "CoverageEligibilityResponse.disposition", "method": "redact"},
-    {"path": "CoverageEligibilityResponse.insurance.item.name", "method": "redact"},
-    {"path": "CoverageEligibilityResponse.insurance.item.description", "method": "redact"},
-    {"path": "CoverageEligibilityResponse.insurance.item.benefit.allowed", "method": "redact"},
-    {"path": "CoverageEligibilityResponse.insurance.item.benefit.used", "method": "redact"},
-    {"path": "CoverageEligibilityResponse.preAuthRef", "method": "redact"},
+    {"path": "Coverage.Group.group", "method": "redact"},  ///Newadd
+    {"path": "Coverage.Group.subGroup", "method": "redact"},   ///Newadd
+    {"path": "Coverage.Group.plan", "method": "redact"},   ///Newadd
+    {"path": "Coverage.Group.subPlan", "method": "redact"},   ///Newadd
+    {"path": "Coverage.Group.class", "method": "redact"},   ///Newadd
+    {"path": "Coverage.Group.subClass", "method": "redact"},   ///Newadd
+    {"path": "Coverage.Group.groupDisplay", "method": "redact"},  ///Newadd
+    {"path": "Coverage.Group.subGroupDisplay", "method": "redact"},   ///Newadd
+    {"path": "Coverage.Group.planDisplay", "method": "redact"},   ///Newadd
+    {"path": "Coverage.Group.subPlanDisplay", "method": "redact"},   ///Newadd
+    {"path": "Coverage.Group.classDisplay", "method": "redact"},   ///Newadd
+    {"path": "Coverage.Group.subClassDisplay", "method": "redact"},   ///Newadd
+    //{"path": "CoverageEligibilityRequest.insurance.businessArrangement", "method": "redact"},
+    //{"path": "CoverageEligibilityResponse.disposition", "method": "redact"},
+    //{"path": "CoverageEligibilityResponse.insurance.item.name", "method": "redact"},
+    //{"path": "CoverageEligibilityResponse.insurance.item.description", "method": "redact"},
+    //{"path": "CoverageEligibilityResponse.insurance.item.benefit.allowed", "method": "redact"},
+    //{"path": "CoverageEligibilityResponse.insurance.item.benefit.used", "method": "redact"},
+    //{"path": "CoverageEligibilityResponse.preAuthRef", "method": "redact"},
+    {"path": "EligibilityRequest.businessArrangement", "method": "redact"}, ///Newadd
+    {"path": "EligibilityResponse.disposition", "method": "redact"},   ///Newadd
+    {"path": "EligibilityResponse.insurance.benefitBalance.name", "method": "redact"},   ///Newadd
+    {"path": "EligibilityResponse.insurance.benefitBalance.description", "method": "redact"},   ///Newadd 
+    {"path": "EligibilityResponse.insurance.benefitBalance.financial.allowed", "method": "redact"},   ///Newadd
     {"path": "EnrollmentResponse.disposition", "method": "redact"},
     {"path": "Claim.supportingInfo.value", "method": "redact"},
     {"path": "Claim.insurance.businessArrangement", "method": "redact"},
     {"path": "Claim.insurance.preAuthRef", "method": "redact"},
     {"path": "ClaimResponse.disposition", "method": "redact"},
-    {"path": "ClaimResponse.preAuthRef", "method": "redact"},
+    {"path": "ClaimResponse.insurance.preAuthRef", "method": "redact"}, //Modified
     {"path": "ClaimResponse.processNote.text", "method": "redact"},
     {"path": "ClaimResponse.insurance.businessArrangement", "method": "redact"},
     {"path": "Invoice.cancelledReason", "method": "redact"},
@@ -124,68 +152,62 @@
     {"path": "PaymentReconciliation.processNote.text", "method": "redact"},
     {"path": "Account.name", "method": "redact"},
     {"path": "Account.description", "method": "redact"},
+    {"path": "ChargeItem.definition", "method": "redact"},   ///??????????????????
     {"path": "ChargeItem.overrideReason", "method": "redact"},
-    {"path": "ChargeItemDefinition.title", "method": "redact"},
-    {"path": "ChargeItemDefinition.publisher", "method": "redact"},
-    {"path": "ChargeItemDefinition.applicability", "method": "redact"},
-    {"path": "ChargeItemDefinition.propertyGroup.applicability", "method": "redact"},
-    {"path": "Contract.name", "method": "redact"},
-    {"path": "Contract.title", "method": "redact"},
-    {"path": "Contract.subtitle", "method": "redact"},
-    {"path": "Contract.alias", "method": "redact"},
-    {"path": "Contract.topic", "method": "redact"},
-    {"path": "Contract.term.topic", "method": "redact"},
+    //{"path": "ChargeItemDefinition.title", "method": "redact"},
+    //{"path": "ChargeItemDefinition.publisher", "method": "redact"},
+    //{"path": "ChargeItemDefinition.applicability", "method": "redact"},
+    //{"path": "ChargeItemDefinition.propertyGroup.applicability", "method": "redact"},
+    //{"path": "Contract.name", "method": "redact"},
+    //{"path": "Contract.title", "method": "redact"},
+    //{"path": "Contract.subtitle", "method": "redact"},
+    //{"path": "Contract.alias", "method": "redact"},
+    //{"path": "Contract.topic", "method": "redact"},
+    //{"path": "Contract.term.topic", "method": "redact"},
     {"path": "Contract.term.text", "method": "redact"},
-    {"path": "Contract.term.offer.answer.value", "method": "redact"},
-    {"path": "Contract.term.offer.text", "method": "redact"},
-    {"path": "Contract.term.offer.linkId", "method": "redact"},
-    {"path": "Contract.term.asset.context.text", "method": "redact"},
-    {"path": "Contract.term.asset.condition", "method": "redact"},
-    {"path": "Contract.term.asset.text", "method": "redact"},
-    {"path": "Contract.term.asset.linkId", "method": "redact"},
-    {"path": "Contract.term.asset.answer", "method": "redact"},
-    {"path": "Contract.term.asset.valuedItem.entity", "method": "redact"},
-    {"path": "Contract.term.asset.valuedItem.payment", "method": "redact"},
-    {"path": "Contract.term.asset.valuedItem.linkId", "method": "redact"},
-    {"path": "Contract.term.action.linkId", "method": "redact"},
-    {"path": "Contract.term.action.contextLinkId", "method": "redact"},
-    {"path": "Contract.term.action.requesterLinkId", "method": "redact"},
-    {"path": "Contract.term.action.performerLinkId", "method": "redact"},
-    {"path": "Contract.term.action.reason", "method": "redact"},
-    {"path": "Contract.term.action.reasonLinkId", "method": "redact"},
+    //{"path": "Contract.term.offer.answer.value", "method": "redact"},
+    //{"path": "Contract.term.offer.text", "method": "redact"},
+    //{"path": "Contract.term.offer.linkId", "method": "redact"},
+    //{"path": "Contract.term.asset.context.text", "method": "redact"},
+    //{"path": "Contract.term.asset.condition", "method": "redact"},
+    //{"path": "Contract.term.asset.text", "method": "redact"},
+    //{"path": "Contract.term.asset.linkId", "method": "redact"},
+    //{"path": "Contract.term.asset.answer", "method": "redact"},
+    //{"path": "Contract.term.asset.valuedItem.entity", "method": "redact"},
+    //{"path": "Contract.term.asset.valuedItem.payment", "method": "redact"},
+    //{"path": "Contract.term.asset.valuedItem.linkId", "method": "redact"},
+    //{"path": "Contract.term.action.linkId", "method": "redact"},
+    //{"path": "Contract.term.action.contextLinkId", "method": "redact"},
+    //{"path": "Contract.term.action.requesterLinkId", "method": "redact"},
+    //{"path": "Contract.term.action.performerLinkId", "method": "redact"},
+    //{"path": "Contract.term.action.reason", "method": "redact"},
+    //{"path": "Contract.term.action.reasonLinkId", "method": "redact"},
     {"path": "Contract.term.group", "method": "redact"},
     {"path": "ExplanationOfBenefit.disposition", "method": "redact"},
-    {"path": "ExplanationOfBenefit.preAuthRef", "method": "redact"},
-    {"path": "ExplanationOfBenefit.supportingInfo.value", "method": "redact"},
+    {"path": "ExplanationOfBenefit.information.value", "method": "redact"}, //newadd
+    //{"path": "ExplanationOfBenefit.preAuthRef", "method": "redact"},
+    //{"path": "ExplanationOfBenefit.supportingInfo.value", "method": "redact"},
     {"path": "ExplanationOfBenefit.insurance.preAuthRef", "method": "redact"},
-    {"path": "ExplanationOfBenefit.accident.location", "method": "redact"},
-    {"path": "ExplanationOfBenefit.item.location", "method": "redact"},
-    {"path": "ExplanationOfBenefit.addItem.location", "method": "redact"},
+    //{"path": "ExplanationOfBenefit.accident.location", "method": "redact"},
+    //{"path": "ExplanationOfBenefit.item.location", "method": "redact"},
+    //{"path": "ExplanationOfBenefit.addItem.location", "method": "redact"},
     {"path": "ExplanationOfBenefit.processNote.text", "method": "redact"},
     {"path": "ExplanationOfBenefit.benefitBalance.name", "method": "redact"},
     {"path": "ExplanationOfBenefit.benefitBalance.description", "method": "redact"},
     {"path": "ExplanationOfBenefit.benefitBalance.financial.allowed", "method": "redact"},
-    {"path": "InsurancePlan.name", "method": "redact"},
-    {"path": "InsurancePlan.alias", "method": "redact"},
-    {"path": "InsurancePlan.coverage.benefit.requirement", "method": "redact"},
-    {"path": "InsurancePlan.plan.generalCost.comment", "method": "redact"},
-    {"path": "Resource.animal","method": "keep"}, ///Newadd
-    {"path": "Patient.where(animal.exists()).name", "method": "keep"}, ///Newadd
-    {"path": "HealthcareService.comment", "method": "redact"},  ///Newadd 
-    {"path": "HealthcareService.extraDetails", "method": "redact"}, ///Newadd 
-    {"path": "HealthcareService.eligibilityNote", "method": "redact"},  ///Newadd 
-    {"path": "HealthcareService.programName", "method": "redact"},  ///Newadd 
-    {"path": "HealthcareService.availabilityExceptions", "method": "redact"}, ///Newadd 
-    {"path": "HealthcareService.notAvaliable.description", "method": "redact"},  ///Newadd
-    {"path": "DeviceComponent.ProductionSpecification.productionSpec", "method" : "redact"}, ///Newadd
-    {"path": "Task.definitionUri","method": "redact" }, ///Newadd
-    { "path": "ProcessRequest.reference", "method": "redact" },  ///Newadd
-    { "path": "ProcessResponse.disposition", "method": "redact" },   ///Newadd
-    { "path": "ProcessResponse.processNote.text", "method": "redact" },  ///Newadd
+    //{"path": "InsurancePlan.name", "method": "redact"},
+    //{"path": "InsurancePlan.alias", "method": "redact"},
+    //{"path": "InsurancePlan.coverage.benefit.requirement", "method": "redact"},
+    //{"path": "InsurancePlan.plan.generalCost.comment", "method": "redact"},
+   
+    //{"path": "Patient.where(animal.exists()).name", "method": "keep"}, ///Newadd
+    
+    
+ 
 
     {"path": "nodesByType('Contributor').name", "method": "redact"},  ///Newadd
-    {"path": "nodesByType('Attachment').title", "method": "redact"},
-    {"path": "nodesByType('Attachment').url", "method": "redact"},
+    {"path": "nodesByType('Attachment').title", "method": "redact"},   
+    {"path": "nodesByType('Attachment').url", "method": "redact"},   
     {"path": "nodesByType('CodeableConcept').text", "method": "redact"},
     {"path": "nodesByType('Coding').display", "method": "redact"},
     {"path": "nodesByType('Coding').code", "method": "redact"},
