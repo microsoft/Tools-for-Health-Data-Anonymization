@@ -51,19 +51,20 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                     throw new AnonymizerConfigurationErrorsException($"Invalid encrypt key size : {encryptKeySize} bits! Please provide key sizes of 128, 192 or 256 bits.");
                 }
             }
-
         }
 
         // The following method takes a bit length input and returns whether that length is a valid size
         // validSizes for AES: MinSize=128, MaxSize=256, SkipSize=64
         private bool IsValidKeySize(int bitLength, KeySizes[] validSizes)
         {
-            int i, j;
-
-            if (validSizes == null) return false;
-            for (i = 0; i < validSizes.Length; i++)
+            if (validSizes == null)
             {
-                for (j = validSizes[i].MinSize; j <= validSizes[i].MaxSize; j += validSizes[i].SkipSize)
+                return false;
+            }
+
+            for (int i = 0; i < validSizes.Length; i++)
+            {
+                for (int j = validSizes[i].MinSize; j <= validSizes[i].MaxSize; j += validSizes[i].SkipSize)
                 {
                     if (j == bitLength)
                     {
@@ -71,6 +72,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                     }
                 }
             }
+
             return false;
         }
     }
