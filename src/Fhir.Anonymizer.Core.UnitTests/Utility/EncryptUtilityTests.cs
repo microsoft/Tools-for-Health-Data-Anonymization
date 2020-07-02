@@ -8,9 +8,9 @@ namespace Fhir.Anonymizer.Core.UnitTests.Utility
 {
     public class EncryptUtilityTests
     {
-        private byte[] _key => Encoding.UTF8.GetBytes("704ab12c8e3e46d4bea600ef62a6bec7"); 
+        private byte[] Key => Encoding.UTF8.GetBytes("704ab12c8e3e46d4bea600ef62a6bec7"); 
 
-        public static IEnumerable<object[]> GetTextDataForEncrypt()
+        public static IEnumerable<object[]> GetTextDataToEncrypt()
         {
             yield return new object[] { null };
             yield return new object[] { string.Empty };
@@ -21,7 +21,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Utility
             yield return new object[] { "测试" };
         }
 
-        public static IEnumerable<object[]> GetTextDataForDecrypt()
+        public static IEnumerable<object[]> GetTextDataToDecrypt()
         {
             yield return new object[] { null, null };
             yield return new object[] { string.Empty, string.Empty };
@@ -32,7 +32,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Utility
             yield return new object[] { "zrFYnZ2cIwcfmjCVybP1ZC+LaD7gwGXBHR2bZjuutzA=", "测试" };
         }
 
-        public static IEnumerable<object[]> GetInvalidTextForDecrypt()
+        public static IEnumerable<object[]> GetInvalidTextDataToDecrypt()
         {
             // Cipher text shorter than IV size
             yield return new object[] { "YWJj" };
@@ -42,27 +42,27 @@ namespace Fhir.Anonymizer.Core.UnitTests.Utility
         }
 
         [Theory]
-        [MemberData(nameof(GetTextDataForEncrypt))]
+        [MemberData(nameof(GetTextDataToEncrypt))]
         public void GivenAnOriginalText_WhenEncrypt_ResultShouldBeValidAndDecryptable(string originalText)
         {
-            var cipherText = EncryptUtility.EncryptTextToBase64WithAes(originalText, _key);
-            var plainText = EncryptUtility.DecryptTextFromBase64WithAes(cipherText, _key);
+            var cipherText = EncryptUtility.EncryptTextToBase64WithAes(originalText, Key);
+            var plainText = EncryptUtility.DecryptTextFromBase64WithAes(cipherText, Key);
             Assert.Equal(originalText, plainText);
         }
 
         [Theory]
-        [MemberData(nameof(GetTextDataForDecrypt))]
-        public void GivenAnEncryptedBase64Text_WhenDecrypt_OriginalTextShouldReturn(string cipherText, string originalText)
+        [MemberData(nameof(GetTextDataToDecrypt))]
+        public void GivenAnEncryptedBase64Text_WhenDecrypt_OriginalTextShouldBeReturned(string cipherText, string originalText)
         {
-            var plainText = EncryptUtility.DecryptTextFromBase64WithAes(cipherText, _key);
+            var plainText = EncryptUtility.DecryptTextFromBase64WithAes(cipherText, Key);
             Assert.Equal(originalText, plainText);
         }
 
         [Theory]
-        [MemberData(nameof(GetInvalidTextForDecrypt))]
+        [MemberData(nameof(GetInvalidTextDataToDecrypt))]
         public void GivenAInvalidBase64Text_WhenDecrypt_ExceptionShouldBeThrown(string cipherText)
         {
-            Assert.Throws<FormatException>(() => EncryptUtility.DecryptTextFromBase64WithAes(cipherText, _key));
+            Assert.Throws<FormatException>(() => EncryptUtility.DecryptTextFromBase64WithAes(cipherText, Key));
         }
     }
 }
