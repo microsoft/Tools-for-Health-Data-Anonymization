@@ -53,12 +53,12 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
             Assert.Contains("Patient.contained[0]", result);
             Assert.Contains("Patient.contained[0].status[0]", result);
         }
-        /*
+        
         [Fact]
         public void GivenABundleNode_WhenVisit_AllNodesShouldBeVisited()
         {
             Bundle bundle = new Bundle();
-            bundle.Timestamp = new DateTimeOffset();
+            bundle.Type = Bundle.BundleType.Document;
             
             Patient patient = new Patient();
             patient.Active = true;
@@ -71,13 +71,13 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
 
             Assert.Equal(6, result.Count);
             Assert.Contains("Bundle", result);
-            Assert.Contains("Bundle.timestamp[0]", result);
+            Assert.Contains("Bundle.type[0]", result);
             Assert.Contains("Bundle.entry[0].fullUrl[0]", result);
             Assert.Contains("Bundle.entry[0]", result);
             Assert.Contains("Bundle.entry[0].resource[0]", result);
             Assert.Contains("Bundle.entry[0].resource[0].active[0]", result);
         }
-        */
+        
         private class TestVisitor : AbstractElementNodeVisitor
         {
             private HashSet<string> _result;

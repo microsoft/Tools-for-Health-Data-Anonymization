@@ -16,10 +16,10 @@
     {"path": "PractitionerRole.availabilityExceptions", "method": "redact"},
     {"path": "Group.name", "method": "redact"},
     {"path": "Group.characteristic.value", "method": "redact"},
-    {"path": "HealthcareService.comment", "method": "redact"}, 
-    {"path": "HealthcareService.extraDetails", "method": "redact"}, 
-    {"path": "HealthcareService.eligibilityNote", "method": "redact"}, 
-    {"path": "HealthcareService.programName", "method": "redact"},   
+    {"path": "HealthcareService.comment", "method": "redact"},    
+    {"path": "HealthcareService.extraDetails", "method": "redact"},   
+    {"path": "HealthcareService.eligibilityNote", "method": "redact"},    
+    {"path": "HealthcareService.programName", "method": "redact"},    
     {"path": "HealthcareService.availabilityExceptions", "method": "redact"},   
     {"path": "HealthcareService.notAvaliable.description", "method": "redact"},   
     {"path": "Endpoint.name", "method": "redact"},
@@ -30,7 +30,6 @@
     {"path": "Location.position", "method": "redact"},
     {"path": "Device.udi", "method": "redact"},  
     {"path": "DeviceComponent.ProductionSpecification.productionSpec", "method" : "redact"},  
-    {"path": "Task.definitionUri","method": "redact" }, 
     {"path": "Task.description", "method": "redact"},
     {"path": "Task.input.value", "method": "redact"},
     {"path": "Task.output.value", "method": "redact"},
@@ -57,7 +56,7 @@
     {"path": "FamilyMemberHistory.age", "method": "redact"},
     {"path": "FamilyMemberHistory.deceased", "method": "redact"},
     {"path": "FamilyMemberHistory.condition.onset", "method": "redact"},
-    {"path": "ClinicalImpression.despription", "method": "redact"},  
+    {"path": "ClinicalImpression.description", "method": "redact"},  
     {"path": "ClinicalImpression.summary", "method": "redact"},
     {"path": "ClinicalImpression.finding.basis", "method": "redact"},
     {"path": "DetectedIssue.detail", "method": "redact"},
@@ -70,8 +69,7 @@
     {"path": "Specimen.processing.description", "method": "redact"},
     {"path": "Specimen.container.description", "method": "redact"},
     {"path": "BodySite.description","method": "redact"},  
-    {"path": "ImagingStudy.description", "method": "redact"},
-
+    {"path": "ImagingStudy.description", "method": "redact"}, 
     {"path": "ImagingStudy.series.description", "method": "redact"},
     {"path": "ImagingStudy.series.instance.title", "method": "redact"},
     {"path": "ImagingManifest.description", "method": "redact"},  
@@ -136,7 +134,6 @@
     {"path": "PaymentReconciliation.processNote.text", "method": "redact"},
     {"path": "Account.name", "method": "redact"},
     {"path": "Account.description", "method": "redact"},
-    {"path": "ChargeItem.definition", "method": "redact"},  
     {"path": "ChargeItem.overrideReason", "method": "redact"},
     {"path": "Contract.term.text", "method": "redact"},
     {"path": "Contract.term.group", "method": "redact"},
@@ -146,11 +143,10 @@
     {"path": "ExplanationOfBenefit.processNote.text", "method": "redact"},
     {"path": "ExplanationOfBenefit.benefitBalance.name", "method": "redact"},
     {"path": "ExplanationOfBenefit.benefitBalance.description", "method": "redact"},
-    {"path": "ExplanationOfBenefit.benefitBalance.financial.allowed", "method": "redact"},  
+    {"path": "ExplanationOfBenefit.benefitBalance.financial.allowed", "method": "redact"},
     
     
-    {"path": "nodesByType('Dosage').text", "method": "cryptoHash"},  
-    {"path": "nodesByType('oid')", "method": "redact"}, 
+    {"path": "nodesByType('Dosage').text", "method": "redact"},  
     {"path": "nodesByType('Contributor').name", "method": "redact"},   
     {"path": "nodesByType('Attachment').title", "method": "redact"},   
     {"path": "nodesByType('Attachment').url", "method": "redact"},   
@@ -197,4 +193,4 @@
       "893"
     ]
   }
-}    
+}  

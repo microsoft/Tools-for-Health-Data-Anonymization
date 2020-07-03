@@ -55,14 +55,14 @@ namespace Fhir.Anonymizer.Core.UnitTests.Validation
             var actualError = validationErrors.FirstOrDefault()?.ErrorMessage;
             Assert.Equal(expectedError, actualError);
         }
-        /*
+        
         [Fact]
         public void GivenAMissingAttribute_WhenValidateAResource_ThenValidationErrorsShouldBeReturned()
         {
             // Given a Media with content field missing
-            var resource = new Media()
+            var resource = new Task()
             {
-                StatusElement = new Code<EventStatus>(EventStatus.Completed)
+                Status = Task.TaskStatus.Accepted
             };
 
             var validationErrors = _validator.Validate(resource).ToList();
@@ -72,11 +72,11 @@ namespace Fhir.Anonymizer.Core.UnitTests.Validation
             var actualError = validationErrors.FirstOrDefault()?.ErrorMessage;
             Assert.Equal(expectedError, actualError);
 
-            var expectedPath = "Content";
+            var expectedPath = "IntentElement";
             var actualPath = validationErrors.FirstOrDefault()?.MemberNames?.FirstOrDefault();
             Assert.Equal(expectedPath, actualPath);
         }
-        */
+        
         [Fact]
         public void GivenAnInvalidBundleEntry_WhenValidateAResource_ThenValidationErrorsShouldBeReturned()
         {
