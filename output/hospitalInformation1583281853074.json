@@ -1,0 +1,1963 @@
+{
+  "resourceType": "Bundle",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "part of the resource is removed"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "ABSTRED",
+        "display": "exact value is replaced with a range"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "exact value is transformed with a hash function"
+      }
+    ]
+  },
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "4406bf42b20ae2de7068667770a2521b5526b9b746d5f1ef34db5ae828ba57e0",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:7aee0dad98e686b5c6b9ff7166ab87b7fd257556cab9ef781e985622b2925404"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "7aee0dad98e686b5c6b9ff7166ab87b7fd257556cab9ef781e985622b2925404",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "c809c579-2e8f-377c-a6c8-358d22454adb"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "OVERLAKE HOSPITAL MEDICAL CENTER",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "4256885000"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "1035-116TH AVE NE"
+            ],
+            "city": "BELLEVUE",
+            "state": "WA",
+            "postalCode": "98004",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "34ada028a6679e73f85d576d330c4ac9a674379894b883b8ea0a2e940162701b",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:9823bd22f17d5d12aafc2ea19d9a7c8ca711f7963438dd2587ca66ba80065866"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "9823bd22f17d5d12aafc2ea19d9a7c8ca711f7963438dd2587ca66ba80065866",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "b363924b-d465-3419-bab0-ed824da2e498"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "EVERGREENHEALTH MEDICAL CENTER",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "4258991000"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "12040 NE 128TH STREET"
+            ],
+            "city": "KIRKLAND",
+            "state": "WA",
+            "postalCode": "98034",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "a09ececd884336645f2b911f5f42d4227758b7875fd0e2640ac943b6929434ab",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:53b4aff33b5e04b15aa421150f045820fab53caace4db53190a272af1357bcf8"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "53b4aff33b5e04b15aa421150f045820fab53caace4db53190a272af1357bcf8",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "9eb96c8c-b110-3803-80a1-3f7f05b3155a"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "SWEDISH ISSAQUAH",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "4253134000"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "751 NE BLAKELY DR"
+            ],
+            "city": "ISSAQUAH",
+            "state": "WA",
+            "postalCode": "98029",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "f04651b31392ac3a350f89dc60aa28b7ebf4a075203f4e622a8e3344a534a400",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000-0000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:8c51f93aebabdd6d4f27a304dd104b8b14d4b32784554421712a727687a7629c"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "8c51f93aebabdd6d4f27a304dd104b8b14d4b32784554421712a727687a7629c",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "2e487cf8-5d49-3b8f-8a10-fc310bcbdea9"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "PCP31347",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "206-488-5496"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "7800 NE BOTHELL WAY"
+            ],
+            "city": "KENMORE",
+            "state": "WA",
+            "postalCode": "98028-1830",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "3520b41842d32e29502f753a17ff9c3ba241e81cd0337c0e87f1e137f8ea2c40",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000-0000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:3e3f5e1b3b70932ee35c730cccccada07a73516b0f19162bca1a5b9c4ad8344b"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "3e3f5e1b3b70932ee35c730cccccada07a73516b0f19162bca1a5b9c4ad8344b",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "10ee170a-cf04-3a75-9d2a-1c21daa2b8f1"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "PCP100690",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(555) 555-5555"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "22647 NE INGLEWOOD HILL RD"
+            ],
+            "city": "SAMMAMISH",
+            "state": "WA",
+            "postalCode": "98074-7105",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "f35790ab58c21299321999f68bfecf17629b0cb51997c2dda4c99a656566022e",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000-0000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:00d23cd44f677793b649fd80b05d31c946acdb27731b378dc065e8d2c8c2bdc7"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "00d23cd44f677793b649fd80b05d31c946acdb27731b378dc065e8d2c8c2bdc7",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "1eb9b0b9-f8a1-3d3c-9381-eeb1c1896f24"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "PCP124332",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(555) 555-5555"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "1750 112TH AVE NE"
+            ],
+            "city": "BELLEVUE",
+            "state": "WA",
+            "postalCode": "98004-3727",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "fa4f4559231dc76f40a2c048080255d0eb6e53af9e00d34c6ac77cf98c418b6b",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000-0000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:e6efd093ab73b1111a00fa2fdce69bd6f2497be000fd3df4f5ceda27fc021279"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "e6efd093ab73b1111a00fa2fdce69bd6f2497be000fd3df4f5ceda27fc021279",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "22f9acc8-b99a-3db5-b945-b54f1c8b3a34"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "PCP137728",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(555) 555-5555"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "13317 NE 175TH ST N"
+            ],
+            "city": "WOODINVILLE",
+            "state": "WA",
+            "postalCode": "98072-3517",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "8fcd53897cadedb2399a228377ee545fab07ba38b6068d22c6437c73fff27d0f",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000-0000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:a395c53ea3c807ba70b1c9b2731fac018281ea482dd6bfe439d94016f5e096ee"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "a395c53ea3c807ba70b1c9b2731fac018281ea482dd6bfe439d94016f5e096ee",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "1f9ca997-e856-3629-8926-7c675ac7a56e"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "PCP155681",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(555) 555-5555"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "15435 MAIN ST NE"
+            ],
+            "city": "DUVALL",
+            "state": "WA",
+            "postalCode": "98019-8576",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "606c10e7217c94ca27180360652191dd1b06f956bf8e0efc3b5d275813cbee7e",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000-0000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:355519d57727ee59198f1de8dc84bf3b17465cdf53dc08ea0894e3af0d58300e"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "355519d57727ee59198f1de8dc84bf3b17465cdf53dc08ea0894e3af0d58300e",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "ddd0a6be-830a-3740-8f6a-390a5e13337b"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "WASHINGTON SPORTS MEDICINE ASSOCIATES INC",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "425-820-1221"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "12707 120TH AVE NE"
+            ],
+            "city": "KIRKLAND",
+            "state": "WA",
+            "postalCode": "98034-7500",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "9a238c189a97965b883ded4755e8a2c23dc5b4f6cbdeed4a3edaaa4b6caa1b79",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000-0000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:4b87c102d3d7db006f12e4333fcc8256f0ef0ff514027c4e85b04100996e1d51"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "4b87c102d3d7db006f12e4333fcc8256f0ef0ff514027c4e85b04100996e1d51",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "a93fadc4-18db-3043-9757-8fb96fcb5b01"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "REDICLINIC OF WA LLC",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "877-935-0333"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "18022 68TH AVE NE"
+            ],
+            "city": "KENMORE",
+            "state": "WA",
+            "postalCode": "98028-2702",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "6b916e90f6cb1cced414209a65025d0a3e51fb35262e0d8c250965b661bb3048",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000-0000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:6763d5b4812739339e9101e98c9550605d5fa6fa0ad09c8a170f663763922587"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "6763d5b4812739339e9101e98c9550605d5fa6fa0ad09c8a170f663763922587",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "1eeecb52-07b8-3dbc-aee6-454474898ce3"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "INNOVA PHYSICAL THERAPY LLC",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "425-658-4980"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "8630 164TH AVE NE"
+            ],
+            "city": "REDMOND",
+            "state": "WA",
+            "postalCode": "98052-3606",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "a523f570e276bd55eb33930f969654bb1743942276564f04d3818ebe3a2ec0a2",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000-0000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:a170d929f328024ee35696db5f049b98b7c1d37cae7bc0338ec291085b10b791"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "a170d929f328024ee35696db5f049b98b7c1d37cae7bc0338ec291085b10b791",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "e864357d-f14b-3b29-8158-ef1e1c56c9bd"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "VIRGINIA MASON MEDICAL CENTER",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "425-637-1855"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "222 112TH AVE NE"
+            ],
+            "city": "BELLEVUE",
+            "state": "WA",
+            "postalCode": "98004-5856",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "453d61511369c75ef36122bad11b0d782f51eace30d33040c46d2192ee075a95",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000-0000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:1ce737fa5b2d0c0e85d0314e6c1e6f4c142b2ecca66c774e4448872201590009"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "1ce737fa5b2d0c0e85d0314e6c1e6f4c142b2ecca66c774e4448872201590009",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "dd731257-2109-371f-b3fa-114b5f7af290"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "ELLIS BANDT BIRKIN KOLLINS AND WONG PC",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "702-759-8600"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "17745 SE 58TH PL"
+            ],
+            "city": "BELLEVUE",
+            "state": "WA",
+            "postalCode": "98006-5942",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "8d558fe650d36a259999a8e50c4b35ee6487990ecd0b142570def791a10961c7",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:b92d823e3d607ae6c231fd1943d521dc288f2cde53c7415083a3bc1bf02d026c"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "b92d823e3d607ae6c231fd1943d521dc288f2cde53c7415083a3bc1bf02d026c",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "5dfa4a4d-4ec2-3045-b5b3-f8f10999639d"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "WOODINVILLE URGENT CARE",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "425-488-2273"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "17000 140TH AVENUE NORTHEAST"
+            ],
+            "city": "WOODINVILLE",
+            "state": "WA",
+            "postalCode": "98072",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "f2af98519e78c713abc6c4cfe6621f2fec8c5c842d9b62f9dcde34141206d9f6",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:a370c1f4326a3f153ffce623f8a164d923386129e4fb15b0a84d406363d21136"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "a370c1f4326a3f153ffce623f8a164d923386129e4fb15b0a84d406363d21136",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "8c675212-94c0-3051-b63b-8ab15cdfb993"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "OVERLAKE URGENT CARE CLINIC",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "425-688-5777"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "6520 226TH PLACE SE"
+            ],
+            "city": "ISSAQUAH",
+            "state": "WA",
+            "postalCode": "98027",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "554977c7c98c7c0a4fcc0ba58d145afed61fb4cb7443a7606347f4b36ec04f85",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:87fcc078c18205f18a2472e46b9dae9cba0168c56aad7035191742cb2c04eddf"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "87fcc078c18205f18a2472e46b9dae9cba0168c56aad7035191742cb2c04eddf",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "826cc6b3-0a7f-3987-a5ab-3e4075132278"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "REDMOND URGENT CARE",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "425-883-3333"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "8301 161ST AVENUE NORTHEAST"
+            ],
+            "city": "REDMOND",
+            "state": "WA",
+            "postalCode": "98052",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "5e290e42768e1e584ee5b56cbf0d01bb487038ffe187e82bf86515019bba0940",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:06fcb3e059769901bde052cd0589efcae2617371c0b3c74d0b5d3db66977e780"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "06fcb3e059769901bde052cd0589efcae2617371c0b3c74d0b5d3db66977e780",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "37faf5f6-9068-3ce6-9450-23be531d1d4b"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "CAREPLUS MEDICAL CENTER - KENMORE",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "425-486-8300"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "17511 68TH AVENUE NORTHEAST"
+            ],
+            "city": "KENMORE",
+            "state": "WA",
+            "postalCode": "98028",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "56080fa5a5546d775bf7931d293765964ea26ef40ff306cd1910f15d38a5c900",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:c13f1abbcac57f534ac912d5306a8333786410d986db3c005c3aa37ed0815cca"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "c13f1abbcac57f534ac912d5306a8333786410d986db3c005c3aa37ed0815cca",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "841815c5-10b6-3daf-8f9f-563d1b49c94d"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "MEDCARE CLINIC",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "425-557-4227"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "1490 NORTHWEST GILMAN BOULEVARD"
+            ],
+            "city": "ISSAQUAH",
+            "state": "WA",
+            "postalCode": "98027",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "65a0cb76f9353ec45847a0722b378ddf63b6b1eac39ebc92c4cb1952576db1c2",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-location"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "status": "active",
+        "address": {
+          "state": "WA",
+          "postalCode": "98000",
+          "country": "US"
+        },
+        "managingOrganization": {
+          "reference": "urn:uuid:453805d2a4658543d322a4eab9efc46e5158cb67d48737772cb801cd4b5de5e8"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Location"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Organization",
+        "id": "453805d2a4658543d322a4eab9efc46e5158cb67d48737772cb801cd4b5de5e8",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "7f032ec9-a41a-3292-9cbc-c101f119375a"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ],
+        "name": "US HEALTHWORKS MEDICAL GROUP - BELLEVUE",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "425-865-8060"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "1925 140TH AVENUE NORTHEAST"
+            ],
+            "city": "BELLEVUE",
+            "state": "WA",
+            "postalCode": "98005",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    }
+  ]
+}

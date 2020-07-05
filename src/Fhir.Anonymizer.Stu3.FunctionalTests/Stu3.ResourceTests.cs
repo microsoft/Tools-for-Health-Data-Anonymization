@@ -33,33 +33,32 @@ namespace Fhir.Anonymizer.FunctionalTests
         {
             yield return new object[] { "Stu3OnlyResource/Claim-Stu3", "Stu3OnlyResource/Claim-Stu3-target" };
             yield return new object[] { "Stu3OnlyResource/Account-Stu3", "Stu3OnlyResource/Account-Stu3-target" };
+            yield return new object[] { "Stu3OnlyResource/Contract-Stu3", "Stu3OnlyResource/Contract-Stu3-target" };
         }
 
         public static IEnumerable<object[]> GetCommonResourcesWithR4OnlyField()
         {
             yield return new object[] { "R4OnlyResource/Claim-R4" };
             yield return new object[] { "R4OnlyResource/Account-R4" };
-        }
+            yield return new object[] { "R4OnlyResource/Contract-R4" };
+        }   
 
         [Theory]
         [MemberData(nameof(GetR4OnlyResources))]
 
         public void GivenAR4OnlyResource_WhenAnonymizing_ExceptionShouldBeReturned(string testFile, string ResourceName)
         {
-
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "stu3-configuration-sample.json"));
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
             var ex = Assert.Throws<FormatException>(() => engine.AnonymizeJson(testContent));
             var expectedError = "type (at Cannot locate type information for type '" + ResourceName + "')";
             Assert.Equal(expectedError, ex.Message.ToString());
-
         }
 
         [Theory]
         [MemberData(nameof(GetStu3OnlyResources))]
         public void GivenAStu3OnlyResource_WhenAnonymizing_AnonymizedJsonShouldBeReturned(string testFile, string targetFile)
         {
- 
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "stu3-configuration-sample.json"));
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile(testFile), ResourceTestsFile(targetFile));
         }
@@ -71,22 +70,17 @@ namespace Fhir.Anonymizer.FunctionalTests
         {
 
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "stu3-configuration-sample.json"));
-            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile(testFile), ResourceTestsFile(targetFile));
-
-
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile(testFile), ResourceTestsFile(targetFile));   
         }
 
         [Theory]
         [MemberData(nameof(GetCommonResourcesWithR4OnlyField))]
 
         public void GivenCommonResourceWithR4OnlyField_WhenAnonymizing_ExceptionShouldBeReturned(string testFile)
-        {
-
+        { 
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "stu3-configuration-sample.json"));
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
             Assert.Throws<FormatException>(() => engine.AnonymizeJson(testContent));
-
-
         }
         private string ResourceTestsFile(string fileName)
         {

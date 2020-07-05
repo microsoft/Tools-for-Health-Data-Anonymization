@@ -1,0 +1,1868 @@
+{
+  "resourceType": "Bundle",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "part of the resource is removed"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "ABSTRED",
+        "display": "exact value is replaced with a range"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "exact value is transformed with a hash function"
+      }
+    ]
+  },
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "6473f893b31adc9a0dec3a5e415441fac472f17b272d8b65acc32cf7d6faa8ea",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "22a4a14094a2316b11755334ed271eb51cafbcc772bc24ad7b3ecf04fbf1a92f",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:6473f893b31adc9a0dec3a5e415441fac472f17b272d8b65acc32cf7d6faa8ea"
+        },
+        "organization": {
+          "reference": "urn:uuid:7aee0dad98e686b5c6b9ff7166ab87b7fd257556cab9ef781e985622b2925404"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "f833970609dcee6129e0ac9b0e390cfdfb985248fa11115d4bb334cfb12e3de8",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "3e3b36d6504c20e986d6ee843aa893683cf1f203f2ad8e67a1f40b98010b5729",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:f833970609dcee6129e0ac9b0e390cfdfb985248fa11115d4bb334cfb12e3de8"
+        },
+        "organization": {
+          "reference": "urn:uuid:9823bd22f17d5d12aafc2ea19d9a7c8ca711f7963438dd2587ca66ba80065866"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "ee1adb03f69c5d3beff8bab594fb4f1700f1418dd01eb340cff049b1dfd6d7bc",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "9629c508adc0f737a237c5372cf0126bc417b1fcd37f380e0ea60191ce02a204",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:ee1adb03f69c5d3beff8bab594fb4f1700f1418dd01eb340cff049b1dfd6d7bc"
+        },
+        "organization": {
+          "reference": "urn:uuid:53b4aff33b5e04b15aa421150f045820fab53caace4db53190a272af1357bcf8"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "cacebbf1eeaaaf6659f1ea9ee99aa7a7c32c90004684c837d5945e99d17c401c",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000-0000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "119697c95fc0a61fac832dd7bdb1bdb24cf8ae11315c792698a49316747c7229",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:cacebbf1eeaaaf6659f1ea9ee99aa7a7c32c90004684c837d5945e99d17c401c"
+        },
+        "organization": {
+          "reference": "urn:uuid:8c51f93aebabdd6d4f27a304dd104b8b14d4b32784554421712a727687a7629c"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "8bdb98b6b211439a08ad730e1ccc5fd0d5beca9130ebc8ca8d88228782c2bae6",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000-0000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "5731bd83726d9156a89b1eae7bf44bf20f6ff1df7bf4595c1cf35bbdc7d8654e",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:8bdb98b6b211439a08ad730e1ccc5fd0d5beca9130ebc8ca8d88228782c2bae6"
+        },
+        "organization": {
+          "reference": "urn:uuid:3e3f5e1b3b70932ee35c730cccccada07a73516b0f19162bca1a5b9c4ad8344b"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "9045730b9428fb9b0b16648f31d3f6a711a854315c1bd27d8b4b7b9d1581da03",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000-0000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "c1751ebf3686a60e6ac1ab456e57538d11c05f7c9f3738514fce5dab7cd8c3b9",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:9045730b9428fb9b0b16648f31d3f6a711a854315c1bd27d8b4b7b9d1581da03"
+        },
+        "organization": {
+          "reference": "urn:uuid:00d23cd44f677793b649fd80b05d31c946acdb27731b378dc065e8d2c8c2bdc7"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "dc4c5a11f7e5e8abbddcf7ed730b5fb7a1ab1ddfb3640d0e69ff8d9816dcd535",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000-0000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "c1dce6fa3ef6b9b7d72579a9c12e2620340adc0b5b10fa80936944908df897c6",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:dc4c5a11f7e5e8abbddcf7ed730b5fb7a1ab1ddfb3640d0e69ff8d9816dcd535"
+        },
+        "organization": {
+          "reference": "urn:uuid:e6efd093ab73b1111a00fa2fdce69bd6f2497be000fd3df4f5ceda27fc021279"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "4c0b5d150fcc4cbdc120e58d8255cd12d8dac25e2d131c9e1cbfe05319353dee",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000-0000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "c0ee01e59ad5db3f4051e95e84bd8d387fc57e9aa19cfa7d4f07706589556ea0",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:4c0b5d150fcc4cbdc120e58d8255cd12d8dac25e2d131c9e1cbfe05319353dee"
+        },
+        "organization": {
+          "reference": "urn:uuid:a395c53ea3c807ba70b1c9b2731fac018281ea482dd6bfe439d94016f5e096ee"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "26634a588af6c13f93dba00e2e85573e25601a57ec9317884888b31a2fa8b7f9",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000-0000",
+            "country": "US"
+          }
+        ],
+        "gender": "female"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "9bb6af7c06ffe6fa39ed30ec9c18b1e4d3db5d1617ceaaefd89d938beaa305e8",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:26634a588af6c13f93dba00e2e85573e25601a57ec9317884888b31a2fa8b7f9"
+        },
+        "organization": {
+          "reference": "urn:uuid:355519d57727ee59198f1de8dc84bf3b17465cdf53dc08ea0894e3af0d58300e"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "1e3be3e7a47ca82f785757992c24ff1f47fef28948bd863bb2b2e087d5bc432a",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000-0000",
+            "country": "US"
+          }
+        ],
+        "gender": "female"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "c0d49e7380ad066671c7f72edebdb5086dd55cfc62abed95d93333ff95bc7118",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:1e3be3e7a47ca82f785757992c24ff1f47fef28948bd863bb2b2e087d5bc432a"
+        },
+        "organization": {
+          "reference": "urn:uuid:4b87c102d3d7db006f12e4333fcc8256f0ef0ff514027c4e85b04100996e1d51"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "d16c1a06cec25d36d3117f15b72fabdb0e0ec344a0c05bb2e6adbf75a750760e",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000-0000",
+            "country": "US"
+          }
+        ],
+        "gender": "female"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "0fa6a36adfab311c96513daa427d3eacc9038609a6a46f463116797db38ab788",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:d16c1a06cec25d36d3117f15b72fabdb0e0ec344a0c05bb2e6adbf75a750760e"
+        },
+        "organization": {
+          "reference": "urn:uuid:6763d5b4812739339e9101e98c9550605d5fa6fa0ad09c8a170f663763922587"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "ac331e4eaf498e6ac69d415200e9916fdd6f0612ad00520cdc108500d3f21d99",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000-0000",
+            "country": "US"
+          }
+        ],
+        "gender": "female"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "9a3dc389e3f24f032fded41adaf26d7cbb3a6884f176ad08799fc36f8fdb5b5b",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:ac331e4eaf498e6ac69d415200e9916fdd6f0612ad00520cdc108500d3f21d99"
+        },
+        "organization": {
+          "reference": "urn:uuid:a170d929f328024ee35696db5f049b98b7c1d37cae7bc0338ec291085b10b791"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "7da1155d62191cf3d398c4c1bec84966b96d7c70267fd5b2298ceb106d73194d",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000-0000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "c4d247c6cbf2e987dd7287770e27534b0198d8477cff71c852a4255b591506cf",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:7da1155d62191cf3d398c4c1bec84966b96d7c70267fd5b2298ceb106d73194d"
+        },
+        "organization": {
+          "reference": "urn:uuid:1ce737fa5b2d0c0e85d0314e6c1e6f4c142b2ecca66c774e4448872201590009"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "71f4fedb505d238be37ceec4696956886ea6cbcc01baa6e5858e0e9d830d4c5d",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000",
+            "country": "US"
+          }
+        ],
+        "gender": "female"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "4193727b82553e322c4dd610662f6f04fa36c6321841cbeea8b917687e67c7a5",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:71f4fedb505d238be37ceec4696956886ea6cbcc01baa6e5858e0e9d830d4c5d"
+        },
+        "organization": {
+          "reference": "urn:uuid:b92d823e3d607ae6c231fd1943d521dc288f2cde53c7415083a3bc1bf02d026c"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "30fa41e6ff1a844176d3180a28d48b72fa6a8a7206f783341c140552b8e1a7fa",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "68587e9e77ed35b74f204ff4d6be2fa565c7138c725ea8b765af006a9ec2b7a1",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:30fa41e6ff1a844176d3180a28d48b72fa6a8a7206f783341c140552b8e1a7fa"
+        },
+        "organization": {
+          "reference": "urn:uuid:a370c1f4326a3f153ffce623f8a164d923386129e4fb15b0a84d406363d21136"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "c6ff2c1ecb05d7f2a57f9e07c30c35fe8f4550f1aa741c91b603f5b0f70ab2c3",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000",
+            "country": "US"
+          }
+        ],
+        "gender": "female"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "cf5f300340199f0209a8c77a280d2c1a8c12df54da601ec04c8f4abca37bc1ad",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:c6ff2c1ecb05d7f2a57f9e07c30c35fe8f4550f1aa741c91b603f5b0f70ab2c3"
+        },
+        "organization": {
+          "reference": "urn:uuid:87fcc078c18205f18a2472e46b9dae9cba0168c56aad7035191742cb2c04eddf"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "3c1c9d368a2e1e709e53612b4e674172097d93b81fb77991f5b0dff8eeb07626",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "72bab69deadff3cd7c787fc60bb2014784c1afc4360a49f7a6c2a7c985e72d50",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:3c1c9d368a2e1e709e53612b4e674172097d93b81fb77991f5b0dff8eeb07626"
+        },
+        "organization": {
+          "reference": "urn:uuid:06fcb3e059769901bde052cd0589efcae2617371c0b3c74d0b5d3db66977e780"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "9770636d24b9ebdf21d984ab68f2527c8d6c53bab601fbe435199e017b341b1e",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000",
+            "country": "US"
+          }
+        ],
+        "gender": "female"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "8affff87b7600d4a3eae070e113dafaf86f296afb156c06da2cdb04781d4d95b",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:9770636d24b9ebdf21d984ab68f2527c8d6c53bab601fbe435199e017b341b1e"
+        },
+        "organization": {
+          "reference": "urn:uuid:c13f1abbcac57f534ac912d5306a8333786410d986db3c005c3aa37ed0815cca"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "f7516b91545ac96649f4f22c2f48016b779c5d2423e5fcd082d16eda51430ae6",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "ABSTRED",
+              "display": "exact value is replaced with a range"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
+        "active": true,
+        "address": [
+          {
+            "state": "WA",
+            "postalCode": "98000",
+            "country": "US"
+          }
+        ],
+        "gender": "male"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "cda82ad9bcd7939c59195938eaaee5d213246674c8ca69f7c59f7d8c9a2a0f4a",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitionerrole"
+          ],
+          "security": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "REDACTED",
+              "display": "part of the resource is removed"
+            },
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "CRYTOHASH",
+              "display": "exact value is transformed with a hash function"
+            }
+          ]
+        },
+        "practitioner": {
+          "reference": "urn:uuid:f7516b91545ac96649f4f22c2f48016b779c5d2423e5fcd082d16eda51430ae6"
+        },
+        "organization": {
+          "reference": "urn:uuid:453805d2a4658543d322a4eab9efc46e5158cb67d48737772cb801cd4b5de5e8"
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ],
+        "specialty": [
+          {
+            "coding": [
+              {
+                "system": "http://nucc.org/provider-taxonomy"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PractitionerRole"
+      }
+    }
+  ]
+}

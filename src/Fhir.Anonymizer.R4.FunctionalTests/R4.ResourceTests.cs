@@ -33,12 +33,14 @@ namespace Fhir.Anonymizer.FunctionalTests
         {
             yield return new object[] { "Stu3OnlyResource/Claim-Stu3"};
             yield return new object[] { "Stu3OnlyResource/Account-Stu3" };
+            yield return new object[] { "Stu3OnlyResource/Contract-Stu3" };
         }
 
         public static IEnumerable<object[]> GetCommonResourcesWithR4OnlyField()
         {
             yield return new object[] { "R4OnlyResource/Claim-R4", "R4OnlyResource/Claim-R4-target" };
             yield return new object[] { "R4OnlyResource/Account-R4", "R4OnlyResource/Account-R4-target" };
+            yield return new object[] { "R4OnlyResource/Contract-R4", "R4OnlyResource/Contract-R4-target" };
         }
 
         [Theory]
@@ -72,8 +74,7 @@ namespace Fhir.Anonymizer.FunctionalTests
         {
 
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "r4-configuration-sample.json"));
-            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile(testFile), ResourceTestsFile(targetFile));
-
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile(testFile), ResourceTestsFile(targetFile)); 
 
         }
 

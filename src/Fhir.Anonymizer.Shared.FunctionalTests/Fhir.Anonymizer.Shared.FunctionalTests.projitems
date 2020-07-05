@@ -91,6 +91,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ResourceTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Contract-R4.json" />
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Contract-R4-target.json" />
     <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Account-R4-target.json" />
     <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Account-R4.json" />
     <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Claim-R4-target.json" />
@@ -101,6 +103,8 @@
     <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\MedicinalProduct.json" />
     <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\ServiceRequest-target.json" />
     <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\ServiceRequest.json" />
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Contract-Stu3.json" />
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Contract-Stu3-target.json" />
     <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Account-Stu3.json" />
     <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Account-Stu3-target.json" />
     <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Claim-Stu3-target.json" />
