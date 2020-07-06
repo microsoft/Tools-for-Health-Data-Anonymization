@@ -107,7 +107,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Extensions
         public void GivenAPatient_WhenNavigateWithExtendedFunction_MatchNodeShouldBeReturned()
         {
             Patient patient = new Patient();
-            //patient.Active = true;
+            patient.Active = true;
             patient.Address.Add(new Address() { City = "Test0" });
             patient.Contact.Add(new Patient.ContactComponent() { Address = new Address() { City = "Test1" } });
 

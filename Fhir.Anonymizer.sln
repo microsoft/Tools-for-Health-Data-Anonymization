@@ -38,7 +38,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Func
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Tool", "src\Fhir.Anonymizer.Shared.Tool\Fhir.Anonymizer.Shared.Tool.shproj", "{140255C7-6C80-4A3C-A248-AE8CDFDCF907}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.ADF.UnitTests", "src\Fhir.Anonymizer.R4.ADF.UnitTests\Fhir.Anonymizer.R4.ADF.UnitTests.csproj", "{20BB25FC-B55E-4B9B-BAF5-E8C76C8061C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests", "src\Fhir.Anonymizer.R4.ADF.UnitTests\Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests.csproj", "{20BB25FC-B55E-4B9B-BAF5-E8C76C8061C6}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

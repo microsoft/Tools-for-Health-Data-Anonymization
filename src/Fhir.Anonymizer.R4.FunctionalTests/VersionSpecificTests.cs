@@ -5,42 +5,46 @@ using Fhir.Anonymizer.Core;
 using Fhir.Anonymizer.Core.Extensions;
 using Hl7.FhirPath;
 using Xunit;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Xunit.Abstractions;
+
 
 namespace Fhir.Anonymizer.FunctionalTests
 {
     public class VersionSpecificTests
     {
-        public VersionSpecificTests()
+        public VersionSpecificTests(ITestOutputHelper outputHelper)
         {
+            OutputHelper = outputHelper;
             FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
         }
+        private ITestOutputHelper OutputHelper { get; }
+
         public static IEnumerable<object[]> GetStu3OnlyResources()
         {
-            yield return new object[] { "Stu3OnlyResource/DeviceComponent","DeviceComponent" };
-            yield return new object[] { "Stu3OnlyResource/ProcessRequest","ProcessRequest" };
-            yield return new object[] { "Stu3OnlyResource/ProcessResponse","ProcessResponse" };
+            yield return new object[] { "Stu3OnlyResource/DeviceComponent.json","DeviceComponent" };
+            yield return new object[] { "Stu3OnlyResource/ProcessRequest.json", "ProcessRequest" };
+            yield return new object[] { "Stu3OnlyResource/ProcessResponse.json", "ProcessResponse" };
         }
 
         public static IEnumerable<object[]> GetR4OnlyResources()
         {
-            yield return new object[] { "R4OnlyResource/Organizationaffiliation", "R4OnlyResource/Organizationaffiliation-target" };
-            yield return new object[] { "R4OnlyResource/MedicinalProduct", "R4OnlyResource/MedicinalProduct-target" };
-            yield return new object[] { "R4OnlyResource/ServiceRequest", "R4OnlyResource/ServiceRequest-target" };
+            yield return new object[] { "R4OnlyResource/Organizationaffiliation.json", "R4OnlyResource/Organizationaffiliation-target.json" };
+            yield return new object[] { "R4OnlyResource/MedicinalProduct.json", "R4OnlyResource/MedicinalProduct-target.json" };
+            yield return new object[] { "R4OnlyResource/ServiceRequest.json", "R4OnlyResource/ServiceRequest-target.json" };
         }
 
         public static IEnumerable<object[]> GetCommonResourcesWithStu3OnlyField()
         {
-            yield return new object[] { "Stu3OnlyResource/Claim-Stu3"};
-            yield return new object[] { "Stu3OnlyResource/Account-Stu3" };
-            yield return new object[] { "Stu3OnlyResource/Contract-Stu3" };
+            yield return new object[] { "Stu3OnlyResource/Claim-Stu3.json" };
+            yield return new object[] { "Stu3OnlyResource/Account-Stu3.json" };
+            yield return new object[] { "Stu3OnlyResource/Contract-Stu3.json" };
         }
 
         public static IEnumerable<object[]> GetCommonResourcesWithR4OnlyField()
         {
-            yield return new object[] { "R4OnlyResource/Claim-R4", "R4OnlyResource/Claim-R4-target" };
-            yield return new object[] { "R4OnlyResource/Account-R4", "R4OnlyResource/Account-R4-target" };
-            yield return new object[] { "R4OnlyResource/Contract-R4", "R4OnlyResource/Contract-R4-target" };
+            yield return new object[] { "R4OnlyResource/Claim-R4.json", "R4OnlyResource/Claim-R4-target.json" };
+            yield return new object[] { "R4OnlyResource/Account-R4.json", "R4OnlyResource/Account-R4-target.json" };
+            yield return new object[] { "R4OnlyResource/Contract-R4.json", "R4OnlyResource/Contract-R4-target.json" };
         }
 
         [Theory]
@@ -48,7 +52,7 @@ namespace Fhir.Anonymizer.FunctionalTests
       
         public void GivenAStu3OnlyResource_WhenAnonymizing_ExceptionShouldBeReturned(string testFile,string ResourceName)
         {
-
+            OutputHelper.WriteLine(testFile);
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "r4-configuration-sample.json"));
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
             var ex = Assert.Throws<FormatException>(() => engine.AnonymizeJson(testContent));
@@ -93,7 +97,7 @@ namespace Fhir.Anonymizer.FunctionalTests
 
         private string ResourceTestsFile(string fileName)
         {
-            return Path.Combine("../../../../Fhir.Anonymizer.Shared.FunctionalTests/TestResources", fileName+".json");
+            return Path.Combine("../../../../Fhir.Anonymizer.Shared.FunctionalTests/TestResources", fileName);
         }
 
     }
