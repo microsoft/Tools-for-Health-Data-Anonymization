@@ -289,7 +289,7 @@ else
 }
 
 $appFolder = "AdfApplication"
-$appName = "Fhir.Anonymizer.AzureDataFactoryPipeline"
+$appName = "Fhir.Anonymizer.R4.AzureDataFactoryPipeline"
 $adfPipelineName = "AdfAnonymizerPipeline"
 
 if (!$RunPipelineOnly) 
