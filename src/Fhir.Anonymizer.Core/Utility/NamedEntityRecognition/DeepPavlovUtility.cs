@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Fhir.Anonymizer.Core.Models.DeepPavlov;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Polly;
 using DeepPavlovResponseDocument = System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<string>>;
 
 namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
@@ -17,6 +20,14 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
         private static readonly HttpClient _client = new HttpClient();
         private static readonly ILogger _logger = AnonymizerLogging.CreateLogger<DeepPavlovUtility>();
         private static readonly string NonEntity = "O";
+        private static readonly int _maxNumberOfRetries = 0;
+        private static readonly HttpStatusCode[] _httpStatusCodesForRetrying = {
+            HttpStatusCode.RequestTimeout, // 408
+            HttpStatusCode.InternalServerError, // 500
+            HttpStatusCode.BadGateway, // 502
+            HttpStatusCode.ServiceUnavailable, // 503
+            HttpStatusCode.GatewayTimeout // 504
+        };
 
         public async static Task<IEnumerable<string>> AnonymizeText(IEnumerable<string> textList, string apiEndpoint)
         {
@@ -31,7 +42,15 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
 
                 var content = new StringContent(JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
 
-                var response = await NamedEntityRecognitionSharedUtility.Request(_client, content, apiEndpoint);
+                var response = await Policy
+                    .Handle<HttpRequestException>()
+                    .OrResult<HttpResponseMessage>(r => _httpStatusCodesForRetrying.Contains(r.StatusCode))
+                    .WaitAndRetryAsync(
+                        _maxNumberOfRetries,
+                        retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+                    .ExecuteAsync(
+                        async ct => await _client.PostAsync(apiEndpoint, content, ct), CancellationToken.None); response.EnsureSuccessStatusCode();
+
                 response.EnsureSuccessStatusCode();
                 var responseData = await response.Content.ReadAsStringAsync();
                 var responseContent = JsonConvert.DeserializeObject<IEnumerable<DeepPavlovResponseDocument>>(responseData).ToList();
