@@ -45,7 +45,7 @@ namespace Fhir.Anonymizer.FunctionalTests
 
         [Theory]
         [MemberData(nameof(GetStu3OnlyResources))]
-        public void GivenAStu3OnlyResource_WhenAnonymizing_ExceptionShouldBeThrown(string testFile,string ResourceName)
+        public void GivenAStu3OnlyResource_WhenAnonymizing_ExceptionShouldBeThrown(string testFile, string ResourceName)
         {
             AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
@@ -57,7 +57,7 @@ namespace Fhir.Anonymizer.FunctionalTests
 
         [Theory]
         [MemberData(nameof(GetR4OnlyResources))]
-        public void GivenAR4OnlyResource_WhenAnonymizing_AnonymizedJsonShouldBeReturned(string testFile,string targetFile)
+        public void GivenAR4OnlyResource_WhenAnonymizing_AnonymizedJsonShouldBeReturned(string testFile, string targetFile)
         {
             AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile(testFile), ResourceTestsFile(targetFile));
