@@ -6,6 +6,6 @@
         DateShift,
         CryptoHash,
         Keep,
-        TextAnalytic
+        NamedEntityRecognition
     }
 }

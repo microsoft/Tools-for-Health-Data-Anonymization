@@ -1,40 +1,29 @@
-﻿using Fhir.Anonymizer.Core.Models.TextAnalytics;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Polly;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using Fhir.Anonymizer.Core.Models.TextAnalytics;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
-namespace Fhir.Anonymizer.Core.Utility
+namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
 {
     public class TextAnalyticUtility
     {
         private static readonly HttpClient _client = new HttpClient();
         private static readonly ILogger _logger = AnonymizerLogging.CreateLogger<TextAnalyticUtility>();
         private static readonly string _textAnalyticsApiKeyFieldName = "Ocp-Apim-Subscription-Key";
-        private static readonly int _maxNumberOfRetries = 0;
-        private static readonly HttpStatusCode[] _httpStatusCodesForRetrying = {
-            HttpStatusCode.RequestTimeout, // 408
-            HttpStatusCode.InternalServerError, // 500
-            HttpStatusCode.BadGateway, // 502
-            HttpStatusCode.ServiceUnavailable, // 503
-            HttpStatusCode.GatewayTimeout // 504
-        };
 
-        public async static Task<IEnumerable<string>> AnonymizeText(IEnumerable<string> textList, string textAnalyticsApiEndpoint, string textAnalyticsApiKey)
+        public async static Task<IEnumerable<string>> AnonymizeText(IEnumerable<string> textList, string apiEndpoint, string apiKey)
         {
             var resultList = textList.ToList();
 
             try
             {
-                _client.DefaultRequestHeaders.Add(_textAnalyticsApiKeyFieldName, textAnalyticsApiKey);
+                _client.DefaultRequestHeaders.Add(_textAnalyticsApiKeyFieldName, apiKey);
 
                 var documents = textList
                     .Select((text, id) => new TextAnalyticsRequestDocument
@@ -57,15 +46,8 @@ namespace Fhir.Anonymizer.Core.Utility
 
                 var content = new StringContent(JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
 
-                var response = await Policy
-                    .Handle<HttpRequestException>()
-                    .OrResult<HttpResponseMessage>(r => _httpStatusCodesForRetrying.Contains(r.StatusCode))
-                    .WaitAndRetryAsync(
-                        _maxNumberOfRetries,
-                        retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
-                    .ExecuteAsync(
-                        async ct => await _client.PostAsync(textAnalyticsApiEndpoint, content, ct), CancellationToken.None);
-
+                var response = await NamedEntityRecognitionSharedUtility.Request(_client, content, apiEndpoint);
+                response.EnsureSuccessStatusCode();
                 var responseData = await response.Content.ReadAsStringAsync();
                 var responseContent = JsonConvert.DeserializeObject<TextAnalyticsResponseContent>(responseData);
                 

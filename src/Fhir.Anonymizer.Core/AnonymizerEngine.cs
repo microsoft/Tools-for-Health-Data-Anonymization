@@ -112,7 +112,7 @@ namespace Fhir.Anonymizer.Core
             _processors[AnonymizerMethod.Redact.ToString().ToUpperInvariant()] = RedactProcessor.Create(configurationManager);
             _processors[AnonymizerMethod.CryptoHash.ToString().ToUpperInvariant()] = new CryptoHashProcessor(configurationManager.GetParameterConfiguration().CryptoHashKey);
             _processors[AnonymizerMethod.Keep.ToString().ToUpperInvariant()] = new KeepProcessor();
-            _processors[AnonymizerMethod.TextAnalytic.ToString().ToUpperInvariant()] = TextAnalyticProcessor.Create(configurationManager);
+            _processors[AnonymizerMethod.NamedEntityRecognition.ToString().ToUpperInvariant()] = NamedEntityRecognitionProcessor.Create(configurationManager);
         }
     }
 }

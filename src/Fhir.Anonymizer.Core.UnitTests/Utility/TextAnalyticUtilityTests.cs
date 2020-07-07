@@ -9,7 +9,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Utility
 {
     public class TextAnalyticUtilityTests
     {
-        [Fact]
+        /*[Fact]
         public async Task GivenText_WhenAnalysing_CorrectResultShouldBeReturned()
         {
             var text = new List<string> 
@@ -20,6 +20,6 @@ namespace Fhir.Anonymizer.Core.UnitTests.Utility
             var result = await TextAnalyticUtility.AnonymizeText(text);
             Assert.Equal("[Person] will come to help us [DateTime].", result.First());
             Assert.Equal("Jim", result.Last());
-        }
+        }*/
     }
 }

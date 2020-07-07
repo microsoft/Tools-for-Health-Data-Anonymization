@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
@@ -15,11 +16,14 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         [DataMember(Name = "cryptoHashKey")]
         public string CryptoHashKey { get; set; }
 
-        [DataMember(Name = "textAnalyticApiEndpoint")]
-        public string TextAnalyticApiEndpoint { get; set; }
+        [DataMember(Name = "namedEntityRecognitionMethod")]
+        public NamedEntityRecognitionMethod NamedEntityRecognitionMethod { get; set; }
+        
+        [DataMember(Name = "namedEntityRecognitionApiEndpoint")]
+        public string NamedEntityRecognitionApiEndpoint { get; set; }
 
-        [DataMember(Name = "textAnalyticApiKey")]
-        public string TextAnalyticApiKey { get; set; }
+        [DataMember(Name = "namedEntityRecognitionApiKey")]
+        public string NamedEntityRecognitionApiKey { get; set; }
 
         [DataMember(Name = "enablePartialAgesForRedact")]
         public bool EnablePartialAgesForRedact { get; set; }
