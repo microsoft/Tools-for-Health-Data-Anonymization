@@ -9,9 +9,6 @@
     <Import_RootNamespace>Fhir.Anonymizer.Shared.FunctionalTests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Configurations\r4-configuration-sample.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="$(MSBuildThisFileDirectory)Configurations\common-config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -19,9 +16,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="$(MSBuildThisFileDirectory)Configurations\redact-all-config.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="$(MSBuildThisFileDirectory)Configurations\stu3-configuration-sample.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="$(MSBuildThisFileDirectory)TestResources\bundle-basic-target.json">
@@ -91,29 +85,77 @@
     <Compile Include="$(MSBuildThisFileDirectory)ResourceTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Contract-R4.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Contract-R4-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Account-R4-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Account-R4.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Claim-R4-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Claim-R4.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\OrganizationAffiliation-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\OrganizationAffiliation.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\MedicinalProduct-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\MedicinalProduct.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\ServiceRequest-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\ServiceRequest.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Contract-Stu3.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Contract-Stu3-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Account-Stu3.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Account-Stu3-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Claim-Stu3-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Claim-Stu3.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\ProcessRequest-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\ProcessResponse-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\ProcessResponse.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\ProcessRequest.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\DeviceComponent-target.json" />
-    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\DeviceComponent.json" />
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Contract-R4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Contract-R4-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Account-R4-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Account-R4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Claim-R4-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\Claim-R4.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\OrganizationAffiliation-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\OrganizationAffiliation.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\MedicinalProduct-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\MedicinalProduct.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\ServiceRequest-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\R4OnlyResource\ServiceRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Contract-Stu3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Contract-Stu3-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Account-Stu3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Account-Stu3-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Claim-Stu3-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\Claim-Stu3.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\ProcessRequest-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\ProcessResponse-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\ProcessResponse.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\ProcessRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\DeviceComponent-target.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)TestResources\Stu3OnlyResource\DeviceComponent.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\Fhir.Anonymizer.R4.Tool\configuration-sample.json" Link="configuration-sample.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="..\Fhir.Anonymizer.R4.CommandLineTool\configuration-sample.json" Link="configuration-sample.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

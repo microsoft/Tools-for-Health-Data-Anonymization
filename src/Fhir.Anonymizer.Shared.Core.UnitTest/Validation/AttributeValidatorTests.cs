@@ -59,7 +59,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Validation
         [Fact]
         public void GivenAMissingAttribute_WhenValidateAResource_ThenValidationErrorsShouldBeReturned()
         {
-            // Given a Media with content field missing
+            // Given a Task with intent field missing
             var resource = new Task()
             {
                 Status = Task.TaskStatus.Accepted

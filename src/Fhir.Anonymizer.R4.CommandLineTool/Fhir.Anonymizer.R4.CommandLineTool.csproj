@@ -20,6 +20,6 @@
     </None>
   </ItemGroup>
 
-  <Import Project="..\Fhir.Anonymizer.Shared.Tool\Fhir.Anonymizer.Shared.Tool.projitems" Label="Shared" />
+  <Import Project="..\Fhir.Anonymizer.Shared.CommandLineTool\Fhir.Anonymizer.Shared.CommandLineTool.projitems" Label="Shared" />
 
 </Project>

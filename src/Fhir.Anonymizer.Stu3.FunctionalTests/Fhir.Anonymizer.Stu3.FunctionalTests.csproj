@@ -26,6 +26,12 @@
     <ProjectReference Include="..\Fhir.Anonymizer.Stu3.Core\Fhir.Anonymizer.Stu3.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="stu3-configuration-sample.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <Import Project="..\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.projitems" Label="Shared" />
 
 </Project>

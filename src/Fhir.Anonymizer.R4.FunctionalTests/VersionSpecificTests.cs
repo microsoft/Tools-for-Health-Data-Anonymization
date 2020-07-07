@@ -5,19 +5,15 @@ using Fhir.Anonymizer.Core;
 using Fhir.Anonymizer.Core.Extensions;
 using Hl7.FhirPath;
 using Xunit;
-using Xunit.Abstractions;
-
 
 namespace Fhir.Anonymizer.FunctionalTests
 {
     public class VersionSpecificTests
     {
-        public VersionSpecificTests(ITestOutputHelper outputHelper)
+        public VersionSpecificTests()
         {
-            OutputHelper = outputHelper;
             FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
         }
-        private ITestOutputHelper OutputHelper { get; }
 
         public static IEnumerable<object[]> GetStu3OnlyResources()
         {
@@ -49,56 +45,45 @@ namespace Fhir.Anonymizer.FunctionalTests
 
         [Theory]
         [MemberData(nameof(GetStu3OnlyResources))]
-      
-        public void GivenAStu3OnlyResource_WhenAnonymizing_ExceptionShouldBeReturned(string testFile,string ResourceName)
+        public void GivenAStu3OnlyResource_WhenAnonymizing_ExceptionShouldBeThrown(string testFile,string ResourceName)
         {
-            OutputHelper.WriteLine(testFile);
-            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "r4-configuration-sample.json"));
+            AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
             var ex = Assert.Throws<FormatException>(() => engine.AnonymizeJson(testContent));
             var expectedError = "type (at Cannot locate type information for type '"+ ResourceName + "')";
+            
             Assert.Equal(expectedError, ex.Message.ToString());
-           
         }
 
         [Theory]
         [MemberData(nameof(GetR4OnlyResources))]
         public void GivenAR4OnlyResource_WhenAnonymizing_AnonymizedJsonShouldBeReturned(string testFile,string targetFile)
         {
- 
-            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "r4-configuration-sample.json"));
+            AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile(testFile), ResourceTestsFile(targetFile));
         }
 
-
         [Theory]
         [MemberData(nameof(GetCommonResourcesWithR4OnlyField))]
-
         public void GivenCommonResourceWithR4OnlyField_WhenAnonymizing_AnonymizedJsonShouldBeReturned(string testFile, string targetFile)
         {
-
-            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "r4-configuration-sample.json"));
+            AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile(testFile), ResourceTestsFile(targetFile)); 
-
         }
 
         [Theory]
         [MemberData(nameof(GetCommonResourcesWithStu3OnlyField))]
-
-        public void GivenCommonResourceWithStu3OnlyField_WhenAnonymizing_ExceptionShouldBeReturned(string testFile)
+        public void GivenCommonResourceWithStu3OnlyField_WhenAnonymizing_ExceptionShouldBeThrown(string testFile)
         {
-
-            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "r4-configuration-sample.json"));
+            AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
-            Assert.Throws<FormatException>(() => engine.AnonymizeJson(testContent));
             
-
+            Assert.Throws<FormatException>(() => engine.AnonymizeJson(testContent));
         }
 
         private string ResourceTestsFile(string fileName)
         {
-            return Path.Combine("../../../../Fhir.Anonymizer.Shared.FunctionalTests/TestResources", fileName);
+            return Path.Combine("TestResources", fileName);
         }
-
     }
 }

@@ -20,6 +20,12 @@
     <ProjectReference Include="..\Fhir.Anonymizer.R4.Core\Fhir.Anonymizer.R4.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="r4-configuration-sample.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <Import Project="..\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.projitems" Label="Shared" />
 
 </Project>
