@@ -15,10 +15,10 @@ using DeepPavlovResponseDocument = System.Collections.Generic.IEnumerable<System
 
 namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
 {
-    public class DeepPavlovUtility
+    public class DeepPavlovRecognizer : INamedEntityRecognizer
     {
         private static readonly HttpClient _client = new HttpClient();
-        private static readonly ILogger _logger = AnonymizerLogging.CreateLogger<DeepPavlovUtility>();
+        private static readonly ILogger _logger = AnonymizerLogging.CreateLogger<DeepPavlovRecognizer>();
         private static readonly string NonEntity = "O";
         private static readonly int _maxNumberOfRetries = 0;
         private static readonly HttpStatusCode[] _httpStatusCodesForRetrying = {
@@ -28,8 +28,14 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
             HttpStatusCode.ServiceUnavailable, // 503
             HttpStatusCode.GatewayTimeout // 504
         };
+        private readonly string ApiEndpoint;
 
-        public async static Task<IEnumerable<string>> AnonymizeText(IEnumerable<string> textList, string apiEndpoint)
+        public DeepPavlovRecognizer(string apiEndpoint)
+        {
+            ApiEndpoint = apiEndpoint;
+        }
+
+        public async Task<IEnumerable<string>> AnonymizeText(IEnumerable<string> textList)
         {
             var resultList = textList.ToList();
 
@@ -49,7 +55,7 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
                         _maxNumberOfRetries,
                         retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
                     .ExecuteAsync(
-                        async ct => await _client.PostAsync(apiEndpoint, content, ct), CancellationToken.None); response.EnsureSuccessStatusCode();
+                        async ct => await _client.PostAsync(ApiEndpoint, content, ct), CancellationToken.None); response.EnsureSuccessStatusCode();
 
                 response.EnsureSuccessStatusCode();
                 var responseData = await response.Content.ReadAsStringAsync();

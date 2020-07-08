@@ -14,10 +14,10 @@ using Polly;
 
 namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
 {
-    public class TextAnalyticUtility
+    public class TextAnalyticRecognizer : INamedEntityRecognizer
     {
         private static readonly HttpClient _client = new HttpClient();
-        private static readonly ILogger _logger = AnonymizerLogging.CreateLogger<TextAnalyticUtility>();
+        private static readonly ILogger _logger = AnonymizerLogging.CreateLogger<TextAnalyticRecognizer>();
         private static readonly string _textAnalyticsApiKeyFieldName = "Ocp-Apim-Subscription-Key";
         private static readonly int _maxNumberOfRetries = 0;
         private static readonly HttpStatusCode[] _httpStatusCodesForRetrying = {
@@ -27,15 +27,20 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
             HttpStatusCode.ServiceUnavailable, // 503
             HttpStatusCode.GatewayTimeout // 504
         };
+        private readonly string ApiEndpoint;
 
-        public async static Task<IEnumerable<string>> AnonymizeText(IEnumerable<string> textList, string apiEndpoint, string apiKey)
+        public TextAnalyticRecognizer(string apiEndpoint, string apiKey)
+        {
+            ApiEndpoint = apiEndpoint;
+            _client.DefaultRequestHeaders.Add(_textAnalyticsApiKeyFieldName, apiKey);
+        }
+
+        public async Task<IEnumerable<string>> AnonymizeText(IEnumerable<string> textList)
         {
             var resultList = textList.ToList();
 
             try
             {
-                _client.DefaultRequestHeaders.Add(_textAnalyticsApiKeyFieldName, apiKey);
-
                 var documents = textList
                     .Select((text, id) => new TextAnalyticsRequestDocument
                     {
@@ -64,7 +69,7 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
                         _maxNumberOfRetries,
                         retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
                     .ExecuteAsync(
-                        async ct => await _client.PostAsync(apiEndpoint, content, ct), CancellationToken.None);
+                        async ct => await _client.PostAsync(ApiEndpoint, content, ct), CancellationToken.None);
                 
                 response.EnsureSuccessStatusCode();
                 var responseData = await response.Content.ReadAsStringAsync();

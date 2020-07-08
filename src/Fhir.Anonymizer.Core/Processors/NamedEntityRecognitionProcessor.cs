@@ -11,17 +11,16 @@ namespace Fhir.Anonymizer.Core.Processors
 {
     public class NamedEntityRecognitionProcessor : IAnonymizerProcessor
     {
-        public NamedEntityRecognitionMethod NamedEntityRecognitionMethod { get; set; }
-        
-        public string NamedEntityRecognitionApiEndpoint { get; set; } = string.Empty;
-
-        public string NamedEntityRecognitionApiKey { get; set; } = string.Empty;
+        private INamedEntityRecognizer NamedEntityRecognizer { get; set; }
 
         public NamedEntityRecognitionProcessor(NamedEntityRecognitionMethod namedEntityRecognitionMethod, string namedEntityRecognitionApiEndpoint, string namedEntityRecognitionApiKey)
         {
-            this.NamedEntityRecognitionMethod = namedEntityRecognitionMethod;
-            this.NamedEntityRecognitionApiEndpoint = namedEntityRecognitionApiEndpoint;
-            this.NamedEntityRecognitionApiKey = namedEntityRecognitionApiKey;
+            NamedEntityRecognizer = namedEntityRecognitionMethod switch
+            {
+                NamedEntityRecognitionMethod.TextAnalytics => new TextAnalyticRecognizer(namedEntityRecognitionApiEndpoint, namedEntityRecognitionApiKey),
+                NamedEntityRecognitionMethod.DeepPavlov => new DeepPavlovRecognizer(namedEntityRecognitionApiEndpoint),
+                _ => throw new NotImplementedException($"The named entity recognition method is not supported: {namedEntityRecognitionMethod}"),
+            };
         }
 
         public static NamedEntityRecognitionProcessor Create(AnonymizerConfigurationManager configuratonManager)
@@ -38,18 +37,7 @@ namespace Fhir.Anonymizer.Core.Processors
                 return processResult;
             }
 
-            switch (NamedEntityRecognitionMethod)
-            {
-                case NamedEntityRecognitionMethod.TextAnalytics:
-                    node.Value = (await TextAnalyticUtility.AnonymizeText(new List<string> { node.Value.ToString() }, NamedEntityRecognitionApiEndpoint, NamedEntityRecognitionApiKey)).First();
-                    break;
-                case NamedEntityRecognitionMethod.DeepPavlov:
-                    node.Value = (await DeepPavlovUtility.AnonymizeText(new List<string> { node.Value.ToString() }, NamedEntityRecognitionApiEndpoint)).First();
-                    break;
-                default:
-                    throw new NotImplementedException($"The named entity recognition method is not supported: {NamedEntityRecognitionMethod}");
-            }
-            
+            node.Value = (await NamedEntityRecognizer.AnonymizeText(new List<string> { node.Value.ToString() })).First();
             processResult.AddProcessRecord(AnonymizationOperations.Masked, node);
             return processResult;
         }
