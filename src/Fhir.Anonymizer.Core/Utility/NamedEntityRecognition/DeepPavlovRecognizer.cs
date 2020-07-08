@@ -28,11 +28,11 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
             HttpStatusCode.ServiceUnavailable, // 503
             HttpStatusCode.GatewayTimeout // 504
         };
-        private readonly string ApiEndpoint;
+        private readonly string _apiEndpoint;
 
         public DeepPavlovRecognizer(string apiEndpoint)
         {
-            ApiEndpoint = apiEndpoint;
+            _apiEndpoint = apiEndpoint;
         }
 
         public async Task<IEnumerable<string>> AnonymizeText(IEnumerable<string> textList)
@@ -55,7 +55,7 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
                         _maxNumberOfRetries,
                         retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
                     .ExecuteAsync(
-                        async ct => await _client.PostAsync(ApiEndpoint, content, ct), CancellationToken.None); response.EnsureSuccessStatusCode();
+                        async ct => await _client.PostAsync(_apiEndpoint, content, ct), CancellationToken.None); response.EnsureSuccessStatusCode();
 
                 response.EnsureSuccessStatusCode();
                 var responseData = await response.Content.ReadAsStringAsync();

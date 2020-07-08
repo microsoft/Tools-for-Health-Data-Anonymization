@@ -11,11 +11,11 @@ namespace Fhir.Anonymizer.Core.Processors
 {
     public class NamedEntityRecognitionProcessor : IAnonymizerProcessor
     {
-        private INamedEntityRecognizer NamedEntityRecognizer { get; set; }
+        private INamedEntityRecognizer _namedEntityRecognizer { get; set; }
 
         public NamedEntityRecognitionProcessor(NamedEntityRecognitionMethod namedEntityRecognitionMethod, string namedEntityRecognitionApiEndpoint, string namedEntityRecognitionApiKey)
         {
-            NamedEntityRecognizer = namedEntityRecognitionMethod switch
+            _namedEntityRecognizer = namedEntityRecognitionMethod switch
             {
                 NamedEntityRecognitionMethod.TextAnalytics => new TextAnalyticRecognizer(namedEntityRecognitionApiEndpoint, namedEntityRecognitionApiKey),
                 NamedEntityRecognitionMethod.DeepPavlov => new DeepPavlovRecognizer(namedEntityRecognitionApiEndpoint),
@@ -37,7 +37,7 @@ namespace Fhir.Anonymizer.Core.Processors
                 return processResult;
             }
 
-            node.Value = (await NamedEntityRecognizer.AnonymizeText(new List<string> { node.Value.ToString() })).First();
+            node.Value = (await _namedEntityRecognizer.AnonymizeText(new List<string> { node.Value.ToString() })).First();
             processResult.AddProcessRecord(AnonymizationOperations.Masked, node);
             return processResult;
         }

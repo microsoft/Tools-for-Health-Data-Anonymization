@@ -27,11 +27,11 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
             HttpStatusCode.ServiceUnavailable, // 503
             HttpStatusCode.GatewayTimeout // 504
         };
-        private readonly string ApiEndpoint;
+        private readonly string _apiEndpoint;
 
         public TextAnalyticRecognizer(string apiEndpoint, string apiKey)
         {
-            ApiEndpoint = apiEndpoint;
+            _apiEndpoint = apiEndpoint;
             _client.DefaultRequestHeaders.Add(_textAnalyticsApiKeyFieldName, apiKey);
         }
 
@@ -69,7 +69,7 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
                         _maxNumberOfRetries,
                         retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
                     .ExecuteAsync(
-                        async ct => await _client.PostAsync(ApiEndpoint, content, ct), CancellationToken.None);
+                        async ct => await _client.PostAsync(_apiEndpoint, content, ct), CancellationToken.None);
                 
                 response.EnsureSuccessStatusCode();
                 var responseData = await response.Content.ReadAsStringAsync();
