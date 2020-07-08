@@ -1,0 +1,48 @@
+﻿{
+  "fhirPathRules": [
+    {
+      "path": "Patient.nodesByType('HumanName')",
+      "method": "redact"
+    },
+    {
+      "path": "TestResource",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('HumanName')",
+      "method": "redact"
+    },
+    {
+      "path": "Resource",
+      "method": "keep"
+    },
+    {
+      "path": "Device.where(id.exists()).id",
+      "method": "keep"
+    },
+    
+  ],
+  "parameters": {
+    "dateShiftKey": "",
+    "cryptoHashKey": "",
+    "enablePartialAgesForRedact": true,
+    "enablePartialDatesForRedact": true,
+    "enablePartialZipCodesForRedact": true,
+    "restrictedZipCodeTabulationAreas": [
+      "036",
+      "059",
+      "102",
+      "203",
+      "205",
+      "369",
+      "556",
+      "692",
+      "821",
+      "823",
+      "878",
+      "879",
+      "884",
+      "893"
+    ]
+  }
+}
