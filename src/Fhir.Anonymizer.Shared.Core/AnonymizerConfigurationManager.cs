@@ -25,27 +25,35 @@ namespace Fhir.Anonymizer.Core
             FhirPathRules = _configuration.FhirPathRules.Select(entry => AnonymizationFhirPathRule.CreateAnonymizationFhirPathRule(entry)).ToArray();
         }
 
+        public static AnonymizerConfigurationManager CreateFromSettingsInJson(string settingsInJson)
+        {
+            try
+            {
+                JsonLoadSettings settings = new JsonLoadSettings
+                {
+                    DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error
+                };
+                var token = JToken.Parse(settingsInJson, settings);
+                var configuration = token.ToObject<AnonymizerConfiguration>();
+                return new AnonymizerConfigurationManager(configuration);
+            }
+            catch (JsonException innerException)
+            {
+                throw new JsonException($"Failed to parse configuration file", innerException);
+            }
+        }
+
         public static AnonymizerConfigurationManager CreateFromConfigurationFile(string configFilePath)
         {
             try
             {
                 var content = File.ReadAllText(configFilePath);
 
-                JsonLoadSettings settings = new JsonLoadSettings
-                {
-                    DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error
-                };
-                var token = JToken.Parse(content, settings);
-                var configuration = token.ToObject<AnonymizerConfiguration>();
-                return new AnonymizerConfigurationManager(configuration);
+                return CreateFromSettingsInJson(content);
             }
             catch (IOException innerException)
             {
                 throw new IOException($"Failed to read configuration file {configFilePath}", innerException);
-            }
-            catch (JsonException innerException)
-            {
-                throw new JsonException($"Failed to parse configuration file {configFilePath}", innerException);
             }
         }
 
