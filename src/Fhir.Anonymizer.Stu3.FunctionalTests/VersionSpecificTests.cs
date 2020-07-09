@@ -50,7 +50,7 @@ namespace Fhir.Anonymizer.FunctionalTests
             AnonymizerEngine engine = new AnonymizerEngine("stu3-configuration-sample.json");
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
             var ex = Assert.Throws<FormatException>(() => engine.AnonymizeJson(testContent));
-            var expectedError = "types (at Cannot locate type information for type '" + ResourceName + "')";
+            var expectedError = "type (at Cannot locate type information for type '" + ResourceName + "')";
             Assert.Equal(expectedError, ex.Message.ToString());
         }
 
