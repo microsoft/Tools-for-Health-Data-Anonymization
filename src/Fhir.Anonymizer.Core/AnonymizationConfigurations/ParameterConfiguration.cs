@@ -15,6 +15,9 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         [DataMember(Name = "cryptoHashKey")]
         public string CryptoHashKey { get; set; }
 
+        [DataMember(Name = "encryptKey")]
+        public string EncryptKey { get; set; }
+
         [DataMember(Name = "enablePartialAgesForRedact")]
         public bool EnablePartialAgesForRedact { get; set; }
 

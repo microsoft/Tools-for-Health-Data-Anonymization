@@ -15,6 +15,7 @@ namespace Fhir.Anonymizer.Core.UnitTests
             yield return new object[] { "./TestConfigurations/configuration-miss-rules.json" };
             yield return new object[] { "./TestConfigurations/configuration-unsupported-method.json" };
             yield return new object[] { "./TestConfigurations/configuration-invalid-fhirpath.json" };
+            yield return new object[] { "./TestConfigurations/configuration-invalid-encryptkey.json" };
         }
 
         [Theory]

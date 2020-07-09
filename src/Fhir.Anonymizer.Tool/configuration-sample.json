@@ -1,4 +1,4 @@
-﻿{
+{
   "fhirPathRules": [
     {"path": "nodesByType('Extension')", "method": "redact"},
     
@@ -194,6 +194,7 @@
     "dateShiftKey": "",
     "dateShiftScope": "resource",
     "cryptoHashKey": "",
+    "encryptKey": "",
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,
