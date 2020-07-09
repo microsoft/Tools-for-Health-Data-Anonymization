@@ -35,7 +35,7 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 
 * Support anonymization of FHIR R4 data in json as well as ndjson format
 * Configuration of the data elements that need to be de-identified 
-* Configuration of the de-identification method for each data element (keeping, redacting, Date-shifting, or Crypto-hashing) 
+* Configuration of the de-identification method for each data element (keeping, redacting, encrypting, Date-shifting, or Crypto-hashing) 
 * Ability to create Azure Data Factory to support de-identification of the data flows 
 * Ability to run the tool on premise to de-identify a dataset locally
 
@@ -254,6 +254,7 @@ Here is a sample configuration:
   "parameters": {
     "dateShiftKey": "",
     "cryptoHashKey": "",
+    "encryptKey": "",
     "enablePartialAgesForRedact": true
   }
 }
@@ -273,6 +274,7 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |redact|All elements| Removes the element. See the parameters section below to handle special cases.|
 |dateShift|Elements of type date, dateTime, and instant | Shifts the value using the [Date-shift algorithm](#date-shift-algorithm).
 |cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
+|encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
 
 Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
@@ -286,6 +288,7 @@ Parameters affect the de-identification methods specified in the FHIR path rules
 | dateShift |dateShiftKey|date, dateTime, instant fields| string|A randomly generated string|This key is used to generate date-shift amount in the [Date-shift algorithm](#date-shift-algorithm). 
 | dateShift |dateShiftScope|date, dateTime, instant fields| resource, file, folder | resource | This parameter is used to select date-shift scope. Dates within the same scope will be shifted the same amount. Please provide dateShiftKey together with it. |
 | cryptoHash |cryptoHashKey|All hashing fields| string|A randomly generated string|This key is used for HMAC-SHA256 algorithm in [Crypto-hash method](#Crypto-hash-method). 
+| encrypt |encryptKey|All encrypting fields| string|A randomly generated 256-bit string|This key is used for AES encryption algorithm in [Encrypt method](#Encrypt-method). 
 | redact | enablePartialAgesForRedact |Age fields | boolean | false | If the value is set to **true**, only age values over 89 will be redacted. |
 | redact | enablePartialDatesForRedact  | date, dateTime, instant fields | boolean | false | If the value is set to **true**, date, dateTime, instant will keep year if indicative age is not over 89. |
 | redact | enablePartialZipCodesForRedact  | Zip Code fields | boolean | false | If the value is set to **true**, Zip Code will be redacted as per the HIPAA Safe Harbor rule. |
@@ -311,6 +314,10 @@ To redact the home-use Contact point
 To generate hash of Resource Id
 ```json
 {"path": "Resource.id", "method": "cryptoHash"}
+```
+To encrypt city values of Address data type
+```json
+{"path": "nodesByType('Address').city", "method": "encrypt"}
 ```
 
 ## Date-shift algorithm
@@ -344,7 +351,11 @@ You can specify the crypto-hash method in the configuration file. We use HMAC-SH
 
 A typical scenario is to replace resource ids across FHIR resources via crypto hashing. With a specific hash key, same resource ids that reside in resources and references will be hashed to a same value. There is a special case when crypto hashing a [literal reference](https://www.hl7.org/fhir/references.html#literal) element. The tool captures and transforms only the id part from a reference, for example, reference ```Patient/123``` will be hashed to ```Patient/a3c024f01cccb3b63457d848b0d2f89c1f744a3d```. In this way, you can easily resolve references across anonymized FHIR resources.
 
-# Resources
+## Encrypt method
+We use AES-CBC algorithm to transform FHIR data with an encryption key, and then replace the original value with a Base64 encoded representation of the encrypted value.
+1. The encryption key needs to be exactly 128, 192 or 256 bits long.
+2. The algorithm will generate a random and unique initialization vector (IV) for each encryption, therefore the encrypted results are different for the same input values.
+3. If you want the anonymized output to be conformant to the FHIR specification, do use encrypt method on those fields that accept a Base64 encoded value. Besides, avoid encrypting data fields with length limits because the Base64 encoded value will be longer than the original value.
 
 ## Current limitations
 1. We only support FHIR data in R4, JSON format. Support for XML and STU 3 is planned.
