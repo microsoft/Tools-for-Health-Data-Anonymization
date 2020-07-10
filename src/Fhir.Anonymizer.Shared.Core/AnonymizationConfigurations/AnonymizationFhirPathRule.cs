@@ -46,8 +46,8 @@ namespace Fhir.Anonymizer.Core.AnonymizationConfigurations
             bool isPrimitiveReplacement = false;
             if (config.ContainsKey(Constants.ReplaceWithKey))
             {
-                replaceWith = config[Constants.ReplaceWithKey].ToString();
-                isPrimitiveReplacement = config[Constants.ReplaceWithKey].Type == JTokenType.String;
+                replaceWith = config[Constants.ReplaceWithKey]?.ToString();
+                isPrimitiveReplacement = (config[Constants.ReplaceWithKey]?.Type ?? JTokenType.Null) != JTokenType.Object;
             }
 
             // Parse expression and resource type from path
