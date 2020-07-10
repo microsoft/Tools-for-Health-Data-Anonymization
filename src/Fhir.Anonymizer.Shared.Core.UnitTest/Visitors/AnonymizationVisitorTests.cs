@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Processors;
+using Fhir.Anonymizer.Core.Utility;
 using Fhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
@@ -66,6 +68,82 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             Assert.Contains(SecurityLabels.CRYTOHASH.Code, patient.Meta.Security.Select(s => s.Code));
         }
 
+        [Fact]
+        public void GivenAnEncryptRule_WhenProcess_NodeShouldBeEncrypted()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Patient.address", "address", "Patient", "encrypt", AnonymizerRuleType.FhirPathRule, "Patient.address"),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var patient = CreateTestPatient();
+            var patientNode = ElementNode.FromElement(patient.ToTypedElement());
+            patientNode.Accept(visitor);
+            patientNode.RemoveNullChildren();
+
+            var patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
+            var key = Encoding.UTF8.GetBytes("1234567890123456");
+            var plainValue = EncryptUtility.DecryptTextFromBase64WithAes(patientCity.Value.ToString(), key);
+            Assert.Equal("patienttestcity1", plainValue);
+
+            patient = patientNode.ToPoco<Patient>();
+            Assert.Single(patient.Meta.Security);
+            Assert.Contains(SecurityLabels.ENCRYPT.Code, patient.Meta.Security.Select(s => s.Code));
+        }
+
+        [Fact]
+        public void GivenAPrimitiveSubstituteRule_WhenProcess_NodeShouldBeSubstituted()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Patient.address.city", "address.city", "Patient", "substitute", AnonymizerRuleType.FhirPathRule, "Patient.address.city", "MoonValley", true),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var patient = CreateTestPatient();
+            var patientNode = ElementNode.FromElement(patient.ToTypedElement());
+            var patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
+            Assert.Equal("patienttestcity1", patientCity.Value.ToString());
+            var patientCountry = patientNode.Select("Patient.address[0].country").FirstOrDefault();
+            Assert.Equal("patienttestcountry1", patientCountry.Value.ToString());
+
+            patientNode.Accept(visitor);
+            patientNode.RemoveNullChildren();
+
+            patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
+            Assert.Equal("MoonValley", patientCity.Value.ToString());
+            patientCountry = patientNode.Select("Patient.address[0].country").FirstOrDefault();
+            Assert.Equal("patienttestcountry1", patientCountry.Value.ToString());
+        }
+
+        [Fact]
+        public void GivenAComplexSubstituteRule_WhenProcess_NodeShouldBeSubstituted()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Patient.address", "address", "Patient", "substitute", AnonymizerRuleType.FhirPathRule, "Patient.address", "{ \"city\": \"MoonValley\" }"),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var patient = CreateTestPatient();
+            var patientNode = ElementNode.FromElement(patient.ToTypedElement());
+            var patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
+            Assert.Equal("patienttestcity1", patientCity.Value.ToString());
+            var patientCountry = patientNode.Select("Patient.address[0].country").FirstOrDefault();
+            Assert.Equal("patienttestcountry1", patientCountry.Value.ToString());
+
+            patientNode.Accept(visitor);
+            patientNode.RemoveNullChildren();
+
+            patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
+            Assert.Equal("MoonValley", patientCity.Value.ToString());
+            patientCountry = patientNode.Select("Patient.address[0].country").FirstOrDefault();
+            Assert.Null(patientCountry);
+        }
 
         [Fact]
         public void GivenAPatientWithOnlyId_WhenProcess_NodeShouldBeRedact()
@@ -336,12 +414,16 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             RedactProcessor redactProcessor = new RedactProcessor(false, false, false, null);
             DateShiftProcessor dateShiftProcessor = new DateShiftProcessor("123", "123", false);
             CryptoHashProcessor cryptoHashProcessor = new CryptoHashProcessor("123");
+            EncryptProcessor encryptProcessor = new EncryptProcessor("1234567890123456");
+            SubstituteProcessor substituteProcessor = new SubstituteProcessor();
             Dictionary<string, IAnonymizerProcessor> processors = new Dictionary<string, IAnonymizerProcessor>()
             {
                 { "KEEP", keepProcessor},
                 { "REDACT", redactProcessor},
                 { "DATESHIFT", dateShiftProcessor},
-                { "CRYPTOHASH", cryptoHashProcessor}
+                { "CRYPTOHASH", cryptoHashProcessor},
+                { "ENCRYPT", encryptProcessor },
+                { "SUBSTITUTE", substituteProcessor }
             };
 
             return processors;

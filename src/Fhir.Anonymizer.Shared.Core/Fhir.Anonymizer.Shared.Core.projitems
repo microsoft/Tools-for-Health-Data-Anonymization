@@ -41,12 +41,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\AnonymizationOperations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\CryptoHashProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\DateShiftProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\EncryptProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\IAnonymizerProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\KeepProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\SubstituteProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\CryptoHashUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\DateTimeUtility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\EncryptUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\PostalCodeUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\ReferenceUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\SubstituteUtility.cs" />

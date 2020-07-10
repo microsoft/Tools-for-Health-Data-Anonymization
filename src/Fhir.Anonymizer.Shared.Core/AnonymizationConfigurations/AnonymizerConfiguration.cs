@@ -25,7 +25,8 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                 ParameterConfiguration = new ParameterConfiguration
                 {
                     DateShiftKey = Guid.NewGuid().ToString("N"),
-                    CryptoHashKey = s_defaultCryptoKey.Value
+                    CryptoHashKey = s_defaultCryptoKey.Value,
+                    EncryptKey = s_defaultCryptoKey.Value
                 };
                 return;
             }
@@ -38,6 +39,11 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
             if (string.IsNullOrEmpty(ParameterConfiguration.CryptoHashKey))
             {
                 ParameterConfiguration.CryptoHashKey = s_defaultCryptoKey.Value;
+            }
+
+            if (string.IsNullOrEmpty(ParameterConfiguration.EncryptKey))
+            {
+                ParameterConfiguration.EncryptKey = s_defaultCryptoKey.Value;
             }
         }
     }

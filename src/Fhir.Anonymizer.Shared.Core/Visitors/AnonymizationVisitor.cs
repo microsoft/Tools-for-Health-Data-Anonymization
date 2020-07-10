@@ -11,6 +11,7 @@ using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
+using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 
 namespace Fhir.Anonymizer.Core.Visitors
 {
@@ -75,7 +76,7 @@ namespace Fhir.Anonymizer.Core.Visitors
             foreach (var rule in resourceSpecificAndGeneralRules)
             {
                 ProcessSetting setting = new ProcessSetting();
-                if (rule.CanSupportMethod(AnonymizationOperations.Substitute))
+                if (rule.CanSupportMethod(AnonymizerMethod.Substitute.ToString()))
                 {
                     setting.ReplaceWith = rule.ReplaceWith;
                     setting.IsPrimitiveReplacement = rule.IsPrimitiveReplacement;

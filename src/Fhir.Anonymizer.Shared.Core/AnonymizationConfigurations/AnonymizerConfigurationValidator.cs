@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using System.Text;
 using Fhir.Anonymizer.Core.Processors;
 using Hl7.FhirPath;
 
@@ -40,12 +41,46 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                 }
 
                 // Should provide replacement value for substitue rule
-                if (string.Equals(method, AnonymizationOperations.Substitute, StringComparison.InvariantCultureIgnoreCase)
+                if (string.Equals(method, AnonymizerMethod.Substitute.ToString(), StringComparison.InvariantCultureIgnoreCase)
                     && !rule.ContainsKey(Constants.ReplaceWithKey))
                 {
                     throw new AnonymizerConfigurationErrorsException($"Missing replaceWith value in substitution rule config at {rule[Constants.PathKey]}.");
                 }
             }
+
+            // Check AES key size is valid (16, 24 or 32 bytes).
+            if (!string.IsNullOrEmpty(config.ParameterConfiguration?.EncryptKey))
+            {
+                using Aes aes = Aes.Create();
+                var encryptKeySize = Encoding.UTF8.GetByteCount(config.ParameterConfiguration.EncryptKey) * 8;
+                if (!IsValidKeySize(encryptKeySize, aes.LegalKeySizes))
+                {
+                    throw new AnonymizerConfigurationErrorsException($"Invalid encrypt key size : {encryptKeySize} bits! Please provide key sizes of 128, 192 or 256 bits.");
+                }
+            }
+        }
+
+        // The following method takes a bit length input and returns whether that length is a valid size
+        // validSizes for AES: MinSize=128, MaxSize=256, SkipSize=64
+        private bool IsValidKeySize(int bitLength, KeySizes[] validSizes)
+        {
+            if (validSizes == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < validSizes.Length; i++)
+            {
+                for (int j = validSizes[i].MinSize; j <= validSizes[i].MaxSize; j += validSizes[i].SkipSize)
+                {
+                    if (j == bitLength)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
