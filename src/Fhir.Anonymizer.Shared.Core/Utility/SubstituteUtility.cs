@@ -38,7 +38,7 @@ namespace Fhir.Anonymizer.Core.Utility
                     else if (i < targetChildren.Count)
                     {
                         // We still have target nodes, do replacement
-                        processResult.Update(SubstituteNode(child, targetChildren[i], visitedNodes, keepNodes));
+                        processResult.Update(SubstituteNode(child, targetChildren[i ++], visitedNodes, keepNodes));
                     }
                     else if (keepNodes.Contains(child))
                     {
@@ -56,7 +56,7 @@ namespace Fhir.Anonymizer.Core.Utility
                 while (i < targetChildren.Count)
                 {
                     // Add extra target nodes, create a new copy before adding
-                    node.Add(s_provider, ElementNode.FromElement(targetChildren[i++]));
+                    node.Add(s_provider, ElementNode.FromElement(targetChildren[i ++]));
                 }
             }
 
@@ -85,15 +85,6 @@ namespace Fhir.Anonymizer.Core.Utility
             return processResult;
         }
 
-        public static void MarkSubstitutedChildrenAsVisited(ElementNode node, HashSet<ElementNode> visitedNodes)
-        {
-            visitedNodes.Add(node);
-            foreach (var child in node.Children().Cast<ElementNode>())
-            {
-                MarkSubstitutedChildrenAsVisited(child, visitedNodes);
-            }
-        }
-
         // To keep consistent anonymization changes made by preceding rules, we should figure out whether a node can be removed during substitution
         public static bool ShouldKeepNodeDuringSubstitution(ElementNode node, HashSet<ElementNode> visitedNodes, HashSet<ElementNode> keepNodes)
         {
@@ -114,9 +105,22 @@ namespace Fhir.Anonymizer.Core.Utility
             return shouldKeep;
         }
 
+        // Post-process to mark all substituted children nodes as visited
+        public static void MarkSubstitutedFragementAsVisited(ElementNode node, HashSet<ElementNode> visitedNodes)
+        {
+            visitedNodes.Add(node);
+            foreach (var child in node.Children().Cast<ElementNode>())
+            {
+                MarkSubstitutedFragementAsVisited(child, visitedNodes);
+            }
+        }
+
         private static ElementNode GetDummyNode()
         {
-            return ElementNode.FromElement(ElementNode.ForPrimitive(string.Empty));
+            var dummy = ElementNode.FromElement(ElementNode.ForPrimitive(string.Empty));
+            // Set dummy value to null to ensure a correct serialization result
+            dummy.Value = null;
+            return dummy;
         }
     }
 }

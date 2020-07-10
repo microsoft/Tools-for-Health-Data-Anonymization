@@ -31,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utility\DateTimeUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\PostalCodeUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\ReferenceUtilityTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\SubstituteUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\AttributeValidatorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Visitors\AnonymizationVisitorTests.cs" />
   </ItemGroup>

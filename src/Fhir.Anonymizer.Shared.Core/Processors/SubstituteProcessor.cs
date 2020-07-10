@@ -18,6 +18,24 @@ namespace Fhir.Anonymizer.Core.Processors
 
         public ProcessResult Process(ElementNode node, ProcessSetting setting = null)
         {
+            if (setting == null)
+            {
+                setting = new ProcessSetting
+                {
+                    ReplaceWith = string.Empty,
+                    IsPrimitiveReplacement = true,
+                    VisitedNodes = new HashSet<ElementNode>()
+                };
+            }
+            else if (setting.ReplaceWith == null)
+            {
+                setting.ReplaceWith = string.Empty;
+            }
+            else if (setting.VisitedNodes == null)
+            {
+                setting.VisitedNodes = new HashSet<ElementNode>();
+            }
+
             ElementNode replacementNode;
             // Get replacementNode for substitution  
             if (setting.IsPrimitiveReplacement)
@@ -37,10 +55,10 @@ namespace Fhir.Anonymizer.Core.Processors
             }
 
             var keepNodes = new HashSet<ElementNode>();
+            // Retrieve all nodes that have been processed before to keep 
             _ = SubstituteUtility.ShouldKeepNodeDuringSubstitution(node, setting.VisitedNodes, keepNodes);
-
             var processResult = SubstituteUtility.SubstituteNode(node, replacementNode, setting.VisitedNodes, keepNodes);
-            SubstituteUtility.MarkSubstitutedChildrenAsVisited(node, setting.VisitedNodes);
+            SubstituteUtility.MarkSubstitutedFragementAsVisited(node, setting.VisitedNodes);
 
             return processResult;
         }
