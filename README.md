@@ -50,7 +50,7 @@ This repo contains a few [sample](samples/) FHIR files that you can download. Th
 You can also export FHIR resource from your FHIR server using [Bulk Export](https://docs.microsoft.com/en-us/azure/healthcare-apis/configure-export-data).
 
 ## Anonymize FHIR data using the command line tool
-Once you have built the command line tool, you will find two executable file for two versions: 
+Once you have built the command line tool, you will find two executable file for R4 and Stu3: 
 
 1. Fhir.Anonymizer.R4.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.R4.Tool\bin\Debug|Release\netcoreapp3.1 folder. 
 
@@ -212,7 +212,7 @@ Out of the 18 identifier types mentioned in HIPAA Safe Harbor method (2)(i), thi
 
 This configuration file is provided in a best-effort manner. We **strongly** recommend that you review the HIPAA guidelines as well as the implementation of this project before using it for you anonymization requirements. 
 
-The safe harbor configuration sample for [R4](src/Fhir.Anonymizer.R4.Tool/configuration-sample.json) and [Stu3](src/Fhir.Anonymizer.Stu3.Tool/configuration-sample.json) are given in repo.
+The safe harbor configuration sample for [R4](src/Fhir.Anonymizer.R4.CommandLineTool/configuration-sample.json) and [Stu3](src/Fhir.Anonymizer.Stu3.CommandLineTool/configuration-sample.json) are given in repo.
 # Concepts
 
 ## How the engine works
