@@ -33,7 +33,7 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 
 ## Features
 
-* Support anonymization of FHIR R4 data in json as well as ndjson format
+* Support anonymization of FHIR R4 data and STU3 data in json as well as ndjson format
 * Configuration of the data elements that need to be de-identified 
 * Configuration of the de-identification method for each data element (keeping, redacting, encrypting, Date-shifting, or Crypto-hashing) 
 * Ability to create Azure Data Factory to support de-identification of the data flows 
@@ -45,14 +45,20 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 Use the .Net Core 3.1 SDK to build FHIR Tools for Anonymization. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet-core/3.1).
 
 ## Get sample FHIR files
-This repo contains a few [sample](samples/fhir-r4-files) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
+This repo contains a few [sample](samples/) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
 
 You can also export FHIR resource from your FHIR server using [Bulk Export](https://docs.microsoft.com/en-us/azure/healthcare-apis/configure-export-data).
 
 ## Anonymize FHIR data using the command line tool
-Once you have built the command line tool, you will find the Fhir.Anonymizer.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.Tool\bin\Debug|Release\netcoreapp3.1 folder. You can use this exe to anonymize FHIR resource files in a folder.   
+Once you have built the command line tool, you will find two executable file for two versions: 
+
+1. Fhir.Anonymizer.R4.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.R4.Tool\bin\Debug|Release\netcoreapp3.1 folder. 
+
+2. Fhir.Anonymizer.Stu3.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.Stu3.Tool\bin\Debug|Release\netcoreapp3.1 folder.
+
+ You can use these exe to anonymize FHIR resource files in a folder.   
 ```
-> .\Fhir.Anonymizer.Tool.exe -i myInputFolder -o myOutputFolder
+> .\Fhir.Anonymizer.<version>.Tool.exe -i myInputFolder -o myOutputFolder
 ```
 See the [reference](#the-command-line-tool) section for usage details of the command line tool.
 
@@ -194,6 +200,9 @@ The PowerShell script implicitly creates a resource group by appending 'resource
 
 If you want to cleanup resources, delete that resource group in addition to any other resources you may have explicitly created as part of this tutorial.
 
+**[!NOTE]**
+> Azure data factory only support R4 version for now.
+
 # Samples
 
 ## Sample configuration file for HIPAA Safe Harbor method
@@ -203,8 +212,7 @@ Out of the 18 identifier types mentioned in HIPAA Safe Harbor method (2)(i), thi
 
 This configuration file is provided in a best-effort manner. We **strongly** recommend that you review the HIPAA guidelines as well as the implementation of this project before using it for you anonymization requirements. 
 
-The safe harbor configuration file can be accessed [here](src/Fhir.Anonymizer.Tool/configuration-sample.json).
-
+The safe harbor configuration sample for [R4](src/Fhir.Anonymizer.R4.Tool/configuration-sample.json) and [Stu3](src/Fhir.Anonymizer.Stu3.Tool/configuration-sample.json) are given in repo.
 # Concepts
 
 ## How the engine works
@@ -232,12 +240,12 @@ The command-line tool can be used to anonymize a folder containing FHIR resource
 
 Example usage to anonymize FHIR resource files in a folder: 
 ```
-> .\Fhir.Anonymizer.Tool.exe -i myInputFolder -o myOutputFolder
+> .\Fhir.Anonymizer.<version>.Tool.exe -i myInputFolder -o myOutputFolder
 ```
 
 ## Configuration file format
 
-The configuration is specified in JSON format. It has two high-level sections. One of these sections, namely _fhirPathRules_ is meant to specify de-identification methods for data elements. The second section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file.
+The configuration is specified in JSON format. It has two high-level sections. One of these sections, namely _fhirPathRules_ is meant to specify de-identification methods for data elements. The second section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. The content of _fhirPathRules_ is version dependent since resources are different in R4 and Stu3. 
 
 Here is a sample configuration:
 
@@ -320,6 +328,7 @@ To encrypt city values of Address data type
 {"path": "nodesByType('Address').city", "method": "encrypt"}
 ```
 
+
 ## Date-shift algorithm
 You can specify dateShift as a de-identification method in the configuration file. With this method, the input date/dateTime/instant value will be shifted within a 100-day differential. The following algorithm is used to shift the target dates:
 
@@ -358,7 +367,7 @@ We use AES-CBC algorithm to transform FHIR data with an encryption key, and then
 3. If you want the anonymized output to be conformant to the FHIR specification, do use encrypt method on those fields that accept a Base64 encoded value. Besides, avoid encrypting data fields with length limits because the Base64 encoded value will be longer than the original value.
 
 ## Current limitations
-1. We only support FHIR data in R4, JSON format. Support for XML and STU 3 is planned.
+1. We support FHIR data in R4 and Stu3, JSON format. Support for XML is planned.
 2. De-identification of fields within Extensions is not supported. 
 
 ## FAQ
