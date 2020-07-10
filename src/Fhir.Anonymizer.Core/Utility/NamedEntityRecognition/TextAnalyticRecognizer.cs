@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using Fhir.Anonymizer.Core.Models.TextAnalytics;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -46,7 +47,7 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
                     {
                         Id = id,
                         Language = "en",
-                        Text = text
+                        Text = HtmlTextUtility.StripTags(text),
                     })
                     .Where(document => !string.IsNullOrWhiteSpace(document.Text));
 
@@ -88,7 +89,7 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
             return resultList;
         }
 
-        private static string ProcessEntities(string originText, IEnumerable<TextEntity> textEntities)
+        private string ProcessEntities(string originText, IEnumerable<TextEntity> textEntities)
         {
             if (string.IsNullOrWhiteSpace(originText))
             {

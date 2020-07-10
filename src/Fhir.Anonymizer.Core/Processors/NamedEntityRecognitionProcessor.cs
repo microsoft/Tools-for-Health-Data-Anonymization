@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Utility.NamedEntityRecognition;
@@ -13,7 +14,7 @@ namespace Fhir.Anonymizer.Core.Processors
     {
         private INamedEntityRecognizer NamedEntityRecognizer { get; set; }
 
-        public NamedEntityRecognitionProcessor(NamedEntityRecognitionMethod namedEntityRecognitionMethod, string namedEntityRecognitionApiEndpoint, string namedEntityRecognitionApiKey)
+        private NamedEntityRecognitionProcessor(NamedEntityRecognitionMethod namedEntityRecognitionMethod, string namedEntityRecognitionApiEndpoint, string namedEntityRecognitionApiKey)
         {
             NamedEntityRecognizer = namedEntityRecognitionMethod switch
             {
@@ -37,7 +38,7 @@ namespace Fhir.Anonymizer.Core.Processors
                 return processResult;
             }
 
-            node.Value = (await NamedEntityRecognizer.AnonymizeText(new List<string> { node.Value.ToString() })).First();
+            node.Value = (await NamedEntityRecognizer.AnonymizeText(new List<string> { HttpUtility.HtmlDecode(node.Value.ToString()) })).First();
             processResult.AddProcessRecord(AnonymizationOperations.Masked, node);
             return processResult;
         }

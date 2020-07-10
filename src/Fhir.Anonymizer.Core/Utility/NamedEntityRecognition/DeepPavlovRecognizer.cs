@@ -43,7 +43,7 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
             {
                 var requestContent = new DeepPavlovRequestContent
                 {
-                    X = textList
+                    X = HtmlTextUtility.StripTagsForArray(textList)
                 };
 
                 var content = new StringContent(JsonConvert.SerializeObject(requestContent), Encoding.UTF8, "application/json");
@@ -74,7 +74,7 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
             return resultList;
         }
 
-        private static string ProcessEntities(string originText, DeepPavlovResponseDocument document)
+        private string ProcessEntities(string originText, DeepPavlovResponseDocument document)
         {
             if (string.IsNullOrWhiteSpace(originText))
             {
