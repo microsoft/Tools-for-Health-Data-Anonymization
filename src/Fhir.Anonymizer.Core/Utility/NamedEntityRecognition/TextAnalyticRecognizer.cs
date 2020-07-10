@@ -38,6 +38,7 @@ namespace Fhir.Anonymizer.Core.Utility.NamedEntityRecognition
 
         public async Task<IEnumerable<string>> AnonymizeText(IEnumerable<string> textList)
         {
+            textList = textList.Select(text => HttpUtility.HtmlDecode(text));
             var resultList = textList.ToList();
 
             try
