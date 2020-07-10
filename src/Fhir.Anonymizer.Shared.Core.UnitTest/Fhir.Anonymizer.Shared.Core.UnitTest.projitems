@@ -25,9 +25,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirStreamReaderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\CryptoHashProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\DateShiftProcessorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\EncryptProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\CryptoHashUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\DateTimeUtilityTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\EncryptUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\PostalCodeUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\ReferenceUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\AttributeValidatorTests.cs" />
@@ -52,5 +54,10 @@
     <None Include="$(MSBuildThisFileDirectory)TestResources\contained-basic.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-invalid-encryptkey.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

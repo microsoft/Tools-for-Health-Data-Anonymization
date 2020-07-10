@@ -25,6 +25,13 @@ namespace Fhir.Anonymizer.Core.Models
             Display = "exact value is transformed with a hash function"
         };
 
+        public static readonly Coding ENCRYPT = new Coding()
+        {
+            System = "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+            Code = "ENCRYPT",
+            Display = "exact value is transformed into ciphertext"
+        };
+
         public static readonly Coding PERTURBED = new Coding()
         {
             Code = "PERTURBED",
