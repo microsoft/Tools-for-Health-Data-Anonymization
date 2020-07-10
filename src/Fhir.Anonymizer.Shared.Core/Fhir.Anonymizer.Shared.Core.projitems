@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeVisitorExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\FhirPathSymbolExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ProcessResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ProcessSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SecurityLabels.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\BatchAnonymizeProgressDetail.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirEnumerableReader.cs" />
@@ -43,10 +44,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\IAnonymizerProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\KeepProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\SubstituteProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\CryptoHashUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\DateTimeUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\PostalCodeUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\ReferenceUtility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\SubstituteUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\AttributeValidator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\ResourceNotValidException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\ResourceValidator.cs" />

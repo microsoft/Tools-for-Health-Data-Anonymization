@@ -5,6 +5,7 @@
         Redact,
         DateShift,
         CryptoHash,
+        Substitute,
         Keep
     }
 }

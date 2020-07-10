@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using Fhir.Anonymizer.Core.Processors;
 using Hl7.FhirPath;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
@@ -24,7 +25,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                 // Grammar check on FHIR path
                 try
                 {
-                    compiler.Compile(rule[Constants.PathKey]);
+                    compiler.Compile(rule[Constants.PathKey].ToString());
                 }
                 catch (Exception ex)
                 {
@@ -32,10 +33,17 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                 }
 
                 // Method validate
-                string method = rule[Constants.MethodKey];
+                string method = rule[Constants.MethodKey].ToString();
                 if (!Enum.TryParse<AnonymizerMethod>(method, true, out _))
                 {
                     throw new AnonymizerConfigurationErrorsException($"{method} not support.");
+                }
+
+                // Should provide replacement value for substitue rule
+                if (string.Equals(method, AnonymizationOperations.Substitute, StringComparison.InvariantCultureIgnoreCase)
+                    && !rule.ContainsKey(Constants.ReplaceWithKey))
+                {
+                    throw new AnonymizerConfigurationErrorsException($"Missing replaceWith value in substitution rule config at {rule[Constants.PathKey]}.");
                 }
             }
         }

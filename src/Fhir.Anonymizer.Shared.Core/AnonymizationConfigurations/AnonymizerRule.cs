@@ -21,5 +21,10 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
             Type = type;
             Source = source;
         }
+
+        public bool CanSupportMethod(string method)
+        {
+            return string.Equals(Method, method, StringComparison.InvariantCultureIgnoreCase);
+        }
     }
 }

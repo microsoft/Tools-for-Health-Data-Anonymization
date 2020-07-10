@@ -22,8 +22,10 @@ namespace Fhir.Anonymizer.Core
         internal const string EntryNodeName = "entry";
         internal const string EntryResourceNodeName = "resource";
 
+        // Rule constants
         internal const string PathKey = "path";
         internal const string MethodKey = "method";
+        internal const string ReplaceWithKey = "replaceWith";
 
         internal const int DefaultPartitionedExecutionCount = 4;
         internal const int DefaultPartitionedExecutionBatchSize = 1000;

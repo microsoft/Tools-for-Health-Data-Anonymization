@@ -2,6 +2,7 @@
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Utility;
+using Fhir.Anonymizer.Shared.Core.Models;
 using Hl7.Fhir.ElementModel;
 using Microsoft.Extensions.Logging;
 
@@ -19,7 +20,7 @@ namespace Fhir.Anonymizer.Core.Processors
             _cryptoHashFunction = (input) => CryptoHashUtility.ComputeHmacSHA256Hash(input, _cryptoHashKey);
         }
 
-        public ProcessResult Process(ElementNode node)
+        public ProcessResult Process(ElementNode node, ProcessSetting setting = null)
         {
             var processResult = new ProcessResult();
             if (string.IsNullOrEmpty(node?.Value?.ToString()))
