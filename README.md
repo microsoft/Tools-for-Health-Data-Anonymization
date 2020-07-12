@@ -33,7 +33,7 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 
 ## Features
 
-* Support anonymization of FHIR R4 data and STU 3 data in json as well as ndjson format
+* Support anonymization of FHIR R4 and STU 3 data in json as well as ndjson format
 * Configuration of the data elements that need to be de-identified 
 * Configuration of the de-identification method for each data element (keeping, redacting, encrypting, Date-shifting, or Crypto-hashing) 
 * Ability to create Azure Data Factory to support de-identification of the data flows 
