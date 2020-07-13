@@ -98,7 +98,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
-                new AnonymizationFhirPathRule("Patient.address.city", "address.city", "Patient", "substitute", AnonymizerRuleType.FhirPathRule, "Patient.address.city", "MoonValley", true),
+                new AnonymizationFhirPathRule("Patient.address.city", "address.city", "Patient", "substitute", AnonymizerRuleType.FhirPathRule, "Patient.address.city", "ExampleCity2020", true),
             };
 
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
@@ -114,7 +114,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             patientNode.RemoveNullChildren();
 
             patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
-            Assert.Equal("MoonValley", patientCity.Value.ToString());
+            Assert.Equal("ExampleCity2020", patientCity.Value.ToString());
             patientCountry = patientNode.Select("Patient.address[0].country").FirstOrDefault();
             Assert.Equal("patienttestcountry1", patientCountry.Value.ToString());
         }
@@ -124,7 +124,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
-                new AnonymizationFhirPathRule("Patient.address", "address", "Patient", "substitute", AnonymizerRuleType.FhirPathRule, "Patient.address", "{ \"city\": \"MoonValley\" }"),
+                new AnonymizationFhirPathRule("Patient.address", "address", "Patient", "substitute", AnonymizerRuleType.FhirPathRule, "Patient.address", "{ \"city\": \"ExampleCity2020\" }"),
             };
 
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
@@ -140,7 +140,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             patientNode.RemoveNullChildren();
 
             patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
-            Assert.Equal("MoonValley", patientCity.Value.ToString());
+            Assert.Equal("ExampleCity2020", patientCity.Value.ToString());
             patientCountry = patientNode.Select("Patient.address[0].country").FirstOrDefault();
             Assert.Null(patientCountry);
         }

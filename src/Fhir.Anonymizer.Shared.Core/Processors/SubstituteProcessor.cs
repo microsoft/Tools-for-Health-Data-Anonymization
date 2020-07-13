@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Utility;
 using Hl7.Fhir.ElementModel;
@@ -46,7 +47,11 @@ namespace Fhir.Anonymizer.Core.Processors
                 var replacementNodeType = modelAssembly
                     .GetTypes()
                     .Where(type => string.Equals(type.Name, node.InstanceType, StringComparison.InvariantCultureIgnoreCase))
-                    .First();
+                    .FirstOrDefault();
+                if (replacementNodeType == null)
+                {
+                    throw new FormatException($"Replacement value for substitution method is invalid for path {node.GetFhirPath()}.");
+                }
 
                 var replaceElement = _parser.Parse(setting.ReplaceWith, replacementNodeType).ToTypedElement();
                 replacementNode = ElementNode.FromElement(replaceElement);
