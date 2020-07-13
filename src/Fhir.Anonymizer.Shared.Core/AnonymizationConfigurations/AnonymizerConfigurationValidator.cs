@@ -4,25 +4,32 @@ using System.Security.Cryptography;
 using System.Text;
 using Hl7.FhirPath;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
+using Hl7.Fhir.Model;
+using System.Collections.Generic;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizerConfigurationValidator
     {
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerConfigurationValidator>();
+        private readonly Dictionary<string, string> allowedVersion= new Dictionary<string,string>{ { "3", "Stu3" },{ "4", "R4" } };
         public void Validate(AnonymizerConfiguration config)
         {
-            Assembly currentAssem = Assembly.GetExecutingAssembly();
+            var currentFullVersion = ModelInfo.Version;
+            string version = currentFullVersion.Split('.')[0];
+
             if (!string.IsNullOrEmpty(config.ConfigVersion))
-            {
-                string coreVersion = currentAssem.FullName;
-                var tmpind = coreVersion.IndexOf(".Core");
-                string version = coreVersion.Substring(16, tmpind - 16);
-                if (!string.Equals(version, config.ConfigVersion))
+            {      
+                if (!string.Equals(allowedVersion[version], config.ConfigVersion))
                 {
-                    throw new AnonymizerConfigurationErrorsException($"The version of configuration is {version} where the {config.ConfigVersion} executable file is running");                  
+                    throw new AnonymizerConfigurationErrorsException($"The version of configuration is {config.ConfigVersion} where the {allowedVersion[version]} executable file is running");                  
                 }
             }
-            
+            else
+            {
+                _logger.LogWarning($"No version specification of configuration file, the version of {allowedVersion[version]} is assumed here. Mistakes may accured by this assumption");
+            }
 
             if (config.FhirPathRules == null)
             {
