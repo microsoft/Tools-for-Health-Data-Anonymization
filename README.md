@@ -247,7 +247,7 @@ Example usage to anonymize FHIR resource files in a folder:
 
 ## Configuration file format
 
-The configuration is specified in JSON format. It has three high-level sections. One of these sections, namely _version_ which specify the configuration file's version for anonymizer. The second section named _fhirPathRules_ is meant to specify de-identification methods for data elements. The third section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. 
+The configuration is specified in JSON format. It has three high-level sections. One of these sections, namely _version_ specify the configuration file's version for anonymizer. The second section named _fhirPathRules_ is meant to specify de-identification methods for data elements. The third section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. 
 
 Here is a sample configuration for R4:
 
@@ -275,7 +275,7 @@ Here is a sample configuration for R4:
 | ----- | ----- |
 |Stu3|Specify STU 3 version for the configuration file|
 |R4|Specify R4 version for the configuration file|
-|Empty or Null| The configuration file will be specified as the version same with the running executable file.
+|Empty or Null| The configuration file will be specified the same version with the running executable file.
 
 > **[!NOTE]**
 > When  _version_ section is missing or empty, the program will not throw an exception but give a warning information.
