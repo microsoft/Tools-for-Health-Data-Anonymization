@@ -20,7 +20,7 @@
     {
       "path": "Device.where(id.exists()).id",
       "method": "keep"
-    }
+    },
 
   ],
   "parameters": {

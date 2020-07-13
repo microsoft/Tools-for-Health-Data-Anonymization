@@ -1,5 +1,6 @@
 ﻿{
-  "version": "both",
+  
+  "version": "STU 3",
   "fhirPathRules": [
     {
       "path": "Patient.nodesByType('HumanName')",
@@ -20,7 +21,7 @@
     {
       "path": "Device.where(id.exists()).id",
       "method": "keep"
-    }
+    },
 
   ],
   "parameters": {

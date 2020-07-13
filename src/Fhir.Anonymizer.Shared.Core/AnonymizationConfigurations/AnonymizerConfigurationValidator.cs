@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Hl7.FhirPath;
+using System.Reflection;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
@@ -10,6 +11,26 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
     {
         public void Validate(AnonymizerConfiguration config)
         {
+            Assembly currentAssem = Assembly.GetExecutingAssembly();
+            
+            string coreVersion = currentAssem.FullName;
+            var tmpind = coreVersion.IndexOf(".Core");
+            string version = coreVersion.Substring(16, tmpind-16).ToUpper();
+            if (string.Equals(version, "R4"))
+            {
+                if (!string.Equals(config.ConfigVersion, "R4") && !string.Equals(config.ConfigVersion, "") && config.ConfigVersion != null && !string.Equals(config.ConfigVersion, "both"))
+                {
+                    throw new AnonymizerConfigurationErrorsException("The version of configuration is incorrect, please use the correct configuration file");
+                }
+            }
+            else if (string.Equals(version, "STU3"))
+            {
+                if (!string.Equals(config.ConfigVersion, "STU 3") && !string.Equals(config.ConfigVersion, "both"))
+                {
+                    throw new AnonymizerConfigurationErrorsException("The version of configuration is incorrect, please use the correct configuration file");
+                }
+            }
+
             if (config.FhirPathRules == null)
             {
                 throw new AnonymizerConfigurationErrorsException("The configuration is invalid, please specify any fhirPathRules");

@@ -1,4 +1,5 @@
 {
+  "version": "both",
   "fhirPathRules": [
     {
       "path": "Patient.nodesByType('HumanName').use",
