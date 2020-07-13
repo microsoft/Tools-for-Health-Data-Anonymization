@@ -49,6 +49,27 @@ namespace Fhir.Anonymizer.FunctionalTests
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-no-partial.json"), ResourceTestsFile("patient-no-partial-target.json"));
         }
 
+        [Fact]
+        public void GivenAPatientResource_WhenAnonymizingWitPrimitiveSubstituteConfig_ThenAnonymizedJsonShouldBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "substitute-primitive.json"));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-substitute-primitive.json"), ResourceTestsFile("patient-substitute-primitive-target.json"));
+        }
+
+        [Fact]
+        public void GivenAPatientResource_WhenAnonymizingWitComplexSubstituteConfig_ThenAnonymizedJsonShouldBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "substitute-complex.json"));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-substitute-complex.json"), ResourceTestsFile("patient-substitute-complex-target.json"));
+        }
+
+        [Fact]
+        public void GivenAPatientResource_WhenAnonymizingWithConflictRulesSubstituteConfig_ThenAnonymizedJsonShouldBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "substitute-conflict-rules.json"));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-substitute-conflict-rules.json"), ResourceTestsFile("patient-substitute-conflict-rules-target.json"));
+        }
+
         private string ResourceTestsFile(string fileName)
         {
             return Path.Combine("TestResources", fileName);
