@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Fhir.Anonymizer.R4.CommandLineTool": {
+      "commandName": "Project",
+      "commandLineArgs": "-i D:\\data\\deidperf -o D:\\data\\deidperf\\result"
+    }
+  }
+}

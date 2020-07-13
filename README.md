@@ -321,7 +321,7 @@ To encrypt city values of Address data type
 {"path": "nodesByType('Address').city", "method": "encrypt"}
 ```
 
-To substitute city values of Address data type with "exampleCity"
+To substitute city values of Address data type with "example city"
 ```json
 {"path": "nodesByType('Address').city", "method": "substitute", "replaceWith": "example city"}
 ```

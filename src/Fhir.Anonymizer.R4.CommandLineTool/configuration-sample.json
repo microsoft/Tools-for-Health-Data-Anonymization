@@ -171,7 +171,19 @@
     {"path": "InsurancePlan.alias", "method": "redact"},
     {"path": "InsurancePlan.coverage.benefit.requirement", "method": "redact"},
     {"path": "InsurancePlan.plan.generalCost.comment", "method": "redact"},
-    
+
+    {
+      "path": "nodesByType('Address')",
+      "method": "substitute",
+      "replaceWith": {
+        "use": "home",
+        "city": "example city",
+        "state": "example state",
+        "period": {
+          "start": "2000-01-01"
+        }
+      }
+    },
 
     {"path": "nodesByType('Expression').description", "method": "redact"},   
     {"path": "nodesByType('Expression').expression", "method": "redact"},    
