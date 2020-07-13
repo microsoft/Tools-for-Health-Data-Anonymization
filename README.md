@@ -33,7 +33,7 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 
 ## Features
 
-* Support anonymization of FHIR R4 data and STU 3 data in json as well as ndjson format
+* Support anonymization of FHIR R4 and STU 3 data in json as well as ndjson format
 * Configuration of the data elements that need to be de-identified 
 * Configuration of the de-identification method for each data element (keeping, redacting, encrypting, Date-shifting, or Crypto-hashing) 
 * Ability to create Azure Data Factory to support de-identification of the data flows 
@@ -52,13 +52,13 @@ You can also export FHIR resource from your FHIR server using [Bulk Export](http
 ## Anonymize FHIR data using the command line tool
 Once you have built the command line tool, you will find two executable files for R4 and STU 3 respectively: 
 
-1. Fhir.Anonymizer.R4.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.R4.Tool\bin\Debug|Release\netcoreapp3.1 folder. 
+1. Fhir.Anonymizer.R4.CommandLineTool.exe in the $SOURCE\src\Fhir.Anonymizer.R4.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder. 
 
-2. Fhir.Anonymizer.Stu3.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.Stu3.Tool\bin\Debug|Release\netcoreapp3.1 folder.
+2. Fhir.Anonymizer.Stu3.CommandLineTool.exe in the $SOURCE\src\Fhir.Anonymizer.Stu3.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder.
 
  You can use these executables to anonymize FHIR resource files in a folder.   
 ```
-> .\Fhir.Anonymizer.<version>.Tool.exe -i myInputFolder -o myOutputFolder
+> .\Fhir.Anonymizer.<version>.CommandLineTool.exe -i myInputFolder -o myOutputFolder
 ```
 See the [reference](#the-command-line-tool) section for usage details of the command line tool.
 
@@ -242,17 +242,18 @@ The command-line tool can be used to anonymize a folder containing FHIR resource
 
 Example usage to anonymize FHIR resource files in a folder: 
 ```
-> .\Fhir.Anonymizer.<version>.Tool.exe -i myInputFolder -o myOutputFolder
+> .\Fhir.Anonymizer.<version>.CommandLineTool.exe -i myInputFolder -o myOutputFolder
 ```
 
 ## Configuration file format
 
-The configuration is specified in JSON format. It has two high-level sections. One of these sections, namely _fhirPathRules_ is meant to specify de-identification methods for data elements. The second section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. The content of _fhirPathRules_ is version dependent since resources are different in R4 and STU 3. 
+The configuration is specified in JSON format. It has three high-level sections. One of these sections, namely _version_ which specify the configuration file's version for anonymizer. The second section named _fhirPathRules_ is meant to specify de-identification methods for data elements. The third section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. 
 
-Here is a sample configuration:
+Here is a sample configuration for R4:
 
 ```json
 {
+  "version": "R4"
   "fhirPathRules": [
     {"path": "nodesByType('Extension')", "method": "redact"},
     {"path": "Organization.identifier", "method": "keep"},
@@ -269,7 +270,15 @@ Here is a sample configuration:
   }
 }
 ```
+### Version Specify
+| Version | Desciption |
+| ----- | ----- |
+|Stu3|Specify STU 3 version for the configuration file|
+|R4|Specify R4 version for the configuration file|
+|Empty or Null| The configuration file will be specified as the version same with the running executable file.
 
+> **[!NOTE]**
+> When  _version_ section is missing or empty, the program will not throw an exception but give a warning information.
 ### FHIR Path Rules
 FHIR path rules can be used to specify the de-identification methods for individual elements as well as elements of specific data types. Ex:
 
