@@ -76,7 +76,7 @@ namespace Fhir.Anonymizer.Core.Visitors
             foreach (var rule in resourceSpecificAndGeneralRules)
             {
                 ProcessSetting setting = new ProcessSetting();
-                if (rule.CanSupportMethod(AnonymizerMethod.Substitute.ToString()))
+                if (rule.Supports(AnonymizerMethod.Substitute.ToString()))
                 {
                     setting.ReplaceWith = rule.ReplaceWith;
                     setting.IsPrimitiveReplacement = rule.IsPrimitiveReplacement;

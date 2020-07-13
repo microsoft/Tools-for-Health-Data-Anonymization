@@ -22,7 +22,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
             Source = source;
         }
 
-        public bool CanSupportMethod(string method)
+        public bool Supports(string method)
         {
             return string.Equals(Method, method, StringComparison.InvariantCultureIgnoreCase);
         }
