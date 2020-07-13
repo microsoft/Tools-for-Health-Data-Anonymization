@@ -1,5 +1,5 @@
 ﻿{
-  "version": "both",
+  "version": "",
   "fhirPathRules": [
     {
       "path": "Patient",

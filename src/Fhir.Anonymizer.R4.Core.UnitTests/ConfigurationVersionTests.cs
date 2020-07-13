@@ -25,7 +25,6 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
         public static IEnumerable<object[]> GetValidVersionOfConfigs()
         {
             yield return new object[] { "./TestConfigurationsVersion/configuration-R4-version.json" };
-            yield return new object[] { "./TestConfigurationsVersion/configuration-both-version.json" };
             yield return new object[] { "./TestConfigurationsVersion/configuration-empty-version.json" };
             yield return new object[] { "./TestConfigurationsVersion/configuration-null-version.json" };
         }
