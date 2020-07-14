@@ -12,21 +12,33 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerConfigurationValidator>();
         
         public void Validate(AnonymizerConfiguration config)
-        {
-            var currentFullVersion = ModelInfo.Version;
-            string version = currentFullVersion.Split('.')[0];
-            if (!string.IsNullOrEmpty(config.ConfigVersion))
-            {      
-                if (!string.Equals(Constants.allowedVersion[version], config.ConfigVersion))
+        {   
+            if (!string.IsNullOrEmpty(config.FhirVersion))
+            {
+                var currentFullVersion = ModelInfo.Version;
+                if (string.IsNullOrEmpty(currentFullVersion))
                 {
-                    throw new AnonymizerConfigurationErrorsException($"The version of executable and configuration do not match: executable version is {Constants.allowedVersion[version]} but configuration version is {config.ConfigVersion}.");                  
+                    throw new AnonymizerConfigurationErrorsException("Fail to read supported FHIR version");
                 }
+                string versionNumber = currentFullVersion.Split('.')[0];
+                Constants.allowedVersion versionCode;
+                if (Enum.TryParse(versionNumber, true, out versionCode) && Enum.IsDefined(typeof(Constants.allowedVersion), versionCode))
+                {
+                    if (!string.Equals(versionCode.ToString(), config.FhirVersion))
+                    {
+                        throw new AnonymizerConfigurationErrorsException($"Configuration of fhirVersion {config.FhirVersion} is not supported. Expected fhirVersion: {versionCode}");
+                    }   
+                }
+                else
+                {
+                    throw new AnonymizerConfigurationErrorsException("Fail to read supported FHIR version");
+                }    
             }
             else
             {
-                _logger.LogWarning($"Version is not specified in configuration file, the version of {Constants.allowedVersion[version]} is assumed here. Mistakes may accured by this assumption");
+                _logger.LogWarning($"Version is not specified in configuration file. Mistakes may accured by missing version");
             }
-
+            
             if (config.FhirPathRules == null)
             {
                 throw new AnonymizerConfigurationErrorsException("The configuration is invalid, please specify any fhirPathRules");

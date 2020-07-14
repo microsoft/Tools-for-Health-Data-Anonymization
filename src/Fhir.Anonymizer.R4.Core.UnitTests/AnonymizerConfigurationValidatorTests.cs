@@ -19,11 +19,9 @@ namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
         }
 
         public static IEnumerable<object[]> GetConfigsWithInvalidFhirVersion()
-        {
-        
+        {      
             yield return new object[] { "./TestConfigurationsVersion/configuration-Stu3-version.json" };
             yield return new object[] { "./TestConfigurationsVersion/configuration-invalid-version.json" };
-
         }
 
         public static IEnumerable<object[]> GetConfigsWithValidFhirVersion()

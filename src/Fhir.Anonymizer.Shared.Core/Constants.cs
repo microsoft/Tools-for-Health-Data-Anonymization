@@ -29,6 +29,6 @@ namespace Fhir.Anonymizer.Core
         internal const string GeneralResourceType = "Resource";
         internal const string GeneralDomainResourceType = "DomainResource";
 
-        internal static Dictionary<string, string> allowedVersion = new Dictionary<string, string> { { "3", "Stu3" }, { "4", "R4" } };
+        internal enum allowedVersion { Stu3=3, R4=4 };
     }
 }
