@@ -13,30 +13,13 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         
         public void Validate(AnonymizerConfiguration config)
         {   
-            if (!string.IsNullOrEmpty(config.FhirVersion))
+            if (!string.IsNullOrEmpty(config.FhirVersion) && !string.Equals(Constants.supportedVersion, config.FhirVersion, StringComparison.InvariantCultureIgnoreCase))
             {
-                var currentFullVersion = ModelInfo.Version;
-                if (string.IsNullOrEmpty(currentFullVersion))
-                {
-                    throw new AnonymizerConfigurationErrorsException("Fail to read supported FHIR version");
-                }
-                string versionNumber = currentFullVersion.Split('.')[0];
-                Constants.allowedVersion versionCode;
-                if (Enum.TryParse(versionNumber, true, out versionCode) && Enum.IsDefined(typeof(Constants.allowedVersion), versionCode))
-                {
-                    if (!string.Equals(versionCode.ToString(), config.FhirVersion))
-                    {
-                        throw new AnonymizerConfigurationErrorsException($"Configuration of fhirVersion {config.FhirVersion} is not supported. Expected fhirVersion: {versionCode}");
-                    }   
-                }
-                else
-                {
-                    throw new AnonymizerConfigurationErrorsException("Fail to read supported FHIR version");
-                }    
+                throw new AnonymizerConfigurationErrorsException($"Configuration of fhirVersion {config.FhirVersion} is not supported. Expected fhirVersion: {Constants.supportedVersion}");
             }
             else
             {
-                _logger.LogWarning($"Version is not specified in configuration file. Mistakes may accured by missing version");
+                _logger.LogWarning($"Version is not specified in configuration file.");
             }
             
             if (config.FhirPathRules == null)

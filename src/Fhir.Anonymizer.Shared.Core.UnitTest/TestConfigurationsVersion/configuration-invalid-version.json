@@ -1,5 +1,5 @@
 ﻿{
-  "fhirVersion": "stu3",
+  "fhirVersion": "r3",
   "fhirPathRules": [
     {
       "path": "Patient.nodesByType('HumanName')",
