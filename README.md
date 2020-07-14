@@ -247,13 +247,13 @@ Example usage to anonymize FHIR resource files in a folder:
 
 ## Configuration file format
 
-The configuration is specified in JSON format. It has three high-level sections. One of these sections, namely _version_ specify the configuration file's version for anonymizer. The second section named _fhirPathRules_ is meant to specify de-identification methods for data elements. The third section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. 
+The configuration is specified in JSON format. It has three high-level sections. One of these sections, namely _fhirVersion_ specify the configuration file's version for anonymizer. The second section named _fhirPathRules_ is meant to specify de-identification methods for data elements. The third section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. 
 
 Here is a sample configuration for R4:
 
 ```json
 {
-  "version": "R4"
+  "fhirVersion": "R4",
   "fhirPathRules": [
     {"path": "nodesByType('Extension')", "method": "redact"},
     {"path": "Organization.identifier", "method": "keep"},
@@ -270,15 +270,15 @@ Here is a sample configuration for R4:
   }
 }
 ```
-### Version Specify
-| Version | Desciption |
+### FhirVersion Specify
+| fhirVersion | Desciption |
 | ----- | ----- |
 |Stu3|Specify STU 3 version for the configuration file|
 |R4|Specify R4 version for the configuration file|
 |Empty or Null| The configuration file will be specified the same version with the running executable file.
 
 > **[!NOTE]**
-> When  _version_ section is missing or empty, the program will not throw an exception but give a warning information.
+> When  _fhirVersion_ section is missing or empty, the program will not throw an exception but give a warning information.
 ### FHIR Path Rules
 FHIR path rules can be used to specify the de-identification methods for individual elements as well as elements of specific data types. Ex:
 
