@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -9,7 +8,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
     public class AnonymizerConfiguration
     {
         [DataMember(Name = "fhirPathRules")]
-        public Dictionary<string, JToken>[] FhirPathRules { get; set; }
+        public Dictionary<string, object>[] FhirPathRules { get; set; }
 
         [DataMember(Name = "parameters")]
         public ParameterConfiguration ParameterConfiguration { get; set; }

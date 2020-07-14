@@ -14,6 +14,8 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 
         public string Source { get; set; }
 
+        public Dictionary<string, object> RuleSettings { get; set; }
+
         public AnonymizerRule(string path, string method, AnonymizerRuleType type, string source)
         {
             Path = path;

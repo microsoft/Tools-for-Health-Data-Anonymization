@@ -6,12 +6,9 @@ using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Processors;
-using Fhir.Anonymizer.Core.Models;
 using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Model;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 
 namespace Fhir.Anonymizer.Core.Visitors
 {
@@ -75,13 +72,10 @@ namespace Fhir.Anonymizer.Core.Visitors
 
             foreach (var rule in resourceSpecificAndGeneralRules)
             {
-                ProcessSetting setting = new ProcessSetting();
-                if (rule.Supports(AnonymizerMethod.Substitute.ToString()))
+                ProcessContext context = new ProcessContext
                 {
-                    setting.ReplaceWith = rule.ReplaceWith;
-                    setting.IsPrimitiveReplacement = rule.IsPrimitiveReplacement;
-                    setting.VisitedNodes = _visitedNodes;
-                }
+                    VisitedNodes = _visitedNodes
+                };
 
                 ProcessResult resultOnRule = new ProcessResult();
                 string method = rule.Method.ToUpperInvariant();
@@ -110,7 +104,7 @@ namespace Fhir.Anonymizer.Core.Visitors
                 
                 foreach (var matchNode in matchNodes)
                 {
-                    resultOnRule.Update(ProcessNodeRecursive(matchNode, _processors[method], setting));
+                    resultOnRule.Update(ProcessNodeRecursive(matchNode, _processors[method], context, rule.RuleSettings));
                 }
                 LogProcessResult(node, rule, resultOnRule);
 
@@ -143,7 +137,7 @@ namespace Fhir.Anonymizer.Core.Visitors
                                     || string.Equals(Constants.GeneralDomainResourceType, r.ResourceType));
         }
 
-        public ProcessResult ProcessNodeRecursive(ElementNode node, IAnonymizerProcessor processor, ProcessSetting setting)
+        public ProcessResult ProcessNodeRecursive(ElementNode node, IAnonymizerProcessor processor, ProcessContext context, Dictionary<string, object> settings)
         {
             ProcessResult result = new ProcessResult();
             if (_visitedNodes.Contains(node))
@@ -151,7 +145,7 @@ namespace Fhir.Anonymizer.Core.Visitors
                 return result;
             }
             
-            result = processor.Process(node, setting);
+            result = processor.Process(node, context, settings);
             _visitedNodes.Add(node);
 
             foreach (var child in node.Children().Cast<ElementNode>())
@@ -161,7 +155,7 @@ namespace Fhir.Anonymizer.Core.Visitors
                     continue;
                 }
 
-                result.Update(ProcessNodeRecursive(child, processor, setting));
+                result.Update(ProcessNodeRecursive(child, processor, context, settings));
             }
 
             return result;

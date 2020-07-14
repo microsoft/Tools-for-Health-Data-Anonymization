@@ -11,6 +11,7 @@ using Fhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.FhirPath;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.Visitors
@@ -98,7 +99,8 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
-                new AnonymizationFhirPathRule("Patient.address.city", "address.city", "Patient", "substitute", AnonymizerRuleType.FhirPathRule, "Patient.address.city", "ExampleCity2020", true),
+                new AnonymizationFhirPathRule("Patient.address.city", "address.city", "Patient", "substitute", AnonymizerRuleType.FhirPathRule, "Patient.address.city",
+                    new Dictionary<string, object> { {"replaceWith", "ExampleCity2020" } })           
             };
 
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
@@ -124,7 +126,8 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
-                new AnonymizationFhirPathRule("Patient.address", "address", "Patient", "substitute", AnonymizerRuleType.FhirPathRule, "Patient.address", "{ \"city\": \"ExampleCity2020\" }"),
+                new AnonymizationFhirPathRule("Patient.address", "address", "Patient", "substitute", AnonymizerRuleType.FhirPathRule, "Patient.address",
+                    new Dictionary<string, object> { {"replaceWith", "{ \"city\": \"ExampleCity2020\" }" } } ),
             };
 
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());

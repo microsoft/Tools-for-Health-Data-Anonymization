@@ -27,6 +27,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\DateShiftProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\EncryptProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\SubstituteSettingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\SubstituteProcessorTests.cs" />
     <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-miss-replacement.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -36,7 +37,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utility\EncryptUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\PostalCodeUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\ReferenceUtilityTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utility\SubstituteUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\AttributeValidatorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Visitors\AnonymizationVisitorTests.cs" />
   </ItemGroup>

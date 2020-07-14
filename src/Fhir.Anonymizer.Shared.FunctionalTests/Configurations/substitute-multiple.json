@@ -1,0 +1,23 @@
+﻿{
+  "fhirPathRules": [
+    {
+      "path": "Patient.name.period",
+      "method": "substitute",
+      "replaceWith": {
+        "start": "2020-01-01",
+        "end": "2021-01-01"
+      }
+    },
+    {
+      "path": "Patient.name",
+      "method": "substitute",
+      "replaceWith": {
+        "family": "example",
+        "given": [
+          "test",
+          "testing"
+        ]
+      }
+    }
+  ]
+}
