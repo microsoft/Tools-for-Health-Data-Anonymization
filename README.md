@@ -50,16 +50,9 @@ This repo contains a few [sample](samples/fhir-r4-files) FHIR files that you can
 You can also export FHIR resource from your FHIR server using [Bulk Export](https://docs.microsoft.com/en-us/azure/healthcare-apis/configure-export-data).
 
 ## Anonymize FHIR data using the command line tool
-
-Once you have built the command line tool, you will find two executable files for R4 and STU 3 respectively: 
-
-1. Fhir.Anonymizer.R4.CommandLineTool.exe in the $SOURCE\src\Fhir.Anonymizer.R4.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder. 
-
-2. Fhir.Anonymizer.Stu3.CommandLineTool.exe in the $SOURCE\src\Fhir.Anonymizer.Stu3.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder.
-
- You can use these executables to anonymize FHIR resource files in a folder.   
+Once you have built the command line tool, you will find the Fhir.Anonymizer.Tool.exe in the $SOURCE\src\Fhir.Anonymizer.Tool\bin\Debug|Release\netcoreapp3.1 folder. You can use this exe to anonymize FHIR resource files in a folder.   
 ```
-> .\Fhir.Anonymizer.<version>.CommandLineTool.exe -i myInputFolder -o myOutputFolder
+> .\Fhir.Anonymizer.Tool.exe -i myInputFolder -o myOutputFolder
 ```
 See the [reference](#the-command-line-tool) section for usage details of the command line tool.
 
@@ -239,12 +232,12 @@ The command-line tool can be used to anonymize a folder containing FHIR resource
 
 Example usage to anonymize FHIR resource files in a folder: 
 ```
-> .\Fhir.Anonymizer.<version>.CommandLineTool.exe -i myInputFolder -o myOutputFolder
+> .\Fhir.Anonymizer.Tool.exe -i myInputFolder -o myOutputFolder
 ```
 
 ## Configuration file format
 
-The configuration is specified in JSON format. It has two high-level sections. One of these sections, namely _fhirPathRules_ is meant to specify de-identification methods for data elements. The second section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. 
+The configuration is specified in JSON format. It has two high-level sections. One of these sections, namely _fhirPathRules_ is meant to specify de-identification methods for data elements. The second section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file.
 
 Here is a sample configuration:
 
