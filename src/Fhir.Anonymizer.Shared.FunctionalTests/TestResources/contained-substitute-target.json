@@ -1,0 +1,47 @@
+{
+  "resourceType": "Condition",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "ABSTRED",
+        "display": "exact value is replaced with a range"
+      }
+    ]
+  },
+  "contained": [
+    {
+      "resourceType": "Patient",
+      "id": "p1",
+      "name": [
+        {
+          "family": "example",
+          "given": [
+            "test",
+            "testing"
+          ]
+        }
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "p2",
+      "name": [
+        {
+          "family": "example",
+          "given": [
+            "test",
+            "testing"
+          ],
+          "period": {
+            "start": "2020-01-01",
+            "end": "2021-01-01"
+          }
+        }
+      ]
+    }
+  ],
+  "asserter": {
+    "reference": "#p1"
+  }
+}

@@ -44,7 +44,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                 if (string.Equals(method, AnonymizerMethod.Substitute.ToString(), StringComparison.InvariantCultureIgnoreCase)
                     && !rule.ContainsKey(Constants.ReplaceWithKey))
                 {
-                    throw new AnonymizerConfigurationErrorsException($"Missing replaceWith value in substitution rule config at {rule[Constants.PathKey]}.");
+                    throw new AnonymizerConfigurationErrorsException($"Missing replaceWith value in substitution rule at {rule[Constants.PathKey]}.");
                 }
             }
 

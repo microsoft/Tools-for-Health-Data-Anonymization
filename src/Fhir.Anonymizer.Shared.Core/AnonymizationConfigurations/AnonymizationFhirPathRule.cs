@@ -16,13 +16,9 @@ namespace Fhir.Anonymizer.Core.AnonymizationConfigurations
 
         public string ResourceType { get; private set; }
 
-        public string ReplaceWith { get; set; }
-        // The replacement value is primitive or complex
-        public bool IsPrimitiveReplacement { get; set; }
-        // Path is same to the resource type
         public bool IsResourceTypeRule { get { return Path.Equals(ResourceType);  } }
 
-        public static AnonymizationFhirPathRule CreateAnonymizationFhirPathRule(Dictionary<string, JToken> config)
+        public static AnonymizationFhirPathRule CreateAnonymizationFhirPathRule(Dictionary<string, object> config)
         {
             if (config == null)
             {
@@ -42,14 +38,6 @@ namespace Fhir.Anonymizer.Core.AnonymizationConfigurations
             string path = config[Constants.PathKey].ToString();
             string method = config[Constants.MethodKey].ToString();
 
-            string replaceWith = null;
-            bool isPrimitiveReplacement = false;
-            if (config.ContainsKey(Constants.ReplaceWithKey))
-            {
-                replaceWith = config[Constants.ReplaceWithKey]?.ToString();
-                isPrimitiveReplacement = (config[Constants.ReplaceWithKey]?.Type ?? JTokenType.Null) != JTokenType.Object;
-            }
-
             // Parse expression and resource type from path
             string resourceType = null;
             string expression = null;
@@ -67,11 +55,11 @@ namespace Fhir.Anonymizer.Core.AnonymizationConfigurations
             }
 
             return new AnonymizationFhirPathRule(path, expression, resourceType, 
-                method, AnonymizerRuleType.FhirPathRule, path, replaceWith, isPrimitiveReplacement);
+                method, AnonymizerRuleType.FhirPathRule, path, config);
         }
 
         public AnonymizationFhirPathRule(string path, string expression, string resourceType, string method,
-            AnonymizerRuleType type, string source, string replaceWith = null, bool isPrimitiveReplacement = false)
+            AnonymizerRuleType type, string source, Dictionary<string, object> settings = null)
             : base(path, method, type, source)
         {
             if (string.IsNullOrEmpty(expression))
@@ -81,8 +69,7 @@ namespace Fhir.Anonymizer.Core.AnonymizationConfigurations
 
             Expression = expression;
             ResourceType = resourceType;
-            ReplaceWith = replaceWith;
-            IsPrimitiveReplacement = isPrimitiveReplacement;
+            RuleSettings = settings;
         }
     }
 }

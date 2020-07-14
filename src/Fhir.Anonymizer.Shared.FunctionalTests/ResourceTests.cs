@@ -50,14 +50,14 @@ namespace Fhir.Anonymizer.FunctionalTests
         }
 
         [Fact]
-        public void GivenAPatientResource_WhenAnonymizingWitPrimitiveSubstituteConfig_ThenAnonymizedJsonShouldBeReturned()
+        public void GivenAPatientResource_WhenAnonymizingWithPrimitiveSubstituteConfig_ThenAnonymizedJsonShouldBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "substitute-primitive.json"));
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-substitute-primitive.json"), ResourceTestsFile("patient-substitute-primitive-target.json"));
         }
 
         [Fact]
-        public void GivenAPatientResource_WhenAnonymizingWitComplexSubstituteConfig_ThenAnonymizedJsonShouldBeReturned()
+        public void GivenAPatientResource_WhenAnonymizingWithComplexSubstituteConfig_ThenAnonymizedJsonShouldBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "substitute-complex.json"));
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-substitute-complex.json"), ResourceTestsFile("patient-substitute-complex-target.json"));
@@ -68,6 +68,17 @@ namespace Fhir.Anonymizer.FunctionalTests
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "substitute-conflict-rules.json"));
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-substitute-conflict-rules.json"), ResourceTestsFile("patient-substitute-conflict-rules-target.json"));
+        }
+
+        [Fact]
+        public void GivenAPatientResource_WhenAnonymizingWithMultipleSubstituteConfig_ThenAnonymizedJsonShouldBeReturned()
+        {
+            // Child node is substituted first
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "substitute-multiple.json"));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-substitute-multiple.json"), ResourceTestsFile("patient-substitute-multiple-target.json"));
+            // Parent node is substituted first
+            engine = new AnonymizerEngine(Path.Combine("Configurations", "substitute-multiple-2.json"));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-substitute-multiple-2.json"), ResourceTestsFile("patient-substitute-multiple-2-target.json"));
         }
 
         private string ResourceTestsFile(string fileName)
