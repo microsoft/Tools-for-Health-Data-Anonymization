@@ -1,6 +1,5 @@
 {
-  
-  "version": "R4",
+  "fhirVersion": "R4",
   "fhirPathRules": [
     {
       "path": "nodesByType('Extension')",

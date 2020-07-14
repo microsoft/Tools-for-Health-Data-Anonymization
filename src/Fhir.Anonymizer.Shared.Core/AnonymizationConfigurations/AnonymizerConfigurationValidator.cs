@@ -1,34 +1,30 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Hl7.FhirPath;
-using System.Reflection;
-using Microsoft.Extensions.Logging;
 using Hl7.Fhir.Model;
-using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizerConfigurationValidator
     {
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerConfigurationValidator>();
-        private readonly Dictionary<string, string> allowedVersion= new Dictionary<string,string>{ { "3", "Stu3" },{ "4", "R4" } };
+        
         public void Validate(AnonymizerConfiguration config)
         {
             var currentFullVersion = ModelInfo.Version;
             string version = currentFullVersion.Split('.')[0];
-
             if (!string.IsNullOrEmpty(config.ConfigVersion))
             {      
-                if (!string.Equals(allowedVersion[version], config.ConfigVersion))
+                if (!string.Equals(Constants.allowedVersion[version], config.ConfigVersion))
                 {
-                    throw new AnonymizerConfigurationErrorsException($"The version of configuration is {config.ConfigVersion} where the {allowedVersion[version]} executable file is running");                  
+                    throw new AnonymizerConfigurationErrorsException($"The version of executable and configuration do not match: executable version is {Constants.allowedVersion[version]} but configuration version is {config.ConfigVersion}.");                  
                 }
             }
             else
             {
-                _logger.LogWarning($"No version specification of configuration file, the version of {allowedVersion[version]} is assumed here. Mistakes may accured by this assumption");
+                _logger.LogWarning($"Version is not specified in configuration file, the version of {Constants.allowedVersion[version]} is assumed here. Mistakes may accured by this assumption");
             }
 
             if (config.FhirPathRules == null)

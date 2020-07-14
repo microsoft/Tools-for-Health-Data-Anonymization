@@ -7,7 +7,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
     [DataContract]
     public class AnonymizerConfiguration
     {
-        [DataMember(Name = "version")]
+        [DataMember(Name = "fhirVersion")]
         public string ConfigVersion { get; set; }
 
         [DataMember(Name = "fhirPathRules")]

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Fhir.Anonymizer.Core
 {
@@ -30,5 +28,7 @@ namespace Fhir.Anonymizer.Core
 
         internal const string GeneralResourceType = "Resource";
         internal const string GeneralDomainResourceType = "DomainResource";
+
+        internal static Dictionary<string, string> allowedVersion = new Dictionary<string, string> { { "3", "Stu3" }, { "4", "R4" } };
     }
 }
