@@ -12,14 +12,15 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerConfigurationValidator>();
         
         public void Validate(AnonymizerConfiguration config)
-        {   
-            if (!string.IsNullOrEmpty(config.FhirVersion) && !string.Equals(Constants.supportedVersion, config.FhirVersion, StringComparison.InvariantCultureIgnoreCase))
+        {
+            
+            if (string.IsNullOrEmpty(config.FhirVersion)) 
             {
-                throw new AnonymizerConfigurationErrorsException($"Configuration of fhirVersion {config.FhirVersion} is not supported. Expected fhirVersion: {Constants.supportedVersion}");
+                _logger.LogWarning($"Version is not specified in configuration file.");                            
             }
-            else
+            else if (!string.Equals(Constants.SupportedVersion, config.FhirVersion, StringComparison.InvariantCultureIgnoreCase))
             {
-                _logger.LogWarning($"Version is not specified in configuration file.");
+                throw new AnonymizerConfigurationErrorsException($"Configuration of fhirVersion {config.FhirVersion} is not supported. Expected fhirVersion: {Constants.SupportedVersion}");
             }
             
             if (config.FhirPathRules == null)

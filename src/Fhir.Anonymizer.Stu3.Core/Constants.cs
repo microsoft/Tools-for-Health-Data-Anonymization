@@ -4,6 +4,6 @@ namespace Fhir.Anonymizer.Core
 {
     internal static partial class Constants
     {
-        internal const string supportedVersion = "STU3";
+        internal const string SupportedVersion = "STU3";
     }
 }
