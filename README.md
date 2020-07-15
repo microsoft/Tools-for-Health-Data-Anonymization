@@ -270,12 +270,13 @@ Here is a sample configuration for R4:
   }
 }
 ```
-### FhirVersion Specify
+### FhirVersion Specification
 | fhirVersion | Desciption |
 | ----- | ----- |
 |Stu3|Specify STU 3 version for the configuration file|
 |R4|Specify R4 version for the configuration file|
 |Empty or Null| The configuration file will be specified the same version with the running executable file.
+|Other values| Other values will raise an exception.
 
 > **[!NOTE]**
 > When  _fhirVersion_ section is missing or empty, the program will not throw an exception but give a warning information.
