@@ -278,8 +278,7 @@ Here is a sample configuration for R4:
 |Empty or Null| The configuration file will be specified the same version with the running executable file.
 |Other values| Other values will raise an exception.
 
-> **[!NOTE]**
-> When  _fhirVersion_ section is missing or empty, the program will not throw an exception but give a warning information.
+
 ### FHIR Path Rules
 FHIR path rules can be used to specify the de-identification methods for individual elements as well as elements of specific data types. Ex:
 
