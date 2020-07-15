@@ -17,6 +17,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
             }
 
             FhirPathCompiler compiler = new FhirPathCompiler();
+            var supportedMethods = Enum.GetNames(typeof(AnonymizerMethod)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
             foreach (var rule in config.FhirPathRules)
             {
                 if (!rule.ContainsKey(Constants.PathKey) || !rule.ContainsKey(Constants.MethodKey))
@@ -36,7 +37,6 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 
                 // Method validate
                 string method = rule[Constants.MethodKey].ToString();
-                var supportedMethods = Enum.GetNames(typeof(AnonymizerMethod)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
                 if (!supportedMethods.Contains(method))
                 {
                     throw new AnonymizerConfigurationErrorsException($"Anonymization method {method} not supported.");
