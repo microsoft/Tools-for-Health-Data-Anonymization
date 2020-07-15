@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Fhir.Anonymizer.Core.Processors;
 using Hl7.FhirPath;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
@@ -35,9 +36,10 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 
                 // Method validate
                 string method = rule[Constants.MethodKey].ToString();
-                if (!Enum.TryParse<AnonymizerMethod>(method, true, out _))
+                var supportedMethods = Enum.GetNames(typeof(AnonymizerMethod)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+                if (!supportedMethods.Contains(method))
                 {
-                    throw new AnonymizerConfigurationErrorsException($"{method} not support.");
+                    throw new AnonymizerConfigurationErrorsException($"Anonymization method {method} not supported.");
                 }
 
                 // Should provide replacement value for substitue rule

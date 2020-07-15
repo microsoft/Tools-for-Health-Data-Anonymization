@@ -119,6 +119,10 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             Assert.Equal("ExampleCity2020", patientCity.Value.ToString());
             patientCountry = patientNode.Select("Patient.address[0].country").FirstOrDefault();
             Assert.Equal("patienttestcountry1", patientCountry.Value.ToString());
+
+            patient = patientNode.ToPoco<Patient>();
+            Assert.Single(patient.Meta.Security);
+            Assert.Contains(SecurityLabels.SUBSTITUTED.Code, patient.Meta.Security.Select(s => s.Code));
         }
 
         [Fact]
@@ -146,6 +150,10 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             Assert.Equal("ExampleCity2020", patientCity.Value.ToString());
             patientCountry = patientNode.Select("Patient.address[0].country").FirstOrDefault();
             Assert.Null(patientCountry);
+
+            patient = patientNode.ToPoco<Patient>();
+            Assert.Single(patient.Meta.Security);
+            Assert.Contains(SecurityLabels.SUBSTITUTED.Code, patient.Meta.Security.Select(s => s.Code));
         }
 
         [Fact]

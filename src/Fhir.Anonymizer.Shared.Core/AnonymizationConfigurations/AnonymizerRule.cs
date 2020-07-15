@@ -23,10 +23,5 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
             Type = type;
             Source = source;
         }
-
-        public bool Supports(string method)
-        {
-            return string.Equals(Method, method, StringComparison.InvariantCultureIgnoreCase);
-        }
     }
 }
