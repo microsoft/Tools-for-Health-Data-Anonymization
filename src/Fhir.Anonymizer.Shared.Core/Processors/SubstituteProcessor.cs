@@ -95,7 +95,7 @@ namespace Fhir.Anonymizer.Core.Processors
                     }
                     else
                     {
-                        // Remove source node when no target node availabe and we don't need to keep the source node
+                        // Remove source node when no target node available and we don't need to keep the source node
                         node.Remove(child);
                     }
                 }
