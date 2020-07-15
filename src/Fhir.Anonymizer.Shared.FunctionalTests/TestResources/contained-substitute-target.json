@@ -3,9 +3,8 @@
   "meta": {
     "security": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
-        "code": "ABSTRED",
-        "display": "exact value is replaced with a range"
+        "code": "SUBSTITUTED",
+        "display": "exact value is replaced with a predefined value"
       }
     ]
   },

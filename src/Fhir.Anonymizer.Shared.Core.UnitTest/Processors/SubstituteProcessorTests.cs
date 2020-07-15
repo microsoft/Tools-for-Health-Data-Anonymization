@@ -109,7 +109,7 @@ namespace Fhir.Anonymizer.Core.UnitTest.Processors
             var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
 
             var processResult = processor.Process(node, context, settings);
-            Assert.True(processResult.IsAbstracted);
+            Assert.True(processResult.IsSubstituted);
             Assert.Equal(node.Value?.ToString(), settings["replaceWith"]?.ToString());
         }
 
@@ -126,7 +126,7 @@ namespace Fhir.Anonymizer.Core.UnitTest.Processors
             var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
 
             var processResult = processor.Process(node, context, settings);
-            Assert.True(processResult.IsAbstracted);
+            Assert.True(processResult.IsSubstituted);
             Assert.Equal(targetJson, Standardize(node));
         }
 
@@ -147,12 +147,12 @@ namespace Fhir.Anonymizer.Core.UnitTest.Processors
             if (isPrimitive)
             {
                 // Primitive types are not substituted
-                Assert.False(processResult.IsAbstracted);
+                Assert.False(processResult.IsSubstituted);
                 Assert.Equal(targetJson, node.Value);
             }
             else
             {
-                Assert.True(processResult.IsAbstracted);
+                Assert.True(processResult.IsSubstituted);
                 Assert.Equal(targetJson, Standardize(node));
             }
         }

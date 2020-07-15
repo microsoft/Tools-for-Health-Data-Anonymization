@@ -19,7 +19,7 @@ namespace Fhir.Anonymizer.Core.Models
         {
             get
             {
-                return ProcessRecords.ContainsKey(AnonymizationOperations.Abstract) || ProcessRecords.ContainsKey(AnonymizationOperations.Substitute);
+                return ProcessRecords.ContainsKey(AnonymizationOperations.Abstract);
             }
         }
 
@@ -44,6 +44,13 @@ namespace Fhir.Anonymizer.Core.Models
             get 
             {
                 return ProcessRecords.ContainsKey(AnonymizationOperations.Perturb);
+            }
+        }
+        public bool IsSubstituted
+        {
+            get
+            {
+                return ProcessRecords.ContainsKey(AnonymizationOperations.Substitute);
             }
         }
 

@@ -37,5 +37,11 @@ namespace Fhir.Anonymizer.Core.Models
             Code = "PERTURBED",
             Display = "exact value is replaced with another exact value"
         };
+
+        public static readonly Coding SUBSTITUTED = new Coding()
+        {
+            Code = "SUBSTITUTED",
+            Display = "exact value is replaced with a predefined value"
+        };
     }
 }
