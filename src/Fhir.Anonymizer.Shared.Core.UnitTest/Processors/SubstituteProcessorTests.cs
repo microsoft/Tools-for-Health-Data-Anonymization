@@ -26,6 +26,12 @@ namespace Fhir.Anonymizer.Core.UnitTest.Processors
 
         public static IEnumerable<object[]> GetComplexNodes()
         {
+            yield return new object[]
+            {
+                new Address { State = "DC" },
+                "{ \"replaceWith\": null }",
+                "{}"
+            };
             yield return new object[] 
             {
                 new Address { State = "DC" },
@@ -48,11 +54,6 @@ namespace Fhir.Anonymizer.Core.UnitTest.Processors
 
         public static IEnumerable<object[]> GetInvalidReplaceValue()
         {
-            yield return new object[]
-            {
-                new Address { State = "DC" },
-                "{\"replaceWith\": null }"
-            };
             yield return new object[]
             {
                 new Address { State = "DC" },

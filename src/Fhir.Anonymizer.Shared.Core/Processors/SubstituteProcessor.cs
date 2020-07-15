@@ -21,32 +21,30 @@ namespace Fhir.Anonymizer.Core.Processors
 
         public ProcessResult Process(ElementNode node, ProcessContext context = null, Dictionary<string, object> settings = null)
         {
+            EnsureArg.IsNotNull(node);
+            EnsureArg.IsNotNull(context?.VisitedNodes);
             EnsureArg.IsNotNull(settings);
-            EnsureArg.IsNotNull(context);
-            EnsureArg.IsNotNull(context.VisitedNodes);
 
             var substituteSetting = SubstituteSetting.CreateFromRuleSettings(settings);
             ElementNode replacementNode;
             // Get replacementNode for substitution  
             if (ModelInfo.IsPrimitive(node.InstanceType))
             {
+                // Handle replaceWith value of string
                 replacementNode = GetPrimitiveNode(substituteSetting.ReplaceWith);
             }
             else
             {
-                if (string.IsNullOrEmpty(substituteSetting.ReplaceWith))
-                {
-                    throw new FormatException($"Replacement value is invalid at path {node.GetFhirPath()}.");
-                }
-
+                // Handle replaceWith value of json object
                 var replacementNodeType = ModelInfo.GetTypeForFhirType(node.InstanceType);
                 if (replacementNodeType == null)
                 {
-                    // Shall never be null
+                    // Shall never throws here
                     throw new Exception($"Node type is invalid at path {node.GetFhirPath()}.");
                 }
-
-                var replaceElement = _parser.Parse(substituteSetting.ReplaceWith, replacementNodeType).ToTypedElement();
+                // Convert null object to empty object
+                var replaceWith = substituteSetting.ReplaceWith ?? "{}";
+                var replaceElement = _parser.Parse(replaceWith, replacementNodeType).ToTypedElement();
                 replacementNode = ElementNode.FromElement(replaceElement);
             }
 
