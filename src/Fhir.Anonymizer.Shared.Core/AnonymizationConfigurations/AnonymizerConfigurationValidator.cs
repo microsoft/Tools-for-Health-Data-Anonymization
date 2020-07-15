@@ -1,15 +1,28 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Hl7.FhirPath;
+using Hl7.Fhir.Model;
+using Microsoft.Extensions.Logging;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizerConfigurationValidator
     {
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerConfigurationValidator>();
+        
         public void Validate(AnonymizerConfiguration config)
         {
+            
+            if (string.IsNullOrEmpty(config.FhirVersion)) 
+            {
+                _logger.LogWarning($"Version is not specified in configuration file.");                            
+            }
+            else if (!string.Equals(Constants.SupportedVersion, config.FhirVersion, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new AnonymizerConfigurationErrorsException($"Configuration of fhirVersion {config.FhirVersion} is not supported. Expected fhirVersion: {Constants.SupportedVersion}");
+            }
+            
             if (config.FhirPathRules == null)
             {
                 throw new AnonymizerConfigurationErrorsException("The configuration is invalid, please specify any fhirPathRules");
