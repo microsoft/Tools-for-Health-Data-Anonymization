@@ -6,7 +6,7 @@
     <SharedGUID>f7a47fd1-bd24-41a6-b3c6-2dd062523271</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Fhir.Anonymizer.Shared.Core.UnitTest</Import_RootNamespace>
+    <Import_RootNamespace>Fhir.Anonymizer.Core.UnitTests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizationFhirPathRuleTests.cs" />
