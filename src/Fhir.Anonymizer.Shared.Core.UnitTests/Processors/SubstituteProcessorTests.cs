@@ -10,7 +10,7 @@ using Hl7.FhirPath;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTest.Processors
+namespace Fhir.Anonymizer.Core.UnitTests.Processors
 {
     public class SubstituteProcessorTests
     {

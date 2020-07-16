@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Fhir.Anonymizer.Core
 {
-    internal static class Constants
+    internal static partial class Constants
     {
         // InstanceType constants
         internal const string DateTypeName = "date";
@@ -32,5 +30,6 @@ namespace Fhir.Anonymizer.Core
 
         internal const string GeneralResourceType = "Resource";
         internal const string GeneralDomainResourceType = "DomainResource";
+
     }
 }

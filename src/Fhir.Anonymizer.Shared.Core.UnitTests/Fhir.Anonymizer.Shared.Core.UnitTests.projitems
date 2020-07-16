@@ -6,7 +6,7 @@
     <SharedGUID>f7a47fd1-bd24-41a6-b3c6-2dd062523271</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Fhir.Anonymizer.Shared.Core.UnitTest</Import_RootNamespace>
+    <Import_RootNamespace>Fhir.Anonymizer.Core.UnitTests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizationFhirPathRuleTests.cs" />
@@ -41,6 +41,21 @@
     <Compile Include="$(MSBuildThisFileDirectory)Visitors\AnonymizationVisitorTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurationsVersion\configuration-empty-version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurationsVersion\configuration-invalid-version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurationsVersion\configuration-null-version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurationsVersion\configuration-R4-version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurationsVersion\configuration-Stu3-version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-invalid-fhirpath.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

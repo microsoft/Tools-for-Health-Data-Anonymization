@@ -1,4 +1,5 @@
 ﻿{
+  "fhirVersion": "Stu3",
   "fhirPathRules": [
     {
       "path": "Patient.nodesByType('HumanName')",
@@ -15,11 +16,16 @@
     {
       "path": "Resource",
       "method": "keep"
+    },
+    {
+      "path": "Device.where(id.exists()).id",
+      "method": "keep"
     }
+
   ],
   "parameters": {
     "dateShiftKey": "",
-    "encryptKey": "01234567890123456789",
+    "cryptoHashKey": "",
     "enablePartialAgesForRedact": true,
     "enablePartialDatesForRedact": true,
     "enablePartialZipCodesForRedact": true,

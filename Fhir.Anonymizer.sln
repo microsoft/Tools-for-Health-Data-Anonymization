@@ -28,7 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.AzureDat
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Core", "src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.shproj", "{8918CE75-F36E-4CB4-8232-12024A1E41AC}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Core.UnitTest", "src\Fhir.Anonymizer.Shared.Core.UnitTest\Fhir.Anonymizer.Shared.Core.UnitTest.shproj", "{F7A47FD1-BD24-41A6-B3C6-2DD062523271}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Core.UnitTests", "src\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.shproj", "{F7A47FD1-BD24-41A6-B3C6-2DD062523271}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.FunctionalTests", "src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.shproj", "{19E3E7A2-17A6-4708-B9F2-04A2C9968C83}"
 EndProject
@@ -45,15 +45,15 @@ Global
 		src\Fhir.Anonymizer.Shared.CommandLineTool\Fhir.Anonymizer.Shared.CommandLineTool.projitems*{140255c7-6c80-4a3c-a248-ae8cdfdcf907}*SharedItemsImports = 13
 		src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.projitems*{19e3e7a2-17a6-4708-b9f2-04a2c9968c83}*SharedItemsImports = 13
 		src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.projitems*{37241a6c-0897-4837-b845-10a54f1b3c7c}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.Core.UnitTest\Fhir.Anonymizer.Shared.Core.UnitTest.projitems*{3f277aa6-5ad7-4e13-8a2c-b112d1cecde1}*SharedItemsImports = 5
+		src\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{3f277aa6-5ad7-4e13-8a2c-b112d1cecde1}*SharedItemsImports = 5
 		src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.projitems*{6919ce19-56bc-4ec9-a16e-111401607daf}*SharedItemsImports = 5
 		src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.projitems*{71945966-a531-466c-8c66-6c6eba591832}*SharedItemsImports = 5
 		src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.projitems*{8918ce75-f36e-4cb4-8232-12024a1e41ac}*SharedItemsImports = 13
 		src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.projitems*{96456150-db43-4970-9e22-7003516fa05e}*SharedItemsImports = 5
 		src\Fhir.Anonymizer.Shared.CommandLineTool\Fhir.Anonymizer.Shared.CommandLineTool.projitems*{d4ba9a53-bc94-4536-9dee-b264f4b13b61}*SharedItemsImports = 5
 		src\Fhir.Anonymizer.Shared.CommandLineTool\Fhir.Anonymizer.Shared.CommandLineTool.projitems*{e443ba88-3005-4aee-bda4-beaf88d520bc}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.Core.UnitTest\Fhir.Anonymizer.Shared.Core.UnitTest.projitems*{f6ab65d3-6e69-433f-b84a-e469d2ab1090}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.Core.UnitTest\Fhir.Anonymizer.Shared.Core.UnitTest.projitems*{f7a47fd1-bd24-41a6-b3c6-2dd062523271}*SharedItemsImports = 13
+		src\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{f6ab65d3-6e69-433f-b84a-e469d2ab1090}*SharedItemsImports = 5
+		src\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{f7a47fd1-bd24-41a6-b3c6-2dd062523271}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

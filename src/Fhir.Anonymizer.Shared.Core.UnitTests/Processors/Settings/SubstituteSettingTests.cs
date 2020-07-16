@@ -3,7 +3,7 @@ using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.Processors.Settings;
 using Xunit;
 
-namespace Fhir.Anonymizer.Shared.Core.UnitTest.Processors.Settings
+namespace Fhir.Anonymizer.Core.UnitTests.Processors.Settings
 {
     public class SubstituteSettingTests
     {

@@ -26,6 +26,6 @@
     <ProjectReference Include="..\Fhir.Anonymizer.Stu3.Core\Fhir.Anonymizer.Stu3.Core.csproj" />
   </ItemGroup>
 
-  <Import Project="..\Fhir.Anonymizer.Shared.Core.UnitTest\Fhir.Anonymizer.Shared.Core.UnitTest.projitems" Label="Shared" />
+  <Import Project="..\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.projitems" Label="Shared" />
 
 </Project>
