@@ -1,4 +1,5 @@
 {
+  "fhirVersion": "R4",
   "fhirPathRules": [
     {"path": "nodesByType('Extension')", "method": "redact"},
 

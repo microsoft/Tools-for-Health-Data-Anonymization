@@ -1,4 +1,5 @@
 ﻿{
+  "fhirVersion": "",
   "fhirPathRules": [
     {
       "path": "Resource",
