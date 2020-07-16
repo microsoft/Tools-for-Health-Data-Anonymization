@@ -325,7 +325,7 @@ To substitute city values of Address data type with "example city"
 ```json
 {"path": "nodesByType('Address').city", "method": "substitute", "replaceWith": "example city"}
 ```
-To substitute Address data types with a fixed json fragement
+To substitute Address data types with a fixed json fragment
 ```json
 {
   "path": "nodesByType('Address')", 
