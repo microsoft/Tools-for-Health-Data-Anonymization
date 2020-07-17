@@ -1,7 +1,6 @@
 <#
 .PARAMETER AppVersion
-    Default: win10-x64
-    Specify the dotnet runtime id in your compute node.
+    Specify the version of app.
 #>
 
 [cmdletbinding()]
