@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>f7a47fd1-bd24-41a6-b3c6-2dd062523271</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Fhir.Anonymizer.Core.UnitTests</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizationFhirPathRuleTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationManagerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationValidatorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngineTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeNavExtensionTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeVisitorExtensionsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementTypeExtensionsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\FhirPathSymbolExtensionsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SecurityTagExtensionsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirEnumerableReaderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirPartitionedExecutionTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirStreamConsumerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirStreamReaderTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\CryptoHashProcessorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\DateShiftProcessorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\EncryptProcessorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\CryptoHashUtilityTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\DateTimeUtilityTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\EncryptUtilityTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\PostalCodeUtilityTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\ReferenceUtilityTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Validation\AttributeValidatorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Visitors\AnonymizationVisitorTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurationsVersion\configuration-empty-version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurationsVersion\configuration-invalid-version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurationsVersion\configuration-null-version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurationsVersion\configuration-R4-version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurationsVersion\configuration-Stu3-version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-invalid-fhirpath.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-miss-rules.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-test-sample.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-unsupported-method.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestResources\bundle-basic.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestResources\contained-basic.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-invalid-encryptkey.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>
