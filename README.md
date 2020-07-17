@@ -294,7 +294,7 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |dateShift|Elements of type date, dateTime, and instant | Shifts the value using the [Date-shift algorithm](#date-shift-algorithm).
 |cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
 |encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
-|substitute|All elements| [Substitute](#Substitute-method) the value to a predefined value.  |
+|substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value.  |
 
 Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
@@ -398,7 +398,7 @@ We use AES-CBC algorithm to transform FHIR data with an encryption key, and then
 3. If you want the anonymized output to be conformant to the FHIR specification, do use encrypt method on those fields that accept a Base64 encoded value. Besides, avoid encrypting data fields with length limits because the Base64 encoded value will be longer than the original value.
 
 ## Substitute method
-You can specify a fixed, valid value to replace a target FHIR field. For example, for postal code, user can provide "12233". For birth date, user can provide '1990-01-01', etc.
+You can specify a fixed, valid value to replace a target FHIR field. For example, for postal code, you can provide "12233". For birth date, you can provide '1990-01-01', etc.
 
 For complex data types, you can provide a fixed json fragment following the [sample rules](#Sample-rules-using-FHIRPath).
 You should provide valid value for the target data type to avoid unexpected errors.
