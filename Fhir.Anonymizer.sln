@@ -28,8 +28,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.AzureDat
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Core", "src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.shproj", "{8918CE75-F36E-4CB4-8232-12024A1E41AC}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Core.UnitTests", "src\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.shproj", "{F7A47FD1-BD24-41A6-B3C6-2DD062523271}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.FunctionalTests", "src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.shproj", "{19E3E7A2-17A6-4708-B9F2-04A2C9968C83}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.CommandLineTool", "src\Fhir.Anonymizer.R4.CommandLineTool\Fhir.Anonymizer.R4.CommandLineTool.csproj", "{D4BA9A53-BC94-4536-9DEE-B264F4B13B61}"
@@ -39,6 +37,8 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.CommandLineTool", "src\Fhir.Anonymizer.Shared.CommandLineTool\Fhir.Anonymizer.Shared.CommandLineTool.shproj", "{140255C7-6C80-4A3C-A248-AE8CDFDCF907}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests", "src\Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests\Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests.csproj", "{619BB4C9-455C-48FA-83AD-4B98AADC74C2}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Core.UnitTests", "src\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.shproj", "{F7A47FD1-BD24-41A6-B3C6-2DD062523271}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -113,12 +113,12 @@ Global
 		{6919CE19-56BC-4EC9-A16E-111401607DAF} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
 		{786E4AF9-F95D-441A-B5B0-329C616AA2E8} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{8918CE75-F36E-4CB4-8232-12024A1E41AC} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
-		{F7A47FD1-BD24-41A6-B3C6-2DD062523271} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
 		{19E3E7A2-17A6-4708-B9F2-04A2C9968C83} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
 		{D4BA9A53-BC94-4536-9DEE-B264F4B13B61} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{E443BA88-3005-4AEE-BDA4-BEAF88D520BC} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{140255C7-6C80-4A3C-A248-AE8CDFDCF907} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{619BB4C9-455C-48FA-83AD-4B98AADC74C2} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{F7A47FD1-BD24-41A6-B3C6-2DD062523271} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19A940B3-FA97-4729-AC91-EE68070BCFC1}
