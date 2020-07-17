@@ -1,0 +1,13 @@
+{
+  "dataFactoryName": "DataFactoryName",
+  "resourceLocation": "WestUS",
+  "sourceStorageAccountName": "sourceStorageAccountName",
+  "sourceStorageAccountKey": "sourceStorageAccountKey",
+  "destinationStorageAccountName": "destinationStorageAccountName",
+  "destinationStorageAccountKey": "destinationStorageAccountKey",
+  "sourceStorageContainerName": "sourceStorageContainerName",
+  "destinationStorageContainerName": "destinationStorageContainerName",
+  "sourceContainerFolderPath": "",
+  "destinationContainerFolderPath": "",
+  "activityContainerName": "customactivityContainerName"
+}

@@ -5,6 +5,11 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="..\Fhir.Anonymizer.R4.CommandLineTool\configuration-sample.json" Link="configuration-sample.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -20,5 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Fhir.Anonymizer.R4.Core\Fhir.Anonymizer.R4.Core.csproj" />
   </ItemGroup>
+
+  <Import Project="..\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems" Label="Shared" />
 
 </Project>

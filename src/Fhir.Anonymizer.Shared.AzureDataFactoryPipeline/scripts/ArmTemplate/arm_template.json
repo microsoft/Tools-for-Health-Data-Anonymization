@@ -57,6 +57,10 @@
             "type": "string",
             "metadata": "Azure Batch Uri"
         },
+        "appVersion": {
+            "type": "string",
+            "metadata": "App Version"
+        },
         "solutionName": {
             "type": "string",
             "defaultValue": "FHIRAnonymizer",
@@ -98,47 +102,47 @@
                         },
                         "userProperties": [],
                         "typeProperties": {
-                            "command": "cmd /c Powershell.exe -File CustomActivity.ps1",
-                            "resourceLinkedService": {
-                                "referenceName": "DestinationStorageLinkedService",
-                                "type": "LinkedServiceReference"
-                            },
-                            "folderPath": "[concat(parameters('sourceStorageActivityApplicationContainer'), '/AdfApplication')]",
-                            "extendedProperties": {
-                                "sourceConnectionString": "[parameters('sourceStorageLinkedService_connectionString')]",
-                                "destinationConnectionString": "[parameters('destinationStorageLinkedService_connectionString')]",
-                                "skipExistedBlob": {
-                                    "value": "@pipeline().parameters.skipExistedBlob",
-                                    "type": "Expression"
-                                }
-                            },
-                            "referenceObjects": {
-                                "linkedServices": [
-                                    {
-                                        "referenceName": "SourceStorageLinkedService",
-                                        "type": "LinkedServiceReference",
-                                        "parameters": {}
-                                    },
-                                    {
-                                        "referenceName": "DestinationStorageLinkedService",
-                                        "type": "LinkedServiceReference",
-                                        "parameters": {}
-                                    }
-                                ],
-                                "datasets": [
-                                    {
-                                        "referenceName": "InputDataset",
-                                        "type": "DatasetReference",
-                                        "parameters": {}
-                                    },
-                                    {
-                                        "referenceName": "OutputDataset",
-                                        "type": "DatasetReference",
-                                        "parameters": {}
-                                    }
-                                ]
-                            }
+                          "command": "[concat('cmd /c Powershell.exe -File CustomActivity.ps1 -AppVersion ', parameters('appVersion'))]",
+                          "resourceLinkedService": {
+                            "referenceName": "DestinationStorageLinkedService",
+                            "type": "LinkedServiceReference"
+                          },
+                        "folderPath": "[concat(parameters('sourceStorageActivityApplicationContainer'), '/', parameters('appVersion'), '.AdfApplication')]",
+                        "extendedProperties": {
+                          "sourceConnectionString": "[parameters('sourceStorageLinkedService_connectionString')]",
+                          "destinationConnectionString": "[parameters('destinationStorageLinkedService_connectionString')]",
+                          "skipExistedBlob": {
+                            "value": "@pipeline().parameters.skipExistedBlob",
+                            "type": "Expression"
+                          }
                         },
+                        "referenceObjects": {
+                          "linkedServices": [
+                            {
+                              "referenceName": "SourceStorageLinkedService",
+                              "type": "LinkedServiceReference",
+                              "parameters": {}
+                            },
+                            {
+                              "referenceName": "DestinationStorageLinkedService",
+                              "type": "LinkedServiceReference",
+                              "parameters": {}
+                            }
+                          ],
+                          "datasets": [
+                            {
+                              "referenceName": "InputDataset",
+                              "type": "DatasetReference",
+                              "parameters": {}
+                            },
+                            {
+                              "referenceName": "OutputDataset",
+                              "type": "DatasetReference",
+                              "parameters": {}
+                            }
+                          ]
+                        }
+                      },
                         "linkedServiceName": {
                             "referenceName": "AzureBatchLinkedService",
                             "type": "LinkedServiceReference"
