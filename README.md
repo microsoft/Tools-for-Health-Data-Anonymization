@@ -275,7 +275,7 @@ Here is a sample configuration for R4:
 | ----- | ----- |
 |Stu3|Specify STU 3 version for the configuration file|
 |R4|Specify R4 version for the configuration file|
-|Empty or Null| The configuration file will be specified the same version with the running executable file.
+|Empty or Null| The configuration file targets the same FHIR version as the executable.
 |Other values| Other values will raise an exception.
 
 
