@@ -38,7 +38,7 @@
 
 [cmdletbinding()]
 param(
-    [string]$ConfigFile = "..\..\Fhir.Anonymizer.R4.AzureDataFactoryPipeline\AzureDataFactorySettings.json",
+    [string]$ConfigFile = "..\..\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline\AzureDataFactorySettings.json",
     [Parameter(Mandatory=$true)]
     [string]$BatchAccountName,
     [Parameter(Mandatory=$true)]
@@ -50,7 +50,7 @@ param(
     [string]$BatchComputeNodeRuntimeId = "win10-x64"
 )
 
-$fhirVersion = "R4"
+$FhirVersion = "Stu3"
 
 cd ../Fhir.Anonymizer.Shared.AzureDataFactoryPipeline/scripts
-.\DeployAzureDataFactoryPipeline.ps1 -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -ResourceGroupName $ResourceGroupName -FhirVersion $fhirVersion -ConfigFile $ConfigFile
+.\AzureDataFactoryPipelineUtility.ps1 -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -ResourceGroupName $ResourceGroupName -FhirVersion $fhirVersion -ConfigFile $ConfigFile

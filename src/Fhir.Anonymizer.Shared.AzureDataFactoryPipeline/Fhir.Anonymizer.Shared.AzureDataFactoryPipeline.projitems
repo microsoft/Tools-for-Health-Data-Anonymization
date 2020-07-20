@@ -21,6 +21,6 @@
     <None Include="$(MSBuildThisFileDirectory)scripts\ArmTemplate\arm_template.json" />
     <None Include="$(MSBuildThisFileDirectory)scripts\ArmTemplate\arm_template_parameters.json" />
     <None Include="$(MSBuildThisFileDirectory)scripts\CustomActivity.ps1" />
-    <None Include="$(MSBuildThisFileDirectory)scripts\DeployAzureDataFactoryPipeline.ps1" />
+    <None Include="$(MSBuildThisFileDirectory)scripts\AzureDataFactoryPipelineUtility.ps1" />
   </ItemGroup>
 </Project>

@@ -102,7 +102,7 @@
                         },
                         "userProperties": [],
                         "typeProperties": {
-                            "command": "[concat('cmd /c Powershell.exe -File CustomActivity.ps1 -FhieVersion ', parameters('fhirVersion'))]",
+                            "command": "[concat('cmd /c Powershell.exe -File CustomActivity.ps1 -FhirVersion ', parameters('fhirVersion'))]",
                             "resourceLinkedService": {
                                 "referenceName": "DestinationStorageLinkedService",
                                 "type": "LinkedServiceReference"
