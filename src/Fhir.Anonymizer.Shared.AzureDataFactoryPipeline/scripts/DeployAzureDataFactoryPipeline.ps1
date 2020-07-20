@@ -34,8 +34,8 @@
 .PARAMETER BatchComputeNodeRuntimeId
     Default: win10-x64
     Specify the dotnet runtime id in your compute node.
-.PARAMETER AppVersion
-    Specify the app version (R4 or Stu3)
+.PARAMETER FhirVersion
+    Specify the FHIR version (R4 or Stu3)
 #>
 
 [cmdletbinding()]
@@ -51,7 +51,7 @@ param(
     [string]$BatchComputeNodeSize = "Standard_d1",
     [string]$BatchComputeNodeRuntimeId = "win10-x64",
     [Parameter(Mandatory=$true)]
-    [string]$AppVersion
+    [string]$FhirVersion
 )
 
 function BuildToolAndUploadToBlobContainer 
@@ -211,7 +211,7 @@ function CreateAzureDataFactoryAndPipeline
     $json.parameters.azureBatchLinkedService_poolName.value = $batchPoolName
     $json.parameters.azureBatchLinkedService_properties_typeProperties_accountName.value = $batchContext.AccountName
     $json.parameters.azureBatchLinkedService_properties_typeProperties_batchUri.value = $batchContext.TaskTenantUrl
-    $json.parameters.appVersion.value = $AppVersion
+    $json.parameters.fhirVersion.value = $FhirVersion
     ConvertTo-Json $json -Depth 10 | Set-Content "./ArmTemplate/arm_template_parameters.json"
 
     # Data Factory settings are overwritten in every Deployment/Execution to make sure input/output/application settings are newest 
@@ -262,7 +262,7 @@ function RunAzureDataFactoryPipeline
 
 $supporttedVersion="stu3","r4"
 # Check App version, case insensititve
-if ($AppVersion -notin $supporttedVersion )
+if ($FhirVersion -notin $supporttedVersion )
 {
     throw "App Version is not supportted"
 }
@@ -300,8 +300,8 @@ else
     Write-Host "Resource Group $ResourceGroupName already exist."
 }
 
-$appName="Fhir.Anonymizer.$AppVersion.AzureDataFactoryPipeline"
-$appFolder = "$AppVersion.AdfApplication"
+$appName="Fhir.Anonymizer.$FhirVersion.AzureDataFactoryPipeline"
+$appFolder = "$FhirVersion.AdfApplication"
 $adfPipelineName = "AdfAnonymizerPipeline"
 
 if (!$RunPipelineOnly) 

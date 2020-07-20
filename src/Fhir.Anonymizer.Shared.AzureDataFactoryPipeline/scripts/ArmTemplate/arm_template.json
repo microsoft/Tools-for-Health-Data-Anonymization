@@ -57,9 +57,9 @@
             "type": "string",
             "metadata": "Azure Batch Uri"
         },
-         "appVersion": {
+         "fhirVersion": {
             "type": "string",
-            "metadata": "App Version"
+            "metadata": "FHIR Version"
         },
         "solutionName": {
             "type": "string",
@@ -102,12 +102,12 @@
                         },
                         "userProperties": [],
                         "typeProperties": {
-                            "command": "[concat('cmd /c Powershell.exe -File CustomActivity.ps1 -AppVersion ', parameters('appVersion'))]",
+                            "command": "[concat('cmd /c Powershell.exe -File CustomActivity.ps1 -FhieVersion ', parameters('fhirVersion'))]",
                             "resourceLinkedService": {
                                 "referenceName": "DestinationStorageLinkedService",
                                 "type": "LinkedServiceReference"
                             },
-                            "folderPath": "[concat(parameters('sourceStorageActivityApplicationContainer'), '/', parameters('appVersion'), '.AdfApplication')]",
+                            "folderPath": "[concat(parameters('sourceStorageActivityApplicationContainer'), '/', parameters('fhirVersion'), '.AdfApplication')]",
                             "extendedProperties": {
                                 "sourceConnectionString": "[parameters('sourceStorageLinkedService_connectionString')]",
                                 "destinationConnectionString": "[parameters('destinationStorageLinkedService_connectionString')]",

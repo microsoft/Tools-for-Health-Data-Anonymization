@@ -50,7 +50,7 @@ param(
     [string]$BatchComputeNodeRuntimeId = "win10-x64"
 )
 
-$appVersion = "Stu3"
+$FhirVersion = "Stu3"
 
 cd ../Fhir.Anonymizer.Shared.AzureDataFactoryPipeline/scripts
-.\DeployAzureDataFactoryPipeline.ps1 -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -ResourceGroupName $ResourceGroupName -AppVersion $appVersion -ConfigFile $ConfigFile
+.\DeployAzureDataFactoryPipeline.ps1 -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -ResourceGroupName $ResourceGroupName -FhirVersion $fhirVersion -ConfigFile $ConfigFile

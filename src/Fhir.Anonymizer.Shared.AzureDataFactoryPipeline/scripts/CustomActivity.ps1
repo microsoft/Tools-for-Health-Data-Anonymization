@@ -1,17 +1,17 @@
 <#
-.PARAMETER AppVersion
-    Specify the version of app.
+.PARAMETER FhirVersion
+    Specify FHIR version.
 #>
 
 [cmdletbinding()]
 param(
-    [string]$AppVersion
+    [string]$FhirVersion
 )
 
 # Script to run custom activity executable
-$AppFolder = "$AppVersion.AdfApplication"
+$AppFolder = "$FhirVersion.AdfApplication"
 Expand-Archive -Path "$AppFolder.zip" -DestinationPath .
-&".\Fhir.Anonymizer.$AppVersion.AzureDataFactoryPipeline.exe" -f
+&".\Fhir.Anonymizer.$FhirVersion.AzureDataFactoryPipeline.exe" -f
 if ($LastExitCode -ne 0) 
 {
     Write-Host "An error occurred."

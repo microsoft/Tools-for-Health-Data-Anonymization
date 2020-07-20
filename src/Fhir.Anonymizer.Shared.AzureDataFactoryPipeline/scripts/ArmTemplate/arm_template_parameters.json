@@ -41,7 +41,7 @@
     "azureBatchLinkedService_properties_typeProperties_batchUri": {
       "value": ""
     },
-    "appversion": {
+    "fhirVersion": {
       "value": ""
     }
   }
