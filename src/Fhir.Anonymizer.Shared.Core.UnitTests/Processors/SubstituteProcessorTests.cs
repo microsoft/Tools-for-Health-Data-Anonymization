@@ -175,7 +175,6 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
 
         private static string Standardize(ElementNode node)
         {
-
             FhirJsonSerializationSettings serializationSettings = new FhirJsonSerializationSettings
             {
                 Pretty = true,

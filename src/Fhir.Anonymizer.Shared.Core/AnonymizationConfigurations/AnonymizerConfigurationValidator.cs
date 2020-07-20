@@ -56,7 +56,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                     throw new AnonymizerConfigurationErrorsException($"Anonymization method {method} not supported.");
                 }
 
-                // Should provide replacement value for substitue rule
+                // Should provide replacement value for substitute rule
                 if (string.Equals(method, AnonymizerMethod.Substitute.ToString(), StringComparison.InvariantCultureIgnoreCase)
                     && !rule.ContainsKey(Constants.ReplaceWithKey))
                 {
