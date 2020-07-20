@@ -1,0 +1,192 @@
+﻿{
+  "resourceType": "Patient",
+  "id": "example",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "part of the resource is removed"
+      },
+      {
+        "code": "SUBSTITUTED",
+        "display": "exact value is replaced with a predefined value"
+      }
+    ]
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Test Html</div>"
+  },
+  "identifier": [
+    {
+      "use": "usual",
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MR"
+          }
+        ]
+      },
+      "system": "urn:oid:1.2.36.146.595.217.0.1",
+      "value": "12345",
+      "period": {
+        "start": "2001-01-01"
+      },
+      "assigner": {
+        "display": "Test Healthcare"
+      }
+    }
+  ],
+  "active": true,
+  "name": [
+    {
+      "family": "example",
+      "given": [
+        "test",
+        "testing"
+      ]
+    },
+    {
+      "family": "example",
+      "given": [
+        "test",
+        "testing"
+      ]
+    },
+    {
+      "family": "example",
+      "given": [
+        "test",
+        "testing"
+      ],
+      "period": {
+        "start": "2002"
+      }
+    }
+  ],
+  "telecom": [
+    {
+      "use": "home"
+    },
+    {
+      "system": "phone",
+      "value": "(01) 1234 5678",
+      "use": "work",
+      "rank": 1
+    },
+    {
+      "system": "phone",
+      "value": "(01) 1234 5678",
+      "use": "mobile",
+      "rank": 2
+    },
+    {
+      "system": "phone",
+      "value": "(01) 4321 8765",
+      "use": "old",
+      "period": {
+        "end": "2014"
+      }
+    }
+  ],
+  "gender": "male",
+  "birthDate": "2000-01-01",
+  "_birthDate": {
+    "extension": [
+      {
+        "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime",
+        "valueDateTime": "2000-01-01T01:01:01-01:00"
+      }
+    ]
+  },
+  "deceasedBoolean": false,
+  "address": [
+    {
+      "use": "home",
+      "type": "both",
+      "text": "123 Test St Test1, Test2, Test3 1234",
+      "line": [
+        "123 Test St"
+      ],
+      "city": "TestCity",
+      "district": "TestRegion",
+      "state": "TestState",
+      "postalCode": "12345",
+      "period": {
+        "start": "2000-01-01"
+      }
+    },
+    {
+      "use": "home",
+      "type": "both",
+      "text": "123 Test St Test1, Test2, Test3 1234",
+      "line": [
+        "123 Test St"
+      ],
+      "city": "KeepTest",
+      "district": "TestRegion",
+      "state": "TestState",
+      "postalCode": "12345",
+      "period": {
+        "start": "2000-01-01"
+      }
+    }
+  ],
+  "contact": [
+    {
+      "relationship": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+              "code": "N"
+            }
+          ]
+        }
+      ],
+      "name": {
+        "family": "TestFamily",
+        "_family": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/humanname-own-prefix",
+              "valueString": "VV"
+            }
+          ]
+        },
+        "given": [
+          "TestGiven"
+        ]
+      },
+      "telecom": [
+        {
+          "system": "phone",
+          "value": "+01 (123) 456789"
+        }
+      ],
+      "address": {
+        "use": "home",
+        "type": "both",
+        "line": [
+          "321 Test St"
+        ],
+        "city": "TestCity",
+        "district": "TestRegion",
+        "state": "TestState",
+        "postalCode": "54321",
+        "period": {
+          "start": "2001-01-01"
+        }
+      },
+      "gender": "female",
+      "period": {
+        "start": "2005"
+      }
+    }
+  ],
+  "managingOrganization": {
+    "reference": "Organization/1"
+  }
+}

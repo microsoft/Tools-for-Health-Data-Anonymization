@@ -11,7 +11,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
         public string FhirVersion { get; set; }
 
         [DataMember(Name = "fhirPathRules")]
-        public Dictionary<string, string>[] FhirPathRules { get; set; }
+        public Dictionary<string, object>[] FhirPathRules { get; set; }
 
         [DataMember(Name = "parameters")]
         public ParameterConfiguration ParameterConfiguration { get; set; }

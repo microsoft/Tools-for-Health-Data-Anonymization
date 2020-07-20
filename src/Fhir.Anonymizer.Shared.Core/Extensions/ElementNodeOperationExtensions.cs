@@ -99,6 +99,12 @@ namespace Fhir.Anonymizer.Core.Extensions
                 meta.Security.Add(SecurityLabels.PERTURBED);
             }
 
+            if (result.IsSubstituted && !meta.Security.Any(x =>
+                string.Equals(x.Code, SecurityLabels.SUBSTITUTED.Code, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                meta.Security.Add(SecurityLabels.SUBSTITUTED);
+            }
+
             ElementNode newMetaNode = ElementNode.FromElement(meta.ToTypedElement());
             if (metaNode == null)
             {

@@ -11,5 +11,6 @@ namespace Fhir.Anonymizer.Core.Processors
         public const string Perturb = "PERTURB";
         public const string CryptoHash = "CRYPTOHASH";
         public const string Encrypt = "ENCRYPT";
+        public const string Substitute = "SUBSTITUTE";
     }
 }
