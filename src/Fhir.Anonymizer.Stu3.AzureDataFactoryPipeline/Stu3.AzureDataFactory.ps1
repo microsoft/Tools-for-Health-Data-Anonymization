@@ -50,7 +50,6 @@ param(
     [string]$BatchComputeNodeRuntimeId = "win10-x64"
 )
 
-
 $appVersion = "Stu3"
 
 cd ../Fhir.Anonymizer.Shared.AzureDataFactoryPipeline/scripts
