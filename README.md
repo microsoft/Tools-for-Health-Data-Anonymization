@@ -200,9 +200,6 @@ The PowerShell script implicitly creates a resource group by appending 'resource
 
 If you want to cleanup resources, delete that resource group in addition to any other resources you may have explicitly created as part of this tutorial.
 
->**[!NOTE]**
-> The Azure Data Factory tool only supports R4 version for now. STU 3 support is planned.
-
 # Samples
 
 ## Sample configuration file for HIPAA Safe Harbor method
