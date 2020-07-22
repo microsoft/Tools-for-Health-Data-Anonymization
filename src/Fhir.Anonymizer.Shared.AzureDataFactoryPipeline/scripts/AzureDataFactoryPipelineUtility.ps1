@@ -261,10 +261,10 @@ function RunAzureDataFactoryPipeline
 }
 
 $supportedVersion="stu3","r4"
-# Check App version, case insensititve
+# Check Fhir version, case insensititve
 if ($FhirVersion -notin $supportedVersion )
 {
-    throw "App Version is not supported"
+    throw "Fhir Version is not supported"
 }
 
 # Check batch account parameter
