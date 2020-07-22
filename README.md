@@ -110,7 +110,7 @@ You can also export FHIR resources from a FHIR server using [Bulk Export](https:
 
 ### Create Data Factory pipeline
 
-1. Locate _AzureDataFactorySettings.json_ in the project and replace the values as described below.
+1. Enter the project forder $SOURCE\src\Fhir.Anonymizer.\<version>.AzureDataFactoryPipeline. Locate _AzureDataFactorySettings.json_ in the project and replace the values as described below.
 
 > **[!NOTE]**
 > dataFactoryName can contain only lowercase characters or numbers, and must be 3-19 characters in length.
