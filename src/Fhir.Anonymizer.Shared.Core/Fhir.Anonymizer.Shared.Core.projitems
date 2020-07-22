@@ -44,7 +44,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\EncryptProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\IAnonymizerProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\KeepProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\PerturbProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbRangeType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbSetting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\RuleKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\SubstituteSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\SubstituteProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\CryptoHashUtility.cs" />

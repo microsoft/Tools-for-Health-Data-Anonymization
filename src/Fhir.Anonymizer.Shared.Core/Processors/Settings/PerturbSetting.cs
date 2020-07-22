@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using EnsureThat;
 
 namespace Fhir.Anonymizer.Core.Processors.Settings
 {
     public class PerturbSetting
     {
-        public decimal Span { get; set; }
+        public double Span { get; set; }
         public PerturbRangeType RangeType { get; set; }
         public int RoundTo { get; set; }
 
@@ -19,14 +20,16 @@ namespace Fhir.Anonymizer.Core.Processors.Settings
                 roundTo = Convert.ToInt32(ruleSettings.GetValueOrDefault(RuleKeys.RoundTo)?.ToString());
             }
 
-            var span = 0;
+            double span = 0;
             if (ruleSettings.ContainsKey(RuleKeys.Span))
             {
-                span = Convert.ToDecimal(ruleSettings.GetValueOrDefault(RuleKeys.Span)?.ToString());
+                span = Convert.ToDouble(ruleSettings.GetValueOrDefault(RuleKeys.Span)?.ToString());
             }
 
             var rangeType = PerturbRangeType.Fixed;
-            if (string.Equals(PerturbRangeType.Proportional.ToString(), ruleSettings.GetValueOrDefault(RuleKeys.RangeType)?.ToString()))
+            if (string.Equals(PerturbRangeType.Proportional.ToString(), 
+                ruleSettings.GetValueOrDefault(RuleKeys.RangeType)?.ToString(),
+                StringComparison.InvariantCultureIgnoreCase))
             {
                 rangeType = PerturbRangeType.Proportional;
             }
