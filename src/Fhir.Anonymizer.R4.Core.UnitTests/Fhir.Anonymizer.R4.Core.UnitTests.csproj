@@ -20,4 +20,5 @@
   </ItemGroup>
 
   <Import Project="..\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.projitems" Label="Shared" />
+
 </Project>

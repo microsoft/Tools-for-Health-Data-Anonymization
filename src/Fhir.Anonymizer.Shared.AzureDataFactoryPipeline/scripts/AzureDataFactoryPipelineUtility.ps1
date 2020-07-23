@@ -34,6 +34,8 @@
 .PARAMETER BatchComputeNodeRuntimeId
     Default: win10-x64
     Specify the dotnet runtime id in your compute node.
+.PARAMETER FhirVersion
+    Specify the FHIR version (R4 or Stu3)
 #>
 
 [cmdletbinding()]
@@ -47,7 +49,9 @@ param(
     [string]$ResourceGroupName,
     [switch]$RunPipelineOnly = $false,
     [string]$BatchComputeNodeSize = "Standard_d1",
-    [string]$BatchComputeNodeRuntimeId = "win10-x64"
+    [string]$BatchComputeNodeRuntimeId = "win10-x64",
+    [Parameter(Mandatory=$true)]
+    [string]$FhirVersion
 )
 
 function BuildToolAndUploadToBlobContainer 
@@ -56,7 +60,7 @@ function BuildToolAndUploadToBlobContainer
     # Build AzureDataFactory Custom Activity Tool
     New-Item -ItemType Directory -Force -Path "Build"
 
-    dotnet publish -c Release -r $dotnetRuntimeId --self-contained true -o "Build\$AppFolder" "..\$AppName.csproj" 
+    dotnet publish -c Release -r $dotnetRuntimeId --self-contained true -o "Build\$AppFolder" "..\..\$AppName\$AppName.csproj" 
     Compress-Archive -Path "Build\$AppFolder\*" -DestinationPath "Build\$AppFolder.zip" -Force
 
     $currentDirectory = $(Get-Location).Path    
@@ -207,6 +211,7 @@ function CreateAzureDataFactoryAndPipeline
     $json.parameters.azureBatchLinkedService_poolName.value = $batchPoolName
     $json.parameters.azureBatchLinkedService_properties_typeProperties_accountName.value = $batchContext.AccountName
     $json.parameters.azureBatchLinkedService_properties_typeProperties_batchUri.value = $batchContext.TaskTenantUrl
+    $json.parameters.fhirVersion.value = $FhirVersion
     ConvertTo-Json $json -Depth 10 | Set-Content "./ArmTemplate/arm_template_parameters.json"
 
     # Data Factory settings are overwritten in every Deployment/Execution to make sure input/output/application settings are newest 
@@ -255,6 +260,13 @@ function RunAzureDataFactoryPipeline
     $result.Output -join "`r`n"
 }
 
+$supportedVersion="stu3","r4"
+# Check Fhir version, case insensititve
+if ($FhirVersion -notin $supportedVersion )
+{
+    throw "Fhir Version is not supported"
+}
+
 # Check batch account parameter
 if ($BatchAccountName -ne "" -And $BatchAccountPoolName -eq "") 
 {
@@ -288,8 +300,8 @@ else
     Write-Host "Resource Group $ResourceGroupName already exist."
 }
 
-$appFolder = "AdfApplication"
-$appName = "Fhir.Anonymizer.R4.AzureDataFactoryPipeline"
+$appName="Fhir.Anonymizer.$FhirVersion.AzureDataFactoryPipeline"
+$appFolder = "$FhirVersion.AdfApplication"
 $adfPipelineName = "AdfAnonymizerPipeline"
 
 if (!$RunPipelineOnly) 
