@@ -46,6 +46,13 @@ namespace Fhir.Anonymizer.Core.Models
                 return ProcessRecords.ContainsKey(AnonymizationOperations.Perturb);
             }
         }
+        public bool IsSubstituted
+        {
+            get
+            {
+                return ProcessRecords.ContainsKey(AnonymizationOperations.Substitute);
+            }
+        }
 
         public Dictionary<string, HashSet<ITypedElement>> ProcessRecords { get; } = new Dictionary<string, HashSet<ITypedElement>>();
 

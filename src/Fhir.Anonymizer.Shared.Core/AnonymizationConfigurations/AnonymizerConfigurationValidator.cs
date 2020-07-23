@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Hl7.FhirPath;
@@ -29,6 +31,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
             }
 
             FhirPathCompiler compiler = new FhirPathCompiler();
+            var supportedMethods = Enum.GetNames(typeof(AnonymizerMethod)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
             foreach (var rule in config.FhirPathRules)
             {
                 if (!rule.ContainsKey(Constants.PathKey) || !rule.ContainsKey(Constants.MethodKey))
@@ -39,7 +42,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                 // Grammar check on FHIR path
                 try
                 {
-                    compiler.Compile(rule[Constants.PathKey]);
+                    compiler.Compile(rule[Constants.PathKey].ToString());
                 }
                 catch (Exception ex)
                 {
@@ -47,10 +50,17 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                 }
 
                 // Method validate
-                string method = rule[Constants.MethodKey];
-                if (!Enum.TryParse<AnonymizerMethod>(method, true, out _))
+                string method = rule[Constants.MethodKey].ToString();
+                if (!supportedMethods.Contains(method))
                 {
-                    throw new AnonymizerConfigurationErrorsException($"{method} not support.");
+                    throw new AnonymizerConfigurationErrorsException($"Anonymization method {method} not supported.");
+                }
+
+                // Should provide replacement value for substitute rule
+                if (string.Equals(method, AnonymizerMethod.Substitute.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                    && !rule.ContainsKey(Constants.ReplaceWithKey))
+                {
+                    throw new AnonymizerConfigurationErrorsException($"Missing replaceWith value in substitution rule at {rule[Constants.PathKey]}.");
                 }
             }
 

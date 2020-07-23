@@ -55,6 +55,20 @@ namespace Fhir.Anonymizer.FunctionalTests
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, CollectionResourceTestsFile("contained-in-bundle.json"), CollectionResourceTestsFile("contained-in-bundle-redact-all-target.json"));
         }
 
+        [Fact]
+        public void GivenAResourceWithContained_WhenSubstitute_ThenRedactedJsonShouldBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "substitute-multiple.json"));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, CollectionResourceTestsFile("contained-substitute.json"), CollectionResourceTestsFile("contained-substitute-target.json"));
+        }
+
+        [Fact]
+        public void GivenABundleResource_WhenSubstitute_ThenAnonymizedJsonShouldBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "substitute-multiple.json"));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, CollectionResourceTestsFile("bundle-substitute.json"), CollectionResourceTestsFile("bundle-substitute-target.json"));
+        }
+
         private string CollectionResourceTestsFile(string fileName)
         {
             return Path.Combine("TestResources", fileName);

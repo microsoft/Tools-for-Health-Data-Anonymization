@@ -35,7 +35,7 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 
 * Support anonymization of FHIR R4 and STU 3 data in json as well as ndjson format
 * Configuration of the data elements that need to be de-identified 
-* Configuration of the de-identification method for each data element (keeping, redacting, encrypting, Date-shifting, or Crypto-hashing) 
+* Configuration of the de-identification method for each data element (keeping, redacting, encrypting, substituting, Date-shifting, or Crypto-hashing) 
 * Ability to create Azure Data Factory to support de-identification of the data flows 
 * Ability to run the tool on premise to de-identify a dataset locally
 
@@ -291,6 +291,7 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |dateShift|Elements of type date, dateTime, and instant | Shifts the value using the [Date-shift algorithm](#date-shift-algorithm).
 |cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
 |encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
+|substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value.  |
 
 Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
@@ -336,6 +337,26 @@ To encrypt city values of Address data type
 {"path": "nodesByType('Address').city", "method": "encrypt"}
 ```
 
+To substitute city values of Address data type with "example city"
+```json
+{"path": "nodesByType('Address').city", "method": "substitute", "replaceWith": "example city"}
+```
+To substitute Address data types with a fixed json fragement
+```json
+{
+  "path": "nodesByType('Address')", 
+  "method": "substitute", 
+  "replaceWith": {
+    "use":"home",
+    "city": "example city",
+    "state": "example state",
+    "period": {
+      "start": "2000-01-01"
+    }
+  }
+}
+```
+
 ## Date-shift algorithm
 You can specify dateShift as a de-identification method in the configuration file. With this method, the input date/dateTime/instant value will be shifted within a 100-day differential. The following algorithm is used to shift the target dates:
 
@@ -372,6 +393,12 @@ We use AES-CBC algorithm to transform FHIR data with an encryption key, and then
 1. The encryption key needs to be exactly 128, 192 or 256 bits long.
 2. The algorithm will generate a random and unique initialization vector (IV) for each encryption, therefore the encrypted results are different for the same input values.
 3. If you want the anonymized output to be conformant to the FHIR specification, do use encrypt method on those fields that accept a Base64 encoded value. Besides, avoid encrypting data fields with length limits because the Base64 encoded value will be longer than the original value.
+
+## Substitute method
+You can specify a fixed, valid value to replace a target FHIR field. For example, for postal code, you can provide "12233". For birth date, you can provide '1990-01-01', etc.
+
+For complex data types, you can provide a fixed json fragment following the [sample rules](#Sample-rules-using-FHIRPath).
+You should provide valid value for the target data type to avoid unexpected errors.
 
 ## Current limitations
 1. We support FHIR data in R4 and STU 3, JSON format. Support for XML is planned.

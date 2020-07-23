@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using Fhir.Anonymizer.Core.Processors;
 using Fhir.Anonymizer.Core.Utility;
