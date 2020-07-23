@@ -15,7 +15,7 @@
 &nbsp;&nbsp; [The command line tool](#the-command-line-tool)  
 &nbsp;&nbsp; [Configuration file format](#configuration-file-format)  
 &nbsp;&nbsp; [Date-shift algorithm](#date-shift-algorithm)  
-&nbsp;&nbsp; [Cryptohash method](#Crypto-hash-method)  
+&nbsp;&nbsp; [Crypto-hash method](#Crypto-hash-method)  
 &nbsp;&nbsp; [Encrypt method](#Encrypt-method)  
 &nbsp;&nbsp; [Substitute method](#Substitute-method)  
 &nbsp;&nbsp; [Perturb method](#Perturb-method)  
