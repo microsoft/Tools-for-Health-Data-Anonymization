@@ -30,6 +30,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\SubstituteSettingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\SubstituteProcessorTests.cs" />
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-perturb-miss-span.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-perturb-negative-roundTo.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-perturb-wrong-roundTo.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-perturb-wrong-rangetype.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-miss-replacement.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

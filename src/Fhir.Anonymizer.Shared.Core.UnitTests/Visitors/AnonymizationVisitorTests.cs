@@ -161,6 +161,83 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
         }
 
         [Fact]
+        public void GivenAPerturbRule_WhenProcess_NodeShouldBePerturbed()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Observation.referenceRange.low", "referenceRange.low", "Observation", "perturb", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low",
+                    new Dictionary<string, object> { { "span", "2" } }),
+                new AnonymizationFhirPathRule("Observation.referenceRange.high.value", "referenceRange.high.value", "Observation", "perturb", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.high.value",
+                    new Dictionary<string, object> { { "span", "0.1" }, { "rangeType", "proportional" } })
+            };
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var observation = CreateTestObservation();
+            var observationNode = ElementNode.FromElement(observation.ToTypedElement());
+            observationNode.Accept(visitor);
+            observationNode.RemoveNullChildren();
+
+            var lowNode = observationNode.Select("Observation.referenceRange.low");
+            var perturbedValue = decimal.Parse(lowNode.Children("value").First().Value.ToString());
+            Assert.InRange(perturbedValue, 8, 12);
+
+            var highNode = observationNode.Select("Observation.referenceRange.high");
+            perturbedValue = decimal.Parse(highNode.Children("value").First().Value.ToString());
+            Assert.InRange(perturbedValue, 90, 110);
+
+            observation = observationNode.ToPoco<Observation>();
+            Assert.Contains(SecurityLabels.PERTURBED.Code, observation.Meta.Security.Select(s => s.Code));
+        }
+
+        [Fact]
+        public void GivenAPerturbRuleAndARedactRule_WhenProcess_NodeShouldBePerturbed()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Observation.referenceRange.low", "referenceRange.low", "Observation", "perturb", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low",
+                    new Dictionary<string, object> { { "span", "-1" } }),
+                new AnonymizationFhirPathRule("Observation.referenceRange.low", "referenceRange.low", "Observation", "redact", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low")
+            };
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var observation = CreateTestObservation();
+            var observationNode = ElementNode.FromElement(observation.ToTypedElement());
+            observationNode.Accept(visitor);
+
+            var lowNode = observationNode.Select("Observation.referenceRange.low");
+            var perturbedValue = decimal.Parse(lowNode.Children("value").First().Value.ToString());
+            Assert.InRange(perturbedValue, 9, 11);
+
+            observation = observationNode.ToPoco<Observation>();
+            Assert.Contains(SecurityLabels.PERTURBED.Code, observation.Meta.Security.Select(s => s.Code));
+            Assert.DoesNotContain(SecurityLabels.REDACT.Code, observation.Meta.Security.Select(s => s.Code));
+        }
+
+        [Fact]
+        public void GivenARedactRuleAndAPerturbRule_WhenProcess_NodeShouldBeProcessedCorrectly()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Observation.referenceRange.low.value", "referenceRange.low.value", "Observation", "redact", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low.value"),
+                new AnonymizationFhirPathRule("Observation.referenceRange.low", "referenceRange.low", "Observation", "perturb", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low",
+                    new Dictionary<string, object> { { "span", "-1" } }),
+            };
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var observation = CreateTestObservation();
+            var observationNode = ElementNode.FromElement(observation.ToTypedElement());
+            observationNode.Accept(visitor);
+
+            var lowNode = observationNode.Select("Observation.referenceRange.low");
+            var perturbedValue = lowNode.Children("value").First().Value;
+            Assert.Null(perturbedValue);
+
+            observation = observationNode.ToPoco<Observation>();
+            Assert.Contains(SecurityLabels.REDACT.Code, observation.Meta.Security.Select(s => s.Code));
+            Assert.DoesNotContain(SecurityLabels.PERTURBED.Code, observation.Meta.Security.Select(s => s.Code));
+        }
+
+        [Fact]
         public void GivenAPatientWithOnlyId_WhenProcess_NodeShouldBeRedact()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
@@ -431,6 +508,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             CryptoHashProcessor cryptoHashProcessor = new CryptoHashProcessor("123");
             EncryptProcessor encryptProcessor = new EncryptProcessor("1234567890123456");
             SubstituteProcessor substituteProcessor = new SubstituteProcessor();
+            PerturbProcessor perturbProcessor = new PerturbProcessor();
             Dictionary<string, IAnonymizerProcessor> processors = new Dictionary<string, IAnonymizerProcessor>()
             {
                 { "KEEP", keepProcessor},
@@ -438,7 +516,8 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
                 { "DATESHIFT", dateShiftProcessor},
                 { "CRYPTOHASH", cryptoHashProcessor},
                 { "ENCRYPT", encryptProcessor },
-                { "SUBSTITUTE", substituteProcessor }
+                { "SUBSTITUTE", substituteProcessor },
+                { "PERTURB", perturbProcessor }
             };
 
             return processors;
@@ -475,6 +554,18 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             person.Active = true;
 
             return person;
+        }
+
+        private Observation CreateTestObservation()
+        {
+            Observation observation = new Observation();
+            observation.ReferenceRange.Add(
+                new Observation.ReferenceRangeComponent
+                {
+                    Low = new SimpleQuantity { Value = 10 },
+                    High = new SimpleQuantity { Value = 100},
+                });
+            return observation;
         }
     }
 }

@@ -1,0 +1,10 @@
+﻿{
+  "fhirPathRules": [
+    {
+      "path": "Condition.onset as Age",
+      "method": "perturb",
+      "span": 3,
+      "roundTo": "abc"
+    }
+  ]
+}
