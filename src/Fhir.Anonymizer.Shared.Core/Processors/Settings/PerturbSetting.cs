@@ -44,11 +44,16 @@ namespace Fhir.Anonymizer.Core.Processors.Settings
             };
         }
 
-        public static void ValidateRuleSetting(Dictionary<string, object> ruleSettings)
+        public static void ValidateRuleSettings(Dictionary<string, object> ruleSettings)
         {
             if (ruleSettings == null)
             {
                 throw new AnonymizerConfigurationErrorsException($"Perturb rule should not be null.");
+            }
+
+            if (!ruleSettings.ContainsKey(Constants.PathKey))
+            {
+                throw new AnonymizerConfigurationErrorsException("Missing path in Fhir path rule config.");
             }
 
             if (ruleSettings.ContainsKey(RuleKeys.RoundTo))
@@ -84,7 +89,6 @@ namespace Fhir.Anonymizer.Core.Processors.Settings
             }
 
             var supportedRangeTypes = Enum.GetNames(typeof(PerturbRangeType)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
-
             if (ruleSettings.ContainsKey(RuleKeys.RangeType)
                 && !supportedRangeTypes.Contains(ruleSettings[RuleKeys.RangeType]?.ToString()))
             {

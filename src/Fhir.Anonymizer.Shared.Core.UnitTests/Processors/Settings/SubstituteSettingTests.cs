@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Fhir.Anonymizer.Core.AnonymizationConfigurations;
+using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.Processors.Settings;
 using Xunit;
 
@@ -17,6 +17,11 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors.Settings
             yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.address" }, { "method", "substitute" }, { "replaceWith", "{\"city\":\"abc\"}" } }, "{\"city\":\"abc\"}" };
         }
 
+        public static IEnumerable<object[]> GetInvalidSubstituteFhirRuleConfigs()
+        {
+            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.address.city" }, { "method", "substitute" } } };
+        }
+
         [Theory]
         [MemberData(nameof(GetSubstituteFhirRuleConfigs))]
         public void GivenASubstituteRule_WhenCreate_ReplacementValueShouldBeParsedCorrectly(Dictionary<string, object> config, string expectedValue)
@@ -26,6 +31,13 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors.Settings
 
             var substituteSetting = SubstituteSetting.CreateFromRuleSettings(rule.RuleSettings);
             Assert.Equal(expectedValue, substituteSetting.ReplaceWith);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetInvalidSubstituteFhirRuleConfigs))]
+        public void GivenAInvalidSubstituteRule_WhenValidate_ExceptionShouldBeThrown(Dictionary<string, object> config)
+        {
+            Assert.Throws<AnonymizerConfigurationErrorsException>(() => SubstituteSetting.ValidateRuleSettings(config));
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
@@ -11,7 +10,6 @@ using Fhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.FhirPath;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.Visitors
@@ -207,6 +205,9 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             var lowNode = observationNode.Select("Observation.referenceRange.low");
             var perturbedValue = decimal.Parse(lowNode.Children("value").First().Value.ToString());
             Assert.InRange(perturbedValue, 9, 11);
+
+            var unitNode = observationNode.Select("Observation.referenceRange.low.unit").First();
+            Assert.Equal("TestUnit", unitNode.Value.ToString());
 
             observation = observationNode.ToPoco<Observation>();
             Assert.Contains(SecurityLabels.PERTURBED.Code, observation.Meta.Security.Select(s => s.Code));
@@ -562,7 +563,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             observation.ReferenceRange.Add(
                 new Observation.ReferenceRangeComponent
                 {
-                    Low = new SimpleQuantity { Value = 10 },
+                    Low = new SimpleQuantity { Value = 10, Unit = "TestUnit" },
                     High = new SimpleQuantity { Value = 100},
                 });
             return observation;

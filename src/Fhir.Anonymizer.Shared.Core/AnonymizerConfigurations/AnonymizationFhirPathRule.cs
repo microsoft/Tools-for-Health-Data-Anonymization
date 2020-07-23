@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Hl7.Fhir.Model;
-using Newtonsoft.Json.Linq;
 
-namespace Fhir.Anonymizer.Core.AnonymizationConfigurations
+namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizationFhirPathRule : AnonymizerRule
     {

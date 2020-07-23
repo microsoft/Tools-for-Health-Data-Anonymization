@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\PerturbProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\SubstituteSettingTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbSettingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\SubstituteProcessorTests.cs" />
     <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-perturb-miss-span.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

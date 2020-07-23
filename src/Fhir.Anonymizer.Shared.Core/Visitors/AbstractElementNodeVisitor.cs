@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Hl7.Fhir.ElementModel;
+﻿using Hl7.Fhir.ElementModel;
 
 namespace Fhir.Anonymizer.Core.Visitors
 {

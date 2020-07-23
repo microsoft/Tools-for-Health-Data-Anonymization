@@ -64,7 +64,7 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
 
                 if (string.Equals(method, AnonymizerMethod.Perturb.ToString(), StringComparison.InvariantCultureIgnoreCase))
                 {
-                    PerturbSetting.ValidateRuleSetting(rule);
+                    PerturbSetting.ValidateRuleSettings(rule);
                 }
             }
 

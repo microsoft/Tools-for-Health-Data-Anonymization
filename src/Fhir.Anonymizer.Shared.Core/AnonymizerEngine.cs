@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using EnsureThat;
-using Fhir.Anonymizer.Core.AnonymizationConfigurations;
 using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Processors;

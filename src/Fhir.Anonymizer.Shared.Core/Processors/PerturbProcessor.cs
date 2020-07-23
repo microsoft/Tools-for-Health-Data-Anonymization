@@ -12,18 +12,8 @@ using MathNet.Numerics.Distributions;
 
 namespace Fhir.Anonymizer.Core.Processors
 {
-    public class PerturbProcessor : IAnonymizerProcessor
+    public partial class PerturbProcessor : IAnonymizerProcessor
     {
-        private static readonly HashSet<string> s_quantityTypeNames = new HashSet<string>
-        {
-            FHIRAllTypes.Age.ToString(),
-            FHIRAllTypes.Duration.ToString(),
-            FHIRAllTypes.Distance.ToString(),
-            FHIRAllTypes.Money.ToString(),
-            FHIRAllTypes.Quantity.ToString(),
-            FHIRAllTypes.SimpleQuantity.ToString()
-        };
-
         private static readonly HashSet<string> s_primitiveValueTypeNames = new HashSet<string> 
         {
             FHIRAllTypes.Decimal.ToString(),
@@ -77,7 +67,7 @@ namespace Fhir.Anonymizer.Core.Processors
             return result;
         }
 
-        public void AddNoise(ElementNode node, PerturbSetting perturbSetting) 
+        private void AddNoise(ElementNode node, PerturbSetting perturbSetting) 
         {
             if (s_integerValueTypeNames.Contains(node.InstanceType, StringComparer.InvariantCultureIgnoreCase))
             {
