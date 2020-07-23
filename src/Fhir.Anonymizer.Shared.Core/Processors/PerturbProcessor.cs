@@ -70,10 +70,6 @@ namespace Fhir.Anonymizer.Core.Processors
             }
 
             var perturbSetting = PerturbSetting.CreateFromRuleSettings(settings);
-            if (node.IsAgeNode())
-            {
-                perturbSetting.RoundTo = 0;
-            }
 
             AddNoise(valueNode, perturbSetting);
             context.VisitedNodes.UnionWith(node.Descendants().Cast<ElementNode>());
