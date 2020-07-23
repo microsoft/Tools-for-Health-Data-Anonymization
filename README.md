@@ -15,6 +15,10 @@
 &nbsp;&nbsp; [The command line tool](#the-command-line-tool)  
 &nbsp;&nbsp; [Configuration file format](#configuration-file-format)  
 &nbsp;&nbsp; [Date-shift algorithm](#date-shift-algorithm)  
+&nbsp;&nbsp; [Cryptohash method](#Crypto-hash-method)  
+&nbsp;&nbsp; [Encrypt method](#Encrypt-method)  
+&nbsp;&nbsp; [Substitute method](#Substitute-method)  
+&nbsp;&nbsp; [Perturb method](#Perturb-method)  
 [Resources](#resources)  
 &nbsp;&nbsp; [FAQ](#faq)  
 [Contributing](#contributing)
@@ -358,22 +362,22 @@ To substitute Address data types with a fixed json fragement
 }
 ```
 
-To perturb age fields of Condition resource by sampling noise from a fixed span
+To perturb age fields of Condition resource by adding random noise having range ```[-3, 3]```
 ```json
 {
   "path": "Condition.onset as Age | Condition.abatement as Age",
   "method": "perturb",
-  "span": 3,
+  "span": 6,
   "rangeType": "fixed",
   "roundTo": 0
 }
 ```
-To perturb age fields of Condition resource by sampling noise from a proportional span
+To perturb age fields of Condition resource by adding random noise having range ```[-0.1*originalAge, 0.1*originalAge]```
 ```json
 {
   "path": "Condition.onset as Age | Condition.abatement as Age",
   "method": "perturb",
-  "span": 0.1,
+  "span": 0.2,
   "rangeType": "proportional",
   "roundTo": 0
 }
@@ -423,8 +427,10 @@ For complex data types, you can provide a fixed json fragment following the [sam
 You should provide valid value for the target data type to avoid unexpected errors.
 
 ## Perturb method
-With perturbation rule, you can replace specific values with equally specific, but different values. You can choose to sample noise from a fixed range or a proportional range. There are a few parameters that can help you customize the noise amount for different FHIR types.
-- [required] **span** A non-negative value representing the random noise range. For *fixed* range type, the noise will be sampled from a uniform distribution over [-*span*, *span*]. For *proportional* range type, the noise will be sampled from a uniform distribution over [-*span* * value, *span* * value]. 
+With perturbation rule, you can replace specific values with equally specific, but different values. You can choose to add random noise from a fixed range or a proportional range. In the [age example](#Sample-rules-using-FHIRPath) above, for a fixed range ```[-3, 3]```, every age is within +/- 2 years of the original value. For a proportional range ```[-0.1*originalAge, 0.1*originalAge]```, every age is within +/- 10% years of the original value. 
+
+There are a few parameters that can help you customize the noise amount for different FHIR types.
+- [required] **span** A non-negative value representing the random noise range. For *fixed* range type, the noise will be sampled from a uniform distribution over ```[-span/2, span/2]```. For *proportional* range type, the noise will be sampled from a uniform distribution over ```[-span/2 * value, span/2 * value]```. 
 - [optional] **rangeType** Define whether the *span* value is *fixed* or *proportional*. The default value is *fixed*. 
 - [optional] **roundTo** Round the output value to a specified number of decimal places as all quantity values are of decimal type. The default *roundTo* value *0* for integer types and *2* for decimal types.
 
