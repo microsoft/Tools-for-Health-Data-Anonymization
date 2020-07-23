@@ -81,7 +81,7 @@ namespace Fhir.Anonymizer.Core.Processors
                 span = (double)originValue * perturbSetting.Span;
             }
 
-            var noise = (decimal)ContinuousUniform.Sample(-1 * span, span);
+            var noise = (decimal)ContinuousUniform.Sample(-1 * span / 2, span / 2);
             var perturbedValue = decimal.Round(originValue + noise, perturbSetting.RoundTo);
             if (perturbedValue < 0 && IsPositiveValueNode(node))
             {
