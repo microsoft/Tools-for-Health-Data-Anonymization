@@ -365,7 +365,7 @@ To substitute Address data types with a fixed json fragement
 To perturb age fields of Condition resource by adding random noise having range ```[-3, 3]```
 ```json
 {
-  "path": "Condition.onset as Age | Condition.abatement as Age",
+  "path": "Condition.onset | Condition.abatement as Age",
   "method": "perturb",
   "span": 6,
   "rangeType": "fixed",
@@ -375,7 +375,7 @@ To perturb age fields of Condition resource by adding random noise having range 
 To perturb age fields of Condition resource by adding random noise having range ```[-0.1*originalAge, 0.1*originalAge]```
 ```json
 {
-  "path": "Condition.onset as Age | Condition.abatement as Age",
+  "path": "Condition.onset | Condition.abatement as Age",
   "method": "perturb",
   "span": 0.2,
   "rangeType": "proportional",
@@ -432,7 +432,7 @@ With perturbation rule, you can replace specific values with equally specific, b
 There are a few parameters that can help you customize the noise amount for different FHIR types.
 - [required] **span** A non-negative value representing the random noise range. For *fixed* range type, the noise will be sampled from a uniform distribution over ```[-span/2, span/2]```. For *proportional* range type, the noise will be sampled from a uniform distribution over ```[-span/2 * value, span/2 * value]```. 
 - [optional] **rangeType** Define whether the *span* value is *fixed* or *proportional*. The default value is *fixed*. 
-- [optional] **roundTo** Round the output value to a specified number of decimal places as all quantity values are of decimal type. The default *roundTo* value *0* for integer types and *2* for decimal types.
+- [optional] **roundTo** A value from 0 to 28 that specifies the number of decimal places to round to. The default value is *0* for integer types and *2* for decimal types. 
 
 Note that the target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity, SimpleQuantity, Money, etc.). 
 
