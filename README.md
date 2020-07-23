@@ -426,7 +426,7 @@ You should provide valid value for the target data type to avoid unexpected erro
 With perturbation rule, you can replace specific values with equally specific, but different values. You can choose to sample noise from a fixed range or a proportional range. There are a few parameters that can help you customize the noise amount for different FHIR types.
 - [required] **span** A non-negative value representing the random noise range. For *fixed* range type, the noise will be sampled from a uniform distribution over [-*span*, *span*]. For *proportional* range type, the noise will be sampled from a uniform distribution over [-*span* * value, *span* * value]. 
 - [optional] **rangeType** Define whether the *span* value is *fixed* or *proportional*. The default value is *fixed*. 
-- [optional] **roundTo** Round the output value to a specified number of decimal places as all quantity values are of decimal type. The default *roundTo* value *0* for integer types and *2* for decimal types.
+- [optional] **roundTo** A value from 0 to 28 that specifies the number of decimal places to round to. The default value is *0* for integer types and *2* for decimal types. 
 
 Note that the target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity, SimpleQuantity, Money, etc.). 
 
