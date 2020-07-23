@@ -361,7 +361,7 @@ To substitute Address data types with a fixed json fragement
 To perturb age fields of Condition resource by sampling noise from a fixed span
 ```json
 {
-  "path": "Condition.onset as Age | Condition.abatement as Age",
+  "path": "Condition.onset | Condition.abatement as Age",
   "method": "perturb",
   "span": 3,
   "rangeType": "fixed",
@@ -371,7 +371,7 @@ To perturb age fields of Condition resource by sampling noise from a fixed span
 To perturb age fields of Condition resource by sampling noise from a proportional span
 ```json
 {
-  "path": "Condition.onset as Age | Condition.abatement as Age",
+  "path": "Condition.onset | Condition.abatement as Age",
   "method": "perturb",
   "span": 0.1,
   "rangeType": "proportional",
