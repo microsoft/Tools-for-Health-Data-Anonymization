@@ -333,6 +333,27 @@ To redact the home-use Contact point
 {"path": "nodesByType('ContactPoint').where(use='home')","method": "redact"}
 ```
 
+To perturb age fields of Condition resource by adding random noise having range ```[-3, 3]```
+```json
+{
+  "path": "Condition.onset | Condition.abatement as Age",
+  "method": "perturb",
+  "span": 6,
+  "rangeType": "fixed",
+  "roundTo": 0
+}
+```
+To perturb age fields of Condition resource by adding random noise having range ```[-0.1*originalAge, 0.1*originalAge]```
+```json
+{
+  "path": "Condition.onset | Condition.abatement as Age",
+  "method": "perturb",
+  "span": 0.2,
+  "rangeType": "proportional",
+  "roundTo": 0
+}
+```
+
 To generate hash of Resource Id
 ```json
 {"path": "Resource.id", "method": "cryptoHash"}
@@ -359,27 +380,6 @@ To substitute Address data types with a fixed json fragement
       "start": "2000-01-01"
     }
   }
-}
-```
-
-To perturb age fields of Condition resource by adding random noise having range ```[-3, 3]```
-```json
-{
-  "path": "Condition.onset | Condition.abatement as Age",
-  "method": "perturb",
-  "span": 6,
-  "rangeType": "fixed",
-  "roundTo": 0
-}
-```
-To perturb age fields of Condition resource by adding random noise having range ```[-0.1*originalAge, 0.1*originalAge]```
-```json
-{
-  "path": "Condition.onset | Condition.abatement as Age",
-  "method": "perturb",
-  "span": 0.2,
-  "rangeType": "proportional",
-  "roundTo": 0
 }
 ```
 
