@@ -193,7 +193,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
                 new AnonymizationFhirPathRule("Observation.referenceRange.low", "referenceRange.low", "Observation", "perturb", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low",
-                    new Dictionary<string, object> { { "span", "-1" } }),
+                    new Dictionary<string, object> { { "span", "1" } }),
                 new AnonymizationFhirPathRule("Observation.referenceRange.low", "referenceRange.low", "Observation", "redact", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low")
             };
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
@@ -221,7 +221,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Visitors
             {
                 new AnonymizationFhirPathRule("Observation.referenceRange.low.value", "referenceRange.low.value", "Observation", "redact", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low.value"),
                 new AnonymizationFhirPathRule("Observation.referenceRange.low", "referenceRange.low", "Observation", "perturb", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low",
-                    new Dictionary<string, object> { { "span", "-1" } }),
+                    new Dictionary<string, object> { { "span", "1" } }),
             };
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
 

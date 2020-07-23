@@ -25,7 +25,7 @@ namespace Fhir.Anonymizer.Core.Processors.Settings
             double span = 0;
             if (ruleSettings.ContainsKey(RuleKeys.Span))
             {
-                span = Math.Abs(Convert.ToDouble(ruleSettings.GetValueOrDefault(RuleKeys.Span)?.ToString()));
+                span = Convert.ToDouble(ruleSettings.GetValueOrDefault(RuleKeys.Span)?.ToString());
             }
 
             var rangeType = PerturbRangeType.Fixed;
@@ -61,7 +61,7 @@ namespace Fhir.Anonymizer.Core.Processors.Settings
                 try
                 {
                     var roundTo = Convert.ToInt32(ruleSettings.GetValueOrDefault(RuleKeys.RoundTo)?.ToString());
-                    if (roundTo < 0)
+                    if (roundTo < 0 || roundTo > 28)
                     {
                         throw new ArgumentException();
                     }
@@ -77,6 +77,10 @@ namespace Fhir.Anonymizer.Core.Processors.Settings
                 try
                 {
                     var span = Convert.ToDouble(ruleSettings.GetValueOrDefault(RuleKeys.Span)?.ToString());
+                    if (span < 0)
+                    {
+                        throw new ArgumentException();
+                    }
                 }
                 catch
                 {

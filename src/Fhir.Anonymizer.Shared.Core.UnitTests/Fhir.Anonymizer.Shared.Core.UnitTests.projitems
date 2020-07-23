@@ -31,10 +31,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\SubstituteSettingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbSettingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\SubstituteProcessorTests.cs" />
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-perturb-negative-span.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-perturb-miss-span.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-perturb-negative-roundTo.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-perturb-exceed-28-roundTo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-perturb-wrong-roundTo.json">
