@@ -13,6 +13,8 @@
     
     {"path": "Resource.id", "method": "cryptoHash"},
     {"path": "Bundle.entry.fullUrl", "method": "redact"},
+    {"path": "Bundle.entry.request.url", "method": "redact"},
+    {"path": "Bundle.entry.response.location", "method":"redact"},
     {"path": "PractitionerRole.notAvailable.description", "method": "redact"},
     {"path": "PractitionerRole.availabilityExceptions", "method": "redact"},
     {"path": "Group.name", "method": "redact"},
