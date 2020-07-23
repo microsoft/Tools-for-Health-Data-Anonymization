@@ -20,6 +20,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new Integer(5), 0, 0, 5, 5};
             yield return new object[] { new FhirDecimal((decimal)5.0), 0, 2, 5, 5 };
             yield return new object[] { new FhirDecimal((decimal)5.234), 3, 2, 2.23, 8.23 };
+            yield return new object[] { new FhirDecimal((decimal)12e-2), 1, 2, -0.88, 1.12 };
         }
 
         public static IEnumerable<object[]> GetPrimitiveNodesToPerturbProportionalSpan()
@@ -27,7 +28,30 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new Integer(5), 0, 0, 5, 5 };
             yield return new object[] { new Integer(5), 0.2, 0, 4, 6 };
             yield return new object[] { new FhirDecimal(5), 1, 2, 0, 10 };
-            yield return new object[] { new FhirDecimal((decimal)5.234), 0.5, 2, 2.5, 7.5 };
+            yield return new object[] { new FhirDecimal((decimal)5.234), 0.5, 2, 2.62, 7.85 };
+            yield return new object[] { new FhirDecimal((decimal)12e-2), 2, 2, -0.12, 0.36 };
+        }
+
+        public static IEnumerable<object[]> GetIntegerNodesToPerturbFixedSpan()
+        {
+            yield return new object[] { new Integer(100), 0, 0, 100, 100 };
+            yield return new object[] { new UnsignedInt(5000), 50, 2, 4950, 5050 };
+            yield return new object[] { new PositiveInt(1000000), 1000, 2, 999000, 1001000 };
+
+            // Positive nodes should not have value less than zero.
+            yield return new object[] { new UnsignedInt(10), 20, 0, 0, 30 };
+            yield return new object[] { new PositiveInt(1), 100, 2, 0, 101 };
+        }
+
+        public static IEnumerable<object[]> GetIntegerNodesToPerturbProportionalSpan()
+        {
+            yield return new object[] { new Integer(100), 0, 0, 100, 100 };
+            yield return new object[] { new UnsignedInt(5000), 0.01, 2, 4950, 5050 };
+            yield return new object[] { new PositiveInt(1000000), 0.001, 2, 999000, 1001000 };
+
+            // Positive nodes should not have value less than zero.
+            yield return new object[] { new UnsignedInt(10), 2, 0, 0, 30 };
+            yield return new object[] { new PositiveInt(1), 100, 2, 0, 101 };
         }
 
         public static IEnumerable<object[]> GetQuantityNodesToPerturbFixedSpan()
@@ -89,8 +113,8 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
                 new Distance { Value = (decimal)1024.12345678 },
                 0.1,
                 4,
-                927.7111,
-                1126.5258
+                921.7111,
+                1126.5358
             };
             yield return new object[] 
             {
@@ -118,12 +142,6 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             };
         }
 
-        public static IEnumerable<object[]> GetPositiveNodesToPerturbFixedSpan()
-        {
-            yield return new object[] { new UnsignedInt(5), 0, 0, 5, 5 };
-            yield return new object[] { new FhirDecimal((decimal)5.0), 0, 2, 5, 5 };
-        }
-
         [Theory]
         [MemberData(nameof(GetPrimitiveNodesToPerturbFixedSpan))]
         public void GivenAPrimitiveNode_WhenPerturbFixedSpan_PerturbedNodeShouldBeReturned(Base data, decimal span, decimal roundTo, decimal lowerBound, decimal upperBound)
@@ -139,8 +157,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsPerturbed);
             var perturbedValue = decimal.Parse(node.Value.ToString());
-            Assert.True(perturbedValue >= lowerBound);
-            Assert.True(perturbedValue <= upperBound);
+            Assert.InRange(perturbedValue, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(perturbedValue) <= roundTo);
         }
 
@@ -159,8 +176,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsPerturbed);
             var perturbedValue = decimal.Parse(node.Value.ToString());
-            Assert.True(perturbedValue >= lowerBound);
-            Assert.True(perturbedValue <= upperBound);
+            Assert.InRange(perturbedValue, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(perturbedValue) <= roundTo);
         }
 
@@ -179,8 +195,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsPerturbed);
             var perturbedValue = decimal.Parse(node.Children("value").First().Value.ToString());
-            Assert.True(perturbedValue >= lowerBound);
-            Assert.True(perturbedValue <= upperBound);
+            Assert.InRange(perturbedValue, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(perturbedValue) <= roundTo);
         }
 
@@ -199,9 +214,46 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsPerturbed);
             var perturbedValue = decimal.Parse(node.Children("value").First().Value.ToString());
-            Assert.True(perturbedValue >= lowerBound);
-            Assert.True(perturbedValue <= upperBound);
+            Assert.InRange(perturbedValue, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(perturbedValue) <= roundTo);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetIntegerNodesToPerturbFixedSpan))]
+        public void GivenAnIntegerNode_WhenPerturbFixedSpan_PerturbedNodeShouldBeReturned(Base data, decimal span, decimal roundTo, decimal lowerBound, decimal upperBound)
+        {
+            var node = ElementNode.FromElement(data.ToTypedElement());
+            PerturbProcessor processor = new PerturbProcessor();
+            var context = new ProcessContext
+            {
+                VisitedNodes = new HashSet<ElementNode>()
+            };
+            var settings = new Dictionary<string, object> { { "span", span }, { "roundTo", roundTo } };
+
+            var processResult = processor.Process(node, context, settings);
+            Assert.True(processResult.IsPerturbed);
+            var perturbedValue = decimal.Parse(node.Value.ToString());
+            Assert.InRange(perturbedValue, lowerBound, upperBound);
+            Assert.True(GetDecimalPlaces(perturbedValue) == 0);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetIntegerNodesToPerturbProportionalSpan))]
+        public void GivenAnIntegerNode_WhenPerturbProportionalSpan_PerturbedNodeShouldBeReturned(Base data, decimal span, decimal roundTo, decimal lowerBound, decimal upperBound)
+        {
+            var node = ElementNode.FromElement(data.ToTypedElement());
+            PerturbProcessor processor = new PerturbProcessor();
+            var context = new ProcessContext
+            {
+                VisitedNodes = new HashSet<ElementNode>()
+            };
+            var settings = new Dictionary<string, object> { { "span", span }, { "roundTo", roundTo }, { "rangeType", "proportional" } };
+
+            var processResult = processor.Process(node, context, settings);
+            Assert.True(processResult.IsPerturbed);
+            var perturbedValue = decimal.Parse(node.Value.ToString());
+            Assert.InRange(perturbedValue, lowerBound, upperBound);
+            Assert.True(GetDecimalPlaces(perturbedValue) == 0);
         }
 
         private int GetDecimalPlaces(decimal n)

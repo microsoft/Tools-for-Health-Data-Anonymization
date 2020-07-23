@@ -7,6 +7,7 @@
         CryptoHash,
         Substitute,
         Encrypt,
+        Perturb,
         Keep
     }
 }

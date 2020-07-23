@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using EnsureThat;
+using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 
 namespace Fhir.Anonymizer.Core.Processors.Settings
 {
@@ -23,7 +25,7 @@ namespace Fhir.Anonymizer.Core.Processors.Settings
             double span = 0;
             if (ruleSettings.ContainsKey(RuleKeys.Span))
             {
-                span = Convert.ToDouble(ruleSettings.GetValueOrDefault(RuleKeys.Span)?.ToString());
+                span = Math.Abs(Convert.ToDouble(ruleSettings.GetValueOrDefault(RuleKeys.Span)?.ToString()));
             }
 
             var rangeType = PerturbRangeType.Fixed;
@@ -40,6 +42,54 @@ namespace Fhir.Anonymizer.Core.Processors.Settings
                 RangeType = rangeType,
                 RoundTo = roundTo
             };
+        }
+
+        public static void ValidateRuleSetting(Dictionary<string, object> ruleSettings)
+        {
+            if (ruleSettings == null)
+            {
+                throw new AnonymizerConfigurationErrorsException($"Perturb rule should not be null.");
+            }
+
+            if (ruleSettings.ContainsKey(RuleKeys.RoundTo))
+            {
+                try
+                {
+                    var roundTo = Convert.ToInt32(ruleSettings.GetValueOrDefault(RuleKeys.RoundTo)?.ToString());
+                    if (roundTo < 0)
+                    {
+                        throw new ArgumentException();
+                    }
+                }
+                catch
+                {
+                    throw new AnonymizerConfigurationErrorsException($"RoundTo value is invalid at {ruleSettings[Constants.PathKey]}.");
+                }
+            }
+
+            if (ruleSettings.ContainsKey(RuleKeys.Span))
+            {
+                try
+                {
+                    var span = Convert.ToDouble(ruleSettings.GetValueOrDefault(RuleKeys.Span)?.ToString());
+                }
+                catch
+                {
+                    throw new AnonymizerConfigurationErrorsException($"Span value is invalid at {ruleSettings[Constants.PathKey]}.");
+                }
+            }
+            else
+            {
+                throw new AnonymizerConfigurationErrorsException($"Span value is required in perturb rule at {ruleSettings[Constants.PathKey]}.");
+            }
+
+            var supportedRangeTypes = Enum.GetNames(typeof(PerturbRangeType)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+
+            if (ruleSettings.ContainsKey(RuleKeys.RangeType)
+                && !supportedRangeTypes.Contains(ruleSettings[RuleKeys.RangeType]?.ToString()))
+            {
+                throw new AnonymizerConfigurationErrorsException($"RangeType value is invalid at {ruleSettings[Constants.PathKey]}.");
+            }
         }
     }
 }
