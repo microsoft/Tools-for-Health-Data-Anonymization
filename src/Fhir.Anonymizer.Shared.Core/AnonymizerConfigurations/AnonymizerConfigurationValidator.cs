@@ -56,10 +56,9 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                 }
 
                 // Should provide replacement value for substitute rule
-                if (string.Equals(method, AnonymizerMethod.Substitute.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                    && !rule.ContainsKey(Constants.ReplaceWithKey))
+                if (string.Equals(method, AnonymizerMethod.Substitute.ToString(), StringComparison.InvariantCultureIgnoreCase))
                 {
-                    throw new AnonymizerConfigurationErrorsException($"Missing replaceWith value in substitution rule at {rule[Constants.PathKey]}.");
+                    SubstituteSetting.ValidateRuleSettings(rule);
                 }
 
                 if (string.Equals(method, AnonymizerMethod.Perturb.ToString(), StringComparison.InvariantCultureIgnoreCase))
