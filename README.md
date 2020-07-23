@@ -110,7 +110,7 @@ You can also export FHIR resources from a FHIR server using [Bulk Export](https:
 
 ### Create Data Factory pipeline
 
-1. Locate _AzureDataFactorySettings.json_ in the project and replace the values as described below.
+1. Enter the project folder $SOURCE\src\Fhir.Anonymizer.\<version>.AzureDataFactoryPipeline. Locate _AzureDataFactorySettings.json_ in the project and replace the values as described below.
 
 > **[!NOTE]**
 > dataFactoryName can contain only lowercase characters or numbers, and must be 3-19 characters in length.
@@ -199,9 +199,6 @@ You can trigger the pipeline by clicking on the *Add Trigger* button in the pipe
 The PowerShell script implicitly creates a resource group by appending 'resourcegroup' to the Data Factory name provided by you in _AzureDataFactorySettings.json_. 
 
 If you want to cleanup resources, delete that resource group in addition to any other resources you may have explicitly created as part of this tutorial.
-
->**[!NOTE]**
-> The Azure Data Factory tool only supports R4 version for now. STU 3 support is planned.
 
 # Samples
 
