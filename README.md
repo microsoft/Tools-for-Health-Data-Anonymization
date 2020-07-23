@@ -35,7 +35,7 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 
 * Support anonymization of FHIR R4 and STU 3 data in json as well as ndjson format
 * Configuration of the data elements that need to be de-identified 
-* Configuration of the de-identification method for each data element (keeping, redacting, encrypting, substituting, Date-shifting, or Crypto-hashing) 
+* Configuration of the de-identification method for each data element (keeping, redacting, encrypting, substituting, perturbing, Date-shifting, or Crypto-hashing) 
 * Ability to create Azure Data Factory to support de-identification of the data flows 
 * Ability to run the tool on premise to de-identify a dataset locally
 
@@ -289,6 +289,7 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |keep|All elements| Retains the value as is. |
 |redact|All elements| Removes the element. See the parameters section below to handle special cases.|
 |dateShift|Elements of type date, dateTime, and instant | Shifts the value using the [Date-shift algorithm](#date-shift-algorithm).
+|perturb|Elements of numeric and quantity types| [Perturb](#Perturb-method) the value with random noise addition.  |
 |cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
 |encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
 |substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value.  |
@@ -357,6 +358,27 @@ To substitute Address data types with a fixed json fragement
 }
 ```
 
+To perturb age fields of Condition resource by sampling noise from a fixed span
+```json
+{
+  "path": "Condition.onset as Age | Condition.abatement as Age",
+  "method": "perturb",
+  "span": 3,
+  "rangeType": "fixed",
+  "roundTo": 0
+}
+```
+To perturb age fields of Condition resource by sampling noise from a proportional span
+```json
+{
+  "path": "Condition.onset as Age | Condition.abatement as Age",
+  "method": "perturb",
+  "span": 0.1,
+  "rangeType": "proportional",
+  "roundTo": 0
+}
+```
+
 ## Date-shift algorithm
 You can specify dateShift as a de-identification method in the configuration file. With this method, the input date/dateTime/instant value will be shifted within a 100-day differential. The following algorithm is used to shift the target dates:
 
@@ -399,6 +421,14 @@ You can specify a fixed, valid value to replace a target FHIR field. For example
 
 For complex data types, you can provide a fixed json fragment following the [sample rules](#Sample-rules-using-FHIRPath).
 You should provide valid value for the target data type to avoid unexpected errors.
+
+## Perturb method
+With perturbation rule, you can replace specific values with equally specific, but different values. You can choose to sample noise from a fixed range or a proportional range. There are a few parameters that can help you customize the noise amount for different FHIR types.
+- [required] **span** A non-negative value representing the random noise range. For *fixed* range type, the noise will be sampled from a uniform distribution over [-*span*, *span*]. For *proportional* range type, the noise will be sampled from a uniform distribution over [-*span* * value, *span* * value]. 
+- [optional] **rangeType** Define whether the *span* value is *fixed* or *proportional*. The default value is *fixed*. 
+- [optional] **roundTo** Round the output value to a specified number of decimal places as all quantity values are of decimal type. The default *roundTo* value *0* for integer types and *2* for decimal types.
+
+Note that the target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity, SimpleQuantity, Money, etc.). 
 
 ## Current limitations
 1. We support FHIR data in R4 and STU 3, JSON format. Support for XML is planned.
