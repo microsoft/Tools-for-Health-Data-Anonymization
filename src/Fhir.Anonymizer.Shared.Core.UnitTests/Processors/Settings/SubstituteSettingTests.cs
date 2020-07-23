@@ -24,18 +24,15 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors.Settings
 
         [Theory]
         [MemberData(nameof(GetSubstituteFhirRuleConfigs))]
-        public void GivenASubstituteRule_WhenCreate_ReplacementValueShouldBeParsedCorrectly(Dictionary<string, object> config, string expectedValue)
+        public void GivenASubstituteSetting_WhenCreate_ReplacementValueShouldBeParsedCorrectly(Dictionary<string, object> config, string expectedValue)
         {
-            var rule = AnonymizationFhirPathRule.CreateAnonymizationFhirPathRule(config);
-            Assert.NotEmpty(rule.RuleSettings);
-
-            var substituteSetting = SubstituteSetting.CreateFromRuleSettings(rule.RuleSettings);
+            var substituteSetting = SubstituteSetting.CreateFromRuleSettings(config);
             Assert.Equal(expectedValue, substituteSetting.ReplaceWith);
         }
 
         [Theory]
         [MemberData(nameof(GetInvalidSubstituteFhirRuleConfigs))]
-        public void GivenAInvalidSubstituteRule_WhenValidate_ExceptionShouldBeThrown(Dictionary<string, object> config)
+        public void GivenAInvalidSubstituteSetting_WhenValidate_ExceptionShouldBeThrown(Dictionary<string, object> config)
         {
             Assert.Throws<AnonymizerConfigurationErrorsException>(() => SubstituteSetting.ValidateRuleSettings(config));
         }

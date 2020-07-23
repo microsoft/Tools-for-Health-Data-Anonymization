@@ -26,12 +26,9 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors.Settings
 
         [Theory]
         [MemberData(nameof(GetPerturbFhirRuleConfigs))]
-        public void GivenAPerturbRule_WhenCreate_SettingPropertiesShouldBeParsedCorrectly(Dictionary<string, object> config, double expectedSpan, double expectedRoundTo, PerturbRangeType expectedRangeType)
+        public void GivenAPerturbSetting_WhenCreate_SettingPropertiesShouldBeParsedCorrectly(Dictionary<string, object> config, double expectedSpan, double expectedRoundTo, PerturbRangeType expectedRangeType)
         {
-            var rule = AnonymizationFhirPathRule.CreateAnonymizationFhirPathRule(config);
-            Assert.NotEmpty(rule.RuleSettings);
-
-            var perturbSetting = PerturbSetting.CreateFromRuleSettings(rule.RuleSettings);
+            var perturbSetting = PerturbSetting.CreateFromRuleSettings(config);
             Assert.Equal(expectedSpan, perturbSetting.Span);
             Assert.Equal(expectedRoundTo, perturbSetting.RoundTo);
             Assert.Equal(expectedRangeType, perturbSetting.RangeType);
@@ -39,7 +36,7 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors.Settings
 
         [Theory]
         [MemberData(nameof(GetInvalidPerturbFhirRuleConfigs))]
-        public void GivenAInvalidPerturbRule_WhenValidate_ExceptionShouldBeThrown(Dictionary<string, object> config)
+        public void GivenAInvalidPerturbSetting_WhenValidate_ExceptionShouldBeThrown(Dictionary<string, object> config)
         {
             Assert.Throws<AnonymizerConfigurationErrorsException>(() => PerturbSetting.ValidateRuleSettings(config));
         }
