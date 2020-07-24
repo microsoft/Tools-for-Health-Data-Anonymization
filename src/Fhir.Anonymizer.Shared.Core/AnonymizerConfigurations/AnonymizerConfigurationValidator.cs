@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Fhir.Anonymizer.Core.Processors.Settings;
 using Hl7.FhirPath;
-using Hl7.Fhir.Model;
 using Microsoft.Extensions.Logging;
 
 namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
@@ -57,10 +56,14 @@ namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
                 }
 
                 // Should provide replacement value for substitute rule
-                if (string.Equals(method, AnonymizerMethod.Substitute.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                    && !rule.ContainsKey(Constants.ReplaceWithKey))
+                if (string.Equals(method, AnonymizerMethod.Substitute.ToString(), StringComparison.InvariantCultureIgnoreCase))
                 {
-                    throw new AnonymizerConfigurationErrorsException($"Missing replaceWith value in substitution rule at {rule[Constants.PathKey]}.");
+                    SubstituteSetting.ValidateRuleSettings(rule);
+                }
+
+                if (string.Equals(method, AnonymizerMethod.Perturb.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    PerturbSetting.ValidateRuleSettings(rule);
                 }
             }
 

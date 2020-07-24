@@ -17,6 +17,12 @@ namespace Fhir.Anonymizer.Core.UnitTests
             yield return new object[] { "./TestConfigurations/configuration-invalid-fhirpath.json" };
             yield return new object[] { "./TestConfigurations/configuration-invalid-encryptkey.json" };
             yield return new object[] { "./TestConfigurations/configuration-miss-replacement.json" };
+            yield return new object[] { "./TestConfigurations/configuration-perturb-wrong-rangetype.json" };
+            yield return new object[] { "./TestConfigurations/configuration-perturb-miss-span.json" };
+            yield return new object[] { "./TestConfigurations/configuration-perturb-negative-span.json" };
+            yield return new object[] { "./TestConfigurations/configuration-perturb-wrong-roundTo.json" };
+            yield return new object[] { "./TestConfigurations/configuration-perturb-negative-roundTo.json" };
+            yield return new object[] { "./TestConfigurations/configuration-perturb-exceed-28-roundTo.json" };
         }
 
         [Theory]

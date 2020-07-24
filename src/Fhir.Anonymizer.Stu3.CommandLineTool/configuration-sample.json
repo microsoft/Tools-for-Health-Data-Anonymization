@@ -60,6 +60,7 @@
     {"path": "FamilyMemberHistory.born", "method": "redact"},
     {"path": "FamilyMemberHistory.age", "method": "redact"},
     {"path": "FamilyMemberHistory.deceased", "method": "redact"},
+    {"path": "FamilyMemberHistory.condition.onset as Age", "method": "perturb", "span": 0.1, "rangeType": "proportional", "roundTo": 0},
     {"path": "FamilyMemberHistory.condition.onset", "method": "redact"},
     {"path": "ClinicalImpression.description", "method": "redact"},  
     {"path": "ClinicalImpression.summary", "method": "redact"},

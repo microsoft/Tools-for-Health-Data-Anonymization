@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Fhir.Anonymizer.Core.AnonymizationConfigurations;
+using Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Xunit;
 
 namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations

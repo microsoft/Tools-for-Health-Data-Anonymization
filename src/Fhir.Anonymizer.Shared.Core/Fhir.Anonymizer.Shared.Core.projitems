@@ -9,16 +9,16 @@
     <Import_RootNamespace>Fhir.Anonymizer.Shared.Core</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizationFhirPathRule.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerConfiguration.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerConfigurationErrorsException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerConfigurationValidator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerMethod.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerRule.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerRuleType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\AnonymizerSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\DateShiftScope.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationConfigurations\ParameterConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizationFhirPathRule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationErrorsException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationValidator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerRule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerRuleType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\DateShiftScope.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\ParameterConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurationManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerLogging.cs" />
@@ -44,7 +44,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\EncryptProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\IAnonymizerProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\KeepProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\PerturbProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbRangeType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbSetting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\RuleKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\SubstituteSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\SubstituteProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\CryptoHashUtility.cs" />

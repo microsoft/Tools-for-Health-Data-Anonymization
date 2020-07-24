@@ -5,7 +5,7 @@ using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests
+namespace Fhir.Anonymizer.Core.UnitTests.Utility
 {
     public class PostalCodeUtilityTests
     {

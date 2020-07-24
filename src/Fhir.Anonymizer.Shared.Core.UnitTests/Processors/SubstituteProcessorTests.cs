@@ -118,6 +118,8 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
         [MemberData(nameof(GetComplexNodes))]
         public void GivenAComplexDatatypeNodeAndValidReplaceValue_WhenSubstitute_SubstituteNodeShouldBeReturned(Base data, string configJson, string targetJson)
         {
+            targetJson = targetJson.Replace("\r\n", Environment.NewLine);
+
             SubstituteProcessor processor = new SubstituteProcessor();
             var node = ElementNode.FromElement(data.ToTypedElement());
             var context = new ProcessContext
@@ -135,6 +137,8 @@ namespace Fhir.Anonymizer.Core.UnitTests.Processors
         [MemberData(nameof(GetConflictRuleNodes))]
         public void GivenANodeWithConflictRuleProcessedChild_WhenSubstitute_PreviousResultShouldBeKept(Base data, string processedNodePath, string configJson, string targetJson, bool isPrimitive = false)
         {
+            targetJson = targetJson.Replace("\r\n", Environment.NewLine);
+
             SubstituteProcessor processor = new SubstituteProcessor();
             var node = ElementNode.FromElement(data.ToTypedElement());
             var context = new ProcessContext
