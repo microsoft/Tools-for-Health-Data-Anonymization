@@ -15,6 +15,10 @@
 &nbsp;&nbsp; [The command line tool](#the-command-line-tool)  
 &nbsp;&nbsp; [Configuration file format](#configuration-file-format)  
 &nbsp;&nbsp; [Date-shift algorithm](#date-shift-algorithm)  
+&nbsp;&nbsp; [Crypto-hash method](#Crypto-hash-method)  
+&nbsp;&nbsp; [Encrypt method](#Encrypt-method)  
+&nbsp;&nbsp; [Substitute method](#Substitute-method)  
+&nbsp;&nbsp; [Perturb method](#Perturb-method)  
 [Resources](#resources)  
 &nbsp;&nbsp; [FAQ](#faq)  
 [Contributing](#contributing)
@@ -35,7 +39,7 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 
 * Support anonymization of FHIR R4 and STU 3 data in json as well as ndjson format
 * Configuration of the data elements that need to be de-identified 
-* Configuration of the de-identification method for each data element (keeping, redacting, encrypting, substituting, Date-shifting, or Crypto-hashing) 
+* Configuration of the de-identification method for each data element (keeping, redacting, encrypting, substituting, perturbing, Date-shifting, or Crypto-hashing) 
 * Ability to create Azure Data Factory to support de-identification of the data flows 
 * Ability to run the tool on premise to de-identify a dataset locally
 
@@ -289,6 +293,7 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |keep|All elements| Retains the value as is. |
 |redact|All elements| Removes the element. See the parameters section below to handle special cases.|
 |dateShift|Elements of type date, dateTime, and instant | Shifts the value using the [Date-shift algorithm](#date-shift-algorithm).
+|perturb|Elements of numeric and quantity types| [Perturb](#Perturb-method) the value with random noise addition.  |
 |cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
 |encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
 |substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value.  |
@@ -326,6 +331,27 @@ To date-shift date, dateTime, and instant data types
 To redact the home-use Contact point
 ```json
 {"path": "nodesByType('ContactPoint').where(use='home')","method": "redact"}
+```
+
+To perturb age fields of Condition resource by adding random noise having range ```[-3, 3]```
+```json
+{
+  "path": "Condition.onset | Condition.abatement as Age",
+  "method": "perturb",
+  "span": 6,
+  "rangeType": "fixed",
+  "roundTo": 0
+}
+```
+To perturb age fields of Condition resource by adding random noise having range ```[-0.1*originalAge, 0.1*originalAge]```
+```json
+{
+  "path": "Condition.onset | Condition.abatement as Age",
+  "method": "perturb",
+  "span": 0.2,
+  "rangeType": "proportional",
+  "roundTo": 0
+}
 ```
 
 To generate hash of Resource Id
@@ -399,6 +425,16 @@ You can specify a fixed, valid value to replace a target FHIR field. For example
 
 For complex data types, you can provide a fixed json fragment following the [sample rules](#Sample-rules-using-FHIRPath).
 You should provide valid value for the target data type to avoid unexpected errors.
+
+## Perturb method
+With perturbation rule, you can replace specific values with equally specific, but different values. You can choose to add random noise from a fixed range or a proportional range. In the [age example](#Sample-rules-using-FHIRPath) above, for a fixed range ```[-3, 3]```, every age is within +/- 3 years of the original value. For a proportional range ```[-0.1*originalAge, 0.1*originalAge]```, every age is within +/- 10% years of the original value. 
+
+There are a few parameters that can help you customize the noise amount for different FHIR types.
+- [required] **span** A non-negative value representing the random noise range. For *fixed* range type, the noise will be sampled from a uniform distribution over ```[-span/2, span/2]```. For *proportional* range type, the noise will be sampled from a uniform distribution over ```[-span/2 * value, span/2 * value]```. 
+- [optional] **rangeType** Define whether the *span* value is *fixed* or *proportional*. The default value is *fixed*. 
+- [optional] **roundTo** A value from 0 to 28 that specifies the number of decimal places to round to. The default value is *0* for integer types and *2* for decimal types. 
+
+Note that the target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity, SimpleQuantity, Money, etc.). 
 
 ## Current limitations
 1. We support FHIR data in R4 and STU 3, JSON format. Support for XML is planned.
