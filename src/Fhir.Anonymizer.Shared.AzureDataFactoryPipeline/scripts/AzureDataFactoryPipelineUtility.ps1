@@ -56,11 +56,13 @@ param(
 
 function BuildToolAndUploadToBlobContainer 
 {
-    param ($storageAccountName, $storageAccountKey, $containerName, $AppFolder, $AppName, $dotnetRuntimeId)
+    param ($storageAccountName, $storageAccountKey, $containerName, $AppFolder, $dotnetRuntimeId)
     # Build AzureDataFactory Custom Activity Tool
     New-Item -ItemType Directory -Force -Path "Build"
 
-    dotnet publish -c Release -r $dotnetRuntimeId --self-contained true -o "Build\$AppFolder" "..\..\$AppName\$AppName.csproj" 
+    $AppProjPath = "..\..\Fhir.Anonymizer.$FhirVersion.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.$FhirVersion.AzureDataFactoryPipeline.csproj"
+
+    dotnet publish -c Release -r $dotnetRuntimeId --self-contained true -o "Build\$AppFolder" $AppProjPath 
     Compress-Archive -Path "Build\$AppFolder\*" -DestinationPath "Build\$AppFolder.zip" -Force
 
     $currentDirectory = $(Get-Location).Path    
@@ -300,13 +302,12 @@ else
     Write-Host "Resource Group $ResourceGroupName already exist."
 }
 
-$appName="Microsoft.Health.Fhir.Anonymizer.$FhirVersion.AzureDataFactoryPipeline"
 $appFolder = "$FhirVersion.AdfApplication"
 $adfPipelineName = "AdfAnonymizerPipeline"
 
 if (!$RunPipelineOnly) 
 {
-    BuildToolAndUploadToBlobContainer $userConfig.destinationStorageAccountName $userConfig.destinationStorageAccountKey $userConfig.activityContainerName.ToLower() $appFolder $appName $BatchComputeNodeRuntimeId
+    BuildToolAndUploadToBlobContainer $userConfig.destinationStorageAccountName $userConfig.destinationStorageAccountKey $userConfig.activityContainerName.ToLower() $appFolder $BatchComputeNodeRuntimeId
 
     CheckAndCreateAzureBatchLinkedServiceAndComputeEnvrionment $ResourceGroupName $userConfig.resourceLocation $BatchAccountName $BatchAccountPoolName $BatchComputeNodeSize
     

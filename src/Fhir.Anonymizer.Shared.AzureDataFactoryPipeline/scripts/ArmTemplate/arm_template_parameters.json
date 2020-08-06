@@ -1,48 +1,48 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "location": {
-      "value": ""
-    },
-    "factoryName": {
-      "value": ""
-    },
-    "sourceStorageLinkedService_connectionString": {
-      "value": ""
-    },
-    "sourceStorageActivityApplicationContainer": {
-      "value": ""
-    },
-    "sourceStorageContainerName": {
-      "value": ""
-    },
-    "sourceContainerFolderPath": {
-      "value": ""
-    },
-    "destinationStorageLinkedService_connectionString": {
-      "value": ""
-    },
-    "destinationStorageContainerName": {
-      "value": ""
-    },
-    "destinationContainerFolderPath": {
-      "value": ""
-    },
-    "azureBatchLinkedService_accessKey": {
-      "value": ""
-    },
-    "azureBatchLinkedService_poolName": {
-      "value": ""
-    },
-    "azureBatchLinkedService_properties_typeProperties_accountName": {
-      "value": ""
-    },
-    "azureBatchLinkedService_properties_typeProperties_batchUri": {
-      "value": ""
-    },
-    "fhirVersion": {
-      "value": ""
-    }
-  }
+    "$schema":  "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion":  "1.0.0.0",
+    "parameters":  {
+                       "location":  {
+                                        "value":  "WestUS"
+                                    },
+                       "factoryName":  {
+                                           "value":  "tongwutest08061"
+                                       },
+                       "sourceStorageLinkedService_connectionString":  {
+                                                                           "value":  "DefaultEndpointsProtocol=https;AccountName=adfasia;AccountKey=hhqi1kaT5/siN/O2lxYd+ogPqt03EtuCqJ64mViSDzZrMk+RZDd1WrUJ/9Jv8H5BvR88+e5Ry9wWcG5tH59CeA==;EndpointSuffix=core.windows.net"
+                                                                       },
+                       "sourceStorageActivityApplicationContainer":  {
+                                                                         "value":  "tongwutest08061"
+                                                                     },
+                       "sourceStorageContainerName":  {
+                                                          "value":  "synthea"
+                                                      },
+                       "sourceContainerFolderPath":  {
+                                                         "value":  ""
+                                                     },
+                       "destinationStorageLinkedService_connectionString":  {
+                                                                                "value":  "DefaultEndpointsProtocol=https;AccountName=adfasia;AccountKey=hhqi1kaT5/siN/O2lxYd+ogPqt03EtuCqJ64mViSDzZrMk+RZDd1WrUJ/9Jv8H5BvR88+e5Ry9wWcG5tH59CeA==;EndpointSuffix=core.windows.net"
+                                                                            },
+                       "destinationStorageContainerName":  {
+                                                               "value":  "tongwutest08061"
+                                                           },
+                       "destinationContainerFolderPath":  {
+                                                              "value":  ""
+                                                          },
+                       "azureBatchLinkedService_accessKey":  {
+                                                                 "value":  "Ft986BW2ib8P/RihmIQkFaxEhniSg0aCw68tKi4MQjmTeG///epxy5o8Iy2cTGwuPCaM3Z8BIhunv59P0pXX2g=="
+                                                             },
+                       "azureBatchLinkedService_poolName":  {
+                                                                "value":  "adfpool1"
+                                                            },
+                       "azureBatchLinkedService_properties_typeProperties_accountName":  {
+                                                                                             "value":  "skwwttest07068"
+                                                                                         },
+                       "azureBatchLinkedService_properties_typeProperties_batchUri":  {
+                                                                                          "value":  "https://skwwttest07068.westus.batch.azure.com"
+                                                                                      },
+                       "fhirVersion":  {
+                                           "value":  "R4"
+                                       }
+                   }
 }
