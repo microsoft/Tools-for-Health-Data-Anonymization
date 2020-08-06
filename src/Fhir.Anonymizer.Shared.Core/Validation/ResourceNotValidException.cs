@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fhir.Anonymizer.Core.Validation
+namespace MicrosoftFhir.Anonymizer.Core.Validation
 {
     public class ResourceNotValidException : Exception
     {

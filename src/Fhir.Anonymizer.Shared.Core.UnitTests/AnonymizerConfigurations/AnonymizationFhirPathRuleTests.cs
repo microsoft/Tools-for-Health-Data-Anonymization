@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
+namespace MicrosoftFhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
 {
     public class AnonymizationFhirPathRuleTests
     {

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Fhir.Anonymizer.Core
+namespace MicrosoftFhir.Anonymizer.Core
 {
     public interface IFhirDataReader<T>
     {

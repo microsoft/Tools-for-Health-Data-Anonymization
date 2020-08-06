@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using EnsureThat;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Fhir.Anonymizer.Core.Extensions;
-using Fhir.Anonymizer.Core.Processors;
-using Fhir.Anonymizer.Core.Validation;
+using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
+using MicrosoftFhir.Anonymizer.Core.Extensions;
+using MicrosoftFhir.Anonymizer.Core.Processors;
+using MicrosoftFhir.Anonymizer.Core.Validation;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
 
-namespace Fhir.Anonymizer.Core
+namespace MicrosoftFhir.Anonymizer.Core
 {
     public class AnonymizerEngine
     {

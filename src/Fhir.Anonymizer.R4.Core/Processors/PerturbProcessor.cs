@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Hl7.Fhir.Model;
 
-namespace Fhir.Anonymizer.Core.Processors
+namespace MicrosoftFhir.Anonymizer.Core.Processors
 {
     public partial class PerturbProcessor : IAnonymizerProcessor
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
+namespace MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizationFhirPathRule : AnonymizerRule
     {

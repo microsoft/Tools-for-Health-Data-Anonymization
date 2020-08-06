@@ -3,7 +3,7 @@ using System.Linq;
 using Hl7.Fhir.ElementModel;
 using Hl7.FhirPath;
 
-namespace Fhir.Anonymizer.Core.Extensions
+namespace MicrosoftFhir.Anonymizer.Core.Extensions
 {
     public static class ElementNodeNavExtensions
     {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using CommandLine;
 
-namespace Fhir.Anonymizer.DataFactoryTool
+namespace MicrosoftFhir.Anonymizer.DataFactoryTool
 {
     public class Options
     {

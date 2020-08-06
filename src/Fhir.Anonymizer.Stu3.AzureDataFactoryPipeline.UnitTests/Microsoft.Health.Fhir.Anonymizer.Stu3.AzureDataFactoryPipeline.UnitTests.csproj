@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.csproj" />
+    <ProjectReference Include="..\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.csproj" />
   </ItemGroup>
 
   <Import Project="..\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems" Label="Shared" />

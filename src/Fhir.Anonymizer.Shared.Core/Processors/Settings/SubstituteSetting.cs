@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using EnsureThat;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
 
-namespace Fhir.Anonymizer.Core.Processors.Settings
+namespace MicrosoftFhir.Anonymizer.Core.Processors.Settings
 {
     public class SubstituteSetting
     {

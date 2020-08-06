@@ -2,7 +2,7 @@
 using System.Text;
 using System.Security.Cryptography;
 
-namespace Fhir.Anonymizer.Core.Utility
+namespace MicrosoftFhir.Anonymizer.Core.Utility
 {
     public class CryptoHashUtility
     {

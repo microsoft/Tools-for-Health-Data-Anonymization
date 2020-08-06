@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fhir.Anonymizer.Core.Processors
+namespace MicrosoftFhir.Anonymizer.Core.Processors
 {
     public static class AnonymizationOperations
     {

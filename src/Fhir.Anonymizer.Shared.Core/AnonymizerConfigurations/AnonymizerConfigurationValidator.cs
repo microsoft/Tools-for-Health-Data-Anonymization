@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Fhir.Anonymizer.Core.Processors.Settings;
+using MicrosoftFhir.Anonymizer.Core.Processors.Settings;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
 
-namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
+namespace MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizerConfigurationValidator
     {

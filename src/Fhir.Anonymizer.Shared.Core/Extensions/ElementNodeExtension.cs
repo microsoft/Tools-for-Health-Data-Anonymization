@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Hl7.Fhir.ElementModel;
 
-namespace Fhir.Anonymizer.Core.Extensions
+namespace MicrosoftFhir.Anonymizer.Core.Extensions
 {
     public static class ElementNodeExtension
     {

@@ -1,10 +1,10 @@
 ﻿using System.IO;
-using Fhir.Anonymizer.Core;
-using Fhir.Anonymizer.Core.Extensions;
+using MicrosoftFhir.Anonymizer.Core;
+using MicrosoftFhir.Anonymizer.Core.Extensions;
 using Hl7.FhirPath;
 using Xunit;
 
-namespace Fhir.Anonymizer.FunctionalTests
+namespace MicrosoftFhir.Anonymizer.FunctionalTests
 {
     public class CollectionResourceTests
     {

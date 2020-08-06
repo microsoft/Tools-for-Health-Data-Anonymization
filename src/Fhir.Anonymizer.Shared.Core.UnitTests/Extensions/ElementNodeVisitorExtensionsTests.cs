@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Fhir.Anonymizer.Core.Extensions;
-using Fhir.Anonymizer.Core.Visitors;
+using MicrosoftFhir.Anonymizer.Core.Extensions;
+using MicrosoftFhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.Extensions
+namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Extensions
 {
     public class ElementNodeVisitorExtensionsTests
     {

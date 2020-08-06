@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Fhir.Anonymizer.Core.Extensions;
+using MicrosoftFhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.Extensions
+namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Extensions
 {
     public class ElementNodeNavExtensionTests
     {

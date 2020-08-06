@@ -1,11 +1,11 @@
 ﻿using System;
-using Fhir.Anonymizer.Core.Models;
-using Fhir.Anonymizer.Core.Processors;
+using MicrosoftFhir.Anonymizer.Core.Models;
+using MicrosoftFhir.Anonymizer.Core.Processors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.Processors
+namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Processors
 {
     public class DateShiftProcessorTests
     {

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Fhir.Anonymizer.Core.Models;
-using Fhir.Anonymizer.Core.Processors;
-using Fhir.Anonymizer.Core.Visitors;
+using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
+using MicrosoftFhir.Anonymizer.Core.Models;
+using MicrosoftFhir.Anonymizer.Core.Processors;
+using MicrosoftFhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Specification;
 
-namespace Fhir.Anonymizer.Core.Extensions
+namespace MicrosoftFhir.Anonymizer.Core.Extensions
 {
     public static class ElementNodeOperationExtensions
     {

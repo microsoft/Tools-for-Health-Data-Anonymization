@@ -12,41 +12,41 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{BE752207-C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{4273D1F5-D916-4291-8B60-7D74202D425E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.Core.UnitTests", "src\Fhir.Anonymizer.R4.Core.UnitTests\Fhir.Anonymizer.R4.Core.UnitTests.csproj", "{3F277AA6-5AD7-4E13-8A2C-B112D1CECDE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.Core.UnitTests", "src\Fhir.Anonymizer.R4.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.R4.Core.UnitTests.csproj", "{3F277AA6-5AD7-4E13-8A2C-B112D1CECDE1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.Core.UnitTests", "src\Fhir.Anonymizer.Stu3.Core.UnitTests\Fhir.Anonymizer.Stu3.Core.UnitTests.csproj", "{F6AB65D3-6E69-433F-B84A-E469D2AB1090}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.Core.UnitTests", "src\Fhir.Anonymizer.Stu3.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Stu3.Core.UnitTests.csproj", "{F6AB65D3-6E69-433F-B84A-E469D2AB1090}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.Core", "src\Fhir.Anonymizer.R4.Core\Fhir.Anonymizer.R4.Core.csproj", "{96456150-DB43-4970-9E22-7003516FA05E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.Core", "src\Fhir.Anonymizer.R4.Core\Microsoft.Health.Fhir.Anonymizer.R4.Core.csproj", "{96456150-DB43-4970-9E22-7003516FA05E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.Core", "src\Fhir.Anonymizer.Stu3.Core\Fhir.Anonymizer.Stu3.Core.csproj", "{71945966-A531-466C-8C66-6C6EBA591832}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.Core", "src\Fhir.Anonymizer.Stu3.Core\Microsoft.Health.Fhir.Anonymizer.Stu3.Core.csproj", "{71945966-A531-466C-8C66-6C6EBA591832}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.FunctionalTests", "src\Fhir.Anonymizer.R4.FunctionalTests\Fhir.Anonymizer.R4.FunctionalTests.csproj", "{37241A6C-0897-4837-B845-10A54F1B3C7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.FunctionalTests", "src\Fhir.Anonymizer.R4.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.R4.FunctionalTests.csproj", "{37241A6C-0897-4837-B845-10A54F1B3C7C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.FunctionalTests", "src\Fhir.Anonymizer.Stu3.FunctionalTests\Fhir.Anonymizer.Stu3.FunctionalTests.csproj", "{6919CE19-56BC-4EC9-A16E-111401607DAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.FunctionalTests", "src\Fhir.Anonymizer.Stu3.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Stu3.FunctionalTests.csproj", "{6919CE19-56BC-4EC9-A16E-111401607DAF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.R4.AzureDataFactoryPipeline\Fhir.Anonymizer.R4.AzureDataFactoryPipeline.csproj", "{786E4AF9-F95D-441A-B5B0-329C616AA2E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.R4.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.R4.AzureDataFactoryPipeline.csproj", "{786E4AF9-F95D-441A-B5B0-329C616AA2E8}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Core", "src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.shproj", "{8918CE75-F36E-4CB4-8232-12024A1E41AC}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.Core", "src\Fhir.Anonymizer.Shared.Core\Microsoft.Health.Fhir.Anonymizer.Shared.Core.shproj", "{8918CE75-F36E-4CB4-8232-12024A1E41AC}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.FunctionalTests", "src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.shproj", "{19E3E7A2-17A6-4708-B9F2-04A2C9968C83}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests", "src\Fhir.Anonymizer.Shared.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests.shproj", "{19E3E7A2-17A6-4708-B9F2-04A2C9968C83}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.CommandLineTool", "src\Fhir.Anonymizer.R4.CommandLineTool\Fhir.Anonymizer.R4.CommandLineTool.csproj", "{D4BA9A53-BC94-4536-9DEE-B264F4B13B61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool", "src\Fhir.Anonymizer.R4.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.csproj", "{D4BA9A53-BC94-4536-9DEE-B264F4B13B61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.CommandLineTool", "src\Fhir.Anonymizer.Stu3.CommandLineTool\Fhir.Anonymizer.Stu3.CommandLineTool.csproj", "{E443BA88-3005-4AEE-BDA4-BEAF88D520BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool", "src\Fhir.Anonymizer.Stu3.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.csproj", "{E443BA88-3005-4AEE-BDA4-BEAF88D520BC}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.CommandLineTool", "src\Fhir.Anonymizer.Shared.CommandLineTool\Fhir.Anonymizer.Shared.CommandLineTool.shproj", "{140255C7-6C80-4A3C-A248-AE8CDFDCF907}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool", "src\Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.shproj", "{140255C7-6C80-4A3C-A248-AE8CDFDCF907}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests", "src\Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests\Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests.csproj", "{619BB4C9-455C-48FA-83AD-4B98AADC74C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests", "src\Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests.csproj", "{619BB4C9-455C-48FA-83AD-4B98AADC74C2}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.shproj", "{B1CC2F6C-F581-4495-8B38-ADBFBB1A6C29}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.shproj", "{B1CC2F6C-F581-4495-8B38-ADBFBB1A6C29}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.csproj", "{1FDB179A-0D26-42FD-B967-CEA04BAD75CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.csproj", "{1FDB179A-0D26-42FD-B967-CEA04BAD75CE}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests", "src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.shproj", "{24CA7A36-95FF-4E86-9ED8-2C073576DB7B}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests", "src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.shproj", "{24CA7A36-95FF-4E86-9ED8-2C073576DB7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests", "src\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests.csproj", "{F62BA36D-3BB3-40EE-8C79-D98AB5338C45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests", "src\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests.csproj", "{F62BA36D-3BB3-40EE-8C79-D98AB5338C45}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Core.UnitTests", "src\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.shproj", "{F7A47FD1-BD24-41A6-B3C6-2DD062523271}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests", "src\Fhir.Anonymizer.Shared.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests.shproj", "{F7A47FD1-BD24-41A6-B3C6-2DD062523271}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

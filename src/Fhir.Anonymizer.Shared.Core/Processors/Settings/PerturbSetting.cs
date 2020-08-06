@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using EnsureThat;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
 
-namespace Fhir.Anonymizer.Core.Processors.Settings
+namespace MicrosoftFhir.Anonymizer.Core.Processors.Settings
 {
     public class PerturbSetting
     {

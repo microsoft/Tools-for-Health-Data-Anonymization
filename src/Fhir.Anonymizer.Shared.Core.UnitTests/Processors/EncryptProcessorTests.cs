@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using Fhir.Anonymizer.Core.Processors;
-using Fhir.Anonymizer.Core.Utility;
+using MicrosoftFhir.Anonymizer.Core.Processors;
+using MicrosoftFhir.Anonymizer.Core.Utility;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.Processors
+namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Processors
 {
     public class EncryptProcessorTests
     {

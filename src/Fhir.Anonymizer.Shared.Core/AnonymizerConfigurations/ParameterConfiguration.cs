@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
+namespace MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations
 {
     [DataContract]
     public class ParameterConfiguration

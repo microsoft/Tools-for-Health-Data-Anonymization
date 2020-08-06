@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Fhir.Anonymizer.Core.Utility;
+using MicrosoftFhir.Anonymizer.Core.Utility;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.Utility
+namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Utility
 {
     public class EncryptUtilityTests
     {

@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fhir.Anonymizer.Core.PartitionedExecution
+namespace MicrosoftFhir.Anonymizer.Core.PartitionedExecution
 {
     public class FhirStreamConsumer : IFhirDataConsumer<string>, IDisposable
     {

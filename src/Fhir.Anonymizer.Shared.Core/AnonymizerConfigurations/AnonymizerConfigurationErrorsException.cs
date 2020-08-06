@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
+namespace MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizerConfigurationErrorsException : Exception
     {

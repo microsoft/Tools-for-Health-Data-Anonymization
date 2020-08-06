@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Fhir.Anonymizer.Core.Processors.Settings;
+using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
+using MicrosoftFhir.Anonymizer.Core.Processors.Settings;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.Processors.Settings
+namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Processors.Settings
 {
     public class PerturbSettingTests
     {

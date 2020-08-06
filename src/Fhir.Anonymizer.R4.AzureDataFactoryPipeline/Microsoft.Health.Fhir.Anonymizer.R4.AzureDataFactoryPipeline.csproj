@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fhir.Anonymizer.R4.Core\Fhir.Anonymizer.R4.Core.csproj" />
+    <ProjectReference Include="..\Fhir.Anonymizer.R4.Core\Microsoft.Health.Fhir.Anonymizer.R4.Core.csproj" />
   </ItemGroup>
 
   <Import Project="..\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems" Label="Shared" />

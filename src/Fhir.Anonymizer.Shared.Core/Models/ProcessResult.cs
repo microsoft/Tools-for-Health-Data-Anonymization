@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Fhir.Anonymizer.Core.Processors;
+using MicrosoftFhir.Anonymizer.Core.Processors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 
-namespace Fhir.Anonymizer.Core.Models
+namespace MicrosoftFhir.Anonymizer.Core.Models
 {
     public class ProcessResult
     {

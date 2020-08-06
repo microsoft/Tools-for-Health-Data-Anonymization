@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
+namespace MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum DateShiftScope

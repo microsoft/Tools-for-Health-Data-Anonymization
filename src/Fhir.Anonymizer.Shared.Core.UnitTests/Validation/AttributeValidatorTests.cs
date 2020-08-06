@@ -1,11 +1,11 @@
 ﻿using System.IO;
 using System.Linq;
-using Fhir.Anonymizer.Core.Validation;
+using MicrosoftFhir.Anonymizer.Core.Validation;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.Validation
+namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Validation
 {
     public class AttributeValidatorTests
     {

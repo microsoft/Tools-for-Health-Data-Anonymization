@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Fhir.Anonymizer.Core.PartitionedExecution;
+using MicrosoftFhir.Anonymizer.Core.PartitionedExecution;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
+namespace MicrosoftFhir.Anonymizer.Core.UnitTests.PartitionedExecution
 {
     public class FhirPartitionedExecutionTests
     {

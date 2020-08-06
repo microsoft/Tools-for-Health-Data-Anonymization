@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fhir.Anonymizer.Stu3.Core\Fhir.Anonymizer.Stu3.Core.csproj" />
+    <ProjectReference Include="..\Fhir.Anonymizer.R4.Core\Microsoft.Health.Fhir.Anonymizer.R4.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

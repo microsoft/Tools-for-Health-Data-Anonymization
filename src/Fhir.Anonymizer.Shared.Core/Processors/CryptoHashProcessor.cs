@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fhir.Anonymizer.Core.Extensions;
-using Fhir.Anonymizer.Core.Models;
-using Fhir.Anonymizer.Core.Utility;
+using MicrosoftFhir.Anonymizer.Core.Extensions;
+using MicrosoftFhir.Anonymizer.Core.Models;
+using MicrosoftFhir.Anonymizer.Core.Utility;
 using Hl7.Fhir.ElementModel;
 using Microsoft.Extensions.Logging;
 
-namespace Fhir.Anonymizer.Core.Processors
+namespace MicrosoftFhir.Anonymizer.Core.Processors
 {
     public class CryptoHashProcessor : IAnonymizerProcessor
     {

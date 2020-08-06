@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fhir.Anonymizer.Stu3.Core\Fhir.Anonymizer.Stu3.Core.csproj" />
+    <ProjectReference Include="..\Fhir.Anonymizer.Stu3.Core\Microsoft.Health.Fhir.Anonymizer.Stu3.Core.csproj" />
   </ItemGroup>
 
 </Project>

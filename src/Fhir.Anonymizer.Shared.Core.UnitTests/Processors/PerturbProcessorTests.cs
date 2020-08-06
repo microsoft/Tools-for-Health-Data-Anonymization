@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fhir.Anonymizer.Core.Models;
-using Fhir.Anonymizer.Core.Processors;
-using Fhir.Anonymizer.Core.Processors.Settings;
+using MicrosoftFhir.Anonymizer.Core.Models;
+using MicrosoftFhir.Anonymizer.Core.Processors;
+using MicrosoftFhir.Anonymizer.Core.Processors.Settings;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
@@ -11,7 +11,7 @@ using Hl7.FhirPath;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.Processors
+namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Processors
 {
     public class PerturbProcessorTests
     {

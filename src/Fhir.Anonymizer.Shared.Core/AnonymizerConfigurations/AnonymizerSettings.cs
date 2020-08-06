@@ -1,4 +1,4 @@
-﻿namespace Fhir.Anonymizer.Core.AnonymizerConfigurations
+﻿namespace MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizerSettings
     {

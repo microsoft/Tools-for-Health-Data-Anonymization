@@ -2,7 +2,7 @@
 using Hl7.Fhir.Model;
 using Microsoft.Extensions.Logging;
 
-namespace Fhir.Anonymizer.Core.Validation
+namespace MicrosoftFhir.Anonymizer.Core.Validation
 {
     public class ResourceValidator
     {

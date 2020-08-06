@@ -1,4 +1,4 @@
-﻿namespace Fhir.Anonymizer.AzureDataFactoryPipeline.src
+﻿namespace MicrosoftFhir.Anonymizer.AzureDataFactoryPipeline.src
 {
     public static class FhirAzureConstants
     {
