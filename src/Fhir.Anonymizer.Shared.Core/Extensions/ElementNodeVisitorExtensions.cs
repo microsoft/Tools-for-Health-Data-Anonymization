@@ -1,9 +1,9 @@
 ﻿using System.Data;
 using System.Linq;
-using MicrosoftFhir.Anonymizer.Core.Visitors;
+using Microsoft.Health.Fhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
 
-namespace MicrosoftFhir.Anonymizer.Core.Extensions
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 {
     public static class ElementNodeVisitorExtensions
     {

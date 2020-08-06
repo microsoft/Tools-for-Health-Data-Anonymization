@@ -3,7 +3,7 @@ using System.Linq;
 using Hl7.Fhir.ElementModel;
 using Hl7.FhirPath.Expressions;
 
-namespace MicrosoftFhir.Anonymizer.Core.Extensions
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 {
     public static class FhirPathSymbolExtensions
     {

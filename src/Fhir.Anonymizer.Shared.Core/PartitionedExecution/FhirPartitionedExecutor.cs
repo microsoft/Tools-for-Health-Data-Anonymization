@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MicrosoftFhir.Anonymizer.Core.PartitionedExecution;
+using Microsoft.Health.Fhir.Anonymizer.Core.PartitionedExecution;
 
-namespace MicrosoftFhir.Anonymizer.Core
+namespace Microsoft.Health.Fhir.Anonymizer.Core
 {
     public class FhirPartitionedExecutor<TSource, TResult>
     {

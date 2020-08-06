@@ -2,7 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 
-namespace MicrosoftFhir.Anonymizer.Core.Utility
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
 {
     public class EncryptUtility
     {

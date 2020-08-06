@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Hl7.Fhir.Model;
 
-namespace MicrosoftFhir.Anonymizer.Core.Utility
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
 {
     public class ReferenceUtility
     {

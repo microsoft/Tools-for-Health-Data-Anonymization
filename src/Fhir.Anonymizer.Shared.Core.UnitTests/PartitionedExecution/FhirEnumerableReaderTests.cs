@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MicrosoftFhir.Anonymizer.Core.PartitionedExecution;
+using Microsoft.Health.Fhir.Anonymizer.Core.PartitionedExecution;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests.PartitionedExecution
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
 {
     public class FhirEnumerableReaderTests
     {

@@ -1,4 +1,4 @@
-namespace MicrosoftFhir.Anonymizer.Core.Processors.Settings
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
 {
     internal static class RuleKeys 
     {

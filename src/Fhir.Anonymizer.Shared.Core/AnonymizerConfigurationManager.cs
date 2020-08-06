@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace MicrosoftFhir.Anonymizer.Core
+namespace Microsoft.Health.Fhir.Anonymizer.Core
 {
     public sealed class AnonymizerConfigurationManager
     {

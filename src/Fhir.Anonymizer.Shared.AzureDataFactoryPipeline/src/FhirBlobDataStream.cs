@@ -6,7 +6,7 @@ using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
-namespace MicrosoftFhir.Anonymizer.AzureDataFactoryPipeline.src
+namespace Microsoft.Health.Fhir.Anonymizer.AzureDataFactoryPipeline.src
 {
     public class FhirBlobDataStream : Stream
     {

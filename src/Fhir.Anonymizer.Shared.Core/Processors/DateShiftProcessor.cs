@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using MicrosoftFhir.Anonymizer.Core.Extensions;
-using MicrosoftFhir.Anonymizer.Core.Models;
-using MicrosoftFhir.Anonymizer.Core.Utility;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
+using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
 using Hl7.Fhir.ElementModel;
 
-namespace MicrosoftFhir.Anonymizer.Core.Processors
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
     public class DateShiftProcessor : IAnonymizerProcessor
     {

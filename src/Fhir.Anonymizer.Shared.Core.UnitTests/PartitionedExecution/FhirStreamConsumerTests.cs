@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using MicrosoftFhir.Anonymizer.Core.PartitionedExecution;
+using Microsoft.Health.Fhir.Anonymizer.Core.PartitionedExecution;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests.PartitionedExecution
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
 {
     public class FhirStreamConsumerTests
     {

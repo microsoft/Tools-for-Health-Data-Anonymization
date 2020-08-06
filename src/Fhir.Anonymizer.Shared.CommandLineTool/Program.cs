@@ -2,10 +2,10 @@
 using System.IO;
 using System.Threading.Tasks;
 using CommandLine;
-using MicrosoftFhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core;
 using Microsoft.Extensions.Logging;
 
-namespace MicrosoftFhir.Anonymizer.Tool    
+namespace Microsoft.Health.Fhir.Anonymizer.Tool    
 {
     class Options
     {

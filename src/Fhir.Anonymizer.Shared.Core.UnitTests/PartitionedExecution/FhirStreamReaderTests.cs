@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests.PartitionedExecution
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
 {
     public class FhirStreamReaderTests
     {

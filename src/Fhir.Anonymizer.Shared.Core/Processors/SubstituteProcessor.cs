@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using EnsureThat;
-using MicrosoftFhir.Anonymizer.Core.Extensions;
-using MicrosoftFhir.Anonymizer.Core.Models;
-using MicrosoftFhir.Anonymizer.Core.Processors.Settings;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
+using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
@@ -12,7 +12,7 @@ using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Specification;
 using Hl7.FhirPath.Sprache;
 
-namespace MicrosoftFhir.Anonymizer.Core.Processors
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
     public class SubstituteProcessor : IAnonymizerProcessor
     {

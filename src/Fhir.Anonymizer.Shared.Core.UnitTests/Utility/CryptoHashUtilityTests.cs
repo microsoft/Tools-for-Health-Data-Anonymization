@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using MicrosoftFhir.Anonymizer.Core.Utility;
+using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Utility
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
 {
     public class CryptoHashUtilityTests
     {

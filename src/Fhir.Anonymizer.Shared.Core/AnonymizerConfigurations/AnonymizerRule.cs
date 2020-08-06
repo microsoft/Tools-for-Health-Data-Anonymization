@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations
+namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizerRule
     {

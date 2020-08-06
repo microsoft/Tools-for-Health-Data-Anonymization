@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir23.Anonymizer.Core.AnonymizerConfigurations;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests
+namespace Microsoft.Health.Fhir23.Anonymizer.Core.UnitTests
 {
     public class AnonymizerConfigurationValidatorTests
     {

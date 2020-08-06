@@ -1,7 +1,7 @@
 ﻿using Hl7.Fhir.ElementModel;
 using System.Collections.Generic;
 
-namespace MicrosoftFhir.Anonymizer.Core.Models
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Models
 {
     public class ProcessContext
     {

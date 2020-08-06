@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EnsureThat;
-using MicrosoftFhir.Anonymizer.Core;
-using MicrosoftFhir.Anonymizer.Core.Extensions;
-using MicrosoftFhir.Anonymizer.Core.Models;
-using MicrosoftFhir.Anonymizer.Core.Processors.Settings;
+using Microsoft.Health.Fhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
+using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using MathNet.Numerics.Distributions;
 
-namespace MicrosoftFhir.Anonymizer.Core.Processors
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
     public partial class PerturbProcessor : IAnonymizerProcessor
     {

@@ -1,4 +1,4 @@
-﻿namespace MicrosoftFhir.Anonymizer.Core.PartitionedExecution
+﻿namespace Microsoft.Health.Fhir.Anonymizer.Core.PartitionedExecution
 {
     public class BatchAnonymizeProgressDetail
     {

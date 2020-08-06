@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
-using MicrosoftFhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core;
 
-namespace MicrosoftFhir.Anonymizer.AzureDataFactoryPipeline.src
+namespace Microsoft.Health.Fhir.Anonymizer.AzureDataFactoryPipeline.src
 {
     public class FhirBlobConsumer : IFhirDataConsumer<string>
     {

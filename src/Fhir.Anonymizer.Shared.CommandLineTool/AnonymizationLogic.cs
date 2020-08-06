@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using MicrosoftFhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core;
 using Microsoft.Extensions.Logging;
 
-namespace MicrosoftFhir.Anonymizer.Tool
+namespace Microsoft.Health.Fhir.Anonymizer.Tool
 {
     internal static class AnonymizationLogic
     {

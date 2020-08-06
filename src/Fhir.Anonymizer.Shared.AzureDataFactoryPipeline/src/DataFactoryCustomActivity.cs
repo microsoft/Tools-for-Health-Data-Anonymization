@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
-using MicrosoftFhir.Anonymizer.AzureDataFactoryPipeline.src;
-using MicrosoftFhir.Anonymizer.Core;
-using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
-using MicrosoftFhir.Anonymizer.Core.PartitionedExecution;
+using Microsoft.Health.Fhir.Anonymizer.AzureDataFactoryPipeline.src;
+using Microsoft.Health.Fhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.PartitionedExecution;
 using Newtonsoft.Json;
 
-namespace MicrosoftFhir.Anonymizer.DataFactoryTool
+namespace Microsoft.Health.Fhir.Anonymizer.DataFactoryTool
 {
     public class DataFactoryCustomActivity
     {

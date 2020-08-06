@@ -1,11 +1,11 @@
 ﻿using System.Linq;
-using MicrosoftFhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Specification;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Extensions
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
 {
     public class ElementNodeExtensionTests
     {

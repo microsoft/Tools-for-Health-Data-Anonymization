@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using MicrosoftFhir.Anonymizer.Core.Models;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Hl7.Fhir.ElementModel;
 
-namespace MicrosoftFhir.Anonymizer.Core.Processors
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
     public class KeepProcessor: IAnonymizerProcessor
     {

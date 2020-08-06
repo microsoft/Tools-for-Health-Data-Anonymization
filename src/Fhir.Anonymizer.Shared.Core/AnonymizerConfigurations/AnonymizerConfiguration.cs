@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations
+namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     [DataContract]
     public class AnonymizerConfiguration

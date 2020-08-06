@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using MicrosoftFhir.Anonymizer.Core.Models;
-using MicrosoftFhir.Anonymizer.Core.Utility;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
+using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
 using Hl7.Fhir.ElementModel;
 using Microsoft.Extensions.Logging;
 
-namespace MicrosoftFhir.Anonymizer.Core.Processors
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
     public class EncryptProcessor: IAnonymizerProcessor
     {

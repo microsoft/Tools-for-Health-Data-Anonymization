@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
-using MicrosoftFhir.Anonymizer.Core;
-using MicrosoftFhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.FhirPath;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.FunctionalTests
+namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
 {
     public class ResourceTests
     {

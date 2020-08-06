@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MicrosoftFhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.FhirPath;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Extensions
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
 {
     public class FhirPathSymbolExtensionsTests
     {

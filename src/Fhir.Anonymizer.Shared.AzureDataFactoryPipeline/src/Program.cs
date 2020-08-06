@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using CommandLine;
 
-namespace MicrosoftFhir.Anonymizer.DataFactoryTool
+namespace Microsoft.Health.Fhir.Anonymizer.DataFactoryTool
 {
     public class Options
     {

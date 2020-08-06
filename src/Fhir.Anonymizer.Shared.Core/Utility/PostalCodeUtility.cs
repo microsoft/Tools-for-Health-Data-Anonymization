@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using MicrosoftFhir.Anonymizer.Core.Extensions;
-using MicrosoftFhir.Anonymizer.Core.Models;
-using MicrosoftFhir.Anonymizer.Core.Processors;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
+using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Hl7.Fhir.ElementModel;
 
-namespace MicrosoftFhir.Anonymizer.Core.Utility
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
 {
     public class PostalCodeUtility
     {

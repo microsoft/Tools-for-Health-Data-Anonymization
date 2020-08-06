@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using MicrosoftFhir.Anonymizer.Core.Models;
-using MicrosoftFhir.Anonymizer.Core.Utility;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
+using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Utility
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
 {
     public class PostalCodeUtilityTests
     {

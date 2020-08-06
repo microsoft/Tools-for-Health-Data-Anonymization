@@ -7,11 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
-using MicrosoftFhir.Anonymizer.AzureDataFactoryPipeline.src;
+using Microsoft.Health.Fhir.Anonymizer.AzureDataFactoryPipeline.src;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Tools.UnitTests
+namespace Microsoft.Health.Fhir.Anonymizer.Tools.UnitTests
 {
     public class FhirBlobStreamTests
     {

@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
 {
     public class AnonymizerEngineTests
     {

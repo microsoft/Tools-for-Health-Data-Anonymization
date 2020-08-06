@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using MicrosoftFhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.FunctionalTests
+namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
 {
     public static class FunctionalTestUtility
     {

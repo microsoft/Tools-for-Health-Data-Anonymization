@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MicrosoftFhir.Anonymizer.Tool
+namespace Microsoft.Health.Fhir.Anonymizer.Tool
 {
     public class AnonymizationToolOptions
     {

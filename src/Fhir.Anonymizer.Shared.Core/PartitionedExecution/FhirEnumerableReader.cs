@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MicrosoftFhir.Anonymizer.Core.PartitionedExecution
+namespace Microsoft.Health.Fhir.Anonymizer.Core.PartitionedExecution
 {
     public class FhirEnumerableReader<T> : IFhirDataReader<T>
     {

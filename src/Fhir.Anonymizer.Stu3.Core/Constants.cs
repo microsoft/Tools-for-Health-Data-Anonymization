@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MicrosoftFhir.Anonymizer.Core
+namespace Microsoft.Health.Fhir.Anonymizer.Core
 {
     internal static partial class Constants
     {

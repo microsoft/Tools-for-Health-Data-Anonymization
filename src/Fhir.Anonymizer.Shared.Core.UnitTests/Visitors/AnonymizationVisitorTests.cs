@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
-using MicrosoftFhir.Anonymizer.Core.Extensions;
-using MicrosoftFhir.Anonymizer.Core.Models;
-using MicrosoftFhir.Anonymizer.Core.Processors;
-using MicrosoftFhir.Anonymizer.Core.Utility;
-using MicrosoftFhir.Anonymizer.Core.Visitors;
+using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
+using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
+using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
+using Microsoft.Health.Fhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.FhirPath;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Visitors
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
 {
     public class AnonymizationVisitorTests
     {

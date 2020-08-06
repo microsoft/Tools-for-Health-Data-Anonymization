@@ -1,6 +1,6 @@
 ﻿using Hl7.Fhir.Model;
 
-namespace MicrosoftFhir.Anonymizer.Core.Models
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Models
 {
     public static class SecurityLabels
     {

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
-using MicrosoftFhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.FhirPath;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfigurations
 {
     public class AnonymizerConfigurationManagerTests
     {

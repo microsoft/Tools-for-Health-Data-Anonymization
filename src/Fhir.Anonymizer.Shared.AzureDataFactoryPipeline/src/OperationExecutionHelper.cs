@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace MicrosoftFhir.Anonymizer.AzureDataFactoryPipeline.src
+namespace Microsoft.Health.Fhir.Anonymizer.AzureDataFactoryPipeline.src
 {
     public static class OperationExecutionHelper
     {

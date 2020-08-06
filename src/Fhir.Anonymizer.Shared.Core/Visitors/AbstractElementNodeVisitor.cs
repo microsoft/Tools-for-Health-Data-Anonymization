@@ -1,6 +1,6 @@
 ﻿using Hl7.Fhir.ElementModel;
 
-namespace MicrosoftFhir.Anonymizer.Core.Visitors
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
 {
     public abstract class AbstractElementNodeVisitor
     {

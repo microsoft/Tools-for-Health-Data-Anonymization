@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Validation;
 
-namespace MicrosoftFhir.Anonymizer.Core.Validation
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Validation
 {
     public class AttributeValidator
     {

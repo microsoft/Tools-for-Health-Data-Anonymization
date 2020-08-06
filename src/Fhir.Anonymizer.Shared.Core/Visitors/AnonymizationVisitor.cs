@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
-using MicrosoftFhir.Anonymizer.Core.Extensions;
-using MicrosoftFhir.Anonymizer.Core.Models;
-using MicrosoftFhir.Anonymizer.Core.Processors;
+using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
+using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Hl7.Fhir.ElementModel;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
 
-namespace MicrosoftFhir.Anonymizer.Core.Visitors
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
 {
     public class AnonymizationVisitor : AbstractElementNodeVisitor
     {

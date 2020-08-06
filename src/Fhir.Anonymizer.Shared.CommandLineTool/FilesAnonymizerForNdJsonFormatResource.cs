@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MicrosoftFhir.Anonymizer.Core;
-using MicrosoftFhir.Anonymizer.Core.AnonymizerConfigurations;
-using MicrosoftFhir.Anonymizer.Core.PartitionedExecution;
+using Microsoft.Health.Fhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.PartitionedExecution;
 
-namespace MicrosoftFhir.Anonymizer.Tool
+namespace Microsoft.Health.Fhir.Anonymizer.Tool
 {
     public class FilesAnonymizerForNdJsonFormatResource
     {

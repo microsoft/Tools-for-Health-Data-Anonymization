@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MicrosoftFhir.Anonymizer.DataFactoryTool
+namespace Microsoft.Health.Fhir.Anonymizer.DataFactoryTool
 {
     public class ActivityInputData
     {

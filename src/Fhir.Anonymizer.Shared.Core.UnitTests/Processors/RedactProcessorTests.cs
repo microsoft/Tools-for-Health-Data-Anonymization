@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MicrosoftFhir.Anonymizer.Core.Processors;
+using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Xunit;
 
-namespace MicrosoftFhir.Anonymizer.Core.UnitTests.Processors
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 {
     public class RedactProcessorTests
     {
