@@ -1,13 +1,13 @@
 {
-  "dataFactoryName": "tongwutest08061",
+  "dataFactoryName": "DataFactoryName",
   "resourceLocation": "WestUS",
-  "sourceStorageAccountName": "adfasia",
-  "sourceStorageAccountKey": "hhqi1kaT5/siN/O2lxYd+ogPqt03EtuCqJ64mViSDzZrMk+RZDd1WrUJ/9Jv8H5BvR88+e5Ry9wWcG5tH59CeA==",
-  "destinationStorageAccountName": "adfasia",
-  "destinationStorageAccountKey": "hhqi1kaT5/siN/O2lxYd+ogPqt03EtuCqJ64mViSDzZrMk+RZDd1WrUJ/9Jv8H5BvR88+e5Ry9wWcG5tH59CeA==",
-  "sourceStorageContainerName": "synthea",
-  "destinationStorageContainerName": "tongwutest08061",
+  "sourceStorageAccountName": "sourceStorageAccountName",
+  "sourceStorageAccountKey": "sourceStorageAccountKey",
+  "destinationStorageAccountName": "destinationStorageAccountName",
+  "destinationStorageAccountKey": "destinationStorageAccountKey",
+  "sourceStorageContainerName": "sourceStorageContainerName",
+  "destinationStorageContainerName": "destinationStorageContainerName",
   "sourceContainerFolderPath": "",
   "destinationContainerFolderPath": "",
-  "activityContainerName": "tongwutest08061"
+  "activityContainerName": "customactivityContainerName"
 }
