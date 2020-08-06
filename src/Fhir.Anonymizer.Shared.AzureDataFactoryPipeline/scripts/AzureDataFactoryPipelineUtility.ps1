@@ -300,7 +300,7 @@ else
     Write-Host "Resource Group $ResourceGroupName already exist."
 }
 
-$appName="Fhir.Anonymizer.$FhirVersion.AzureDataFactoryPipeline"
+$appName="Microsoft.Health.Fhir.Anonymizer.$FhirVersion.AzureDataFactoryPipeline"
 $appFolder = "$FhirVersion.AdfApplication"
 $adfPipelineName = "AdfAnonymizerPipeline"
 
