@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>Fhir.Anonymizer.R4.Core</AssemblyName>
-    <RootNamespace>Fhir.Anonymizer.R4.Core</RootNamespace>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
