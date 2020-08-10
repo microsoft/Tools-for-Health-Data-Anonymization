@@ -38,7 +38,7 @@
 
 [cmdletbinding()]
 param(
-    [string]$ConfigFile = "..\..\Fhir.Anonymizer.R4.AzureDataFactoryPipeline\AzureDataFactorySettings.json",
+    [string]$ConfigFile = "..\..\Microsoft.Health.Fhir.Anonymizer.R4.AzureDataFactoryPipeline\AzureDataFactorySettings.json",
     [Parameter(Mandatory=$true)]
     [string]$BatchAccountName,
     [Parameter(Mandatory=$true)]
@@ -52,5 +52,5 @@ param(
 
 $fhirVersion = "R4"
 
-cd ../Fhir.Anonymizer.Shared.AzureDataFactoryPipeline/scripts
+cd ../Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline/scripts
 .\AzureDataFactoryPipelineUtility.ps1 -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -ResourceGroupName $ResourceGroupName -FhirVersion $fhirVersion -ConfigFile $ConfigFile
