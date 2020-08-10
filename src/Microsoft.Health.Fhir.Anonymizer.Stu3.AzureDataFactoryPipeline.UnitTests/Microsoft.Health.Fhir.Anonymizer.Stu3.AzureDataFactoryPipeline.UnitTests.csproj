@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems" Label="Shared" />
+
+</Project>

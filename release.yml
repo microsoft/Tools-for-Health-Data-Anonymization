@@ -42,7 +42,7 @@ steps:
     nobuild: true
     zipAfterPublish: true
   env:
-    nuget_version: 2.0.0-$(build.buildNumber)
+    nuget_version: 2.1.0-$(build.buildNumber)
 
 # Publish artifacts
 - task: PublishBuildArtifacts@1

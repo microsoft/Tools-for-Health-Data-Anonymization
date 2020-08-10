@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool\configuration-sample.json" Link="configuration-sample.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.2.0" />
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Health.Fhir.Anonymizer.R4.Core\Microsoft.Health.Fhir.Anonymizer.R4.Core.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems" Label="Shared" />
+
+</Project>
