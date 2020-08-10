@@ -15,13 +15,6 @@ steps:
     command: build
     projects: '$(solution)'
     arguments: '--configuration $(buildConfiguration)'
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test'
-  inputs:
-    command: test
-    projects: '$(testProjects)'
-    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
     
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'
@@ -38,7 +31,7 @@ steps:
     script: |
       [xml]$props = Get-Content .\Directory.Build.props
       $version = Select-Xml -Xml $props -XPath "//Version"
-      Write-Host "##vso[release.version]$version"
+      Write-Host "##vso[task.setvariable variable=version;]$version"
       
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack nugets'
