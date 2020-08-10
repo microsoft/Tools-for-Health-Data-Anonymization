@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Specification;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Xunit;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions

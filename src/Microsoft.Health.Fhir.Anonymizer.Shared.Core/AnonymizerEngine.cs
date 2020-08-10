@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using EnsureThat;
-using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
-using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
-using Microsoft.Health.Fhir.Anonymizer.Core.Validation;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
+using Microsoft.Health.Fhir.Anonymizer.Core.Validation;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core
 {

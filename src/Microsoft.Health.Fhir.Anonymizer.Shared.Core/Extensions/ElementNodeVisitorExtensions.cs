@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Linq;
-using Microsoft.Health.Fhir.Anonymizer.Core.Visitors;
 using Hl7.Fhir.ElementModel;
+using Microsoft.Health.Fhir.Anonymizer.Core.Visitors;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 {

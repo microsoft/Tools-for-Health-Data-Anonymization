@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EnsureThat;
+using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model;
+using MathNet.Numerics.Distributions;
 using Microsoft.Health.Fhir.Anonymizer.Core;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
-using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Model;
-using MathNet.Numerics.Distributions;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {

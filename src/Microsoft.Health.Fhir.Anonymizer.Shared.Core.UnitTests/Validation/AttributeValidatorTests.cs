@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Linq;
-using Microsoft.Health.Fhir.Anonymizer.Core.Validation;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
+using Microsoft.Health.Fhir.Anonymizer.Core.Validation;
 using Xunit;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Validation

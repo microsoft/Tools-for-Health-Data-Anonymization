@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Health.Fhir.Anonymizer.Core;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Fhir.Anonymizer.Core;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Tool
 {

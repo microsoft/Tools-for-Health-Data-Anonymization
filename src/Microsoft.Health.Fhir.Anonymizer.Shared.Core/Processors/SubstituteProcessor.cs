@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using EnsureThat;
-using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
-using Microsoft.Health.Fhir.Anonymizer.Core.Models;
-using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Specification;
 using Hl7.FhirPath.Sprache;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
+using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {

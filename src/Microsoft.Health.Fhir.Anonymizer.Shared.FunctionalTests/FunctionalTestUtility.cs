@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Health.Fhir.Anonymizer.Core;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
+using Microsoft.Health.Fhir.Anonymizer.Core;
 using Newtonsoft.Json;
 using Xunit;
 

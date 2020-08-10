@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model;
+using Hl7.FhirPath;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
 using Microsoft.Health.Fhir.Anonymizer.Core.Visitors;
-using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Model;
-using Hl7.FhirPath;
 using Xunit;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors

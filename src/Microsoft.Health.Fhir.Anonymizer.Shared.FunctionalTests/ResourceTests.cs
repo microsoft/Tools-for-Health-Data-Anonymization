@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
+using Hl7.FhirPath;
 using Microsoft.Health.Fhir.Anonymizer.Core;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
-using Hl7.FhirPath;
 using Xunit;
 
 namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests

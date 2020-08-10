@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Hl7.Fhir.ElementModel;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {

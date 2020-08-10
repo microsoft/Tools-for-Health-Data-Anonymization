@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
 {

@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Hl7.Fhir.ElementModel;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
-using Hl7.Fhir.ElementModel;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
 {
