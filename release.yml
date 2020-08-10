@@ -36,8 +36,8 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $file = Get-Content Directory.Build.props
-      $version = Select-Xml -Content $file -XPath "//version"
+      [xml]$props = Get-Content .\Directory.Build.props
+      $version = Select-Xml -Xml $props -XPath "//Version"
       Write-Host "##vso[release.version]$version"
       
 - task: DotNetCoreCLI@2
