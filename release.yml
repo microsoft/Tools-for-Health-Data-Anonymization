@@ -6,6 +6,7 @@ variables:
   testProjects: "**/*Tests/*.csproj"
   publishProject: "**/*Tool/*.csproj"
   buildConfiguration: 'Release'
+  version: 'Preview'
 
 steps:
 - task: DotNetCoreCLI@2
@@ -31,6 +32,14 @@ steps:
     publishWebProjects: false
     zipAfterPublish: True
 
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $file = Get-Content Directory.Build.props
+      $version = Select-Xml -Content $file -XPath "//version"
+      Write-Host "##vso[release.version]$version"
+      
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack nugets'
   inputs:
@@ -42,7 +51,7 @@ steps:
     nobuild: true
     zipAfterPublish: true
   env:
-    nuget_version: 2.1.0-$(build.buildNumber)
+    nuget_version: $(version)-$(build.buildNumber)
 
 # Publish artifacts
 - task: PublishBuildArtifacts@1
