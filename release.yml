@@ -1,0 +1,69 @@
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  testProjects: "**/*Tests/*.csproj"
+  publishProject: "**/*Tool/*.csproj"
+  buildConfiguration: 'Release'
+  version: 'Preview'
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+  inputs:
+    command: build
+    projects: '$(solution)'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: test
+    projects: '$(testProjects)'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+    
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish'
+  inputs:
+    command: 'publish'
+    projects: '$(publishProject)'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    publishWebProjects: false
+    zipAfterPublish: True
+
+- task: PowerShell@2
+  displayName: 'parse build version'
+  inputs:
+    targetType: 'inline'
+    script: |
+      [xml]$props = Get-Content .\Directory.Build.props
+      $version = Select-Xml -Xml $props -XPath "//Version"
+      Write-Host "##vso[task.setvariable variable=version;]$version"
+      
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet pack nugets'
+  inputs:
+    command: pack
+    configuration: '$(buildConfiguration)'
+    packDirectory: '$(build.artifactStagingDirectory)/nupkgs'
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: 'nuget_version'
+    nobuild: true
+    zipAfterPublish: true
+  env:
+    nuget_version: $(version)-$(build.buildNumber)
+
+# Publish artifacts
+- task: PublishBuildArtifacts@1
+  displayName: 'publish binary artifacts'
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: 'FhirAnonymizerBuild'
+    
+- task: PublishBuildArtifacts@1
+  displayName: 'publish nuget artifacts'
+  inputs:
+    pathtoPublish: '$(build.artifactStagingDirectory)/nupkgs'
+    artifactName: 'nuget'
+    publishLocation: 'container'
