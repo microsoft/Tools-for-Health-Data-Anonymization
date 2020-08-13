@@ -71,6 +71,13 @@ namespace Fhir.Anonymizer.FunctionalTests
         }
 
         [Fact]
+        public void GivenAPatientResource_WhenAnonymizingWithGeneralizeConfig_ThenAnonymizedJsonShouldBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "generalize-patient-config.json"));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-generalize.json"), ResourceTestsFile("patient-generalize-target.json"));
+        }
+
+        [Fact]
         public void GivenAPatientResource_WhenAnonymizingWithMultipleSubstituteConfig_ThenAnonymizedJsonShouldBeReturned()
         {
             // Child node is substituted first

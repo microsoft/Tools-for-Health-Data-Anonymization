@@ -23,6 +23,9 @@ namespace Fhir.Anonymizer.Core.UnitTests
             yield return new object[] { "./TestConfigurations/configuration-perturb-wrong-roundTo.json" };
             yield return new object[] { "./TestConfigurations/configuration-perturb-negative-roundTo.json" };
             yield return new object[] { "./TestConfigurations/configuration-perturb-exceed-28-roundTo.json" };
+            yield return new object[] { "./TestConfigurations/configuration-generalize-miss-cases.json" };
+            yield return new object[] { "./TestConfigurations/configuration-generalize-fail-compiled-expression.json" };
+            yield return new object[] { "./TestConfigurations/configuration-generalize-invalid-othervalues.json" };
         }
 
         [Theory]

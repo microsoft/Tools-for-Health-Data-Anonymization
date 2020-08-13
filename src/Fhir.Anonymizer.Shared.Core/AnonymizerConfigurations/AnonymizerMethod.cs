@@ -8,6 +8,7 @@
         Substitute,
         Encrypt,
         Perturb,
-        Keep
+        Keep,
+        Generalize
     }
 }

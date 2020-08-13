@@ -6,6 +6,7 @@ using Fhir.Anonymizer.Core.Extensions;
 using Fhir.Anonymizer.Core.Models;
 using Fhir.Anonymizer.Core.Processors;
 using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model.Primitives;
 
 namespace Fhir.Anonymizer.Core.Utility
 {
@@ -118,7 +119,7 @@ namespace Fhir.Anonymizer.Core.Utility
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
                 int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
-                node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
+                node.Value = PartialDateTime.Parse(DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat));
                 processResult.AddProcessRecord(AnonymizationOperations.Perturb, node);
             }
             else

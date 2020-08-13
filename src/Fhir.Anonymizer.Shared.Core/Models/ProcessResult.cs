@@ -54,6 +54,14 @@ namespace Fhir.Anonymizer.Core.Models
             }
         }
 
+        public bool IsGeneralized
+        {
+            get
+            {
+                return ProcessRecords.ContainsKey(AnonymizationOperations.Generalize);
+            }
+        }
+
         public Dictionary<string, HashSet<ITypedElement>> ProcessRecords { get; } = new Dictionary<string, HashSet<ITypedElement>>();
 
         public void AddProcessRecord(string operationName, ITypedElement node)
