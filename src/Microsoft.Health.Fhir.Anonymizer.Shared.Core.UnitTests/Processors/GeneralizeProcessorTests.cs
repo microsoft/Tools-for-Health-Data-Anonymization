@@ -85,38 +85,31 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new FhirDateTime("1990-01-01"), PartialDateTime.Parse("1990") };
             yield return new object[] { new FhirDateTime("1990-01"), PartialDateTime.Parse("1990") };
             yield return new object[] { new FhirDateTime("2000-01-01T00:00:00Z"), null };
-            yield return new object[] { new FhirDateTime("2000-01-01T00:00:00"), PartialDateTime.Parse("1990") };
+            yield return new object[] { new FhirDateTime("2000-01-01T00:00:00+08:00"), PartialDateTime.Parse("1990") };
             yield return new object[] { new FhirDateTime("2000-01-01T00:00:00+09:00"), PartialDateTime.Parse("1990") };
             yield return new object[] { new FhirDateTime("2000-01-01T00:00:00-09:00"), null };
             yield return new object[] { new FhirDateTime("2010-01-01"), null };
             yield return new object[] { new FhirDateTime("2010-01-01T00:00:00Z"), null };
-            yield return new object[] { new FhirDateTime("2010-01-01T00:00:00"), PartialDateTime.Parse("2010-01-01") };
+            yield return new object[] { new FhirDateTime("2010-01-01T00:00:00+08:00"), PartialDateTime.Parse("2010-01-01") };
             yield return new object[] { new FhirDateTime("2010-01-01T00:00:00+08:00"), PartialDateTime.Parse("2010-01-01") };
             yield return new object[] { new FhirDateTime("2009-12-31T16:00:00Z"), PartialDateTime.Parse("2010-01-01") };
-            yield return new object[] { new FhirDateTime("2020-01-01T00:00:00"), PartialDateTime.Parse("2020-01-01") };
+            yield return new object[] { new FhirDateTime("2020-01-01T00:00:00+08:00"), PartialDateTime.Parse("2020-01-01") };
             yield return new object[] { new FhirDateTime("2020-01-01"), PartialDateTime.Parse("2020-01-01") };
         }
 
         public static IEnumerable<object[]> GetTimeNodestoGeneralizeWithRangeMapping()
         {
-            yield return new object[] { new Time("23:45:02"), PartialTime.Parse("12:00:00+08:00") };
-            
             yield return new object[] { new Time("13:45:02Z"), PartialTime.Parse("12:00:00+08:00") };
-            yield return new object[] { new Time("13:45:02"), null };
-            yield return new object[] { new Time("02:00"), null };
+            yield return new object[] { new Time("13:45:02+08:00"), null };
             yield return new object[] { new Time("02:00:00+08:00"), null };
             yield return new object[] { new Time("06:00:00-08:00"), PartialTime.Parse("12:00:00+08:00") };
-            yield return new object[] { new Time("23:45:02"), PartialTime.Parse("12:00:00+08:00") };
+            yield return new object[] { new Time("23:45:02+08:00"), PartialTime.Parse("12:00:00+08:00") };
             yield return new object[] { new Time("00:00:00+05:00"), PartialTime.Parse("00:00:00Z") };
             yield return new object[] { new Time("19:00:00Z"), null };
-            yield return new object[] { new Time("03"), PartialTime.Parse("00:00:00Z") };
-            yield return new object[] { new Time("00:00:00"),null };
-            yield return new object[] { new Time("03:00:00"), PartialTime.Parse("00:00:00Z") };
-            yield return new object[] { new Time("10"), PartialTime.Parse("10:00:00") };
-            yield return new object[] { new Time("10:00:00"), PartialTime.Parse("10:00:00") };
-            yield return new object[] { new Time("02:00:00Z"), PartialTime.Parse("10:00:00") };
-            yield return new object[] { new Time("10"), PartialTime.Parse("10:00:00") };
-            
+            yield return new object[] { new Time("00:00:00+08:00"),null };
+            yield return new object[] { new Time("03:00:00+08:00"), PartialTime.Parse("00:00:00Z") };
+            yield return new object[] { new Time("10:00:00+08:00"), PartialTime.Parse("10:00:00") };
+            yield return new object[] { new Time("02:00:00Z"), PartialTime.Parse("10:00:00") };          
         }
 
         public static IEnumerable<object[]> GetInstantNodestoGeneralizeWithRangeMapping()
@@ -209,7 +202,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
         private Dictionary<string, object> CreateRangeMappingSettingsForDateTime(string otherValues)
         {
-            string Cases = "{\"$this >= @1990-01-01T00:00:00Z and $this <= @2000-01-01T00:00:00+08:00\": \"@1990\", \"$this = @2010-01-01T00:00:00\" :\"@2010-01-01\",\"$this ~ @2020-01-01T00:00:00\":\"@2020-01-01\" }";
+            string Cases = "{\"$this >= @1990-01-01T00:00:00Z and $this <= @2000-01-01T00:00:00+08:00\": \"@1990\", \"$this = @2010-01-01T00:00:00+08:00\" :\"@2010-01-01\",\"$this ~ @2020-01-01T00:00:00\":\"@2020-01-01\" }";
             string OtherValues = otherValues;
             return new Dictionary<string, object> { { "cases", Cases }, { "otherValues", OtherValues } };
         }
@@ -223,7 +216,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
         private Dictionary<string, object> CreateRangeMappingSettingsForInstant(string otherValues)
         {
-            string Cases = "{\"$this >= @1990-01-01T00:00:00Z and $this <= @2020-01-01T00:00:00\": \"@1990-01-01T00:00:00Z\" }";
+            string Cases = "{\"$this >= @1990-01-01T00:00:00Z and $this <= @2020-01-01T00:00:00+08:00\": \"@1990-01-01T00:00:00Z\" }";
             string OtherValues = otherValues;
             return new Dictionary<string, object> { { "cases", Cases }, { "otherValues", OtherValues } };
         }
@@ -354,7 +347,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target);
+            Assert.Equal(target, node.Value);
         }
 
         [Theory]
