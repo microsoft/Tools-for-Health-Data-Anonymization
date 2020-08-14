@@ -81,7 +81,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
         public static IEnumerable<object[]> GetDateTimeNodestoGeneralizeWithRangeMapping()
         {
             yield return new object[] { new FhirDateTime("1990-01-01T00:00:00Z"), PartialDateTime.Parse("1990") };
-            yield return new object[] { new FhirDateTime("1990-01-01T00:00:00"), null };
+            yield return new object[] { new FhirDateTime("1990-01-01T00:00:00+08:00"), null };
             yield return new object[] { new FhirDateTime("1990-01-01"), PartialDateTime.Parse("1990") };
             yield return new object[] { new FhirDateTime("1990-01"), PartialDateTime.Parse("1990") };
             yield return new object[] { new FhirDateTime("2000-01-01T00:00:00Z"), null };
@@ -99,6 +99,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
         public static IEnumerable<object[]> GetTimeNodestoGeneralizeWithRangeMapping()
         {
+            yield return new object[] { new Time("23:45:02"), PartialTime.Parse("12:00:00+08:00") };
+            
             yield return new object[] { new Time("13:45:02Z"), PartialTime.Parse("12:00:00+08:00") };
             yield return new object[] { new Time("13:45:02"), null };
             yield return new object[] { new Time("02:00"), null };
@@ -114,6 +116,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new Time("10:00:00"), PartialTime.Parse("10:00:00") };
             yield return new object[] { new Time("02:00:00Z"), PartialTime.Parse("10:00:00") };
             yield return new object[] { new Time("10"), PartialTime.Parse("10:00:00") };
+            
         }
 
         public static IEnumerable<object[]> GetInstantNodestoGeneralizeWithRangeMapping()
@@ -206,7 +209,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
         private Dictionary<string, object> CreateRangeMappingSettingsForDateTime(string otherValues)
         {
-            string Cases = "{\"$this >= @1990-01-01T00:00:00Z and $this <= @2000-01-01T00:00:00\": \"@1990\", \"$this = @2010-01-01T00:00:00\" :\"@2010-01-01\",\"$this ~ @2020-01-01T00:00:00\":\"@2020-01-01\" }";
+            string Cases = "{\"$this >= @1990-01-01T00:00:00Z and $this <= @2000-01-01T00:00:00+08:00\": \"@1990\", \"$this = @2010-01-01T00:00:00\" :\"@2010-01-01\",\"$this ~ @2020-01-01T00:00:00\":\"@2020-01-01\" }";
             string OtherValues = otherValues;
             return new Dictionary<string, object> { { "cases", Cases }, { "otherValues", OtherValues } };
         }
