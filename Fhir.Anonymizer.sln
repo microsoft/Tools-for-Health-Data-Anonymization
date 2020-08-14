@@ -12,139 +12,139 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{BE752207-C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{4273D1F5-D916-4291-8B60-7D74202D425E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.Core.UnitTests", "src\Fhir.Anonymizer.R4.Core.UnitTests\Fhir.Anonymizer.R4.Core.UnitTests.csproj", "{3F277AA6-5AD7-4E13-8A2C-B112D1CECDE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.Core", "src\Microsoft.Health.Fhir.Anonymizer.R4.Core\Microsoft.Health.Fhir.Anonymizer.R4.Core.csproj", "{3CDEF833-6D92-4770-BCEB-164A47A7270E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.Core.UnitTests", "src\Fhir.Anonymizer.Stu3.Core.UnitTests\Fhir.Anonymizer.Stu3.Core.UnitTests.csproj", "{F6AB65D3-6E69-433F-B84A-E469D2AB1090}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.Core.UnitTests", "src\Microsoft.Health.Fhir.Anonymizer.R4.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.R4.Core.UnitTests.csproj", "{25653F35-598C-4312-9C29-6F1E96DF1FFE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.Core", "src\Fhir.Anonymizer.R4.Core\Fhir.Anonymizer.R4.Core.csproj", "{96456150-DB43-4970-9E22-7003516FA05E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.FunctionalTests", "src\Microsoft.Health.Fhir.Anonymizer.R4.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.R4.FunctionalTests.csproj", "{E3AE92AA-1C32-4533-B220-2C3DB4B3BF66}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.Core", "src\Fhir.Anonymizer.Stu3.Core\Fhir.Anonymizer.Stu3.Core.csproj", "{71945966-A531-466C-8C66-6C6EBA591832}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.Core", "src\Microsoft.Health.Fhir.Anonymizer.Shared.Core\Microsoft.Health.Fhir.Anonymizer.Shared.Core.shproj", "{8918CE75-F36E-4CB4-8232-12024A1E41AC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.FunctionalTests", "src\Fhir.Anonymizer.R4.FunctionalTests\Fhir.Anonymizer.R4.FunctionalTests.csproj", "{37241A6C-0897-4837-B845-10A54F1B3C7C}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests", "src\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests.shproj", "{F7A47FD1-BD24-41A6-B3C6-2DD062523271}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.FunctionalTests", "src\Fhir.Anonymizer.Stu3.FunctionalTests\Fhir.Anonymizer.Stu3.FunctionalTests.csproj", "{6919CE19-56BC-4EC9-A16E-111401607DAF}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests", "src\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests.shproj", "{19E3E7A2-17A6-4708-B9F2-04A2C9968C83}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.R4.AzureDataFactoryPipeline\Fhir.Anonymizer.R4.AzureDataFactoryPipeline.csproj", "{786E4AF9-F95D-441A-B5B0-329C616AA2E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.Core", "src\Microsoft.Health.Fhir.Anonymizer.Stu3.Core\Microsoft.Health.Fhir.Anonymizer.Stu3.Core.csproj", "{54F67473-3873-4EB0-BDF1-1647EF224910}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Core", "src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.shproj", "{8918CE75-F36E-4CB4-8232-12024A1E41AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.Core.UnitTests", "src\Microsoft.Health.Fhir.Anonymizer.Stu3.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Stu3.Core.UnitTests.csproj", "{A83E59E1-D6B2-4FA4-A08B-A38276C1A7D0}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.FunctionalTests", "src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.shproj", "{19E3E7A2-17A6-4708-B9F2-04A2C9968C83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.FunctionalTests", "src\Microsoft.Health.Fhir.Anonymizer.Stu3.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Stu3.FunctionalTests.csproj", "{4047A680-A94F-4B50-BCD9-8F34838D23E4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.CommandLineTool", "src\Fhir.Anonymizer.R4.CommandLineTool\Fhir.Anonymizer.R4.CommandLineTool.csproj", "{D4BA9A53-BC94-4536-9DEE-B264F4B13B61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.AzureDataFactoryPipeline", "src\Microsoft.Health.Fhir.Anonymizer.R4.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.R4.AzureDataFactoryPipeline.csproj", "{D75382E2-8E86-4BB5-A08F-5F2015DB30E9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.CommandLineTool", "src\Fhir.Anonymizer.Stu3.CommandLineTool\Fhir.Anonymizer.Stu3.CommandLineTool.csproj", "{E443BA88-3005-4AEE-BDA4-BEAF88D520BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests", "src\Microsoft.Health.Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests.csproj", "{60018A51-8D65-4599-8A0E-B691F94D5AFA}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.CommandLineTool", "src\Fhir.Anonymizer.Shared.CommandLineTool\Fhir.Anonymizer.Shared.CommandLineTool.shproj", "{140255C7-6C80-4A3C-A248-AE8CDFDCF907}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool", "src\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.csproj", "{14F63B12-5A81-4706-A0D9-F07693DA3089}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests", "src\Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests\Fhir.Anonymizer.R4.AzureDataFactoryPipeline.UnitTests.csproj", "{619BB4C9-455C-48FA-83AD-4B98AADC74C2}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline", "src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.shproj", "{B1CC2F6C-F581-4495-8B38-ADBFBB1A6C29}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.shproj", "{B1CC2F6C-F581-4495-8B38-ADBFBB1A6C29}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests", "src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.shproj", "{24CA7A36-95FF-4E86-9ED8-2C073576DB7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline", "src\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.csproj", "{1FDB179A-0D26-42FD-B967-CEA04BAD75CE}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool", "src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.shproj", "{140255C7-6C80-4A3C-A248-AE8CDFDCF907}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests", "src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.shproj", "{24CA7A36-95FF-4E86-9ED8-2C073576DB7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline", "src\Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.csproj", "{57035793-441B-4347-935C-3D19CE52C709}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests", "src\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests\Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests.csproj", "{F62BA36D-3BB3-40EE-8C79-D98AB5338C45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests", "src\Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Stu3.AzureDataFactoryPipeline.UnitTests.csproj", "{8BAD1364-4C47-443A-95E9-DB624FDF78C8}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fhir.Anonymizer.Shared.Core.UnitTests", "src\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.shproj", "{F7A47FD1-BD24-41A6-B3C6-2DD062523271}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool", "src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.csproj", "{DA3123C7-D0C4-4636-8A85-DF1F52A04794}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		src\Fhir.Anonymizer.Shared.CommandLineTool\Fhir.Anonymizer.Shared.CommandLineTool.projitems*{140255c7-6c80-4a3c-a248-ae8cdfdcf907}*SharedItemsImports = 13
-		src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.projitems*{19e3e7a2-17a6-4708-b9f2-04a2c9968c83}*SharedItemsImports = 13
-		src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{1fdb179a-0d26-42fd-b967-cea04bad75ce}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{24ca7a36-95ff-4e86-9ed8-2c073576db7b}*SharedItemsImports = 13
-		src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.projitems*{37241a6c-0897-4837-b845-10a54f1b3c7c}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{3f277aa6-5ad7-4e13-8a2c-b112d1cecde1}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{619bb4c9-455c-48fa-83ad-4b98aadc74c2}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.FunctionalTests\Fhir.Anonymizer.Shared.FunctionalTests.projitems*{6919ce19-56bc-4ec9-a16e-111401607daf}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.projitems*{71945966-a531-466c-8c66-6c6eba591832}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{786e4af9-f95d-441a-b5b0-329c616aa2e8}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.projitems*{8918ce75-f36e-4cb4-8232-12024a1e41ac}*SharedItemsImports = 13
-		src\Fhir.Anonymizer.Shared.Core\Fhir.Anonymizer.Shared.Core.projitems*{96456150-db43-4970-9e22-7003516fa05e}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{b1cc2f6c-f581-4495-8b38-adbfbb1a6c29}*SharedItemsImports = 13
-		src\Fhir.Anonymizer.Shared.CommandLineTool\Fhir.Anonymizer.Shared.CommandLineTool.projitems*{d4ba9a53-bc94-4536-9dee-b264f4b13b61}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.CommandLineTool\Fhir.Anonymizer.Shared.CommandLineTool.projitems*{e443ba88-3005-4aee-bda4-beaf88d520bc}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{f62ba36d-3bb3-40ee-8c79-d98ab5338c45}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{f6ab65d3-6e69-433f-b84a-e469d2ab1090}*SharedItemsImports = 5
-		src\Fhir.Anonymizer.Shared.Core.UnitTests\Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{f7a47fd1-bd24-41a6-b3c6-2dd062523271}*SharedItemsImports = 13
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems*{140255c7-6c80-4a3c-a248-ae8cdfdcf907}*SharedItemsImports = 13
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems*{14f63b12-5a81-4706-a0d9-f07693da3089}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests.projitems*{19e3e7a2-17a6-4708-b9f2-04a2c9968c83}*SharedItemsImports = 13
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{24ca7a36-95ff-4e86-9ed8-2c073576db7b}*SharedItemsImports = 13
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{25653f35-598c-4312-9c29-6f1e96df1ffe}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core\Microsoft.Health.Fhir.Anonymizer.Shared.Core.projitems*{3cdef833-6d92-4770-bceb-164a47a7270e}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests.projitems*{4047a680-a94f-4b50-bcd9-8f34838d23e4}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core\Microsoft.Health.Fhir.Anonymizer.Shared.Core.projitems*{54f67473-3873-4eb0-bdf1-1647ef224910}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{57035793-441b-4347-935c-3d19ce52c709}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{60018a51-8d65-4599-8a0e-b691f94d5afa}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core\Microsoft.Health.Fhir.Anonymizer.Shared.Core.projitems*{8918ce75-f36e-4cb4-8232-12024a1e41ac}*SharedItemsImports = 13
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{8bad1364-4c47-443a-95e9-db624fdf78c8}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{a83e59e1-d6b2-4fa4-a08b-a38276c1a7d0}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{b1cc2f6c-f581-4495-8b38-adbfbb1a6c29}*SharedItemsImports = 13
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{d75382e2-8e86-4bb5-a08f-5f2015db30e9}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems*{da3123c7-d0c4-4636-8a85-df1f52a04794}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests.projitems*{e3ae92aa-1c32-4533-b220-2c3db4b3bf66}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{f7a47fd1-bd24-41a6-b3c6-2dd062523271}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3F277AA6-5AD7-4E13-8A2C-B112D1CECDE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F277AA6-5AD7-4E13-8A2C-B112D1CECDE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F277AA6-5AD7-4E13-8A2C-B112D1CECDE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F277AA6-5AD7-4E13-8A2C-B112D1CECDE1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F6AB65D3-6E69-433F-B84A-E469D2AB1090}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6AB65D3-6E69-433F-B84A-E469D2AB1090}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F6AB65D3-6E69-433F-B84A-E469D2AB1090}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F6AB65D3-6E69-433F-B84A-E469D2AB1090}.Release|Any CPU.Build.0 = Release|Any CPU
-		{96456150-DB43-4970-9E22-7003516FA05E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{96456150-DB43-4970-9E22-7003516FA05E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{96456150-DB43-4970-9E22-7003516FA05E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{96456150-DB43-4970-9E22-7003516FA05E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{71945966-A531-466C-8C66-6C6EBA591832}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71945966-A531-466C-8C66-6C6EBA591832}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{71945966-A531-466C-8C66-6C6EBA591832}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71945966-A531-466C-8C66-6C6EBA591832}.Release|Any CPU.Build.0 = Release|Any CPU
-		{37241A6C-0897-4837-B845-10A54F1B3C7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37241A6C-0897-4837-B845-10A54F1B3C7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37241A6C-0897-4837-B845-10A54F1B3C7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37241A6C-0897-4837-B845-10A54F1B3C7C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6919CE19-56BC-4EC9-A16E-111401607DAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6919CE19-56BC-4EC9-A16E-111401607DAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6919CE19-56BC-4EC9-A16E-111401607DAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6919CE19-56BC-4EC9-A16E-111401607DAF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{786E4AF9-F95D-441A-B5B0-329C616AA2E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{786E4AF9-F95D-441A-B5B0-329C616AA2E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{786E4AF9-F95D-441A-B5B0-329C616AA2E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{786E4AF9-F95D-441A-B5B0-329C616AA2E8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D4BA9A53-BC94-4536-9DEE-B264F4B13B61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D4BA9A53-BC94-4536-9DEE-B264F4B13B61}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D4BA9A53-BC94-4536-9DEE-B264F4B13B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D4BA9A53-BC94-4536-9DEE-B264F4B13B61}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E443BA88-3005-4AEE-BDA4-BEAF88D520BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E443BA88-3005-4AEE-BDA4-BEAF88D520BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E443BA88-3005-4AEE-BDA4-BEAF88D520BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E443BA88-3005-4AEE-BDA4-BEAF88D520BC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{619BB4C9-455C-48FA-83AD-4B98AADC74C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{619BB4C9-455C-48FA-83AD-4B98AADC74C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{619BB4C9-455C-48FA-83AD-4B98AADC74C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{619BB4C9-455C-48FA-83AD-4B98AADC74C2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1FDB179A-0D26-42FD-B967-CEA04BAD75CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1FDB179A-0D26-42FD-B967-CEA04BAD75CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1FDB179A-0D26-42FD-B967-CEA04BAD75CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1FDB179A-0D26-42FD-B967-CEA04BAD75CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F62BA36D-3BB3-40EE-8C79-D98AB5338C45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F62BA36D-3BB3-40EE-8C79-D98AB5338C45}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F62BA36D-3BB3-40EE-8C79-D98AB5338C45}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F62BA36D-3BB3-40EE-8C79-D98AB5338C45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CDEF833-6D92-4770-BCEB-164A47A7270E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CDEF833-6D92-4770-BCEB-164A47A7270E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CDEF833-6D92-4770-BCEB-164A47A7270E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CDEF833-6D92-4770-BCEB-164A47A7270E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25653F35-598C-4312-9C29-6F1E96DF1FFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25653F35-598C-4312-9C29-6F1E96DF1FFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25653F35-598C-4312-9C29-6F1E96DF1FFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25653F35-598C-4312-9C29-6F1E96DF1FFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3AE92AA-1C32-4533-B220-2C3DB4B3BF66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3AE92AA-1C32-4533-B220-2C3DB4B3BF66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3AE92AA-1C32-4533-B220-2C3DB4B3BF66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3AE92AA-1C32-4533-B220-2C3DB4B3BF66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54F67473-3873-4EB0-BDF1-1647EF224910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54F67473-3873-4EB0-BDF1-1647EF224910}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54F67473-3873-4EB0-BDF1-1647EF224910}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54F67473-3873-4EB0-BDF1-1647EF224910}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A83E59E1-D6B2-4FA4-A08B-A38276C1A7D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A83E59E1-D6B2-4FA4-A08B-A38276C1A7D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A83E59E1-D6B2-4FA4-A08B-A38276C1A7D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A83E59E1-D6B2-4FA4-A08B-A38276C1A7D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4047A680-A94F-4B50-BCD9-8F34838D23E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4047A680-A94F-4B50-BCD9-8F34838D23E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4047A680-A94F-4B50-BCD9-8F34838D23E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4047A680-A94F-4B50-BCD9-8F34838D23E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D75382E2-8E86-4BB5-A08F-5F2015DB30E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75382E2-8E86-4BB5-A08F-5F2015DB30E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D75382E2-8E86-4BB5-A08F-5F2015DB30E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D75382E2-8E86-4BB5-A08F-5F2015DB30E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60018A51-8D65-4599-8A0E-B691F94D5AFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60018A51-8D65-4599-8A0E-B691F94D5AFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60018A51-8D65-4599-8A0E-B691F94D5AFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60018A51-8D65-4599-8A0E-B691F94D5AFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14F63B12-5A81-4706-A0D9-F07693DA3089}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14F63B12-5A81-4706-A0D9-F07693DA3089}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14F63B12-5A81-4706-A0D9-F07693DA3089}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14F63B12-5A81-4706-A0D9-F07693DA3089}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57035793-441B-4347-935C-3D19CE52C709}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57035793-441B-4347-935C-3D19CE52C709}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57035793-441B-4347-935C-3D19CE52C709}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57035793-441B-4347-935C-3D19CE52C709}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BAD1364-4C47-443A-95E9-DB624FDF78C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BAD1364-4C47-443A-95E9-DB624FDF78C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BAD1364-4C47-443A-95E9-DB624FDF78C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BAD1364-4C47-443A-95E9-DB624FDF78C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA3123C7-D0C4-4636-8A85-DF1F52A04794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA3123C7-D0C4-4636-8A85-DF1F52A04794}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA3123C7-D0C4-4636-8A85-DF1F52A04794}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA3123C7-D0C4-4636-8A85-DF1F52A04794}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{3F277AA6-5AD7-4E13-8A2C-B112D1CECDE1} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
-		{F6AB65D3-6E69-433F-B84A-E469D2AB1090} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
-		{96456150-DB43-4970-9E22-7003516FA05E} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
-		{71945966-A531-466C-8C66-6C6EBA591832} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
-		{37241A6C-0897-4837-B845-10A54F1B3C7C} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
-		{6919CE19-56BC-4EC9-A16E-111401607DAF} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
-		{786E4AF9-F95D-441A-B5B0-329C616AA2E8} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{3CDEF833-6D92-4770-BCEB-164A47A7270E} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
+		{25653F35-598C-4312-9C29-6F1E96DF1FFE} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
+		{E3AE92AA-1C32-4533-B220-2C3DB4B3BF66} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
 		{8918CE75-F36E-4CB4-8232-12024A1E41AC} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
-		{19E3E7A2-17A6-4708-B9F2-04A2C9968C83} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
-		{D4BA9A53-BC94-4536-9DEE-B264F4B13B61} = {4273D1F5-D916-4291-8B60-7D74202D425E}
-		{E443BA88-3005-4AEE-BDA4-BEAF88D520BC} = {4273D1F5-D916-4291-8B60-7D74202D425E}
-		{140255C7-6C80-4A3C-A248-AE8CDFDCF907} = {4273D1F5-D916-4291-8B60-7D74202D425E}
-		{619BB4C9-455C-48FA-83AD-4B98AADC74C2} = {4273D1F5-D916-4291-8B60-7D74202D425E}
-		{B1CC2F6C-F581-4495-8B38-ADBFBB1A6C29} = {4273D1F5-D916-4291-8B60-7D74202D425E}
-		{1FDB179A-0D26-42FD-B967-CEA04BAD75CE} = {4273D1F5-D916-4291-8B60-7D74202D425E}
-		{24CA7A36-95FF-4E86-9ED8-2C073576DB7B} = {4273D1F5-D916-4291-8B60-7D74202D425E}
-		{F62BA36D-3BB3-40EE-8C79-D98AB5338C45} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{F7A47FD1-BD24-41A6-B3C6-2DD062523271} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
+		{19E3E7A2-17A6-4708-B9F2-04A2C9968C83} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
+		{54F67473-3873-4EB0-BDF1-1647EF224910} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
+		{A83E59E1-D6B2-4FA4-A08B-A38276C1A7D0} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
+		{4047A680-A94F-4B50-BCD9-8F34838D23E4} = {BE752207-CC25-4CB2-A2A5-65EB7B415E44}
+		{D75382E2-8E86-4BB5-A08F-5F2015DB30E9} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{60018A51-8D65-4599-8A0E-B691F94D5AFA} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{14F63B12-5A81-4706-A0D9-F07693DA3089} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{B1CC2F6C-F581-4495-8B38-ADBFBB1A6C29} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{24CA7A36-95FF-4E86-9ED8-2C073576DB7B} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{140255C7-6C80-4A3C-A248-AE8CDFDCF907} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{57035793-441B-4347-935C-3D19CE52C709} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{8BAD1364-4C47-443A-95E9-DB624FDF78C8} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{DA3123C7-D0C4-4636-8A85-DF1F52A04794} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19A940B3-FA97-4729-AC91-EE68070BCFC1}
