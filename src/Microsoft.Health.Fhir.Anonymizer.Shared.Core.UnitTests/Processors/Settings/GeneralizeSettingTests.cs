@@ -3,7 +3,7 @@ using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.Processors.Settings
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors.Settings
 {
     public class GeneralizeSettingTests
     {

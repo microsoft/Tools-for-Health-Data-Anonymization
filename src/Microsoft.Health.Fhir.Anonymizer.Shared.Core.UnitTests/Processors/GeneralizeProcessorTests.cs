@@ -8,7 +8,7 @@ using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Xunit;
 
-namespace Fhir.Anonymizer.Core.UnitTests.Processors
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 {
     public class GeneralizeTests
     {
