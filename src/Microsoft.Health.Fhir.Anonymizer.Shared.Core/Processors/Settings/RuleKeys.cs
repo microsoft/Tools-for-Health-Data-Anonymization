@@ -11,6 +11,5 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
         //generalize
         internal const string Cases = "cases";
         internal const string OtherValues = "otherValues";
-
     }
 }

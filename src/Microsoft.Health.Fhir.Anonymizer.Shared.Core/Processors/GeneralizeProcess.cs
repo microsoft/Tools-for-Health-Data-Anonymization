@@ -170,8 +170,5 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             result.AddProcessRecord(AnonymizationOperations.Generalize, node);
             return result;
         }
-
-
-
     }
 }
