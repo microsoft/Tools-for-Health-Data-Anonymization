@@ -209,7 +209,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
         private Dictionary<string, object> CreateRangeMappingSettingsForTime(string otherValues)
         {
-            string Cases = "{\"$this >= @T13:45:02Z and $this < @T23:45:02+05:00\": \"@T12:00:00+08:00\", \"$this = @T00:00:00+05:00\" :\"@T00:00:00Z\",\"$this ~ @T10:00:00\":\"@T10:00:00\" }";
+            string Cases = "{\"$this >= @T13:45:02Z and $this < @T23:45:02+05:00\": \"@T12:00:00+08:00\", \"$this = @T00:00:00+05:00\" :\"@T00:00:00Z\",\"$this ~ @T10:00:00+08:00\":\"@T10:00:00\" }";
             string OtherValues = otherValues;
             return new Dictionary<string, object> { { "cases", Cases }, { "otherValues", OtherValues } };
         }
@@ -257,7 +257,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.False(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target);
+            Assert.Equal(target, node.Value);
         }
 
         [Theory]
@@ -275,7 +275,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target);
+            Assert.Equal(target, node.Value);
         }
 
         [Theory]
@@ -293,7 +293,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target); ;
+            Assert.Equal(target, node.Value);
         }
 
         [Theory]
@@ -311,7 +311,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target);
+            Assert.Equal(target, node.Value);
         }
 
         [Theory]
@@ -329,7 +329,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target);
+            Assert.Equal(target, node.Value);
         }
 
         [Theory]
@@ -365,7 +365,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target);
+            Assert.Equal(target, node.Value);
         }
 
         [Theory]
@@ -383,7 +383,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target);
+            Assert.Equal(target, node.Value);
         }
 
         [Theory]
@@ -401,7 +401,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target);
+            Assert.Equal(target, node.Value);
         }
 
         [Theory]
@@ -419,7 +419,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target);
+            Assert.Equal(target, node.Value);
         }
 
         [Theory]
@@ -437,7 +437,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target);
+            Assert.Equal(target, node.Value);
         }
 
         [Theory]
@@ -487,7 +487,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(node.Value, target);
+            Assert.Equal(target, node.Value);
         }
     }
 }
