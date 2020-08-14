@@ -5,6 +5,7 @@ using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
+using Hl7.Fhir.Model.Primitives;
 using Xunit;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
@@ -13,9 +14,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
     {
         public static IEnumerable<object[]> GetDateDataForPartialRedact()
         {
-            yield return new object[] { new Date("2015"), new Date("2015") };
-            yield return new object[] { new Date("2015-02"), new Date("2015") };
-            yield return new object[] { new Date("2015-02-07"), new Date("2015") };
+            yield return new object[] { new Date("2015"), PartialDateTime.Parse("2015") };
+            yield return new object[] { new Date("2015-02"), PartialDateTime.Parse("2015") };
+            yield return new object[] { new Date("2015-02-07"), PartialDateTime.Parse("2015") };
             yield return new object[] { new Date("1925-02-07"), null };
         }
 
@@ -45,16 +46,16 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
 
         public static IEnumerable<object[]> GetDateDataForDateShiftButShouldBeRedacted()
         {
-            yield return new object[] { new Date("2015-02"), new Date("2015") };
+            yield return new object[] { new Date("2015-02"), PartialDateTime.Parse("2015") };
             yield return new object[] { new Date("1925-02-07"), null };
         }
 
         public static IEnumerable<object[]> GetDateTimeDataForRedact()
         {
-            yield return new object[] { new FhirDateTime("2015"), new FhirDateTime("2015") };
-            yield return new object[] { new FhirDateTime("2015-02"), new FhirDateTime("2015") };
-            yield return new object[] { new FhirDateTime("2015-02-07"), new FhirDateTime("2015") };
-            yield return new object[] { new FhirDateTime("2015-02-07T13:28:17-05:00"), new FhirDateTime("2015") };
+            yield return new object[] { new FhirDateTime("2015"), PartialDateTime.Parse("2015") };
+            yield return new object[] { new FhirDateTime("2015-02"), PartialDateTime.Parse("2015") };
+            yield return new object[] { new FhirDateTime("2015-02-07"), PartialDateTime.Parse("2015") };
+            yield return new object[] { new FhirDateTime("2015-02-07T13:28:17-05:00"), PartialDateTime.Parse("2015") };
             yield return new object[] { new FhirDateTime("1925-02-07T13:28:17-05:00"), null };
         }
 
@@ -77,7 +78,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
 
         public static IEnumerable<object[]> GetDateTimeDataForDateShiftButShouldBeRedacted()
         {
-            yield return new object[] { new FhirDateTime("2015-02"), new FhirDateTime("2015") };
+            yield return new object[] { new FhirDateTime("2015-02"), PartialDateTime.Parse("2015") };
             yield return new object[] { new FhirDateTime("1925-02-07T13:28:17-05:00"), null };
         }
 
@@ -95,12 +96,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
 
         [Theory]
         [MemberData(nameof(GetDateDataForPartialRedact))]
-        public void GivenADate_WhenPartialRedact_ThenDateShouldBeRedacted(Date date, Date expectedDate)
+        public void GivenADate_WhenPartialRedact_ThenDateShouldBeRedacted(Date date, object expectedDate)
         {
             var node = ElementNode.FromElement(date.ToTypedElement());
             var processResult = DateTimeUtility.RedactDateNode(node, true);
 
-            Assert.Equal(expectedDate?.ToString() ?? null, node.Value);
+            Assert.Equal(expectedDate, node.Value);
             Assert.True(processResult.IsRedacted);
         }
 
@@ -146,23 +147,23 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
 
         [Theory]
         [MemberData(nameof(GetDateDataForDateShiftButShouldBeRedacted))]
-        public void GivenADateWithoutDayOrAgeOver89_WhenDateShift_ThenDateShouldBeRedacted(Date date, Date expectedDate)
+        public void GivenADateWithoutDayOrAgeOver89_WhenDateShift_ThenDateShouldBeRedacted(Date date, object expectedDate)
         {
             var node = ElementNode.FromElement(date.ToTypedElement());
             var processResult = DateTimeUtility.ShiftDateNode(node, string.Empty, string.Empty, true);
 
-            Assert.Equal(expectedDate?.ToString() ?? null, node.Value);
+            Assert.Equal(expectedDate, node.Value);
             Assert.True(processResult.IsRedacted);
         }
 
         [Theory]
         [MemberData(nameof(GetDateTimeDataForRedact))]
-        public void GivenADateTime_WhenRedact_ThenDateTimeShouldBeRedacted(FhirDateTime dateTime, FhirDateTime expectedDateTime)
+        public void GivenADateTime_WhenRedact_ThenDateTimeShouldBeRedacted(FhirDateTime dateTime, object expectedDateTime)
         {
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
             var processResult = DateTimeUtility.RedactDateTimeAndInstantNode(node, true);
 
-            Assert.Equal(expectedDateTime?.ToString() ?? null, node.Value);
+            Assert.Equal(expectedDateTime, node.Value);
             Assert.True(processResult.IsRedacted);
         }
 
@@ -190,12 +191,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
 
         [Theory]
         [MemberData(nameof(GetDateTimeDataForDateShiftButShouldBeRedacted))]
-        public void GivenADateTimeWithoutDayOrAgeOver89_WhenDateShift_ThenDateTimeShouldBeRedacted(FhirDateTime dateTime, FhirDateTime expectedDateTime)
+        public void GivenADateTimeWithoutDayOrAgeOver89_WhenDateShift_ThenDateTimeShouldBeRedacted(FhirDateTime dateTime, object expectedDateTime)
         {
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
             var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, string.Empty, string.Empty, true);
 
-            Assert.Equal(expectedDateTime?.ToString() ?? null, node.Value);
+            Assert.Equal(expectedDateTime, node.Value);
             Assert.True(processResult.IsRedacted);
         }
 

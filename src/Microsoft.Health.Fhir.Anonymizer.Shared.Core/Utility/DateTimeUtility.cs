@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model.Primitives;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
@@ -42,7 +43,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
                 if (matchedGroups[s_yearIndex].Captures.Any())
                 {
                     string yearOfDate = matchedGroups[s_yearIndex].Value;
-                    node.Value = IndicateAgeOverThreshold(matchedGroups) ? null : yearOfDate;
+                    if (IndicateAgeOverThreshold(matchedGroups))
+                    {
+                        node.Value = null;
+                    }
+                    else
+                    {
+                        node.Value = PartialDateTime.Parse(yearOfDate);
+                    }
                 }
             }
             else
@@ -69,7 +77,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
                 if (matchedGroups[s_yearIndex].Captures.Any())
                 {
                     string yearOfDateTime = matchedGroups[s_yearIndex].Value;
-                    node.Value = IndicateAgeOverThreshold(matchedGroups) ? null : yearOfDateTime;
+                    if (IndicateAgeOverThreshold(matchedGroups))
+                    {
+                        node.Value = null;
+                    }
+                    else
+                    {
+                        node.Value = PartialDateTime.Parse(yearOfDateTime);
+                    }
                 }
             }
             else
@@ -153,11 +168,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
                         string newTime = Regex.Replace(time, @"\d", "0");
                         timestamp = timestamp.Replace(time, newTime);
                     }
-                    node.Value = $"{newDate}{timestamp}";
+                    node.Value = PartialDateTime.Parse($"{newDate}{timestamp}");
                 }
                 else
                 {
-                    node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
+                    node.Value = PartialDateTime.Parse(DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat));
                 }
                 processResult.AddProcessRecord(AnonymizationOperations.Perturb, node);
             }
