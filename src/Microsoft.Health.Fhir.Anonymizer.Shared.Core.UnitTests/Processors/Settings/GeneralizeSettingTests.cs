@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 using Xunit;
@@ -9,10 +10,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors.Settings
     {
         public static IEnumerable<object[]> GetGeneralizeFhirRuleConfigs()
         {
-            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=@2010-01-01 and $this>=@2010-01-01\": \"10\"}" } } , "{\"$this<=@2010-01-01 and $this>=@2010-01-01\": \"10\"}", "redact" };
-            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=10 and $this>=0\": \"10\"}" }, { "otherValues", "keep" } }, "{\"$this<=10 and $this>=0\": \"10\"}", "keep" };
-            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=10 and $this>=0\": \"10\"}" }, { "otherValues", "redact" } }, "{\"$this<=10 and $this>=0\": \"10\"}", "redact" };
-            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"\": \"\"}" }, { "otherValues", "redact" } }, "{\"\": \"\"}", "redact" };
+            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=@2010-01-01 and $this>=@2010-01-01\": \"10\"}" } } , "{\r\n  \"$this<=@2010-01-01 and $this>=@2010-01-01\": \"10\"\r\n}", "redact" };
+            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=10 and $this>=0\": \"10\"}" }, { "otherValues", "keep" } }, "{\r\n  \"$this<=10 and $this>=0\": \"10\"\r\n}", "keep" };
+            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=10 and $this>=0\": \"10\"}" }, { "otherValues", "redact" } }, "{\r\n  \"$this<=10 and $this>=0\": \"10\"\r\n}", "redact" };
+            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"\": \"\"}" }, { "otherValues", "redact" } }, "{\r\n  \"\": \"\"\r\n}", "redact" };
         }
 
         public static IEnumerable<object[]> GetInvalidGeneralizeFhirRuleConfigs()
@@ -36,8 +37,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors.Settings
         public void GivenAGeneralizeSetting_WhenCreate_SettingPropertiesShouldBeParsedCorrectly(Dictionary<string, object> config, string expectedCases, string expectedOtherValues)
         {
             var generalizeSetting = GeneralizeSetting.CreateFromRuleSettings(config);
-            Assert.Equal(expectedCases, generalizeSetting.Cases);
-            Assert.Equal(expectedOtherValues, generalizeSetting.OtherValues);
+            Assert.Equal(expectedCases, generalizeSetting.Cases.ToString());
+            Assert.Equal(expectedOtherValues, generalizeSetting.OtherValues.ToString());
         }
 
         [Theory]

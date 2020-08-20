@@ -12,7 +12,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 {
     public class GeneralizeTests
     {
-        public static IEnumerable<object[]> GetEmptyNodestoGeneralize()
+        public static IEnumerable<object[]> GetEmptyNodesToGeneralize()
         {
             yield return new object[] { new Integer(), null };
             yield return new object[] { new UnsignedInt(), null };
@@ -41,10 +41,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new Integer(78), 60 };
             yield return new object[] { new Integer(110), null, "redact" };
             yield return new object[] { new Integer(110), 110, "keep" };
-            yield return new object[] { new PositiveInt(24), 10 };
-            yield return new object[] { new PositiveInt(5), 1 };
+            yield return new object[] { new PositiveInt(24), 10 };           
             yield return new object[] { new UnsignedInt(24), 10 };
-            yield return new object[] { new UnsignedInt(5), 0 };
         }
 
         public static IEnumerable<object[]> GetStringNodestoGeneralizeWithValueSet()
@@ -136,10 +134,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
         public static IEnumerable<object[]> GetInvalidTargetValuetoInteger()
         {
-            yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"'20'\"}" };
-            yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"2.5\"}" };
+            yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"'a'\"}" };
             yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"@2015\"}" };
             yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"@T00:00:00\"}" };
+            yield return new object[] { new PositiveInt(5), "{\"$this>=0 and $this<20\":\"0\"}" };
+            yield return new object[] { new UnsignedInt(5), "{\"$this>=0 and $this<20\":\"-1\"}" };
         }
 
         public static IEnumerable<object[]> GetInvalidCasesExpressions()
@@ -243,7 +242,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
         }
 
         [Theory]
-        [MemberData(nameof(GetEmptyNodestoGeneralize))]
+        [MemberData(nameof(GetEmptyNodesToGeneralize))]
         public void GivenAnEmptyNode_WhenGeneralized_EmptyNodeShouldBeReturned(Base data, object target, string otherValues = "redact")
         {
             var node = ElementNode.FromElement(data.ToTypedElement());
@@ -458,7 +457,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
         [Theory]
         [MemberData(nameof(GetInvalidCasesExpressions))]
-        public void GivenInvalidCasesExpresions_WhenGeneralized_ExceptionShouldBeThrown(Base data, string cases)
+        public void GivenInvalidCasesExpressions_WhenGeneralized_ExceptionShouldBeThrown(Base data, string cases)
         {
             var node = ElementNode.FromElement(data.ToTypedElement());
 
