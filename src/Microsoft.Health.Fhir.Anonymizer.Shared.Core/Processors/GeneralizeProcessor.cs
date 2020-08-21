@@ -9,7 +9,6 @@ using Hl7.Fhir.Model.Primitives;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
@@ -32,6 +31,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
         private void GeneralizeIntegerNode(ElementNode node, object targetValue)
         {
+            //Transform the target value into int32.
             int target;
             try
             {
@@ -42,6 +42,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 throw new AnonymizerConfigurationErrorsException($"Invalid data types or format of expression {targetValue} output", ex);
             }
 
+            //Check target value for positive integer and unsigned interger.
             if (string.Equals(FHIRAllTypes.PositiveInt.ToString(), node.InstanceType, StringComparison.InvariantCultureIgnoreCase) && target <= 0)
             {
                 throw new AnonymizerConfigurationErrorsException($"Invalid target value {target} for positive int data type.");
@@ -58,6 +59,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
         private void GeneralizeDateOrTimeNode(ElementNode node, object targetValue)
         {
+            //Transform the target value into partialTime or partialDateTime types
             try
             {
                 if (IsTimeNode(node))
@@ -75,13 +77,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             }
         }
 
-        private void GeneralizeNode(ElementNode node, object targetValue, ProcessResult result)
+        private void GeneralizeNode(ElementNode node, object targetValue)
         {
             if (targetValue == null)
             {
                 node.Value = null;
             }
-
+            
+            //Generalization for different data types.
             if (s_integerValueTypeNames.Contains(node.InstanceType, StringComparer.InvariantCultureIgnoreCase))
             {
                 GeneralizeIntegerNode(node, targetValue);
@@ -125,7 +128,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
                 if (matchCondition)
                 {
-                    GeneralizeNode(node, targetValue, result);
+                    GeneralizeNode(node, targetValue);
                     result.AddProcessRecord(AnonymizationOperations.Generalize, node);
                     return result;
                 }
