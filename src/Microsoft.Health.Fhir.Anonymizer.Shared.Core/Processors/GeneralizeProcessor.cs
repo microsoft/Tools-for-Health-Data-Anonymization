@@ -59,22 +59,29 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
         private void GeneralizeDateOrTimeNode(ElementNode node, object targetValue)
         {
-            //Transform the target value into partialTime or partialDateTime types
-            try
+            if (targetValue.GetType() == node.Value.GetType())
             {
-                if (IsTimeNode(node))
-                {
-                    node.Value = PartialTime.Parse(targetValue.ToString());
-                }
-                else
-                {
-                    node.Value = PartialDateTime.Parse(targetValue.ToString());
-                }
+                node.Value = targetValue;
             }
-            catch (Exception ex)
+            else
             {
-                throw new AnonymizerConfigurationErrorsException($"Invalid data types or format of expression {targetValue} output", ex);
-            }
+                //Transform the target value into partialTime or partialDateTime types
+                try
+                {
+                    if (IsTimeNode(node))
+                    {
+                        node.Value = PartialTime.Parse(targetValue.ToString());
+                    }
+                    else
+                    {
+                        node.Value = PartialDateTime.Parse(targetValue.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new AnonymizerConfigurationErrorsException($"Invalid data types or format of expression {targetValue} output", ex);
+                }
+            } 
         }
 
         private void GeneralizeNode(ElementNode node, object targetValue)
@@ -147,6 +154,5 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
         {
             return string.Equals(FHIRAllTypes.Time.ToString(), node.InstanceType, StringComparison.InvariantCultureIgnoreCase);
         }
-
     }
 }
