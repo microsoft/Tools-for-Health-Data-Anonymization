@@ -25,24 +25,24 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
         public static IEnumerable<object[]> GetIntegerNodestoGeneralizeWithRangeMapping()
         {
-            yield return new object[] { new Integer(5), 20 };
-            yield return new object[] { new Integer(20), 40 };
-            yield return new object[] { new Integer(43), 60 };
-            yield return new object[] { new Integer(78), 80 };
+            yield return new object[] { new Integer(5), (long)20 };
+            yield return new object[] { new Integer(20), (long)40 };
+            yield return new object[] { new Integer(43), (long)60 };
+            yield return new object[] { new Integer(78), (long)80 };
             yield return new object[] { new Integer(110), null, "redact"};
             yield return new object[] { new Integer(110), 110, "keep" };
         }
 
         public static IEnumerable<object[]> GetIntegerNodestoGeneralizeWithApproximate()
         {
-            yield return new object[] { new Integer(5), -10 };
-            yield return new object[] { new Integer(20), 10 };
-            yield return new object[] { new Integer(43), 30 };
-            yield return new object[] { new Integer(78), 60 };
+            yield return new object[] { new Integer(5), (long)-10 };
+            yield return new object[] { new Integer(20), (long)10 };
+            yield return new object[] { new Integer(43), (long)30 };
+            yield return new object[] { new Integer(78), (long)60 };
             yield return new object[] { new Integer(110), null, "redact" };
             yield return new object[] { new Integer(110), 110, "keep" };
-            yield return new object[] { new PositiveInt(24), 10 };           
-            yield return new object[] { new UnsignedInt(24), 10 };
+            yield return new object[] { new PositiveInt(24), (long)10 };           
+            yield return new object[] { new UnsignedInt(24), (long)10 };
         }
 
         public static IEnumerable<object[]> GetStringNodestoGeneralizeWithValueSet()
@@ -65,80 +65,65 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
         public static IEnumerable<object[]> GetDateNodestoGeneralizeWithRangeMapping()
         {
-            yield return new object[] { new Date("1990-01-01"), PartialDateTime.Parse("1990") };
+            yield return new object[] { new Date("1990-01-01"), "1990" };
             yield return new object[] { new Date("2000-01-01"), null, "redact" };
-            yield return new object[] { new Date("1990"), PartialDateTime.Parse("1990"), "redact" };
+            yield return new object[] { new Date("1990"), "1990", "redact" };
             yield return new object[] { new Date("2000"), null, "redact" };
-            yield return new object[] { new Date("2010"), PartialDateTime.Parse("2010-01-01"), "redact" };
+            yield return new object[] { new Date("2010"), "2010-01-01", "redact" };
             yield return new object[] { new Date("2010-01-01"), null, "redact" };
-            yield return new object[] { new Date("2020"), PartialDateTime.Parse("2020-01-01") };
-            yield return new object[] { new Date("2020-05-20"), PartialDateTime.Parse("2020-01-01") };
-            yield return new object[] { new Date("2021-05-20"), PartialDateTime.Parse("2021-05-20"), "keep" };
+            yield return new object[] { new Date("2020"), "2020-01-01" };
+            yield return new object[] { new Date("2020-05-20"), "2020-01-01" };
+            yield return new object[] { new Date("2021-05-20"), "2021-05-20", "keep" };
         }
 
         public static IEnumerable<object[]> GetDateTimeNodestoGeneralizeWithRangeMapping()
         {
-            yield return new object[] { new FhirDateTime("1990-01-01T00:00:00Z"), PartialDateTime.Parse("1990") };
+            yield return new object[] { new FhirDateTime("1990-01-01T00:00:00Z"), "1990" };
             yield return new object[] { new FhirDateTime("1990-01-01T00:00:00+08:00"), null };
-            yield return new object[] { new FhirDateTime("1990-01-01"), PartialDateTime.Parse("1990") };
-            yield return new object[] { new FhirDateTime("1990-01"), PartialDateTime.Parse("1990") };
+            yield return new object[] { new FhirDateTime("1990-01-01"), "1990" };
+            yield return new object[] { new FhirDateTime("1990-01"), "1990" };
             yield return new object[] { new FhirDateTime("2000-01-01T00:00:00Z"), null };
-            yield return new object[] { new FhirDateTime("2000-01-01T00:00:00+08:00"), PartialDateTime.Parse("1990") };
-            yield return new object[] { new FhirDateTime("2000-01-01T00:00:00+09:00"), PartialDateTime.Parse("1990") };
+            yield return new object[] { new FhirDateTime("2000-01-01T00:00:00+08:00"), "1990" };
+            yield return new object[] { new FhirDateTime("2000-01-01T00:00:00+09:00"), "1990" };
             yield return new object[] { new FhirDateTime("2000-01-01T00:00:00-09:00"), null };
             yield return new object[] { new FhirDateTime("2010-01-01"), null };
             yield return new object[] { new FhirDateTime("2010-01-01T00:00:00Z"), null };
-            yield return new object[] { new FhirDateTime("2010-01-01T00:00:00+08:00"), PartialDateTime.Parse("2010-01-01") };
-            yield return new object[] { new FhirDateTime("2010-01-01T00:00:00+08:00"), PartialDateTime.Parse("2010-01-01") };
-            yield return new object[] { new FhirDateTime("2009-12-31T16:00:00Z"), PartialDateTime.Parse("2010-01-01") };
-            yield return new object[] { new FhirDateTime("2020-01-01T00:00:00+08:00"), PartialDateTime.Parse("2020-01-01") };
-            yield return new object[] { new FhirDateTime("2020-01-01"), PartialDateTime.Parse("2020-01-01") };
+            yield return new object[] { new FhirDateTime("2010-01-01T00:00:00+08:00"), "2010-01-01" };
+            yield return new object[] { new FhirDateTime("2010-01-01T00:00:00+08:00"), "2010-01-01" };
+            yield return new object[] { new FhirDateTime("2009-12-31T16:00:00Z"), "2010-01-01" };
+            yield return new object[] { new FhirDateTime("2020-01-01T00:00:00+08:00"), "2020-01-01" };
+            yield return new object[] { new FhirDateTime("2020-01-01"), "2020-01-01" };
         }
 
         public static IEnumerable<object[]> GetTimeNodestoGeneralizeWithRangeMapping()
         {
-            yield return new object[] { new Time("13:45:02Z"), PartialTime.Parse("12:00:00+08:00") };
-            yield return new object[] { new Time("13:45:02+08:00"), null };
-            yield return new object[] { new Time("02:00:00+08:00"), null };
-            yield return new object[] { new Time("06:00:00-08:00"), PartialTime.Parse("12:00:00+08:00") };
-            yield return new object[] { new Time("23:45:02+08:00"), PartialTime.Parse("12:00:00+08:00") };
-            yield return new object[] { new Time("00:00:00+05:00"), PartialTime.Parse("00:00:00Z") };
-            yield return new object[] { new Time("19:00:00Z"), null };
-            yield return new object[] { new Time("00:00:00+08:00"),null };
-            yield return new object[] { new Time("03:00:00+08:00"), PartialTime.Parse("00:00:00Z") };
-            yield return new object[] { new Time("10:00:00+08:00"), PartialTime.Parse("10:00:00") };
-            yield return new object[] { new Time("02:00:00Z"), PartialTime.Parse("10:00:00") };          
+            yield return new object[] { new Time("13:45:02"), "12:00:00" };
+            yield return new object[] { new Time("02:00:00"), null };
+            yield return new object[] { new Time("06:00:00"), null };
+            yield return new object[] { new Time("00:00:00"), "00:00:00" };
+            yield return new object[] { new Time("10:00:00"), "10:00:00" };         
         }
 
         public static IEnumerable<object[]> GetInstantNodestoGeneralizeWithRangeMapping()
         {
-            yield return new object[] { new Instant(DateTimeOffset.Parse("2001-04-06T04:13:14Z")), PartialDateTime.Parse("1990-01-01T00:00:00Z") };
-            yield return new object[] { new Instant(DateTimeOffset.Parse("1995-04-06T05:13:14+05:00")), PartialDateTime.Parse("1990-01-01T00:00:00Z") };
+            yield return new object[] { new Instant(DateTimeOffset.Parse("2001-04-06T04:13:14Z")), "1990-01-01T00:00:00Z" };
+            yield return new object[] { new Instant(DateTimeOffset.Parse("1995-04-06T05:13:14+05:00")), "1990-01-01T00:00:00Z" };
             yield return new object[] { new Instant(DateTimeOffset.Parse("2020-04-06T05:13:14+05:00")), null };
 
         }
 
         public static IEnumerable<object[]> GetDateNodestoGeneralizeWithOmitDay()
         {
-            yield return new object[] { new Date("1990-11-01"), PartialDateTime.Parse("1990-11") };
-            yield return new object[] { new Date("1990"), PartialDateTime.Parse("1990") };
-            yield return new object[] { new Date("1990-11"), PartialDateTime.Parse("1990-11") };
+            yield return new object[] { new Date("1990-11-01"), "1990-11" };
+            yield return new object[] { new Date("1990"), "1990" };
+            yield return new object[] { new Date("1990-11"), "1990-11" };
         }
 
         public static IEnumerable<object[]> GetDateTimeNodestoGeneralizeWithOmitDay()
         {
-            yield return new object[] { new FhirDateTime("1990-01-01T00:00:00Z"), PartialDateTime.Parse("1990-01") };
-            yield return new object[] { new FhirDateTime("1990-01-01T00:00:00"), PartialDateTime.Parse("1990-01") };
-            yield return new object[] { new FhirDateTime("1990-01-01"), PartialDateTime.Parse("1990-01") };
-        }
-
-        public static IEnumerable<object[]> GetInvalidTargetValuetoInteger()
-        {
-            yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"'a'\"}" };
-            yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"@2015\"}" };
-            yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"@T00:00:00\"}" };
-            yield return new object[] { new PositiveInt(5), "{\"$this>=0 and $this<20\":\"0\"}" };
-            yield return new object[] { new UnsignedInt(5), "{\"$this>=0 and $this<20\":\"-1\"}" };
+            yield return new object[] { new FhirDateTime("1990-01-01T00:00:00Z"), "1990-01" };
+            yield return new object[] { new FhirDateTime("1990-01-01T00:00:00"), "1990-01" };
+            yield return new object[] { new FhirDateTime("1990-01-01"), "1990-01" };
         }
 
         public static IEnumerable<object[]> GetInvalidCasesExpressions()
@@ -151,7 +136,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new FhirDateTime("2015-01-01T00:00:00Z"), "{\"$this > @2015-1-1\":\"@2015-01-01\"}" };
             yield return new object[] { new FhirDateTime("2015-01-01T00:00:00Z"), "{\"$this > @2015-01-01T00:00\":\"@2015-01-01T00:00:00Z\"}" };
             yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"\"}"};
-            yield return new object[] { new Integer(25), "{\"$this>=0 and $this<20\":\"\"}" };
             yield return new object[] { new Integer(25), "{\"\":\"100\"}" };
             yield return new object[] { new Integer(5), "{\"\":\"\"}" };
         }
@@ -208,7 +192,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
         private Dictionary<string, object> CreateRangeMappingSettingsForTime(string otherValues)
         {
-            string Cases = "{\"$this >= @T13:45:02Z and $this < @T23:45:02+05:00\": \"@T12:00:00+08:00\", \"$this = @T00:00:00+05:00\" :\"@T00:00:00Z\",\"$this ~ @T10:00:00+08:00\":\"@T10:00:00\" }";
+            string Cases = "{\"$this >= @T13:45:02 and $this < @T23:45:02\": \"@T12:00:00\", \"$this = @T00:00:00\" :\"@T00:00:00\",\"$this ~ @T10:00:00\":\"@T10:00:00\" }";
             string OtherValues = otherValues;
             return new Dictionary<string, object> { { "cases", Cases }, { "otherValues", OtherValues } };
         }
@@ -346,7 +330,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(target, node.Value);
+            Assert.Equal(target, node.Value?.ToString());
         }
 
         [Theory]
@@ -364,7 +348,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(target, node.Value);
+            Assert.Equal(target, node.Value?.ToString());
         }
 
         [Theory]
@@ -382,7 +366,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(target, node.Value);
+            Assert.Equal(target, node.Value?.ToString());
         }
 
         [Theory]
@@ -400,7 +384,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(target, node.Value);
+            Assert.Equal(target, node.Value?.ToString());
         }
 
         [Theory]
@@ -418,7 +402,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(target, node.Value);
+            Assert.Equal(target, node.Value?.ToString());
         }
 
         [Theory]
@@ -436,23 +420,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(target, node.Value);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetInvalidTargetValuetoInteger))]
-        public void GivenInvalidTargetValuetoInteger_WhenGeneralized_ExceptionShouldBeThrown(Base data, string cases)
-        {
-            var node = ElementNode.FromElement(data.ToTypedElement());
-
-            GeneralizeProcessor processor = new GeneralizeProcessor();
-            var context = new ProcessContext
-            {
-                VisitedNodes = new HashSet<ElementNode>()
-            };
-            var settings= new Dictionary<string, object> { { "cases", cases } };
-
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => processor.Process(node, context, settings));          
+            Assert.Equal(target, node.Value?.ToString());
         }
 
         [Theory]
@@ -486,7 +454,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
-            Assert.Equal(target, node.Value);
+            Assert.Equal(target, Convert.ToInt32(node.Value));
         }
     }
 }

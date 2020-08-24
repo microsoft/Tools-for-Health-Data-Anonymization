@@ -28,7 +28,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
 
             if (!ruleSettings.ContainsKey(Constants.PathKey))
             {
-                throw new AnonymizerConfigurationErrorsException("Missing path in Fhir path rule config.");
+                throw new AnonymizerConfigurationErrorsException("Missing path in FHIR path rule config.");
             }
 
             if (!ruleSettings.ContainsKey(RuleKeys.ReplaceWith))

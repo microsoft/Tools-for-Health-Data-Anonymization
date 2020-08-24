@@ -48,7 +48,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\PerturbProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeSetting.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeOtherValuesType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeOtherValuesOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbRangeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\RuleKeys.cs" />

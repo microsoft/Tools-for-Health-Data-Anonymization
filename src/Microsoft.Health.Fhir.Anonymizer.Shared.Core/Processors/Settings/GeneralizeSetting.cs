@@ -11,14 +11,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
     public class GeneralizeSetting
     {
         public JObject Cases { get; set; }
-        public GeneralizationOtherValuesType OtherValues { get; set; }
+        public GeneralizationOtherValuesOperation OtherValues { get; set; }
 
         public static GeneralizeSetting CreateFromRuleSettings(Dictionary<string, object> ruleSettings)
         {
             EnsureArg.IsNotNull(ruleSettings);
 
-            JObject cases=null;
-            GeneralizationOtherValuesType otherValues = GeneralizationOtherValuesType.redact;
+            JObject cases = null;
+            GeneralizationOtherValuesOperation otherValues = GeneralizationOtherValuesOperation.redact;
             if (ruleSettings.ContainsKey(RuleKeys.Cases))
             {
                 try
@@ -46,7 +46,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
         public static void ValidateRuleSettings(Dictionary<string, object> ruleSettings)
         {
             FhirPathCompiler compiler = new FhirPathCompiler();
-
             if (ruleSettings == null)
             {
                 throw new AnonymizerConfigurationErrorsException("Generalize rule should not be null.");
@@ -54,17 +53,17 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
 
             if (!ruleSettings.ContainsKey(Constants.PathKey))
             {
-                throw new AnonymizerConfigurationErrorsException("Missing path in Fhir path rule config.");
+                throw new AnonymizerConfigurationErrorsException("Missing path in FHIR path rule config.");
             }
 
             if (!ruleSettings.ContainsKey(Constants.MethodKey))
             {
-                throw new AnonymizerConfigurationErrorsException("Missing method in Fhir path rule config.");
+                throw new AnonymizerConfigurationErrorsException("Missing method in FHIR path rule config.");
             }
 
             if (!ruleSettings.ContainsKey(RuleKeys.Cases))
             {
-                throw new AnonymizerConfigurationErrorsException("Missing cases in Fhir path rule config.");
+                throw new AnonymizerConfigurationErrorsException("Missing cases in FHIR path rule config.");
             }
 
             try
@@ -81,7 +80,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
                 throw new AnonymizerConfigurationErrorsException($"Invalid cases expression {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
             }           
 
-            var supportedOtherValuesOperations = Enum.GetNames(typeof(GeneralizationOtherValuesType)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+            var supportedOtherValuesOperations = Enum.GetNames(typeof(GeneralizationOtherValuesOperation)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
             if (ruleSettings.ContainsKey(RuleKeys.OtherValues) && !supportedOtherValuesOperations.Contains(ruleSettings[RuleKeys.OtherValues].ToString()))
             {
                 throw new AnonymizerConfigurationErrorsException($"OtherValues setting is invalid at {ruleSettings[RuleKeys.OtherValues]}.");
