@@ -10,7 +10,6 @@ using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 
-
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
     public partial class GeneralizeProcessor : IAnonymizerProcessor
