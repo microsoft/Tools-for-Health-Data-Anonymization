@@ -298,6 +298,7 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
 |substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value.  |
 |generalize|Elements of primitive types|[Generalize](#Generalize-method) the value into a more general, less distinguishing value.
+
 Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
 - nodesByName('_name_'): return descendants of node name '_name_'. Nodes in bundle resource and contained list will be excluded. 
@@ -417,7 +418,7 @@ To generalize string data type using expression for masking.
   "path": "patient.address.postalcode",
   "method": "generalize",
   "cases":{
-    "$this.startsWith(\'123\') or $this.startsWith(\'234\')": "$this.subString(0,2)+\'****\'", 
+    "$this.startsWith('123') or $this.startsWith('234')": "$this.subString(0,2)+'****'", 
   },
   "otherValues":"redact"
   }
