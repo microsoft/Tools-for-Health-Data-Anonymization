@@ -383,7 +383,7 @@ To substitute Address data types with a fixed json fragement
   }
 }
 ```
-To generalize age fields of Condition resource using expression to define the range mapping.
+To generalize age fields of Condition resource using expression to define the range mapping
 ```json
 {
   "path": "condition.onset.value as Age",
@@ -397,7 +397,7 @@ To generalize age fields of Condition resource using expression to define the ra
   "otherValues":"redact"
 }
 ```
-To generalize string data type using expression to define the value set mapping.
+To generalize string data type using expression to define the value set mapping
 
 ```json
 {
@@ -411,7 +411,7 @@ To generalize string data type using expression to define the value set mapping.
 }
 ```
 
-To generalize string data type using expression for masking.
+To generalize string data type using expression for masking
 
 ```json
 {
@@ -423,7 +423,7 @@ To generalize string data type using expression for masking.
   "otherValues":"redact"
   }
 ```
-To generalize dateTime, time, date and instant type using expression.
+To generalize dateTime, time, date and instant type using expression
 
 ```json
 {
