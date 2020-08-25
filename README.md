@@ -501,7 +501,7 @@ Generalization uses FHIRPath predicate expression to define a set of cases that 
 |string| _"$this in ('es-AR' \| 'es-ES' \| 'es-UY')": "'es'"_|Data fall in the value set will be mapped to "es".|'es-UY' -> 'es'|
 |string| _"$this.startsWith(\'123\')": "$this.subString(0,2)+\'*\*\*\*\' "_ |Mask sensitive string code.|'1230005' -> '123****'|
 |date, dateTime, time|_"$this >= @2010-1-1": "@2010"_|Data fall in a date/time/dateTime range will be mapped to one date/time/dateTime value.| 2016-03-10 -> 2010|
-|date, dateTime, time|_"$this.replaceMatches('(?&lt;year&gt;\\\d{2,4})-(?&lt;month&gt;\\\d{1,2})-(?&lt;day&gt;\\\d{1,2})\\\b', '${year}-${month}'"_|Omit "day" to generalize specific data.|2016-01-01 -> 2016-01|
+|date, dateTime, time|_"$this.replaceMatches('(?&lt;year&gt;\\\d{2,4})-(?&lt;month&gt;\\\d{1,2})-(?&lt;day&gt;\\\d{1,2})\\\b', '${year}-${month}'"_|Omit "day" to generalize specific date.|2016-01-01 -> 2016-01|
 
 For each generalization rule, there are several additional settings to specify in configuration files:
 - [required] **cases** An object defines key-value pairs to define case condition and replacement value using FHIRPath predicate expression. _key_ represents case condition and _value_ represents target value.
