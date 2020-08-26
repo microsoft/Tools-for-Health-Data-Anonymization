@@ -6,7 +6,7 @@
       {
         "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
         "code": "REDACTED",
-        "display": "part of the resource is removed"
+        "display": "part of the resource is redacted"
       },
       {
         "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
@@ -29,7 +29,7 @@
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
               "code": "REDACTED",
-              "display": "part of the resource is removed"
+              "display": "part of the resource is redacted"
             },
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
@@ -48,7 +48,7 @@
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
               "code": "REDACTED",
-              "display": "part of the resource is removed"
+              "display": "part of the resource is redacted"
             }
           ]
         }
@@ -63,7 +63,7 @@
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
               "code": "REDACTED",
-              "display": "part of the resource is removed"
+              "display": "part of the resource is redacted"
             },
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
