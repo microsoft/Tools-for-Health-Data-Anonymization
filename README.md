@@ -297,7 +297,7 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
 |encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
 |substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value. |
-|generalize|Elements of primitive types|[Generalize](#Generalize-method) the value into a more general, less distinguishing value.
+|generalize|Elements of primitive types|[Generalizes](#Generalize-method) the value into a more general, less distinguishing value.
 
 Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
@@ -491,7 +491,7 @@ There are a few parameters that can help you customize the noise amount for diff
 Note that the target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity, SimpleQuantity, Money, etc.). 
 
 ## Generalize method
-As one of the anonymization method, generalization means mapping values to the higher level of generalization. It is the process of abstracting distinguishing value into a more general, less distinguishing value. Generalization attempts to preserve data utility while also reducing the identifiability of the data. 
+As one of the anonymization methods, generalization means mapping values to the higher level of generalization. It is the process of abstracting distinguishing value into a more general, less distinguishing value. Generalization attempts to preserve data utility while also reducing the identifiability of the data. 
 Generalization uses FHIRPath predicate expression to define a set of cases that specify the condition and target value like [sample rules](#Sample-rules-using-FHIRPath). Follows are some examples of cases.
 
 |Data Type|Cases|Explanation|Input data-> Output data|
@@ -504,9 +504,9 @@ Generalization uses FHIRPath predicate expression to define a set of cases that 
 |date, dateTime, time|_"$this.replaceMatches('(?&lt;year&gt;\\\d{2,4})-(?&lt;month&gt;\\\d{1,2})-(?&lt;day&gt;\\\d{1,2})\\\b', '${year}-${month}'"_|Omit "day" to generalize specific date.|2016-01-01 -> 2016-01|
 
 For each generalization rule, there are several additional settings to specify in configuration files:
-- [required] **cases** An object defines key-value pairs to define case condition and replacement value using FHIRPath predicate expression. _key_ represents case condition and _value_ represents target value.
+- [required] **cases** An object defining key-value pairs to specify case condition and replacement value using FHIRPath predicate expression. _key_ represents case condition and _value_ represents target value.
 
-- [optional] **otherValues** Define the operation for values mismatch all cases. The value could be "redact" or "keep". The default value is "redact".
+- [optional] **otherValues** Define the operation for values that do not match any of the cases. The value could be "redact" or "keep". The default value is "redact".
 
 Since the output of FHIR expression is flexible, users should provide expressions with valid output value to avoid unexcepted errors.
 ## Current limitations
