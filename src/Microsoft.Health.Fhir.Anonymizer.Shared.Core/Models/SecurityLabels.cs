@@ -8,7 +8,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Models
         {
             System = "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
             Code = "REDACTED",
-            Display = "part of the resource is removed"
+            Display = "part of the resource is redacted"
         };
 
         public static readonly Coding ABSTRED = new Coding()
