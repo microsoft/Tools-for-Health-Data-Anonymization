@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
-using Hl7.Fhir.Model.Primitives;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
@@ -130,14 +129,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
         {
             yield return new object[] { new Integer(5), "{\"$this>='0' and $this<'20'\":\"20\"}" };
             yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"$this / 2\"}" };
-            yield return new object[] { new Integer(5), "{\"$this>=0 && $this<20\":\"$this\"}" };
             yield return new object[] { new Integer(5), "{\"$this<5.5\":\"$this\"}" };
-            yield return new object[] { new FhirString("en-AU"), "{\"$this>=0 and $this<20\":\"\"}" };
             yield return new object[] { new FhirDateTime("2015-01-01T00:00:00Z"), "{\"$this > @2015-1-1\":\"@2015-01-01\"}" };
-            yield return new object[] { new FhirDateTime("2015-01-01T00:00:00Z"), "{\"$this > @2015-01-01T00:00\":\"@2015-01-01T00:00:00Z\"}" };
-            yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"\"}"};
-            yield return new object[] { new Integer(25), "{\"\":\"100\"}" };
-            yield return new object[] { new Integer(5), "{\"\":\"\"}" };
+            yield return new object[] { new Date("2015-01-01"), "{\"$this > @2015-1-1\":\"@2015-01-01\"}" };
+            yield return new object[] { new FhirString("2015-01-01"), "{\"$this > @2015-01-01\":\"@2015-01-01\"}" };
         }
 
         public static IEnumerable<object[]> GetNodesToGeneralizeWithConflictSettings()
