@@ -31,7 +31,7 @@ FHIR Tools for Anonymization is an open-source project that helps anonymize heal
 The anonymization capability is available to the users in the following forms:
 1. A [command-line tool](#the-command-line-tool) that can be used on-premises or in the cloud to anonymize data. 
 2. An ADF pipeline. It comes with a [script](#anonymize-fhir-data-using-azure-data-factory) to create a pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
-3. [De-identified $export](#how-to-perform-de-identified-$export-in-the-fhir-server?) operation in the [FHIR server for Azure](https://github.com/microsoft/fhir-server).
+3. [De-identified $export](#how-to-perform-de-identified-export-operation-on-the-fhir-server) operation in the [FHIR server for Azure](https://github.com/microsoft/fhir-server).
 
 The core engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings. This repo contains a sample [safe harbor configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method) to help de-identify data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
 
@@ -446,7 +446,7 @@ Note that the target field should be of either a numeric type (integer, decimal,
 
 ## FAQ
 
-### How to perform de-identified $export oeration on the FHIR server?
+### How to perform de-identified $export operation on the FHIR server?
 De-identified export is an extension of the standard FHIR $export operation that takes de-identification config details as additional parameters. Here are the steps to enable and use de-identified export:
 
 #### Configuration
@@ -461,7 +461,7 @@ De-identified export is an extension of the standard FHIR $export operation that
 
 **{FHIR service base URL}/$export?_container={container name}&_anonymizationConfig={config file name}&_anonymizationConfigEtag="{ETag of config file}"**
 
-here, _\_container_ is the name of the target container within the blob account where you want the data to be exported. 
+here, _\_container_ is the name of the target container within the blob account where you want the data to be exported. The container name should follow the rules [here](https://docs.microsoft.com/en-us/rest/api/storageservices/Naming-and-Referencing-Containers--Blobs--and-Metadata#container-names).
 
 4. Go to the _content-location_ to check the status of the export. Once completed, the _content-location_ URL provides the URLs of the exported resources.
 
