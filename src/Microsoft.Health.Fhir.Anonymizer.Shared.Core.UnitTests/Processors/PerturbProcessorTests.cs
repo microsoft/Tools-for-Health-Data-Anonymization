@@ -38,9 +38,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new UnsignedInt(5000), 100, 2, 4950, 5050 };
             yield return new object[] { new PositiveInt(1000000), 2000, 2, 999000, 1001000 };
 
-            // Positive nodes should not have value less than zero.
+            // Positive nodes should greater than zero. Unsigned nodes should not less than zero.
             yield return new object[] { new UnsignedInt(10), 40, 0, 0, 30 };
-            yield return new object[] { new PositiveInt(1), 200, 2, 0, 101 };
+            yield return new object[] { new PositiveInt(1), 200, 2, 1, 101 };
         }
 
         public static IEnumerable<object[]> GetIntegerNodesToPerturbProportionalSpan()
@@ -49,9 +49,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new UnsignedInt(5000), 0.02, 2, 4950, 5050 };
             yield return new object[] { new PositiveInt(1000000), 0.002, 2, 999000, 1001000 };
 
-            // Positive nodes should not have value less than zero.
+            // Positive nodes should greater than zero. Unsigned nodes should not less than zero.
             yield return new object[] { new UnsignedInt(10), 4, 0, 0, 30 };
-            yield return new object[] { new PositiveInt(1), 200, 2, 0, 101 };
+            yield return new object[] { new PositiveInt(1), 200, 2, 1, 101 };
         }
 
         public static IEnumerable<object[]> GetQuantityNodesToPerturbFixedSpan()
