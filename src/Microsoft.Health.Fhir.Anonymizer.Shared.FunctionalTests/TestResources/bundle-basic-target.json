@@ -6,12 +6,12 @@
       {
         "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
         "code": "REDACTED",
-        "display": "part of the resource is redacted"
+        "display": "redacted"
       },
       {
         "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
         "code": "CRYTOHASH",
-        "display": "exact value is transformed with a hash function"
+        "display": "cryptographic hash function"
       }
     ]
   },
@@ -29,12 +29,12 @@
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
               "code": "REDACTED",
-              "display": "part of the resource is redacted"
+              "display": "redacted"
             },
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
               "code": "CRYTOHASH",
-              "display": "exact value is transformed with a hash function"
+              "display": "cryptographic hash function"
             }
           ]
         }
@@ -48,7 +48,7 @@
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
               "code": "REDACTED",
-              "display": "part of the resource is redacted"
+              "display": "redacted"
             }
           ]
         }
@@ -63,12 +63,12 @@
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
               "code": "REDACTED",
-              "display": "part of the resource is redacted"
+              "display": "redacted"
             },
             {
               "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
               "code": "CRYTOHASH",
-              "display": "exact value is transformed with a hash function"
+              "display": "cryptographic hash function"
             }
           ]
         },
