@@ -104,7 +104,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
                 
                 foreach (var matchNode in matchNodes)
                 {
-                    resultOnRule.Update(ProcessNodeRecursive(matchNode, _processors[method], context, rule.RuleSettings));        
+                    resultOnRule.Update(ProcessNodeRecursive(matchNode, _processors[method], context, rule.RuleSettings));
                 }
                 LogProcessResult(node, rule, resultOnRule);
 

@@ -41,7 +41,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new Integer(78), (long)60 };
             yield return new object[] { new Integer(110), null, "Redact" };
             yield return new object[] { new Integer(110), 110, "Keep" };
-            yield return new object[] { new PositiveInt(24), (long)10 };           
+            yield return new object[] { new PositiveInt(24), (long)10 };
             yield return new object[] { new UnsignedInt(24), (long)10 };
         }
 
