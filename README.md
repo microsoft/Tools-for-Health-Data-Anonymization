@@ -446,7 +446,7 @@ Note that the target field should be of either a numeric type (integer, decimal,
 
 ## FAQ
 
-### How to perform de-identified $export oeration on the FHIR server?
+### How to perform de-identified $export operation on the FHIR server?
 De-identified export is an extension of the standard FHIR $export operation that takes de-identification config details as additional parameters. Here are the steps to enable and use de-identified export:
 
 #### Configuration
@@ -461,7 +461,7 @@ De-identified export is an extension of the standard FHIR $export operation that
 
 **{FHIR service base URL}/$export?_container={container name}&_anonymizationConfig={config file name}&_anonymizationConfigEtag="{ETag of config file}"**
 
-here, _\_container_ is the name of the target container within the blob account where you want the data to be exported. 
+here, _\_container_ is the name of the target container within the blob account where you want the data to be exported. The container name should follow the rules [here](https://docs.microsoft.com/en-us/rest/api/storageservices/Naming-and-Referencing-Containers--Blobs--and-Metadata#container-names).
 
 4. Go to the _content-location_ to check the status of the export. Once completed, the _content-location_ URL provides the URLs of the exported resources.
 
