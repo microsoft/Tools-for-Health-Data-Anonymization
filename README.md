@@ -14,6 +14,7 @@
 [Reference](#reference)  
 &nbsp;&nbsp; [The command line tool](#the-command-line-tool)  
 &nbsp;&nbsp; [Configuration file format](#configuration-file-format)  
+&nbsp;&nbsp; [Sample rules](#sample-rules-using-fhirpath)  
 &nbsp;&nbsp; [Date-shift algorithm](#date-shift-algorithm)  
 &nbsp;&nbsp; [Crypto-hash method](#Crypto-hash-method)  
 &nbsp;&nbsp; [Encrypt method](#Encrypt-method)  
@@ -27,9 +28,12 @@
 
 FHIR Tools for Anonymization is an open-source project that helps anonymize healthcare [FHIR](https://www.hl7.org/fhir/) data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The project released to open source on Friday, March 6th, 2020.
 
-The core engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings to anonymize the data. The project includes a [command-line tool](#the-command-line-tool) that can be used on-premises or in the cloud to anonymize data. It also comes with a [tutorial](#anonymize-fhir-data-using-azure-data-factory) and script to create an ADF pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
+The anonymization capability is available to the users in the following forms:
+1. A [command-line tool](#the-command-line-tool) that can be used on-premises or in the cloud to anonymize data. 
+2. An ADF pipeline. It comes with a [script](#anonymize-fhir-data-using-azure-data-factory) to create a pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
+3. [De-identified $export](#how-to-perform-de-identified-export-operation-on-the-fhir-server) operation in the [FHIR server for Azure](https://github.com/microsoft/fhir-server).
 
-This repo contains a [safe harbor configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method) to help de-identify 17 data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
+The core engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings. This repo contains a sample [safe harbor configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method) to help de-identify data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
 
 This open source project is fully backed by the Microsoft Healthcare team, but we know that this project will only get better with your feedback and contributions. We are leading the development of this code base, and test builds and deployments daily.
 
@@ -39,8 +43,8 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 
 * Support anonymization of FHIR R4 and STU 3 data in json as well as ndjson format
 * Configuration of the data elements that need to be de-identified 
-* Configuration of the de-identification method for each data element (keeping, redacting, encrypting, substituting, perturbing, Date-shifting, or Crypto-hashing) 
-* Ability to create Azure Data Factory to support de-identification of the data flows 
+* Configuration of the [de-identification methods](#fhir-path-rules) for each data element
+* Ability to create a de-identification pipeline in Azure Data Factory
 * Ability to run the tool on premise to de-identify a dataset locally
 
 # Quickstarts
@@ -296,7 +300,8 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |perturb|Elements of numeric and quantity types| [Perturb](#Perturb-method) the value with random noise addition.  |
 |cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
 |encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
-|substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value.  |
+|substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value. |
+|generalize|Elements of primitive types|[Generalizes](#Generalize-method) the value into a more general, less distinguishing value.
 
 Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
@@ -316,7 +321,7 @@ Parameters affect the de-identification methods specified in the FHIR path rules
 | redact | enablePartialZipCodesForRedact  | Zip Code fields | boolean | false | If the value is set to **true**, Zip Code will be redacted as per the HIPAA Safe Harbor rule. |
 | redact | restrictedZipCodeTabulationAreas  | Zip Code fields | a JSON array | empty array | This configuration is used only if enablePartialZipCodesForRedact is set to **true**. This field contains the list of zip codes for which the first 3 digits will be converted to 0. As per the HIPAA Safe Harbor, this list will have the Zip Codes  having population less than 20,000 people. |
 
-### Sample rules using FHIRPath
+## Sample rules using FHIRPath
 
 To retain country as well as state values of Address data type
 ```json
@@ -382,6 +387,59 @@ To substitute Address data types with a fixed json fragement
   }
 }
 ```
+To generalize age fields of Condition resource using expression to define the range mapping
+```json
+{
+  "path": "condition.onset.value as Age",
+  "method": "generalize",
+  "cases":{
+    "$this>=0 and $this<20": "20",
+    "$this>=20 and $this<40": "40",
+    "$this>=40 and $this<60": "60",
+    "$this>=60 and $this<80": "80"     
+  },
+  "otherValues":"redact"
+}
+```
+To generalize string data type using expression to define the value set mapping
+
+```json
+{
+  "path": "patient.communication.language",
+  "method": "generalize",
+  "cases":{
+    "$this in ('en-AU' | 'en-CA' | 'en-GB' |'en-IN' | 'en-NZ' | 'en-SG' | 'en-US')": "'en'",
+    "$this in ('es-AR' | 'es-ES' | 'es-UY')": "'es'",    
+  },
+  "otherValues":"redact"
+}
+```
+
+To generalize string data type using expression for masking
+
+```json
+{
+  "path": "patient.address.postalcode",
+  "method": "generalize",
+  "cases":{
+    "$this.startsWith('123') or $this.startsWith('234')": "$this.subString(0,2)+'****'", 
+  },
+  "otherValues":"redact"
+  }
+```
+To generalize dateTime, time, date and instant type using expression
+
+```json
+{
+  "path": "person.birthDate",
+  "method": "generalize",
+  "cases":{
+    "$this >= @1990-1-1 and $this <= @2000-1-1": "@1990", 
+     "$this >= @2010-1-1 and $this <= @2020-1-1":"@2010-1-1T00:00:00"
+  },
+  "otherValues":"redact"
+}
+```
 
 ## Date-shift algorithm
 You can specify dateShift as a de-identification method in the configuration file. With this method, the input date/dateTime/instant value will be shifted within a 100-day differential. The following algorithm is used to shift the target dates:
@@ -436,11 +494,51 @@ There are a few parameters that can help you customize the noise amount for diff
 
 Note that the target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity, SimpleQuantity, Money, etc.). 
 
+## Generalize method
+As one of the anonymization methods, generalization means mapping values to the higher level of generalization. It is the process of abstracting distinguishing value into a more general, less distinguishing value. Generalization attempts to preserve data utility while also reducing the identifiability of the data. 
+Generalization uses FHIRPath predicate expression to define a set of cases that specify the condition and target value like [sample rules](#Sample-rules-using-FHIRPath). Follows are some examples of cases.
+
+|Data Type|Cases|Explanation|Input data-> Output data|
+|-----|-----|-----|-----|
+|numeric|_"$this>=0 and $this<20": "20"_|Data fall in the range [0,20) will be replaced with 20. |18 -> 20|
+|numeric|_"true": "($this div 10)*10"_|Approximate data to multiples of 10. |18 -> 10|
+|string| _"$this in ('es-AR' \| 'es-ES' \| 'es-UY')": "'es'"_|Data fall in the value set will be mapped to "es".|'es-UY' -> 'es'|
+|string| _"$this.startsWith(\'123\')": "$this.subString(0,2)+\'*\*\*\*\' "_ |Mask sensitive string code.|'1230005' -> '123****'|
+|date, dateTime, time|_"$this >= @2010-1-1": "@2010"_|Data fall in a date/time/dateTime range will be mapped to one date/time/dateTime value.| 2016-03-10 -> 2010|
+|date, dateTime, time|_"$this.replaceMatches('(?&lt;year&gt;\\\d{2,4})-(?&lt;month&gt;\\\d{1,2})-(?&lt;day&gt;\\\d{1,2})\\\b', '${year}-${month}'"_|Omit "day" to generalize specific date.|2016-01-01 -> 2016-01|
+
+For each generalization rule, there are several additional settings to specify in configuration files:
+- [required] **cases** An object defining key-value pairs to specify case condition and replacement value using FHIRPath predicate expression. _key_ represents case condition and _value_ represents target value.
+
+- [optional] **otherValues** Define the operation for values that do not match any of the cases. The value could be "redact" or "keep". The default value is "redact".
+
+Since the output of FHIR expression is flexible, users should provide expressions with valid output value to avoid unexcepted errors.
 ## Current limitations
 1. We support FHIR data in R4 and STU 3, JSON format. Support for XML is planned.
 2. De-identification of fields within Extensions is not supported. 
 
 ## FAQ
+
+### How to perform de-identified $export operation on the FHIR server?
+De-identified export is an extension of the standard FHIR $export operation that takes de-identification config details as additional parameters. Here are the steps to enable and use de-identified export:
+
+#### Configuration
+1. Ensure that $export is [configured](https://github.com/microsoft/fhir-server/blob/master/docs/BulkExport.md) on the FHIR server. Take a note of the blob account that is configured as export location.
+2. Go to the configuration page of the FHIR server App service on Azure portal and add new application setting with name **FhirServer:Features:SupportsAnonymizedExport** and set its value to **True**.
+3. Save the configuration and restart the App service.
+
+#### Usage
+1. Create container named **anonymization** in the blob account that is configured as export location. Put your [anonymization config](#configuration-file-format) file in this container. You can also use the sample [HIPAA Safe Harbor config file](sample-configuration-file-for-hipaa-safe-harbor-method).
+2. Note the Etag of the config file in the blob store. You can see the Etag in the properties dialog of the blob in the Azure Storage Explorer or at Azure portal.
+3. Call the $export method on your FHIR server using the following URL pattern. It is an asynchronous call that returns HTTP 202 on success, and _content-location_ in header.
+
+**{FHIR service base URL}/$export?_container={container name}&_anonymizationConfig={config file name}&_anonymizationConfigEtag="{ETag of config file}"**
+
+here, _\_container_ is the name of the target container within the blob account where you want the data to be exported. The container name should follow the rules [here](https://docs.microsoft.com/en-us/rest/api/storageservices/Naming-and-Referencing-Containers--Blobs--and-Metadata#container-names).
+
+4. Go to the _content-location_ to check the status of the export. Once completed, the _content-location_ URL provides the URLs of the exported resources.
+
+
 ### How can we use FHIR Tools for Anonymization to anonymize HL7 v2.x data
 You can build a pipeline to use [FHIR converter](https://github.com/microsoft/FHIR-Converter) to convert HL7 v2.x data to FHIR format, and subsequently use FHIR Tools for Anonymization to anonymize your data. 
 

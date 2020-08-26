@@ -42,10 +42,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\CryptoHashProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\DateShiftProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\EncryptProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\GeneralizeProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\IAnonymizerProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\KeepProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\PerturbProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeSetting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeOtherValuesOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbRangeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\RuleKeys.cs" />
