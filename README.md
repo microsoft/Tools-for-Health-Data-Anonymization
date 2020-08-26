@@ -14,6 +14,7 @@
 [Reference](#reference)  
 &nbsp;&nbsp; [The command line tool](#the-command-line-tool)  
 &nbsp;&nbsp; [Configuration file format](#configuration-file-format)  
+&nbsp;&nbsp; [Sample rules](#sample-rules-using-fhirpath)  
 &nbsp;&nbsp; [Date-shift algorithm](#date-shift-algorithm)  
 &nbsp;&nbsp; [Crypto-hash method](#Crypto-hash-method)  
 &nbsp;&nbsp; [Encrypt method](#Encrypt-method)  
@@ -27,9 +28,12 @@
 
 FHIR Tools for Anonymization is an open-source project that helps anonymize healthcare [FHIR](https://www.hl7.org/fhir/) data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The project released to open source on Friday, March 6th, 2020.
 
-The core engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings to anonymize the data. The project includes a [command-line tool](#the-command-line-tool) that can be used on-premises or in the cloud to anonymize data. It also comes with a [tutorial](#anonymize-fhir-data-using-azure-data-factory) and script to create an ADF pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
+The anonymization capability is available to the users in the following forms:
+1. A [command-line tool](#the-command-line-tool) that can be used on-premises or in the cloud to anonymize data. 
+2. An ADF pipeline. It comes with a [script](#anonymize-fhir-data-using-azure-data-factory) to create a pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
+3. [De-identified $export](#how-to-perform-de-identified-$export-in-the-fhir-server?) operation in the [FHIR server for Azure](https://github.com/microsoft/fhir-server).
 
-This repo contains a [safe harbor configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method) to help de-identify 17 data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
+The core engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings. This repo contains a sample [safe harbor configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method) to help de-identify data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
 
 This open source project is fully backed by the Microsoft Healthcare team, but we know that this project will only get better with your feedback and contributions. We are leading the development of this code base, and test builds and deployments daily.
 
@@ -39,8 +43,8 @@ FHIR® is the registered trademark of HL7 and is used with the permission of HL7
 
 * Support anonymization of FHIR R4 and STU 3 data in json as well as ndjson format
 * Configuration of the data elements that need to be de-identified 
-* Configuration of the de-identification method for each data element (keeping, redacting, encrypting, substituting, perturbing, Date-shifting, or Crypto-hashing) 
-* Ability to create Azure Data Factory to support de-identification of the data flows 
+* Configuration of the [de-identification methods](#fhir-path-rules) for each data element
+* Ability to create a de-identification pipeline in Azure Data Factory
 * Ability to run the tool on premise to de-identify a dataset locally
 
 # Quickstarts
@@ -316,7 +320,7 @@ Parameters affect the de-identification methods specified in the FHIR path rules
 | redact | enablePartialZipCodesForRedact  | Zip Code fields | boolean | false | If the value is set to **true**, Zip Code will be redacted as per the HIPAA Safe Harbor rule. |
 | redact | restrictedZipCodeTabulationAreas  | Zip Code fields | a JSON array | empty array | This configuration is used only if enablePartialZipCodesForRedact is set to **true**. This field contains the list of zip codes for which the first 3 digits will be converted to 0. As per the HIPAA Safe Harbor, this list will have the Zip Codes  having population less than 20,000 people. |
 
-### Sample rules using FHIRPath
+## Sample rules using FHIRPath
 
 To retain country as well as state values of Address data type
 ```json
@@ -441,6 +445,27 @@ Note that the target field should be of either a numeric type (integer, decimal,
 2. De-identification of fields within Extensions is not supported. 
 
 ## FAQ
+
+### How to perform de-identified $export oeration on the FHIR server?
+De-identified export is an extension of the standard FHIR $export operation that takes de-identification config details as additional parameters. Here are the steps to enable and use de-identified export:
+
+#### Configuration
+1. Ensure that $export is [configured](https://github.com/microsoft/fhir-server/blob/master/docs/BulkExport.md) on the FHIR server. Take a note of the blob account that is configured as export location.
+2. Go to the configuration page of the FHIR server App service on Azure portal and add new application setting with name **FhirServer:Features:SupportsAnonymizedExport** and set its value to **True**.
+3. Save the configuration and restart the App service.
+
+#### Usage
+1. Create container named **anonymization** in the blob account that is configured as export location. Put your [anonymization config](#configuration-file-format) file in this container. You can also use the sample [HIPAA Safe Harbor config file](sample-configuration-file-for-hipaa-safe-harbor-method).
+2. Note the Etag of the config file in the blob store. You can see the Etag in the properties dialog of the blob in the Azure Storage Explorer or at Azure portal.
+3. Call the $export method on your FHIR server using the following URL pattern. It is an asynchronous call that returns HTTP 202 on success, and _content-location_ in header.
+
+**{FHIR service base URL}/$export?_container={container name}&_anonymizationConfig={config file name}&_anonymizationConfigEtag="{ETag of config file}"**
+
+here, _\_container_ is the name of the target container within the blob account where you want the data to be exported. 
+
+4. Go to the _content-location_ to check the status of the export. Once completed, the _content-location_ URL provides the URLs of the exported resources.
+
+
 ### How can we use FHIR Tools for Anonymization to anonymize HL7 v2.x data
 You can build a pipeline to use [FHIR converter](https://github.com/microsoft/FHIR-Converter) to convert HL7 v2.x data to FHIR format, and subsequently use FHIR Tools for Anonymization to anonymize your data. 
 
