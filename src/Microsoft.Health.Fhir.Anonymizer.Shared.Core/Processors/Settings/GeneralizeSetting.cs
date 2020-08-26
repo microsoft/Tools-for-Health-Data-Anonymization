@@ -77,11 +77,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
             {
                 throw new AnonymizerConfigurationErrorsException($"Invalid Json format {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
             }
-            catch (FormatException ex)
+            catch (Exception ex)
             {
                 throw new AnonymizerConfigurationErrorsException($"Invalid cases expression {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
             }
-
+           
             var supportedOtherValuesOperations = Enum.GetNames(typeof(GeneralizationOtherValuesOperation)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
             if (ruleSettings.ContainsKey(RuleKeys.OtherValues) && !supportedOtherValuesOperations.Contains(ruleSettings[RuleKeys.OtherValues].ToString()))
             {
