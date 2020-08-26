@@ -29,12 +29,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             FHIRAllTypes.UnsignedInt.ToString()
         };
 
-        private static readonly HashSet<string> s_positiveValueTypeNames = new HashSet<string>
-        {
-            FHIRAllTypes.PositiveInt.ToString(),
-            FHIRAllTypes.UnsignedInt.ToString()
-        };
-
         public ProcessResult Process(ElementNode node, ProcessContext context = null, Dictionary<string, object> settings = null)
         {
             EnsureArg.IsNotNull(node);
@@ -83,18 +77,16 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
             var noise = (decimal)ContinuousUniform.Sample(-1 * span / 2, span / 2);
             var perturbedValue = decimal.Round(originValue + noise, perturbSetting.RoundTo);
-            if (perturbedValue < 0 && IsPositiveValueNode(node))
+            if (perturbedValue <= 0 && string.Equals(FHIRAllTypes.PositiveInt.ToString(), node.InstanceType, StringComparison.InvariantCultureIgnoreCase))
+            {
+                perturbedValue = 1;
+            }
+            if (perturbedValue < 0 && string.Equals(FHIRAllTypes.UnsignedInt.ToString(), node.InstanceType, StringComparison.InvariantCultureIgnoreCase))
             {
                 perturbedValue = 0;
             }
-
             node.Value = perturbedValue;
             return;
-        }
-
-        private bool IsPositiveValueNode(ElementNode node)
-        {
-            return s_positiveValueTypeNames.Contains(node.InstanceType, StringComparer.InvariantCultureIgnoreCase);
         }
     }
 }
