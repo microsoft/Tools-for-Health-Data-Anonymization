@@ -30,6 +30,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             node.Value = PrimitiveTypeConverter.ConvertTo(node.Value, Primitives.GetNativeRepresentation(node.InstanceType));
             foreach (var eachCase in generalizeSetting.Cases)
             {
+                FhirPathCompiler compiler = new FhirPathCompiler();
+                compiler.Compile(eachCase.Key);
+                compiler.Compile(eachCase.Value.ToString());
                 try
                 {
                     if (node.Predicate(eachCase.Key))
@@ -39,13 +42,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                         return result;
                     }
                 }
-                catch (Exception ex)
+                catch (InvalidOperationException ex)
                 {
-                    if (ex is InvalidOperationException || ex is FormatException)
-                    {
-                        throw new AnonymizerConfigurationErrorsException($"Invalid cases expression {eachCase}.", ex);
-                    }
-                    throw;
+                    throw new AnonymizerConfigurationErrorsException($"Invalid cases expression {eachCase}.", ex);
                 }
             }
 

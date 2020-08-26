@@ -66,24 +66,20 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
 
             try
             {
-                JObject Cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());               
+                JObject Cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());
                 foreach (var eachCase in Cases)
                 {
                     compiler.Compile(eachCase.Key.ToString());
                     compiler.Compile(eachCase.Value.ToString());
                 }
             }
-            catch (Exception ex)
+            catch (JsonReaderException ex)
             {
-                if (ex is JsonReaderException)
-                {
-                    throw new AnonymizerConfigurationErrorsException($"Invalid Json format {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
-                }
-                if (ex is FormatException)
-                {
-                    throw new AnonymizerConfigurationErrorsException($"Invalid cases expression {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
-                }
-                throw;
+                throw new AnonymizerConfigurationErrorsException($"Invalid Json format {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
+            }
+            catch (FormatException ex)
+            {
+                throw new AnonymizerConfigurationErrorsException($"Invalid cases expression {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
             }
 
             var supportedOtherValuesOperations = Enum.GetNames(typeof(GeneralizationOtherValuesOperation)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
