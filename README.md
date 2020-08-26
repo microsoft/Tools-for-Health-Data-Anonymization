@@ -31,7 +31,7 @@ FHIR Tools for Anonymization is an open-source project that helps anonymize heal
 The anonymization capability is available to the users in the following forms:
 1. A [command-line tool](#the-command-line-tool) that can be used on-premises or in the cloud to anonymize data. 
 2. An ADF pipeline. It comes with a [script](#anonymize-fhir-data-using-azure-data-factory) to create a pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
-3. [De-identified $export](#how-to-perform-de-identified-$export-in-the-fhir-server?) operation in the [FHIR server for Azure](https://github.com/microsoft/fhir-server).
+3. [De-identified $export](#how-to-perform-de-identified-export-operation-on-the-fhir-server) operation in the [FHIR server for Azure](https://github.com/microsoft/fhir-server).
 
 The core engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings. This repo contains a sample [safe harbor configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method) to help de-identify data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
 
