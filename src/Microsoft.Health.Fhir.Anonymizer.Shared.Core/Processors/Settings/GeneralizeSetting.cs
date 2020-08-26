@@ -18,19 +18,17 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
         {
             EnsureArg.IsNotNull(ruleSettings);
 
-            JObject cases = null;
-            GeneralizationOtherValuesOperation otherValues = GeneralizationOtherValuesOperation.Redact;
-            if (ruleSettings.ContainsKey(RuleKeys.Cases))
+            JObject cases;
+            GeneralizationOtherValuesOperation otherValues;
+            try
             {
-                try
-                {
-                    cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());
-                }
-                catch (Exception ex)
-                {
-                    throw new AnonymizerConfigurationErrorsException($"Invalid cases {RuleKeys.Cases}", ex);
-                }  
+                cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());
             }
+            catch (Exception ex)
+            {
+                throw new AnonymizerConfigurationErrorsException($"Invalid cases {RuleKeys.Cases}", ex);
+            }    
+
             if (!Enum.TryParse(ruleSettings.GetValueOrDefault(RuleKeys.OtherValues)?.ToString(), true, out otherValues))
             {
                 otherValues = GeneralizationOtherValuesOperation.Redact;

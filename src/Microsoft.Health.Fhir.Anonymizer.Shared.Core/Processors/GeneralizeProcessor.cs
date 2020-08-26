@@ -27,8 +27,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             }
 
             var generalizeSetting = GeneralizeSetting.CreateFromRuleSettings(settings);
-            var nativeType = Primitives.GetNativeRepresentation(node.InstanceType);
-            node.Value = PrimitiveTypeConverter.ConvertTo(node.Value, nativeType);
+            node.Value = PrimitiveTypeConverter.ConvertTo(node.Value, Primitives.GetNativeRepresentation(node.InstanceType));
             foreach (var eachCase in generalizeSetting.Cases)
             {
                 try
@@ -38,7 +37,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                         node.Value = node.Scalar(eachCase.Value.ToString());
                         result.AddProcessRecord(AnonymizationOperations.Generalize, node);
                         return result;
-                    }                   
+                    }
                 }
                 catch (Exception ex)
                 {

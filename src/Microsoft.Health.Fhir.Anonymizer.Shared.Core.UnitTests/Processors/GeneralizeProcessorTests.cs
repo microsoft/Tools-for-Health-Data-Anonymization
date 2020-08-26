@@ -101,7 +101,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new Time("02:00:00"), null };
             yield return new object[] { new Time("06:00:00"), null };
             yield return new object[] { new Time("00:00:00"), "00:00:00" };
-            yield return new object[] { new Time("10:00:00"), "10:00:00" };         
+            yield return new object[] { new Time("10:00:00"), "10:00:00" };
         }
 
         public static IEnumerable<object[]> GetInstantNodesToGeneralizeWithRangeMapping()
