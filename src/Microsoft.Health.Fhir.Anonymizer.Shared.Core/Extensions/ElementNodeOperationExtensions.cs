@@ -105,6 +105,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
                 meta.Security.Add(SecurityLabels.SUBSTITUTED);
             }
 
+            if (result.IsGeneralized && !meta.Security.Any(x =>
+                string.Equals(x.Code, SecurityLabels.GENERALIZED.Code, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                meta.Security.Add(SecurityLabels.GENERALIZED);
+            }
+
             ElementNode newMetaNode = ElementNode.FromElement(meta.ToTypedElement());
             if (metaNode == null)
             {

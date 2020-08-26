@@ -43,5 +43,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Models
             Code = "SUBSTITUTED",
             Display = "exact value is replaced with a predefined value"
         };
+
+        public static readonly Coding GENERALIZED = new Coding()
+        {
+            Code = "GENERALIZED",
+            Display = "exact value is replaced with a general value"
+        };
     }
 }
