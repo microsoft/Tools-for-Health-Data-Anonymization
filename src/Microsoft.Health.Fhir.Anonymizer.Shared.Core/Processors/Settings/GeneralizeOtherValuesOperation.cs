@@ -4,7 +4,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
 {
     public enum GeneralizationOtherValuesOperation
     {
-        redact,
-        keep
+        Redact,
+        Keep
     };
 }

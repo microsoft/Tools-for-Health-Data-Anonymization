@@ -50,7 +50,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 }
             }
 
-            if (generalizeSetting.OtherValues == GeneralizationOtherValuesOperation.redact)
+            if (generalizeSetting.OtherValues == GeneralizationOtherValuesOperation.Redact)
             {
                 node.Value = null;
             }

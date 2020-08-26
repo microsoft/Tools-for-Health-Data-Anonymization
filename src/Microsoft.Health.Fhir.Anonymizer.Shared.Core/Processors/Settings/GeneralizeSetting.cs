@@ -4,6 +4,7 @@ using System.Linq;
 using EnsureThat;
 using Hl7.FhirPath;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
@@ -18,7 +19,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
             EnsureArg.IsNotNull(ruleSettings);
 
             JObject cases = null;
-            GeneralizationOtherValuesOperation otherValues = GeneralizationOtherValuesOperation.redact;
+            GeneralizationOtherValuesOperation otherValues = GeneralizationOtherValuesOperation.Redact;
             if (ruleSettings.ContainsKey(RuleKeys.Cases))
             {
                 try
@@ -30,10 +31,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
                     throw new AnonymizerConfigurationErrorsException($"Invalid cases {RuleKeys.Cases}", ex);
                 }  
             }
-
-            if (ruleSettings.ContainsKey(RuleKeys.OtherValues))
+            if (!Enum.TryParse(ruleSettings.GetValueOrDefault(RuleKeys.OtherValues)?.ToString(), true, out otherValues))
             {
-                Enum.TryParse(ruleSettings.GetValueOrDefault(RuleKeys.OtherValues)?.ToString(), true, out otherValues);
+                otherValues = GeneralizationOtherValuesOperation.Redact;
             }
 
             return new GeneralizeSetting
@@ -68,7 +68,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
 
             try
             {
-                JObject Cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());
+                JObject Cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());               
                 foreach (var eachCase in Cases)
                 {
                     compiler.Compile(eachCase.Key.ToString());
@@ -77,8 +77,16 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
             }
             catch (Exception ex)
             {
-                throw new AnonymizerConfigurationErrorsException($"Invalid cases expression {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
-            }           
+                if (ex is JsonReaderException)
+                {
+                    throw new AnonymizerConfigurationErrorsException($"Invalid Json format {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
+                }
+                if (ex is FormatException)
+                {
+                    throw new AnonymizerConfigurationErrorsException($"Invalid cases expression {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
+                }
+                throw;
+            }
 
             var supportedOtherValuesOperations = Enum.GetNames(typeof(GeneralizationOtherValuesOperation)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
             if (ruleSettings.ContainsKey(RuleKeys.OtherValues) && !supportedOtherValuesOperations.Contains(ruleSettings[RuleKeys.OtherValues].ToString()))
