@@ -20,6 +20,7 @@
 &nbsp;&nbsp; [Encrypt method](#Encrypt-method)  
 &nbsp;&nbsp; [Substitute method](#Substitute-method)  
 &nbsp;&nbsp; [Perturb method](#Perturb-method)  
+&nbsp;&nbsp; [Generalize method](#Generalize-method)  
 [Resources](#resources)  
 &nbsp;&nbsp; [FAQ](#faq)  
 [Contributing](#contributing)
