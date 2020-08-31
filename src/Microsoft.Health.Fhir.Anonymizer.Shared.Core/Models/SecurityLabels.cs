@@ -8,26 +8,25 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Models
         {
             System = "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
             Code = "REDACTED",
-            Display = "part of the resource is removed"
+            Display = "redacted"
         };
 
         public static readonly Coding ABSTRED = new Coding()
         {
             System = "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
             Code = "ABSTRED",
-            Display = "exact value is replaced with a range"
+            Display = "abstracted"
         };
 
         public static readonly Coding CRYTOHASH = new Coding()
         {
             System = "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
             Code = "CRYTOHASH",
-            Display = "exact value is transformed with a hash function"
+            Display = "cryptographic hash function"
         };
 
         public static readonly Coding ENCRYPT = new Coding()
         {
-            System = "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
             Code = "ENCRYPT",
             Display = "exact value is transformed into ciphertext"
         };
