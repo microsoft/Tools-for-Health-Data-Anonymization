@@ -232,7 +232,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
             var node = ElementNode.FromElement(instant.ToTypedElement());
             var processResult = DateTimeUtility.RedactDateTimeAndInstantNode(node, true);
 
-            Assert.Equal(expectedInstantString?.ToString() ?? null, node.Value);
+            Assert.Equal(expectedInstantString, node.Value?.ToString());
             Assert.True(processResult.IsRedacted);
         }
 
@@ -243,8 +243,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
             var node = ElementNode.FromElement(instant.ToTypedElement());
             var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, Guid.NewGuid().ToString("N"), string.Empty, true);
 
-            Assert.True(minExpectedInstant <= new Instant(DateTimeOffset.Parse(node.Value.ToString())));
-            Assert.True(maxExpectedInstant >= new Instant(DateTimeOffset.Parse(node.Value.ToString())));
+            Assert.True(minExpectedInstant <= new Instant(DateTimeOffset.Parse(node.Value?.ToString())));
+            Assert.True(maxExpectedInstant >= new Instant(DateTimeOffset.Parse(node.Value?.ToString())));
             Assert.True(processResult.IsPerturbed);
         }
 
@@ -254,7 +254,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
         {
             var node = ElementNode.FromElement(instant.ToTypedElement());
             var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, dateShiftKey, string.Empty, true);
-            Assert.Equal(expectedInstantString, node.Value.ToString());
+            Assert.Equal(expectedInstantString, node.Value?.ToString());
             Assert.True(processResult.IsPerturbed);
         }
 
@@ -265,7 +265,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
             var node = ElementNode.FromElement(instant.ToTypedElement());
             var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, string.Empty, string.Empty, true);
 
-            Assert.Equal(expectedInstantString?.ToString() ?? null, node.Value);
+            Assert.Equal(expectedInstantString, node.Value?.ToString());
             Assert.True(processResult.IsRedacted);
         }
 
