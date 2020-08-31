@@ -12,7 +12,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
         {
             EnsureArg.IsNotNull(ruleSettings);
 
-            string replaceWith = ruleSettings.GetValueOrDefault(Constants.ReplaceWithKey)?.ToString();
+            string replaceWith = ruleSettings.GetValueOrDefault(RuleKeys.ReplaceWith)?.ToString();
             return new SubstituteSetting
             {
                 ReplaceWith = replaceWith
@@ -28,10 +28,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
 
             if (!ruleSettings.ContainsKey(Constants.PathKey))
             {
-                throw new AnonymizerConfigurationErrorsException("Missing path in Fhir path rule config.");
+                throw new AnonymizerConfigurationErrorsException("Missing path in FHIR path rule config.");
             }
 
-            if (!ruleSettings.ContainsKey(Constants.ReplaceWithKey))
+            if (!ruleSettings.ContainsKey(RuleKeys.ReplaceWith))
             {
                 throw new AnonymizerConfigurationErrorsException($"Missing replaceWith value in substitution rule at {ruleSettings[Constants.PathKey]}.");
             }

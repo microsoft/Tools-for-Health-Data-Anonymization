@@ -65,6 +65,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
                 {
                     PerturbSetting.ValidateRuleSettings(rule);
                 }
+                if (string.Equals(method, AnonymizerMethod.Generalize.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    GeneralizeSetting.ValidateRuleSettings(rule);
+                }
             }
 
             // Check AES key size is valid (16, 24 or 32 bytes).

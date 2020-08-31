@@ -16,7 +16,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
             string testContent = File.ReadAllText(testFile);
             string targetContent = File.ReadAllText(targetFile);
             string resultAfterAnonymize = engine.AnonymizeJson(testContent);
-
+            
             Assert.Equal(Standardize(targetContent), Standardize(resultAfterAnonymize));
         } 
 

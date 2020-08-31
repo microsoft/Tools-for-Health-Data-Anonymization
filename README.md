@@ -20,6 +20,7 @@
 &nbsp;&nbsp; [Encrypt method](#Encrypt-method)  
 &nbsp;&nbsp; [Substitute method](#Substitute-method)  
 &nbsp;&nbsp; [Perturb method](#Perturb-method)  
+&nbsp;&nbsp; [Generalize method](#Generalize-method)  
 [Resources](#resources)  
 &nbsp;&nbsp; [FAQ](#faq)  
 [Contributing](#contributing)
@@ -300,7 +301,8 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |perturb|Elements of numeric and quantity types| [Perturb](#Perturb-method) the value with random noise addition.  |
 |cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
 |encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
-|substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value.  |
+|substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value. |
+|generalize|Elements of primitive types|[Generalizes](#Generalize-method) the value into a more general, less distinguishing value.
 
 Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
@@ -386,6 +388,59 @@ To substitute Address data types with a fixed json fragement
   }
 }
 ```
+To generalize age fields of Condition resource using expression to define the range mapping
+```json
+{
+  "path": "condition.onset.value as Age",
+  "method": "generalize",
+  "cases":{
+    "$this>=0 and $this<20": "20",
+    "$this>=20 and $this<40": "40",
+    "$this>=40 and $this<60": "60",
+    "$this>=60 and $this<80": "80"     
+  },
+  "otherValues":"redact"
+}
+```
+To generalize string data type using expression to define the value set mapping
+
+```json
+{
+  "path": "patient.communication.language",
+  "method": "generalize",
+  "cases":{
+    "$this in ('en-AU' | 'en-CA' | 'en-GB' |'en-IN' | 'en-NZ' | 'en-SG' | 'en-US')": "'en'",
+    "$this in ('es-AR' | 'es-ES' | 'es-UY')": "'es'",    
+  },
+  "otherValues":"redact"
+}
+```
+
+To generalize string data type using expression for masking
+
+```json
+{
+  "path": "patient.address.postalcode",
+  "method": "generalize",
+  "cases":{
+    "$this.startsWith('123') or $this.startsWith('234')": "$this.subString(0,2)+'****'", 
+  },
+  "otherValues":"redact"
+  }
+```
+To generalize dateTime, time, date and instant type using expression
+
+```json
+{
+  "path": "person.birthDate",
+  "method": "generalize",
+  "cases":{
+    "$this >= @1990-1-1 and $this <= @2000-1-1": "@1990", 
+     "$this >= @2010-1-1 and $this <= @2020-1-1":"@2010-1-1T00:00:00"
+  },
+  "otherValues":"redact"
+}
+```
 
 ## Date-shift algorithm
 You can specify dateShift as a de-identification method in the configuration file. With this method, the input date/dateTime/instant value will be shifted within a 100-day differential. The following algorithm is used to shift the target dates:
@@ -440,6 +495,25 @@ There are a few parameters that can help you customize the noise amount for diff
 
 Note that the target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity, SimpleQuantity, Money, etc.). 
 
+## Generalize method
+As one of the anonymization methods, generalization means mapping values to the higher level of generalization. It is the process of abstracting distinguishing value into a more general, less distinguishing value. Generalization attempts to preserve data utility while also reducing the identifiability of the data. 
+Generalization uses FHIRPath predicate expression to define a set of cases that specify the condition and target value like [sample rules](#Sample-rules-using-FHIRPath). Follows are some examples of cases.
+
+|Data Type|Cases|Explanation|Input data-> Output data|
+|-----|-----|-----|-----|
+|numeric|_"$this>=0 and $this<20": "20"_|Data fall in the range [0,20) will be replaced with 20. |18 -> 20|
+|numeric|_"true": "($this div 10)*10"_|Approximate data to multiples of 10. |18 -> 10|
+|string| _"$this in ('es-AR' \| 'es-ES' \| 'es-UY')": "'es'"_|Data fall in the value set will be mapped to "es".|'es-UY' -> 'es'|
+|string| _"$this.startsWith(\'123\')": "$this.subString(0,2)+\'*\*\*\*\' "_ |Mask sensitive string code.|'1230005' -> '123****'|
+|date, dateTime, time|_"$this >= @2010-1-1": "@2010"_|Data fall in a date/time/dateTime range will be mapped to one date/time/dateTime value.| 2016-03-10 -> 2010|
+|date, dateTime, time|_"$this.replaceMatches('(?&lt;year&gt;\\\d{2,4})-(?&lt;month&gt;\\\d{1,2})-(?&lt;day&gt;\\\d{1,2})\\\b', '${year}-${month}'"_|Omit "day" to generalize specific date.|2016-01-01 -> 2016-01|
+
+For each generalization rule, there are several additional settings to specify in configuration files:
+- [required] **cases** An object defining key-value pairs to specify case condition and replacement value using FHIRPath predicate expression. _key_ represents case condition and _value_ represents target value.
+
+- [optional] **otherValues** Define the operation for values that do not match any of the cases. The value could be "redact" or "keep". The default value is "redact".
+
+Since the output of FHIR expression is flexible, users should provide expressions with valid output value to avoid unexcepted errors.
 ## Current limitations
 1. We support FHIR data in R4 and STU 3, JSON format. Support for XML is planned.
 2. De-identification of fields within Extensions is not supported. 
