@@ -111,9 +111,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility.NerTAUtility
                         Console.WriteLine("Processor: Retry");
                         return TimeSpan.FromSeconds(Math.Pow(2, retryAttempt));
                     });
-            var requestMessage = CreateRequestMessage(requestText);
+
             var response = await retryPolicy.ExecuteAsync(
-                    async ct => await _client.SendAsync(requestMessage, ct), CancellationToken.None);
+                    async ct => await _client.SendAsync(CreateRequestMessage(requestText), ct), CancellationToken.None);
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();

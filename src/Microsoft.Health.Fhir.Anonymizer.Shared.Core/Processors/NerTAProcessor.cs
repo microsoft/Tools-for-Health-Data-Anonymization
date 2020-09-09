@@ -33,7 +33,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
         public static NerTAProcessor Create()
         {
-            var configFilePath = $"C:\\quwan\\FHIR-Tools-for-Anonymization\\src\\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool\\TA-config.json";
+            var configFilePath = "TA-config.json";
             var processorConfiguration = LoadConfig(configFilePath);
             return new NerTAProcessor(processorConfiguration);
         }
@@ -57,7 +57,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
             // TODO: Whether to use textStripTags as the input of processor
             var originTextStripTags = HtmlTextUtility.StripTags(originText);
-            Console.WriteLine($"{originText.Length}, {originTextStripTags.Length}");
+            // Console.WriteLine($"{originText.Length}, {originTextStripTags.Length}");
+
             var recognitionResults = GetRecognitionResults(documentId, originText);
             node.Value = ProcessEntities(originText, recognitionResults[documentId]);
 
