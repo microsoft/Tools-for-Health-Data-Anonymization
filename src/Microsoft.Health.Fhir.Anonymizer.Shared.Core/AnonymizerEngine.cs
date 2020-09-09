@@ -121,6 +121,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             _processors[AnonymizerMethod.Perturb.ToString().ToUpperInvariant()] = new PerturbProcessor();
             _processors[AnonymizerMethod.Keep.ToString().ToUpperInvariant()] = new KeepProcessor();
             _processors[AnonymizerMethod.Generalize.ToString().ToUpperInvariant()] = new GeneralizeProcessor();
+            _processors[AnonymizerMethod.NamedEntityRecognition.ToString().ToUpperInvariant()] = NerTAProcessor.Create();
         }
     }
 }

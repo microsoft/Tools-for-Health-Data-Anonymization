@@ -9,6 +9,7 @@
         Encrypt,
         Perturb,
         Keep,
-        Generalize
+        Generalize,
+        NamedEntityRecognition
     }
 }

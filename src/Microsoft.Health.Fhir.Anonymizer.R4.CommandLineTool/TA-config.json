@@ -1,0 +1,68 @@
+{
+	"recognizer":
+	{
+		"name": "MicrosoftNerPii",
+		"type": "MicrosoftNer",
+		"api": {
+			"endpoint": "https://eastus.api.cognitive.microsoft.com",
+			"path": "/text/analytics/v3.1-preview.1/entities/recognition/pii",
+			"key": "eff334d6e5e04b2d94d10ca0bccb4602"
+			},
+		"cache": {
+			"enable": false,
+			"path": "C:\\quwan\\health-ner\\data\\i2b2-2014\\response\\microsoft\\"
+			},
+		"mapping": {
+			"LOCATION": [
+			  {
+				"category": "(^Location$)|(^Organization$)|(^Address$)",
+				"subcategory": "[\\s\\S]*"
+			  }
+			],
+			"CONTACT": [
+			  {
+				"category": "(^Phone Number$)|(^Email$)|(^URL$)|(^IP$)",
+				"subcategory": "[\\s\\S]*"
+			  }
+			],
+			"NAME": [
+			  {
+				"category": "(^Person$)",
+				"subcategory": "[\\s\\S]*"
+			  }
+			],
+			"PROFESSION": [
+			  {
+				"category": "(^PersonType$)",
+				"subcategory": "[\\s\\S]*"
+			  }
+			],
+			"AGE": [
+			  {
+				"category": "(^Quantity$)",
+				"subcategory": "(^Age$)"
+			  }
+			],
+			"DATE": [
+			  {
+				"category": "(^DateTime$)",
+				"subcategory": "\"(^Date$)|(^DateRange$)|(@\"^\\S+$\")\""
+			  }
+			],
+			"ID": [
+			  {
+				"category": "(?=(^((?!phone number).)*$))(number)",
+				"subcategory": "[\\s\\S]*"
+			  },
+			  {
+				"category": "(Passport)|(Code)|(Card)",
+				"subcategory": "[\\s\\S]*"
+			  }
+			]
+			}
+	},
+	"multithreading": {
+		"enable": false,
+		"threads": 10
+	  }
+}
