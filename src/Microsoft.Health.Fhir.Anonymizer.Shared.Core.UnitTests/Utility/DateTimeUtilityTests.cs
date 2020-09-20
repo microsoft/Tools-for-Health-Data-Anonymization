@@ -81,6 +81,32 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
             yield return new object[] { new FhirDateTime("1925-02-07T13:28:17-05:00"), null };
         }
 
+        public static IEnumerable<object[]> GetInstantDataForRedact()
+        {
+            yield return new object[] { new Instant(DateTimeOffset.Parse("2015-02-07T13:28:17-05:00")), "2015" };
+            yield return new object[] { new Instant(DateTimeOffset.Parse("1925-02-07T13:28:17-05:00")), null };
+        }
+
+        public static IEnumerable<object[]> GetInstantDataForDateShift()
+        {
+            yield return new object[] { new Instant(DateTimeOffset.Parse("2015-02-07T13:28:17-05:00")), new Instant(DateTimeOffset.Parse("2014-12-19T00:00:00-05:00")), new Instant(DateTimeOffset.Parse("2015-03-29T00:00:00-05:00")) };
+            yield return new object[] { new Instant(DateTimeOffset.Parse("1998-10-02T08:47:25+08:00")), new Instant(DateTimeOffset.Parse("1998-08-13T00:00:00+08:00")), new Instant(DateTimeOffset.Parse("1998-11-21T00:00:00+08:00")) };
+        }
+
+        public static IEnumerable<object[]> GetInstantDataForDateShiftFormatTest()
+        {
+            yield return new object[] { "dummy", new Instant(DateTimeOffset.Parse("2015-02-07T13:28:17-05:00")), "2015-01-17T00:00:00-05:00" };
+            yield return new object[] { "dummy", new Instant(DateTimeOffset.Parse("2015-02-07T13:28:17+05:00")), "2015-01-17T00:00:00+05:00" };
+            yield return new object[] { "dummy", new Instant(DateTimeOffset.Parse("2015-02-07T13:28:17Z")), "2015-01-17T00:00:00+00:00" };
+            yield return new object[] { "dummy", new Instant(DateTimeOffset.Parse("2015-02-07T13:28:17.12345-05:00")), "2015-01-17T00:00:00.00000-05:00" };
+        }
+
+        public static IEnumerable<object[]> GetInstantDataForDateShiftButShouldBeRedacted()
+        {
+            yield return new object[] { new Instant(DateTimeOffset.Parse("1925-02-07T13:28:17-05:00")), null };
+            yield return new object[] { new Instant(DateTimeOffset.Parse("1915-03-07T13:28:17-05:00")), null };
+        }
+
         public static IEnumerable<object[]> GetAgeDataForPartialRedact()
         {
             yield return new object[] { new Age { Value = 92 } };
@@ -196,6 +222,50 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
             var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, string.Empty, string.Empty, true);
 
             Assert.Equal(expectedDateTime?.ToString() ?? null, node.Value);
+            Assert.True(processResult.IsRedacted);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetInstantDataForRedact))]
+        public void GivenAnInstant_WhenRedact_ThenInstantShouldBeRedacted(Instant instant, string expectedInstantString)
+        {
+            var node = ElementNode.FromElement(instant.ToTypedElement());
+            var processResult = DateTimeUtility.RedactDateTimeAndInstantNode(node, true);
+
+            Assert.Equal(expectedInstantString, node.Value?.ToString());
+            Assert.True(processResult.IsRedacted);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetInstantDataForDateShift))]
+        public void GivenAnInstant_WhenDateShift_ThenInstantShouldBeShifted(Instant instant, Instant minExpectedInstant, Instant maxExpectedInstant)
+        {
+            var node = ElementNode.FromElement(instant.ToTypedElement());
+            var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, Guid.NewGuid().ToString("N"), string.Empty, true);
+
+            Assert.True(minExpectedInstant <= new Instant(DateTimeOffset.Parse(node.Value?.ToString())));
+            Assert.True(maxExpectedInstant >= new Instant(DateTimeOffset.Parse(node.Value?.ToString())));
+            Assert.True(processResult.IsPerturbed);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetInstantDataForDateShiftFormatTest))]
+        public void GivenAnInstant_WhenDateShift_ThenInstantFormatShouldNotChange(string dateShiftKey, Instant instant, string expectedInstantString)
+        {
+            var node = ElementNode.FromElement(instant.ToTypedElement());
+            var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, dateShiftKey, string.Empty, true);
+            Assert.Equal(expectedInstantString, node.Value?.ToString());
+            Assert.True(processResult.IsPerturbed);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetInstantDataForDateShiftButShouldBeRedacted))]
+        public void GivenAnInstantWithAgeOver89_WhenDateShift_ThenInstantShouldBeRedacted(Instant instant, string expectedInstantString)
+        {
+            var node = ElementNode.FromElement(instant.ToTypedElement());
+            var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, string.Empty, string.Empty, true);
+
+            Assert.Equal(expectedInstantString, node.Value?.ToString());
             Assert.True(processResult.IsRedacted);
         }
 
