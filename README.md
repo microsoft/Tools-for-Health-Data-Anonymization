@@ -529,7 +529,7 @@ De-identified export is an extension of the standard FHIR $export operation that
 3. Save the configuration and restart the App service.
 
 #### Usage
-1. Create container named **anonymization** in the blob account that is configured as export location. Put your [anonymization config](#configuration-file-format) file in this container. You can also use the sample [HIPAA Safe Harbor config file](sample-configuration-file-for-hipaa-safe-harbor-method).
+1. Create container named **anonymization** in the blob account that is configured as export location. Put your [anonymization config](#configuration-file-format) file in this container. You can also use the sample [HIPAA Safe Harbor config file](#sample-configuration-file-for-hipaa-safe-harbor-method).
 2. Note the Etag of the config file in the blob store. You can see the Etag in the properties dialog of the blob in the Azure Storage Explorer or at Azure portal.
 3. Call the $export method on your FHIR server using the following URL pattern. It is an asynchronous call that returns HTTP 202 on success, and _content-location_ in header.
 
