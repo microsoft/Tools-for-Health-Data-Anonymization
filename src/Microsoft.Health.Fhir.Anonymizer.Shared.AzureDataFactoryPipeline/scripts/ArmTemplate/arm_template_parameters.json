@@ -1,48 +1,48 @@
 {
-    "$schema":  "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion":  "1.0.0.0",
-    "parameters":  {
-                       "location":  {
-                                        "value":  "WestUS"
-                                    },
-                       "factoryName":  {
-                                           "value":  "tongwu0210stu3"
-                                       },
-                       "sourceStorageLinkedService_connectionString":  {
-                                                                           "value":  "DefaultEndpointsProtocol=https;AccountName=tongwu0210;AccountKey=BRP/8sgI2+xhtz17H5EGvwH6JVMBgbY68Lpt5F1TKiw+jowErWN+79LUv7QcxFcPml7fxsbYjNbizzZAVTRNHg==;EndpointSuffix=core.windows.net"
-                                                                       },
-                       "sourceStorageActivityApplicationContainer":  {
-                                                                         "value":  "tongwu0210stu3adf"
-                                                                     },
-                       "sourceStorageContainerName":  {
-                                                          "value":  "fhir-stu3"
-                                                      },
-                       "sourceContainerFolderPath":  {
-                                                         "value":  ""
-                                                     },
-                       "destinationStorageLinkedService_connectionString":  {
-                                                                                "value":  "DefaultEndpointsProtocol=https;AccountName=tongwu0210;AccountKey=BRP/8sgI2+xhtz17H5EGvwH6JVMBgbY68Lpt5F1TKiw+jowErWN+79LUv7QcxFcPml7fxsbYjNbizzZAVTRNHg==;EndpointSuffix=core.windows.net"
-                                                                            },
-                       "destinationStorageContainerName":  {
-                                                               "value":  "tongwu0210stu3"
-                                                           },
-                       "destinationContainerFolderPath":  {
-                                                              "value":  ""
-                                                          },
-                       "azureBatchLinkedService_accessKey":  {
-                                                                 "value":  "TQnWwTf2M1mCQXcybHFf/zrSYw7xEB1DajOJunnlhPeUJY0NE3t7uiaoypBYr8Ybi+t2C3BFmmHyMVn8+Ian8Q=="
-                                                             },
-                       "azureBatchLinkedService_poolName":  {
-                                                                "value":  "stu3pool"
-                                                            },
-                       "azureBatchLinkedService_properties_typeProperties_accountName":  {
-                                                                                             "value":  "tongwu0210batch"
-                                                                                         },
-                       "azureBatchLinkedService_properties_typeProperties_batchUri":  {
-                                                                                          "value":  "https://tongwu0210batch.westus.batch.azure.com"
-                                                                                      },
-                       "fhirVersion":  {
-                                           "value":  "Stu3"
-                                       }
-                   }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": ""
+    },
+    "factoryName": {
+      "value": ""
+    },
+    "sourceStorageLinkedService_connectionString": {
+      "value": ""
+    },
+    "sourceStorageActivityApplicationContainer": {
+      "value": ""
+    },
+    "sourceStorageContainerName": {
+      "value": ""
+    },
+    "sourceContainerFolderPath": {
+      "value": ""
+    },
+    "destinationStorageLinkedService_connectionString": {
+      "value": ""
+    },
+    "destinationStorageContainerName": {
+      "value": ""
+    },
+    "destinationContainerFolderPath": {
+      "value": ""
+    },
+    "azureBatchLinkedService_accessKey": {
+      "value": ""
+    },
+    "azureBatchLinkedService_poolName": {
+      "value": ""
+    },
+    "azureBatchLinkedService_properties_typeProperties_accountName": {
+      "value": ""
+    },
+    "azureBatchLinkedService_properties_typeProperties_batchUri": {
+      "value": ""
+    },
+    "fhirVersion": {
+      "value": ""
+    }
+  }
 }
