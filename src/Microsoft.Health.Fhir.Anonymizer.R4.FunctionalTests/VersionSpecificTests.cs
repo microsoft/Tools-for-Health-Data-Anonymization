@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Hl7.FhirPath;
+using Hl7.Fhir.ElementModel;
 using Microsoft.Health.Fhir.Anonymizer.Core;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Xunit;
@@ -29,9 +30,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
             yield return new object[] { "R4OnlyResource/ServiceRequest.json", "R4OnlyResource/ServiceRequest-target.json" };
         }
 
-        public static IEnumerable<object[]> GetCommonResourcesWithStu3OnlyField()
+        public static IEnumerable<object[]> GetCommonResourcesWithStu3OnlyValue()
         {
             yield return new object[] { "Stu3OnlyResource/Claim-Stu3.json" };
+
+        }
+
+        public static IEnumerable<object[]> GetCommonResourcesWithStu3OnlyElement()
+        {
             yield return new object[] { "Stu3OnlyResource/Account-Stu3.json" };
             yield return new object[] { "Stu3OnlyResource/Contract-Stu3.json" };
         }
@@ -72,13 +78,23 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         }
 
         [Theory]
-        [MemberData(nameof(GetCommonResourcesWithStu3OnlyField))]
-        public void GivenCommonResourceWithStu3OnlyField_WhenAnonymizing_ExceptionShouldBeThrown(string testFile)
+        [MemberData(nameof(GetCommonResourcesWithStu3OnlyValue))]
+        public void GivenCommonResourceWithStu3OnlyValue_WhenAnonymizing_ExceptionShouldBeThrown(string testFile)
         {
             AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
             
             Assert.Throws<FormatException>(() => engine.AnonymizeJson(testContent));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetCommonResourcesWithStu3OnlyElement))]
+        public void GivenCommonResourceWithStu3OnlyElement_WhenAnonymizing_ExceptionShouldBeThrown(string testFile)
+        {
+            AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
+            string testContent = File.ReadAllText(ResourceTestsFile(testFile));
+
+            Assert.Throws<StructuralTypeException>(() => engine.AnonymizeJson(testContent));
         }
 
         private string ResourceTestsFile(string fileName)

@@ -493,7 +493,7 @@ There are a few parameters that can help you customize the noise amount for diff
 - [optional] **rangeType** Define whether the *span* value is *fixed* or *proportional*. The default value is *fixed*. 
 - [optional] **roundTo** A value from 0 to 28 that specifies the number of decimal places to round to. The default value is *0* for integer types and *2* for decimal types. 
 
-Note that the target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity, SimpleQuantity, Money, etc.). 
+Note that the target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity). 
 
 ## Generalize method
 As one of the anonymization methods, generalization means mapping values to the higher level of generalization. It is the process of abstracting distinguishing value into a more general, less distinguishing value. Generalization attempts to preserve data utility while also reducing the identifiability of the data. 

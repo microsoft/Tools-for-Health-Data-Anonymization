@@ -55,7 +55,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
             FhirBoolean boolean = new FhirBoolean();
             FhirString fhirString = new FhirString();
 
-            var nodes = new Primitive[] { date, instant, boolean, fhirString }.Select(n => ElementNode.FromElement(n.ToTypedElement()));
+            var nodes = new PrimitiveType[] { date, instant, boolean, fhirString }.Select(n => ElementNode.FromElement(n.ToTypedElement()));
             
             var results = FhirPathSymbolExtensions.NodesByType(nodes, "string").Select(n => n.Location);
             Assert.Single(results);
