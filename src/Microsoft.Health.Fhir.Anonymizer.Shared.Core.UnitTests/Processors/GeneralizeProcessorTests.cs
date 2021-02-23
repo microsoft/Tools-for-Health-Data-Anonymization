@@ -68,7 +68,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new Date("2000-01-01"), null, "Redact" };
             yield return new object[] { new Date("1990"), "1990", "Redact" };
             yield return new object[] { new Date("2000"), "1990", "Redact" };
-            yield return new object[] { new Date("2000-01-01"), null, "Redact" };
+            yield return new object[] { new Date("2000-01-01"), null};
             yield return new object[] { new Date("2010"), "2010-01-01"};
             yield return new object[] { new Date("2010-01-01"), "2010-01-01" };
             yield return new object[] { new Date("2010-01-02"), "2010-01-01" };
