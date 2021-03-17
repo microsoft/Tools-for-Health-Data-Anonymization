@@ -53,4 +53,10 @@ param(
 $fhirVersion = "R4"
 
 cd ../Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline/scripts
-.\AzureDataFactoryPipelineUtility.ps1 -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -ResourceGroupName $ResourceGroupName -FhirVersion $fhirVersion -ConfigFile $ConfigFile
+if ($RunPipelineOnly) 
+{
+	.\AzureDataFactoryPipelineUtility.ps1 -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -ResourceGroupName $ResourceGroupName -FhirVersion $fhirVersion -ConfigFile $ConfigFile -RunPipelineOnly -BatchComputeNodeSize $BatchComputeNodeSize -BatchComputeNodeRuntimeId $BatchComputeNodeRuntimeId
+}
+else {
+	.\AzureDataFactoryPipelineUtility.ps1 -SubscriptionId $SubscriptionId -BatchAccountName $BatchAccountName -BatchAccountPoolName $BatchAccountPoolName -ResourceGroupName $ResourceGroupName -FhirVersion $fhirVersion -ConfigFile $ConfigFile -BatchComputeNodeSize $BatchComputeNodeSize -BatchComputeNodeRuntimeId $BatchComputeNodeRuntimeId
+}
