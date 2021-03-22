@@ -90,7 +90,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             };
             yield return new object[] 
             {
-                new SimpleQuantity { Value = decimal.Parse("25,162.1378") },
+                new Quantity { Value = decimal.Parse("25,162.1378") },
                 2.26,
                 2,
                 25161.01,
@@ -134,7 +134,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             };
             yield return new object[] 
             {
-                new SimpleQuantity { Value = decimal.Parse("25,162.1378") },
+                new Quantity { Value = decimal.Parse("25,162.1378") },
                 1,
                 2,
                 12581.07,

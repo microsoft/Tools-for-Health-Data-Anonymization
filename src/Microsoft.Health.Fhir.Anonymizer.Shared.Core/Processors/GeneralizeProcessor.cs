@@ -4,8 +4,6 @@ using EnsureThat;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.FhirPath;
-using Hl7.Fhir.Serialization;
-using Hl7.Fhir.Support.Model;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
@@ -27,7 +25,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             }
 
             var generalizeSetting = GeneralizeSetting.CreateFromRuleSettings(settings);
-            node.Value = PrimitiveTypeConverter.ConvertTo(node.Value, Primitives.GetNativeRepresentation(node.InstanceType));
             foreach (var eachCase in generalizeSetting.Cases)
             {
                 try

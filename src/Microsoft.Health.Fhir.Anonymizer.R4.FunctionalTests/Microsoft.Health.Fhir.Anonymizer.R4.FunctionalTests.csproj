@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Hl7.Fhir.R4" Version="1.7.0" />
-    <PackageReference Include="Hl7.FhirPath" Version="1.7.0" />
+    <PackageReference Include="Hl7.Fhir.R4" Version="2.0.3" />
+    <PackageReference Include="Hl7.FhirPath" Version="2.0.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="xunit" Version="2.4.0" />

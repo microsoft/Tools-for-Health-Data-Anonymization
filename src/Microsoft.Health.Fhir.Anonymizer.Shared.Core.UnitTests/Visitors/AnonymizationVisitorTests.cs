@@ -563,8 +563,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             observation.ReferenceRange.Add(
                 new Observation.ReferenceRangeComponent
                 {
-                    Low = new SimpleQuantity { Value = 10, Unit = "TestUnit" },
-                    High = new SimpleQuantity { Value = 100},
+                    Low = new Quantity { Value = 10, Unit = "TestUnit" },
+                    High = new Quantity { Value = 100},
                 });
             return observation;
         }
