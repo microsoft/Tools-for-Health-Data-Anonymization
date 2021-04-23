@@ -406,7 +406,7 @@ To generalize string data type using expression to define the value set mapping
 
 ```json
 {
-  "path": "Patient.communication.language.coding",
+  "path": "Patient.communication.language.coding.code",
   "method": "generalize",
   "cases":{
     "$this in ('en-AU' | 'en-CA' | 'en-GB' |'en-IN' | 'en-NZ' | 'en-SG' | 'en-US')": "'en'",
