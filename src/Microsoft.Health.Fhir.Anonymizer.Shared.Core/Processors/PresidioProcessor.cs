@@ -1,5 +1,4 @@
 ﻿﻿using System.Collections.Generic;
-using System.Text;
 using Hl7.Fhir.ElementModel;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
