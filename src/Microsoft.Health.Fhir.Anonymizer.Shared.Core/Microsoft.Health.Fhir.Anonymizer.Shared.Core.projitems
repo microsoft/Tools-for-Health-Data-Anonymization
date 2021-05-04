@@ -46,6 +46,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\IAnonymizerProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\KeepProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\PerturbProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\PresidioProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeOtherValuesOperation.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utility\DateTimeUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\EncryptUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\PostalCodeUtility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utility\PresidioUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\ReferenceUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\AttributeValidator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\ResourceNotValidException.cs" />

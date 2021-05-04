@@ -197,7 +197,7 @@
     {"path": "nodesByType('Address')", "method": "redact"},
     {"path": "nodesByType('Age')", "method": "redact"},
     {"path": "nodesByType('Annotation')", "method": "redact"},
-    {"path": "nodesByType('HumanName')", "method": "redact"},
+    {"path": "nodesByType('HumanName')", "method": "presidio"},
     {"path": "nodesByType('ContactPoint')", "method": "redact"}
   ],
   "parameters": {
