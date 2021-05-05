@@ -13,8 +13,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
         [Fact]
         public void GivenANode_WhenProcessingWithPresidio_ValueShouldBeAnonymizedWithPresidio()
         {
+            string analyzerUrl = "localhost";
+            string anonymizerUrl = "localhost";
             var element = ElementNode.FromElement(new FhirString("Text For Anonymization").ToTypedElement()); 
-            var processor = new PresidioProcessor();
+            var processor = new PresidioProcessor(analyzerUrl, anonymizerUrl);
 
             var processResult = processor.Process(element);
 

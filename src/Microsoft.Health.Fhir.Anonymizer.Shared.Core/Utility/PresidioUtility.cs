@@ -5,21 +5,21 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
 {
     public class PresidioUtility
     {
-        public static string Anonymize(string text)
+        public static string Anonymize(string text, string presidioAnalyzerUrl, string presidioAnonymizerUrl)
         {
-            var analyzerResult = Analyze(text);
-            var anonymizerResponse = Anonymize(text, analyzerResult);
+            var analyzerResult = Analyze(text, presidioAnalyzerUrl);
+            var anonymizerResponse = Anonymize(text, presidioAnonymizerUrl, analyzerResult);
             return anonymizerResponse.Text;
         }
 
 
-        private static List<AnalyzerResult> Analyze(string text)
+        private static List<AnalyzerResult> Analyze(string text, string presidioAnalyzerUrl)
         {
             // Call Analyzer REST API
             return new List<AnalyzerResult>(new[] {new AnalyzerResult()});
         }
         
-        private static AnonymizeResponse Anonymize(string text, List<AnalyzerResult> analyzerResult)
+        private static AnonymizeResponse Anonymize(string text, string presidioAnonymizerUrl, List<AnalyzerResult> analyzerResult)
         {
             // Call Anonymizer REST API
             var anonymizeResponse = new AnonymizeResponse();

@@ -31,5 +31,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
         public List<string> RestrictedZipCodeTabulationAreas { get; set; }
 
         public string DateShiftKeyPrefix { get; set; }
+
+        [DataMember(Name = "presidioAnalyzerUrl")]
+        public string PresidioAnalyzerUrl { get; set; }
+
+        [DataMember(Name = "presidioAnonymizerUrl")]
+        public string PresidioAnonymizerUrl { get; set; }
     }
 }

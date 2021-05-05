@@ -223,6 +223,8 @@
       "879",
       "884",
       "893"
-    ]
+    ],
+    "presidioAnalyzerUrl": "http://127.0.0.1:5002",
+    "presidioAnonymizerUrl":  "http://127.0.0.1:5001"
   }
 }

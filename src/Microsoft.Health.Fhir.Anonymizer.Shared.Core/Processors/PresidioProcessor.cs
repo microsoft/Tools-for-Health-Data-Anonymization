@@ -9,7 +9,15 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
     public class PresidioProcessor: IAnonymizerProcessor
     {
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<PresidioProcessor>();
-        
+        private string presidioAnalyzerUrl;
+        private string presidioAnonymizerUrl;
+
+        public PresidioProcessor(string presidioAnalyzerUrl, string presidioAnonymizerUrl)
+        {
+            this.presidioAnalyzerUrl = presidioAnalyzerUrl;
+            this.presidioAnonymizerUrl = presidioAnonymizerUrl;
+        }
+
         public ProcessResult Process(ElementNode node, ProcessContext context = null, Dictionary<string, object> settings = null)
         {
             var processResult = new ProcessResult();
@@ -19,7 +27,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             }
 
             var input = node.Value.ToString();
-            node.Value = string.IsNullOrEmpty(input) ? input : PresidioUtility.Anonymize(input);
+            node.Value = string.IsNullOrEmpty(input) ? input : PresidioUtility.Anonymize(input, presidioAnalyzerUrl, presidioAnonymizerUrl);
             _logger.LogDebug($"Fhir value '{input}' at '{node.Location}' is anonymized with Presidio to '{node.Value}'.");
 
             processResult.AddProcessRecord(AnonymizationOperations.Presidio, node);

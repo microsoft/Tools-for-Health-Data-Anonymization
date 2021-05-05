@@ -12,6 +12,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
             configuration.GenerateDefaultParametersIfNotConfigured();
             Assert.NotNull(configuration.ParameterConfiguration);
             Assert.Equal(32, configuration.ParameterConfiguration.DateShiftKey.Length);
+            Assert.Equal("http://127.0.0.1:5001", configuration.ParameterConfiguration.PresidioAnonymizerUrl);
 
             configuration = new AnonymizerConfiguration() { ParameterConfiguration = new ParameterConfiguration() };
             configuration.GenerateDefaultParametersIfNotConfigured();
@@ -31,12 +32,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
             {
                 ParameterConfiguration = new ParameterConfiguration()
                 {
-                    DateShiftKey = "123"
+                    DateShiftKey = "123",
+                    PresidioAnonymizerUrl = "http://127.0.0.1:3000"
                 }
             };
 
             configuration.GenerateDefaultParametersIfNotConfigured();
             Assert.Equal("123", configuration.ParameterConfiguration.DateShiftKey);
+            Assert.Equal("http://127.0.0.1:3000", configuration.ParameterConfiguration.PresidioAnonymizerUrl);
         }
     }
 }
