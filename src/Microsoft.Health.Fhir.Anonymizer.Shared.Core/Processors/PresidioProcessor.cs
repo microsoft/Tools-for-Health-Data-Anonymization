@@ -19,7 +19,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             }
 
             var input = node.Value.ToString();
-            node.Value = string.IsNullOrEmpty(input) ? input : PresidioUtility.AnalyzeAndAnonymize(input);
+            node.Value = string.IsNullOrEmpty(input) ? input : PresidioUtility.Anonymize(input);
             _logger.LogDebug($"Fhir value '{input}' at '{node.Location}' is anonymized with Presidio to '{node.Value}'.");
 
             processResult.AddProcessRecord(AnonymizationOperations.Presidio, node);

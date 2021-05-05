@@ -61,6 +61,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Models
                 return ProcessRecords.ContainsKey(AnonymizationOperations.Generalize);
             }
         }
+        public bool IsPresidioAnonymized
+        {
+            get
+            {
+                return ProcessRecords.ContainsKey(AnonymizationOperations.Presidio);
+            }
+        }
 
         public Dictionary<string, HashSet<ITypedElement>> ProcessRecords { get; } = new Dictionary<string, HashSet<ITypedElement>>();
 

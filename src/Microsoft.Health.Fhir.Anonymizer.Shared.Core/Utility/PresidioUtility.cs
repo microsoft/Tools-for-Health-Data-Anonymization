@@ -5,7 +5,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
 {
     public class PresidioUtility
     {
-        public static string AnalyzeAndAnonymize(string text)
+        public static string Anonymize(string text)
         {
             var analyzerResult = Analyze(text);
             var anonymizerResponse = Anonymize(text, analyzerResult);
