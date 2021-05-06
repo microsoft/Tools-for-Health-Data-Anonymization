@@ -139,8 +139,9 @@
     {"path": "ExplanationOfBenefit.benefitBalance.name", "method": "redact"},
     {"path": "ExplanationOfBenefit.benefitBalance.description", "method": "redact"},
     {"path": "ExplanationOfBenefit.benefitBalance.financial.allowed", "method": "redact"},
-    
-    
+
+    {"path": "text", "method": "presidio"},
+
     {"path": "nodesByType('Dosage').text", "method": "redact"},  
     {"path": "nodesByType('Dosage').patientInstruction", "method": "redact"},
     {"path": "nodesByType('Contributor').name", "method": "redact"},   
