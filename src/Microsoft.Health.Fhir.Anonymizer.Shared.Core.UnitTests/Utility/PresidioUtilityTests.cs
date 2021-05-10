@@ -10,8 +10,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
         public void GivenAText_WhenPresidioAnonymizationCalled_ThenAnonymizedTextShouldBeReturned()
         {
             const string text = "Text For Anonymization";
+            string analyzerUrl = "localhost";
+            string anonymizerUrl = "localhost";
 
-            var anonymizedText = PresidioUtility.Anonymize(text);
+            var anonymizedText = PresidioUtility.Anonymize(text, analyzerUrl, anonymizerUrl);
             
             Assert.Equal("Anonymized Text", anonymizedText);
         }
