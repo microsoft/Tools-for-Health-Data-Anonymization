@@ -388,7 +388,7 @@ To substitute Address data types with a fixed json fragement
   }
 }
 ```
-To generalize age fields of Observation resource using expression to define the range mapping
+To generalize valueQuantity fields of Observation resource using expression to define the range mapping
 ```json
 {
   "path": "nodesByType('Observation').value.value",
