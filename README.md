@@ -388,10 +388,10 @@ To substitute Address data types with a fixed json fragement
   }
 }
 ```
-To generalize age fields of Condition resource using expression to define the range mapping
+To generalize age fields of Observation resource using expression to define the range mapping
 ```json
 {
-  "path": "condition.onset.value as Age",
+  "path": "nodesByType('Observation').value.value",
   "method": "generalize",
   "cases":{
     "$this>=0 and $this<20": "20",
@@ -402,6 +402,8 @@ To generalize age fields of Condition resource using expression to define the ra
   "otherValues":"redact"
 }
 ```
+> [!Note] : Take care of the expression for field has choise of types. e.g. Observation.value[x]. The expression for the path should be Observation.value.
+
 To generalize string data type using expression to define the value set mapping
 
 ```json
