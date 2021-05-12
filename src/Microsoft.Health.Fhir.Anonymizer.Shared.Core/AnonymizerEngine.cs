@@ -121,7 +121,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             _processors[AnonymizerMethod.Perturb.ToString().ToUpperInvariant()] = new PerturbProcessor();
             _processors[AnonymizerMethod.Keep.ToString().ToUpperInvariant()] = new KeepProcessor();
             _processors[AnonymizerMethod.Generalize.ToString().ToUpperInvariant()] = new GeneralizeProcessor();
-            _processors[AnonymizerMethod.Presidio.ToString().ToUpperInvariant()] = new PresidioProcessor(configurationManager.GetParameterConfiguration().PresidioAnalyzerUrl, configurationManager.GetParameterConfiguration().PresidioAnonymizerUrl);
+            _processors[AnonymizerMethod.Presidio.ToString().ToUpperInvariant()] = new PresidioProcessor(new PresidioApiHandler(configurationManager.GetParameterConfiguration().PresidioAnalyzedLanguage, 
+                                                                                                                                configurationManager.GetParameterConfiguration().PresidioAnalyzerUrl, 
+                                                                                                                                configurationManager.GetParameterConfiguration().PresidioAnonymizerUrl));
         }
     }
 }

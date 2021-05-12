@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\EncryptProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\GeneralizeProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\PerturbProcessorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\PresidioApiHandlerMock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\PresidioProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeSettingTests.cs" />

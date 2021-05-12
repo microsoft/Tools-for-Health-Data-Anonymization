@@ -197,7 +197,7 @@
     {"path": "nodesByType('Address')", "method": "redact"},
     {"path": "nodesByType('Age')", "method": "redact"},
     {"path": "nodesByType('Annotation')", "method": "redact"},
-    {"path": "nodesByType('HumanName')", "method": "presidio"},
+    {"path": "nodesByType('HumanName')", "method": "redact"},
     {"path": "nodesByType('ContactPoint')", "method": "redact"}
   ],
   "parameters": {
@@ -224,7 +224,8 @@
       "884",
       "893"
     ],
+    "presidioAnalyzedLanguage": "en",
     "presidioAnalyzerUrl": "http://127.0.0.1:5002",
-    "presidioAnonymizerUrl":  "http://127.0.0.1:5001"
+    "presidioAnonymizerUrl": "http://127.0.0.1:5001"
   }
 }

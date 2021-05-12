@@ -23,6 +23,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
 
         private static readonly string s_defaultPresidioAnonymizerUrl = "http://127.0.0.1:5001";
 
+        private static readonly string s_defaultPresidioAnalyzedLanguage = "en";
+
         public void GenerateDefaultParametersIfNotConfigured()
         {
             // if not configured, a random string will be generated as date shift key, others will keep their default values
@@ -34,7 +36,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
                     CryptoHashKey = s_defaultCryptoKey.Value,
                     EncryptKey = s_defaultCryptoKey.Value,
                     PresidioAnalyzerUrl = s_defaultPresidioAnalyzerUrl,
-                    PresidioAnonymizerUrl = s_defaultPresidioAnonymizerUrl
+                    PresidioAnonymizerUrl = s_defaultPresidioAnonymizerUrl,
+                    PresidioAnalyzedLanguage = s_defaultPresidioAnalyzedLanguage
                 };
                 return;
             }
@@ -54,7 +57,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
                 ParameterConfiguration.EncryptKey = s_defaultCryptoKey.Value;
             }
 
-            // if presidio endpoint are not configured, default endpoints will be used
+            // if presidio endpoints are not configured, default endpoints will be used
             if (string.IsNullOrEmpty(ParameterConfiguration.PresidioAnalyzerUrl))
             {
                 ParameterConfiguration.PresidioAnalyzerUrl = s_defaultPresidioAnalyzerUrl;

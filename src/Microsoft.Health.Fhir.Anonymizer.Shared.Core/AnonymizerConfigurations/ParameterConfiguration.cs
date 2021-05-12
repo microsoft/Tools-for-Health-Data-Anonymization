@@ -37,5 +37,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
 
         [DataMember(Name = "presidioAnonymizerUrl")]
         public string PresidioAnonymizerUrl { get; set; }
+
+        [DataMember(Name = "presidioAnalyzedLanguage")]
+        public string PresidioAnalyzedLanguage { get; set; }
     }
 }
