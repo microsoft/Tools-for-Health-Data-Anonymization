@@ -402,7 +402,7 @@ To generalize valueQuantity fields of Observation resource using expression to d
   "otherValues":"redact"
 }
 ```
-> [!Note] : Take care of the expression for field has choise of types. e.g. Observation.value[x]. The expression for the path should be Observation.value.
+> [!Note] : Take care of the expression for field has choices of types. e.g. Observation.value[x]. The expression for the path should be Observation.value.
 
 To generalize string data type using expression to define the value set mapping
 
