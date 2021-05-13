@@ -394,10 +394,10 @@ To generalize valueQuantity fields of Observation resource using expression to d
   "path": "nodesByType('Observation').value.value",
   "method": "generalize",
   "cases":{
-    "$this>=0 and $this<20": "20",
-    "$this>=20 and $this<40": "40",
-    "$this>=40 and $this<60": "60",
-    "$this>=60 and $this<80": "80"     
+    "$this.value>=0 and $this.value<20": "20",
+    "$this.value>=20 and $this.value<40": "40",
+    "$this.value>=40 and $this.value<60": "60",
+    "$this.value>=60 and $this.value<80": "80"     
   },
   "otherValues":"redact"
 }
@@ -408,7 +408,7 @@ To generalize string data type using expression to define the value set mapping
 
 ```json
 {
-  "path": "patient.communication.language",
+  "path": "Patient.communication.language.coding.code",
   "method": "generalize",
   "cases":{
     "$this in ('en-AU' | 'en-CA' | 'en-GB' |'en-IN' | 'en-NZ' | 'en-SG' | 'en-US')": "'en'",
@@ -422,10 +422,10 @@ To generalize string data type using expression for masking
 
 ```json
 {
-  "path": "patient.address.postalcode",
+  "path": "Patient.address.postalCode",
   "method": "generalize",
   "cases":{
-    "$this.startsWith('123') or $this.startsWith('234')": "$this.subString(0,2)+'****'", 
+    "$this.startsWith('123') or $this.startsWith('234')": "$this.substring(0,2)+'****'", 
   },
   "otherValues":"redact"
   }
@@ -434,11 +434,11 @@ To generalize dateTime, time, date and instant type using expression
 
 ```json
 {
-  "path": "person.birthDate",
+  "path": "Patient.birthDate",
   "method": "generalize",
   "cases":{
-    "$this >= @1990-1-1 and $this <= @2000-1-1": "@1990", 
-     "$this >= @2010-1-1 and $this <= @2020-1-1":"@2010-1-1T00:00:00"
+    "$this >= @1990-01-01 and $this <= @2000-01-01": "@1990", 
+     "$this >= @2010-01-01 and $this <= @2020-01-01":"@2010-01-01"
   },
   "otherValues":"redact"
 }
