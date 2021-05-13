@@ -22,7 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurationManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerLogging.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Api\ApiHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Api\IApiHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Api\PresidioApiHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeExtension.cs" />

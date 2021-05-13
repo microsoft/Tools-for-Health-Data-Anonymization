@@ -10,9 +10,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
     public class PresidioProcessor: IAnonymizerProcessor
     {
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<PresidioProcessor>();
-        private ApiHandler presidioApiHandler;
+        private IApiHandler presidioApiHandler;
 
-        public PresidioProcessor(ApiHandler presidioApiHandler)
+        public PresidioProcessor(IApiHandler presidioApiHandler)
         {
             this.presidioApiHandler = presidioApiHandler;
         }

@@ -5,7 +5,7 @@ using Presidio.Model;
 
 namespace Fhir.Anonymizer.Core.UnitTests.Api
 {
-    public class PresidioApiHandlerMock : ApiHandler
+    public class PresidioApiHandlerMock : IApiHandler
     {
         public PresidioApiHandlerMock(string presidioAnalyzedLanguage, string presidioAnalyzerUrl, string presidioAnonymizerUrl)
         {            
