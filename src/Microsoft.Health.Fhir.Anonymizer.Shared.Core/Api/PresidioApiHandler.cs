@@ -1,18 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Health.Fhir.Anonymizer.Core.Api;
 using Presidio.Api;
 using Presidio.Client;
 using Presidio.Model;
 
-namespace Microsoft.Health.Fhir.Anonymizer.Core
+namespace Microsoft.Health.Fhir.Anonymizer.Api
 {
-    public interface IApiHandler
-    {
-        List<RecognizerResult> Analyze(string text);
-        AnonymizeResponse Anonymize(string text, List<RecognizerResult> analyzerResult);
-    }
-
-    public class PresidioApiHandler : IApiHandler
+    public class PresidioApiHandler : ApiHandler
     {
         private string analyzerLanguage;
         private AnalyzerApi analyzer;

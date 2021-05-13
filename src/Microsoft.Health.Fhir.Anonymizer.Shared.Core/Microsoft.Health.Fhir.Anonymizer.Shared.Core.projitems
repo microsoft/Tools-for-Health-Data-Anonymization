@@ -22,6 +22,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurationManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerLogging.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Api\ApiHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Api\PresidioApiHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeNavExtensions.cs" />
@@ -46,7 +48,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\IAnonymizerProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\KeepProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\PerturbProcessor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Processors\PresidioApiHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\PresidioProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeSetting.cs" />

@@ -1,6 +1,7 @@
 ﻿﻿using System.Collections.Generic;
 using Hl7.Fhir.ElementModel;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Fhir.Anonymizer.Core.Api;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
 
@@ -9,9 +10,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
     public class PresidioProcessor: IAnonymizerProcessor
     {
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<PresidioProcessor>();
-        private IApiHandler presidioApiHandler;
+        private ApiHandler presidioApiHandler;
 
-        public PresidioProcessor(IApiHandler presidioApiHandler)
+        public PresidioProcessor(ApiHandler presidioApiHandler)
         {
             this.presidioApiHandler = presidioApiHandler;
         }

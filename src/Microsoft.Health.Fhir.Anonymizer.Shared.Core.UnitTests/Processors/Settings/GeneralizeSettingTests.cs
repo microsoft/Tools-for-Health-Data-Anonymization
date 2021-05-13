@@ -10,11 +10,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors.Settings
     {
         public static IEnumerable<object[]> GetGeneralizeFhirRuleConfigs()
         {
-            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=@2010-01-01 and $this>=@2010-01-01\": \"10\"}" } } , "{\r\n  \"$this<=@2010-01-01 and $this>=@2010-01-01\": \"10\"\r\n}", "Redact" };
-            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=10 and $this>=0\": \"10\"}" }, { "otherValues", "Keep" } }, "{\r\n  \"$this<=10 and $this>=0\": \"10\"\r\n}", "Keep" };
-            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=10 and $this>=0\": \"10\"}" }, { "otherValues", "Redact" } }, "{\r\n  \"$this<=10 and $this>=0\": \"10\"\r\n}", "Redact" };
-            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"\": \"\"}" }, { "otherValues", "Redact" } }, "{\r\n  \"\": \"\"\r\n}", "Redact" };
-            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this = @2015-01-01T00:00\": \"@2015-01-01T00:00:00Z\"}" } }, "{\r\n  \"$this = @2015-01-01T00:00\": \"@2015-01-01T00:00:00Z\"\r\n}", "Redact" };
+            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=@2010-01-01 and $this>=@2010-01-01\": \"10\"}" } } , "{\n  \"$this<=@2010-01-01 and $this>=@2010-01-01\": \"10\"\n}", "Redact" };
+            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=10 and $this>=0\": \"10\"}" }, { "otherValues", "Keep" } }, "{\n  \"$this<=10 and $this>=0\": \"10\"\n}", "Keep" };
+            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=10 and $this>=0\": \"10\"}" }, { "otherValues", "Redact" } }, "{\n  \"$this<=10 and $this>=0\": \"10\"\n}", "Redact" };
+            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"\": \"\"}" }, { "otherValues", "Redact" } }, "{\n  \"\": \"\"\n}", "Redact" };
+            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this = @2015-01-01T00:00\": \"@2015-01-01T00:00:00Z\"}" } }, "{\n  \"$this = @2015-01-01T00:00\": \"@2015-01-01T00:00:00Z\"\n}", "Redact" };
         }
 
         public static IEnumerable<object[]> GetInvalidGeneralizeFhirRuleConfigs()

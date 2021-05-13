@@ -6,6 +6,7 @@ using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Fhir.Anonymizer.Api;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;

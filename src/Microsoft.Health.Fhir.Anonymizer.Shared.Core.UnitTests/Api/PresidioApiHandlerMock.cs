@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Health.Fhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core.Api;
 using Presidio.Model;
 
-namespace Fhir.Anonymizer.Core.UnitTests.Processors
+namespace Fhir.Anonymizer.Core.UnitTests.Api
 {
-    public class PresidioApiHandlerMock : IApiHandler
+    public class PresidioApiHandlerMock : ApiHandler
     {
         public PresidioApiHandlerMock(string presidioAnalyzedLanguage, string presidioAnalyzerUrl, string presidioAnonymizerUrl)
         {            

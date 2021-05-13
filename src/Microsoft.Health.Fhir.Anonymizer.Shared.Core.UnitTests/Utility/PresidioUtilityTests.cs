@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Fhir.Anonymizer.Core.UnitTests.Processors;
+﻿using Fhir.Anonymizer.Core.UnitTests.Api;
 using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
 using Xunit;
 
