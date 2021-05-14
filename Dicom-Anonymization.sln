@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39202465-06EF-4668-9EAE-F345AFCBDBFC}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.CommandLineTool", "src\Microsoft.Health.Dicom.Anonymizer.CommandLineTool\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.csproj", "{BF0EE0C0-C095-4230-B25D-57E956E6D2D8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.CommanLineTool.UnitTests", "src\Microsoft.Health.Dicom.Anonymizer.CommanLineTool.UnitTests\Microsoft.Health.Dicom.Anonymizer.CommanLineTool.UnitTests.csproj", "{49E7327D-658C-462A-B17D-01F6ECEEA197}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.Core.UnitTests", "src\Microsoft.Health.Dicom.Anonymizer.Core.UnitTests\Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.csproj", "{A52FCCF1-A124-455C-BFBF-C490EE172140}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.Core", "src\Microsoft.Health.Dicom.Anonymizer.Core\Microsoft.Health.Dicom.Anonymizer.Core.csproj", "{208B3E2E-ECF9-4D5D-B073-315F39D297E7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeID.SharedLib", "src\Microsoft.Health.DeID.SharedLib\Microsoft.Health.DeID.SharedLib.csproj", "{C27B210E-9F48-40F5-92F6-9D36690B7433}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeID.SharedLib.UnitTests", "src\Microsoft.Health.DeID.SharedLib.UnitTests\Microsoft.Health.DeID.SharedLib.UnitTests.csproj", "{4C916724-A7AD-4ECF-924B-C6E15F1E907B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF0EE0C0-C095-4230-B25D-57E956E6D2D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF0EE0C0-C095-4230-B25D-57E956E6D2D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF0EE0C0-C095-4230-B25D-57E956E6D2D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF0EE0C0-C095-4230-B25D-57E956E6D2D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49E7327D-658C-462A-B17D-01F6ECEEA197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49E7327D-658C-462A-B17D-01F6ECEEA197}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49E7327D-658C-462A-B17D-01F6ECEEA197}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49E7327D-658C-462A-B17D-01F6ECEEA197}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A52FCCF1-A124-455C-BFBF-C490EE172140}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A52FCCF1-A124-455C-BFBF-C490EE172140}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A52FCCF1-A124-455C-BFBF-C490EE172140}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A52FCCF1-A124-455C-BFBF-C490EE172140}.Release|Any CPU.Build.0 = Release|Any CPU
+		{208B3E2E-ECF9-4D5D-B073-315F39D297E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{208B3E2E-ECF9-4D5D-B073-315F39D297E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{208B3E2E-ECF9-4D5D-B073-315F39D297E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{208B3E2E-ECF9-4D5D-B073-315F39D297E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C27B210E-9F48-40F5-92F6-9D36690B7433}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C27B210E-9F48-40F5-92F6-9D36690B7433}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C27B210E-9F48-40F5-92F6-9D36690B7433}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C27B210E-9F48-40F5-92F6-9D36690B7433}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C916724-A7AD-4ECF-924B-C6E15F1E907B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C916724-A7AD-4ECF-924B-C6E15F1E907B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C916724-A7AD-4ECF-924B-C6E15F1E907B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C916724-A7AD-4ECF-924B-C6E15F1E907B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E7DBF3B7-5635-473A-8FE0-97451A647C5E}
+	EndGlobalSection
+EndGlobal
