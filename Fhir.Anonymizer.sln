@@ -48,12 +48,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anony
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool", "src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.csproj", "{DA3123C7-D0C4-4636-8A85-DF1F52A04794}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{DC444F94-738E-48C2-B0A2-83D505592455}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeID.SharedLib", "src\Microsoft.Health.DeID.SharedLib\Microsoft.Health.DeID.SharedLib.csproj", "{6CBDBE7E-375D-4034-9E8A-71A962E87EF0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeID.SharedLib.UnitTests", "src\Microsoft.Health.DeID.SharedLib.UnitTests\Microsoft.Health.DeID.SharedLib.UnitTests.csproj", "{9822D9DB-693F-4E38-85F8-4154ED94C4A7}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems*{140255c7-6c80-4a3c-a248-ae8cdfdcf907}*SharedItemsImports = 13
@@ -128,14 +122,6 @@ Global
 		{DA3123C7-D0C4-4636-8A85-DF1F52A04794}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA3123C7-D0C4-4636-8A85-DF1F52A04794}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA3123C7-D0C4-4636-8A85-DF1F52A04794}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6CBDBE7E-375D-4034-9E8A-71A962E87EF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CBDBE7E-375D-4034-9E8A-71A962E87EF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CBDBE7E-375D-4034-9E8A-71A962E87EF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6CBDBE7E-375D-4034-9E8A-71A962E87EF0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9822D9DB-693F-4E38-85F8-4154ED94C4A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9822D9DB-693F-4E38-85F8-4154ED94C4A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9822D9DB-693F-4E38-85F8-4154ED94C4A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9822D9DB-693F-4E38-85F8-4154ED94C4A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,8 +145,6 @@ Global
 		{57035793-441B-4347-935C-3D19CE52C709} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{8BAD1364-4C47-443A-95E9-DB624FDF78C8} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{DA3123C7-D0C4-4636-8A85-DF1F52A04794} = {4273D1F5-D916-4291-8B60-7D74202D425E}
-		{6CBDBE7E-375D-4034-9E8A-71A962E87EF0} = {DC444F94-738E-48C2-B0A2-83D505592455}
-		{9822D9DB-693F-4E38-85F8-4154ED94C4A7} = {DC444F94-738E-48C2-B0A2-83D505592455}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19A940B3-FA97-4729-AC91-EE68070BCFC1}
