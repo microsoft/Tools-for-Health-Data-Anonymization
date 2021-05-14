@@ -12,6 +12,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeID.Share
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeID.SharedLib.UnitTests", "src\Microsoft.Health.DeID.SharedLib.UnitTests\Microsoft.Health.DeID.SharedLib.UnitTests.csproj", "{4C916724-A7AD-4ECF-924B-C6E15F1E907B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.Core", "..\..\Dicom\Dicom-Anonymization\src\Microsoft.Health.Dicom.Anonymizer.Core\Microsoft.Health.Dicom.Anonymizer.Core.csproj", "{EE3392A0-1445-4B79-9C4A-F0DA99FDA339}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.CommandLineTool", "..\..\Dicom\Dicom-Anonymization\src\Microsoft.Health.Dicom.Anonymizer.CommandLineTool\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.csproj", "{AE4E4A8F-26B4-46A0-BA2B-4138C064C9F1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.CommanLineTool.UnitTests", "..\..\Dicom\Dicom-Anonymization\src\Microsoft.Health.Dicom.Anonymizer.CommanLineTool.UnitTests\Microsoft.Health.Dicom.Anonymizer.CommanLineTool.UnitTests.csproj", "{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.Core.UnitTests", "..\..\Dicom\Dicom-Anonymization\src\Microsoft.Health.Dicom.Anonymizer.Core.UnitTests\Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.csproj", "{3E24E184-32D4-4AA3-9F07-351D6981071E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +34,22 @@ Global
 		{4C916724-A7AD-4ECF-924B-C6E15F1E907B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C916724-A7AD-4ECF-924B-C6E15F1E907B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C916724-A7AD-4ECF-924B-C6E15F1E907B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE3392A0-1445-4B79-9C4A-F0DA99FDA339}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE3392A0-1445-4B79-9C4A-F0DA99FDA339}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE3392A0-1445-4B79-9C4A-F0DA99FDA339}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE3392A0-1445-4B79-9C4A-F0DA99FDA339}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE4E4A8F-26B4-46A0-BA2B-4138C064C9F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE4E4A8F-26B4-46A0-BA2B-4138C064C9F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE4E4A8F-26B4-46A0-BA2B-4138C064C9F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE4E4A8F-26B4-46A0-BA2B-4138C064C9F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E24E184-32D4-4AA3-9F07-351D6981071E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E24E184-32D4-4AA3-9F07-351D6981071E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E24E184-32D4-4AA3-9F07-351D6981071E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E24E184-32D4-4AA3-9F07-351D6981071E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

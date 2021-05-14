@@ -1,0 +1,58 @@
+﻿{
+    "defaultSettings": {
+        "perturb": {
+            "span": "1",
+            "roundTo": 2,
+            "rangeType": "Proportional",
+            "distribution": "Uniform"
+        },
+        "dateShift": {
+            "dateShiftKey": "123",
+            "dateShiftScope": "SeriesInstance",
+            "dateShiftRange": "50"
+        }, // Scope could be SeriesInstance, StudyInstance and SOPInstance    
+        "cryptoHash": {
+            "cryptoHashKey": "123",
+            "cryptoHashFunction": "sha256"
+        },
+        "redact": {
+            "enablePartialAgeForRedact": false,
+            "enablePartialDatesForRedact": false
+        },
+        "encrypt": {
+            "encryptKey": "123456781234567812345678",
+            "encryptFunction": "AES"
+        },
+        "substitute": {
+            "replaceWith": "ANONYNOUS",
+        }
+    },
+    "customizedSettings": {
+        "perturbCustomerSetting": {
+            "span": "1",
+            "roundTo": 2,
+            "rangeType": "Fixed",
+            "distribution": "Uniform"
+        },
+        "redactCustomerSetting": {
+            "enablePartialAgeForRedact": true,
+            "enablePartialDatesForRedact": false
+        },
+        "dateShiftCustomerSetting": {
+            "dateShiftKey": "123",
+            "dateShiftScope": "SOPInstance",
+            "dateShiftRange": "100"
+        },
+        "cryptoHashCustomerSetting": {
+            "cryptoHashKey": "123",
+            "cryptoHashFunction": "sha256"
+        },
+        "substituteCustomerSetting": {
+            "replaceWith": "customized"
+        },
+        "encryptCustomerSetting": {
+            "encryptKey": "",
+            "encryptFunction": "AES"
+        }
+    }
+}
