@@ -25,11 +25,11 @@
             "dateShiftKey": "123",
             "dateShiftScope": "SeriesInstance",
             "dateShiftRange": "50"
-        }, // Scope could be SeriesInstance, StudyInstance and SOPInstance    
+        }, 
         "cryptoHash": {
             "cryptoHashKey": "123",
             "cryptoHashFunction": "sha256"
-        }, // function could be sha128, sha256, sha512
+        },
         "redact": {
             "enablePartialAgesForRedact": false,
             "enablePartialDatesForRedact": false

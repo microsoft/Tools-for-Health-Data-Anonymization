@@ -10,7 +10,7 @@
             "dateShiftKey": "123",
             "dateShiftScope": "SeriesInstance",
             "dateShiftRange": "50"
-        }, // Scope could be SeriesInstance, StudyInstance and SOPInstance    
+        },
         "cryptoHash": {
             "cryptoHashKey": "123",
             "cryptoHashFunction": "sha256"
