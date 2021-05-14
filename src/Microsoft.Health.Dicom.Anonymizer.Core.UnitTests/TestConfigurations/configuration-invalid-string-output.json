@@ -1,0 +1,57 @@
+﻿{
+    "rules": [
+        {
+            "tag": "AE",
+            "method": "cryptohash"
+        },
+        {
+            "tag": "AS",
+            "method": "cryptohash"
+        },
+        {
+            "tag": "CS",
+            "method": "cryptohash"
+        },
+        {
+            "tag": "DS",
+            "method": "cryptohash"
+        },
+        {
+            "tag": "RetrieveAETitle",
+            "method": "substitute",
+            "params": { "replaceWith": "AnonymousAnonymous" }
+        },
+        {
+            "tag": "DA",
+            "method": "cryptohash"
+        }
+    ],
+    "defaultSettings": {
+        "perturb": {
+            "span": "1",
+            "roundTo": 2,
+            "rangeType": "Proportional",
+            "distribution": "Uniform"
+        },
+        "dateShift": {
+            "dateShiftKey": "123",
+            "dateShiftScope": "SeriesInstance",
+            "dateShiftRange": "50"
+        }, 
+        "cryptoHash": {
+            "cryptoHashKey": "123",
+            "cryptoHashFunction": "sha256"
+        },
+        "redact": {
+            "enablePartialAgesForRedact": false,
+            "enablePartialDatesForRedact": false
+        },
+        "encrypt": {
+            "encryptKey": "123456781234567812345678",
+            "encryptFunction": "AES"
+        },
+        "substitute": {
+            "replaceWith": "ANONYNOUS"
+        }
+    }
+}
