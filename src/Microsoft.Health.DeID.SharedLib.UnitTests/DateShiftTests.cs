@@ -39,7 +39,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetDateTimeStringForDateShiftFormatTest()
         {
-            yield return new object[] { "dummy", "2015-02-07", "2015-01-17T00:00:00+08:00" };  // mark
             yield return new object[] { "dummy", "2015-02-07T13:28:17-05:00", "2015-01-17T00:00:00-05:00" };
             yield return new object[] { "dummy", "2015-02-07T13:28:17+05:00", "2015-01-17T00:00:00+05:00" };
             yield return new object[] { "dummy", "2015-02-07T13:28:17Z", "2015-01-17T00:00:00+00:00" }; // mark
