@@ -51,7 +51,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
 
                     sw.Stop();
                     TimeSpan ts = sw.Elapsed;
-                    Console.WriteLine("{1} items.DateTime costed for Shuffle function is: {0}ms", ts.TotalMilliseconds, num);
+                    Console.WriteLine("{1} files costed for anonymization is: {0}ms", ts.TotalMilliseconds, num);
                 }
                 else
                 {
@@ -77,13 +77,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
         internal static async Task AnonymizeOneFile(string inputFile, string outputFile, AnonymizerEngine engine)
         {
             DicomFile dicomFile = await DicomFile.OpenAsync(inputFile).ConfigureAwait(false);
-
-            // Console.WriteLine("{0,-15}{1,-40}{2,-15}{3,-50}{4,-70}", "Tag", "Name", "De-ID Method", "Original Value", "Result");
-            // Console.WriteLine(new string('-', 150));
             engine.Anonymize(dicomFile.Dataset);
             dicomFile.Save(outputFile);
-
-            // Console.WriteLine($"Finished processing '{inputFile}'!");
+            Console.WriteLine($"Finished processing '{inputFile}'!");
         }
     }
 }

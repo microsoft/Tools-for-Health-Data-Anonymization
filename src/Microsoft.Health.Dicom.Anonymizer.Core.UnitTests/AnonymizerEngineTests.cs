@@ -47,7 +47,7 @@ namespace UnitTests
         public DicomDataset Dataset { get; set; }
 
         [Fact]
-        public void GivenDicomDataSet_SetAutoValidationTrue_WhenAnonymizeWithUnsupportedOperation_OriginalValueWillBeReturned()
+        public void GivenDicomDataSet_SetAutoValidationTrue_IfSkipFailedItem_WhenAnonymizeWithUnsupportedOperation_OriginalValueWillBeReturned()
         {
             var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json");
             engine.Anonymize(Dataset);

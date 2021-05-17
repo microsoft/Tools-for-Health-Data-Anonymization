@@ -9,10 +9,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
 {
     public class AnonymizerOptions
     {
-        [Option('i', "inputFile", Required = false, HelpText = "Input dicom file")]
+        [Option('i', "inputFile", Required = false, HelpText = "Input DICOM file")]
         public string InputFile { get; set; }
 
-        [Option('o', "outputFile", Required = false, HelpText = "Output dicom file")]
+        [Option('o', "outputFile", Required = false, HelpText = "Output DICOM file")]
         public string OutputFile { get; set; }
 
         [Option('c', "configFile", Required = false, Default = "configuration.json", HelpText = "Anonymization configuration file path.")]
@@ -27,10 +27,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
         [Option('v', "autoValidate", Required = false, Default = true, HelpText = "Auto validate output value when anonymizing.")]
         public bool AutoValidate { get; set; }
 
-        [Option('s', "skipFailedItem", Required = false, Default = true, HelpText = "Skip failed item when anonymizing and maintain the original value.")]
+        [Option('s', "skipFailedItem", Required = false, Default = true, HelpText = "Skip failed items when anonymizing and maintain the original value.")]
         public bool SkipFailedItem { get; set; }
 
-        [Option("validateInput", Required = false, Default = false, HelpText = "Validate input dicom data items.")]
+        [Option("validateInput", Required = false, Default = false, HelpText = "Validate input DICOM data items.")]
         public bool ValidateInput { get; set; }
     }
 }

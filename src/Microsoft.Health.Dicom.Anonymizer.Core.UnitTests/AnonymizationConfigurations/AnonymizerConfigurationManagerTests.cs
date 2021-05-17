@@ -14,20 +14,11 @@ namespace UnitTests.AnonymizationConfigurations
 {
     public class AnonymizerConfigurationManagerTests
     {
-        public AnonymizerConfigurationManagerTests()
-        {
-        }
-
         public static IEnumerable<object[]> GetInvalidConfigsForRuleParsing()
         {
             yield return new object[] { "./TestConfigurations/configuration-miss-tag.json" };
             yield return new object[] { "./TestConfigurations/configuration-unsupported-method.json" };
             yield return new object[] { "./TestConfigurations/configuration-invalid-DicomTag.json" };
-        }
-
-        public static IEnumerable<object[]> GetValidConfigs()
-        {
-            yield return new object[] { "./TestConfigurations/configuration-test-sample.json" };
         }
 
         [Fact]
@@ -44,10 +35,10 @@ namespace UnitTests.AnonymizationConfigurations
             Assert.Throws<AnonymizationConfigurationException>(() => AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath));
         }
 
-        [Theory]
-        [MemberData(nameof(GetValidConfigs))]
-        public void GivenAValidConfig_WhenCreateAnonymizerConfigurationManager_ConfigurationShouldBeLoaded(string configFilePath)
+        [Fact]
+        public void GivenAValidConfig_WhenCreateAnonymizerConfigurationManager_ConfigurationShouldBeLoaded()
         {
+            var configFilePath = "./TestConfigurations/configuration-test-sample.json";
             var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
             var dicomRules = configurationManager.DicomTagRules;
             Assert.True(dicomRules.Any());

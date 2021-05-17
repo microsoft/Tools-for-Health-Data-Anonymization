@@ -51,7 +51,7 @@ namespace UnitTests
             yield return new object[] { DicomTag.Warning​Reason, "10", new DicomSubstituteSetting { ReplaceWith = "20" }, "20" }; // US
         }
 
-        public static IEnumerable<object[]> GetInValidStringFormatForSubstitute()
+        public static IEnumerable<object[]> GetInvalidStringFormatForSubstitute()
         {
             yield return new object[] { DicomTag.RetrieveAETitle, "TEST", new DicomSubstituteSetting { ReplaceWith = "AnonymousAnonymousAnonymous" }, "AnonymousAnonymousAnonymous" }; // AE 16bytes maximum
             yield return new object[] { DicomTag.Query​Retrieve​Level, "0", new DicomSubstituteSetting { ReplaceWith = "Anonymous" }, "Anonymous" }; // CS 16bytes maximum Uppercase characters, "0"-"9", the SPACE character, and underscore "_"
@@ -94,7 +94,7 @@ namespace UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetInValidStringFormatForSubstitute))]
+        [MemberData(nameof(GetInvalidStringFormatForSubstitute))]
         [MemberData(nameof(GetInValidStringVMForSubstitute))]
         [MemberData(nameof(GetInValidReplaceValueTypeForSubstitute))]
         public void GivenADataSetWithInvalidReplaceValueForSubstitute_WhenSubstitute_ExceptionWillBeThrown(DicomTag tag, string value, DicomSubstituteSetting settings, string replaceWith)
@@ -108,7 +108,7 @@ namespace UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetInValidStringFormatForSubstitute))]
+        [MemberData(nameof(GetInvalidStringFormatForSubstitute))]
         [MemberData(nameof(GetInValidStringVMForSubstitute))]
         public void GivenADataSetWithInvalidStringAndVMForSubstitute_WhenSubstituteWithoutAutoValidation_ResultWillBeReturned(DicomTag tag, string value, DicomSubstituteSetting settings, string replaceWith)
         {
