@@ -66,7 +66,7 @@ namespace UnitTests
             yield return new object[] { DicomTag.Patient​Birth​Name, "Name", new DicomSubstituteSetting { ReplaceWith = "Name=Name=Name=Name" }, "Name=Name=Name=Name" }; // PN
         }
 
-        public static IEnumerable<object[]> GetInValidStringVMForSubstitute()
+        public static IEnumerable<object[]> GetInvalidStringVMForSubstitute()
         {
             yield return new object[] { DicomTag.Station​AE​Title, "TEST", new DicomSubstituteSetting { ReplaceWith = "Anonymous\\Anonymous\\Anonymous" }, "Anonymous\\Anonymous\\Anonymous" }; // AE 16bytes maximum
             yield return new object[] { DicomTag.Query​Retrieve​Level, "0", new DicomSubstituteSetting { ReplaceWith = "0\\1\\2" }, "0\\1\\2" }; // CS 16bytes maximum Uppercase characters, "0"-"9", the SPACE character, and underscore "_"
@@ -75,7 +75,7 @@ namespace UnitTests
             yield return new object[] { DicomTag.Stage​Number, "1234", new DicomSubstituteSetting { ReplaceWith = "23456\\123" }, "23456\\123" }; // IS
         }
 
-        public static IEnumerable<object[]> GetInValidReplaceValueTypeForSubstitute()
+        public static IEnumerable<object[]> GetInvalidReplaceValueTypeForSubstitute()
         {
             yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345", null, "Anonymous" }; // FD
         }
@@ -95,8 +95,8 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(GetInvalidStringFormatForSubstitute))]
-        [MemberData(nameof(GetInValidStringVMForSubstitute))]
-        [MemberData(nameof(GetInValidReplaceValueTypeForSubstitute))]
+        [MemberData(nameof(GetInvalidStringVMForSubstitute))]
+        [MemberData(nameof(GetInvalidReplaceValueTypeForSubstitute))]
         public void GivenADataSetWithInvalidReplaceValueForSubstitute_WhenSubstitute_ExceptionWillBeThrown(DicomTag tag, string value, DicomSubstituteSetting settings, string replaceWith)
         {
             var dataset = new DicomDataset
@@ -109,7 +109,7 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(GetInvalidStringFormatForSubstitute))]
-        [MemberData(nameof(GetInValidStringVMForSubstitute))]
+        [MemberData(nameof(GetInvalidStringVMForSubstitute))]
         public void GivenADataSetWithInvalidStringAndVMForSubstitute_WhenSubstituteWithoutAutoValidation_ResultWillBeReturned(DicomTag tag, string value, DicomSubstituteSetting settings, string replaceWith)
         {
             var dataset = new DicomDataset
@@ -187,7 +187,7 @@ namespace UnitTests
         }
 
         [Fact]
-        public void GivenADataSetWithDicomFragmentSequence_WhenPerturb_ExceptionWillBeThrown()
+        public void GivenADataSetWithDicomFragmentSequence_WhenSubstitute_ExceptionWillBeThrown()
         {
             var tag = DicomTag.PixelData;
             var item = new DicomOtherWordFragment(tag);
@@ -200,7 +200,7 @@ namespace UnitTests
         }
 
         [Fact]
-        public void GivenADataSetWithSQItem_WhenPerturb_ExceptionWillBeThrown()
+        public void GivenADataSetWithSQItem_WhenSubstitute_ExceptionWillBeThrown()
         {
             var dataset = new DicomDataset { };
             var sps1 = new DicomDataset { { DicomTag.ScheduledStationName, "1" } };

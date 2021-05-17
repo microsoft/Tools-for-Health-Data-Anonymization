@@ -104,7 +104,7 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(GetValidVRItemForEncryption))]
-        public void GivenADataSetWithValidVRForCryptoHash_WhenCryptoHashWithAutoValidation_ItemWillBeHashed(DicomTag tag, string value)
+        public void GivenADataSetWithValidVRForEncryption_WhenEncryptWithAutoValidation_ResultWillBeReturned(DicomTag tag, string value)
         {
             var dataset = new DicomDataset
             {

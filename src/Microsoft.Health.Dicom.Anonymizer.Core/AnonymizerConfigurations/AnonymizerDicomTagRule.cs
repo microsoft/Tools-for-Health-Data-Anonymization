@@ -10,7 +10,6 @@ using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
@@ -82,10 +81,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
             }
 
             // Parse and validate settings
-            JToken parameters = null;
+            JObject parameters = null;
             if (rule.ContainsKey(Constants.Parameters))
             {
-                parameters = rule[Constants.Parameters];
+                parameters = rule[Constants.Parameters].ToObject<JObject>();
             }
 
             IDicomAnonymizationSetting ruleSetting = null;
@@ -108,10 +107,17 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
             }
             else if (parameters != null)
             {
+                var propertyKeys = parameters.Properties().Select(x => x.Name);
                 ruleSetting = configuration.DefaultSettings.GetDefaultSetting(method);
-                var settings = JObject.Parse(JsonConvert.SerializeObject(ruleSetting));
-                settings.Merge(parameters, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Concat });
-                ruleSetting = AnonymizerDefaultSettings.DicomSettingsMapping[method].CreateFromRuleSettings(settings);
+                foreach (var prop in ruleSetting.GetType().GetProperties())
+                {
+                    if (!propertyKeys.Contains(prop.Name, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        parameters.Add(prop.Name, prop.GetValue(ruleSetting)?.ToString());
+                    }
+                }
+
+                ruleSetting = AnonymizerDefaultSettings.DicomSettingsMapping[method].CreateFromRuleSettings(parameters);
                 ruleSetting.Validate();
             }
 

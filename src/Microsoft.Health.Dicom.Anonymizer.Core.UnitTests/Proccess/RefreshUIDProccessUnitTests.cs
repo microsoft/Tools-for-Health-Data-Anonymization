@@ -48,7 +48,7 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(GetUnsupportedVRItemForRefreshUID))]
-        public void GivenADataSetWithUnsupportedVRForCryptoHash_WhenCryptoHash_ExceptionWillBeThrown(DicomTag tag, string value)
+        public void GivenADataSetWithUnsupportedVRForRefreshUID_WhenRefreshUID_ExceptionWillBeThrown(DicomTag tag, string value)
         {
             var dataset = new DicomDataset
             {
@@ -60,7 +60,7 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(GetValidVRItemForRefreshUID))]
-        public void GivenADataSetWithValidVRForCryptoHash_WhenCryptoHash_ItemWillBeHashed(DicomTag tag, string value)
+        public void GivenADataSetWithValidVRForRefreshUID_WhenRefreshUID_CorrectResultWillBeReturned(DicomTag tag, string value)
         {
             var dataset = new DicomDataset
             {

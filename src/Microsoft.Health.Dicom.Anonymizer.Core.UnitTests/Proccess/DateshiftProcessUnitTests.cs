@@ -28,7 +28,6 @@ namespace UnitTests
 
         public static IEnumerable<object[]> GetUnsupportedVRItemForDateShift()
         {
-            // Invalid output length limitation
             yield return new object[] { DicomTag.RetrieveAETitle, "TEST" }; // AE
             yield return new object[] { DicomTag.PatientAge, "100Y" }; // AS
             yield return new object[] { DicomTag.Query​Retrieve​Level, "0" }; // CS
@@ -36,8 +35,6 @@ namespace UnitTests
             yield return new object[] { DicomTag.Stage​Number, "1234" }; // IS
             yield return new object[] { DicomTag.Patient​Telephone​Numbers, "TEST" }; // SH
             yield return new object[] { DicomTag.SOP​Classes​In​Study, "12345" }; // UI
-
-            // Invalid input
             yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345" }; // FD
             yield return new object[] { DicomTag.Examined​Body​Thickness, "12345" }; // FL
             yield return new object[] { DicomTag.Doppler​Sample​Volume​X​Position, "12345" }; // SL
@@ -62,7 +59,7 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(GetUnsupportedVRItemForDateShift))]
-        public void GivenADataSetWithUnsupportedVRForDateShift_WhenCryptoHash_ExceptionWillBeThrown(DicomTag tag, string value)
+        public void GivenADataSetWithUnsupportedVRForDateShift_WhenDateShift_ExceptionWillBeThrown(DicomTag tag, string value)
         {
             var dataset = new DicomDataset
             {
@@ -77,7 +74,7 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(GetDAItemForDateshift))]
-        public void GivenADataSetWithDAItemForDateshift_WhenCryptoHash_ItemWillBeHashed(DicomTag tag, string value, string minExpectedValue, string maxExpectedValue)
+        public void GivenADataSetWithDAItemForDateshift_WhenDateShift_CorrectValueWillBeReturned(DicomTag tag, string value, string minExpectedValue, string maxExpectedValue)
         {
             var dataset = new DicomDataset
             {
@@ -93,7 +90,7 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(GetDTItemForDateshift))]
-        public void GivenADataSetWithDTItemForDateshift_WhenCryptoHash_ItemWillBeHashed(DicomTag tag, string value, string minExpectedValue, string maxExpectedValue)
+        public void GivenADataSetWithDTItemForDateshift_WhenDateShift_CorrectValueWillBeReturned(DicomTag tag, string value, string minExpectedValue, string maxExpectedValue)
         {
             var dataset = new DicomDataset
             {

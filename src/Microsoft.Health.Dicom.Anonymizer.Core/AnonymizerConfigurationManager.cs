@@ -40,7 +40,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             try
             {
                 var content = File.ReadAllText(configFilePath);
-
                 return CreateFromSettingsInJson(content);
             }
             catch (IOException innerException)
