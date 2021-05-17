@@ -22,11 +22,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private readonly DicomEncryptionSetting _defaultSetting;
 
-        public EncryptionProcessor(DicomEncryptionSetting defaultSetting)
+        public EncryptionProcessor(DicomEncryptionSetting defaultSetting = null)
         {
-            EnsureArg.IsNotNull(defaultSetting, nameof(defaultSetting));
-
-            _defaultSetting = defaultSetting;
+            _defaultSetting = defaultSetting ?? new DicomEncryptionSetting();
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo = null, IDicomAnonymizationSetting settings = null)

@@ -21,11 +21,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private readonly DicomCryptoHashSetting _defaultSetting;
 
-        public CryptoHashProcessor(DicomCryptoHashSetting defaultSetting)
+        public CryptoHashProcessor(DicomCryptoHashSetting defaultSetting = null)
         {
-            EnsureArg.IsNotNull(defaultSetting, nameof(defaultSetting));
-
-            _defaultSetting = defaultSetting;
+            _defaultSetting = defaultSetting ?? new DicomCryptoHashSetting();
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo = null, IDicomAnonymizationSetting settings = null)

@@ -21,9 +21,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private readonly DicomDateShiftSetting _defaultSetting;
 
-        public DateShiftProcessor(DicomDateShiftSetting defaultSetting)
+        public DateShiftProcessor(DicomDateShiftSetting defaultSetting = null)
         {
-            _defaultSetting = defaultSetting;
+            _defaultSetting = defaultSetting ?? new DicomDateShiftSetting();
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo, IDicomAnonymizationSetting settings = null)

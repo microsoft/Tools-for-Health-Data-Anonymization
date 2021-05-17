@@ -14,11 +14,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class SubstituteProcessor : IAnonymizerProcessor
     {
-        private DicomSubstituteSetting _defaultSubstituteSetting;
+        private DicomSubstituteSetting _defaultSetting;
 
-        public SubstituteProcessor(DicomSubstituteSetting defaultSubstituteSettings)
+        public SubstituteProcessor(DicomSubstituteSetting defaultSetting)
         {
-            _defaultSubstituteSetting = defaultSubstituteSettings;
+            _defaultSetting = defaultSetting ?? new DicomSubstituteSetting();
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo = null, IDicomAnonymizationSetting settings = null)
@@ -26,7 +26,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            var substituteSetting = (DicomSubstituteSetting)(settings ?? _defaultSubstituteSetting);
+            var substituteSetting = (DicomSubstituteSetting)(settings ?? _defaultSetting);
 
             if (item is DicomOtherByte || item is DicomSequence || item is DicomFragmentSequence)
             {

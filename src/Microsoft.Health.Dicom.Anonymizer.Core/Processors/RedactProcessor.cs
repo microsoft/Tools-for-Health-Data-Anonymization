@@ -16,11 +16,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class RedactProcessor : IAnonymizerProcessor
     {
-        private DicomRedactSetting _defaultRedactFunction;
+        private DicomRedactSetting _defaultSetting;
 
-        public RedactProcessor(DicomRedactSetting defaultRedactSettings)
+        public RedactProcessor(DicomRedactSetting defaultSetting)
         {
-            _defaultRedactFunction = defaultRedactSettings;
+            _defaultSetting = defaultSetting ?? new DicomRedactSetting();
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo = null, IDicomAnonymizationSetting settings = null)
@@ -28,7 +28,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            var redactSettings = (DicomRedactSetting)(settings ?? _defaultRedactFunction);
+            var redactSettings = (DicomRedactSetting)(settings ?? _defaultSetting);
             var redactFunction = new RedactFunction(redactSettings);
 
             var redactedValues = new List<string>() { };

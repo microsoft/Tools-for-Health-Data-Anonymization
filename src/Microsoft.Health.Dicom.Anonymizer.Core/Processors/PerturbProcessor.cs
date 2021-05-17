@@ -19,11 +19,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private DicomPerturbSetting _defaultSetting;
 
-        public PerturbProcessor(DicomPerturbSetting defaultSetting)
+        public PerturbProcessor(DicomPerturbSetting defaultSetting = null)
         {
-            EnsureArg.IsNotNull(defaultSetting, nameof(defaultSetting));
-
-            _defaultSetting = defaultSetting;
+            _defaultSetting = defaultSetting ?? new DicomPerturbSetting();
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo = null, IDicomAnonymizationSetting settings = null)
