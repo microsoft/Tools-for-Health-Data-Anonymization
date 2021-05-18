@@ -50,7 +50,7 @@ namespace UnitTests
         public void GivenDicomDataSet_SetAutoValidationTrue_IfSkipFailedItem_WhenAnonymizeWithUnsupportedOperation_OriginalValueWillBeReturned()
         {
             var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json");
-            engine.Anonymize(Dataset);
+            engine.AnonymizeDateset(Dataset);
             var dicomFile = DicomFile.Open("DicomResults/UnchangedValue.dcm");
             foreach (var item in Dataset)
             {
@@ -62,14 +62,14 @@ namespace UnitTests
         public void GivenDicomDataSet_SetAutoValidationTrue_IfNotSkipFailedItem_WhenAnonymizeWithUnsupportedOperation_ExceptionWillBeThrown()
         {
             var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerSettings() { SkipFailedItem = false });
-            Assert.Throws<AnonymizationOperationException>(() => engine.Anonymize(Dataset));
+            Assert.Throws<AnonymizationOperationException>(() => engine.AnonymizeDateset(Dataset));
         }
 
         [Fact]
         public void GivenDicomDataSet_SetAutoValidationTrue_WhenAnonymize_ValidDicomDatasetWillBeReturn()
         {
             var engine = new AnonymizerEngine("./TestConfigurations/configuration-test-engine.json");
-            engine.Anonymize(Dataset);
+            engine.AnonymizeDateset(Dataset);
             var dicomFile = DicomFile.Open("DicomResults/anonymized.dcm");
             foreach (var item in Dataset)
             {
@@ -81,7 +81,7 @@ namespace UnitTests
         public void GivenDicomDataSet_SetAutoValidationFalse_WhenAnonymizeWithUnsupportedOperation_InvalidDicomDatasetWillBeReturn()
         {
             var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerSettings() { AutoValidate = false });
-            engine.Anonymize(Dataset);
+            engine.AnonymizeDateset(Dataset);
             var dicomFile = DicomFile.Open("DicomResults/Invalid-String-Format.dcm");
             foreach (var item in Dataset)
             {

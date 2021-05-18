@@ -77,7 +77,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
         internal static async Task AnonymizeOneFile(string inputFile, string outputFile, AnonymizerEngine engine)
         {
             DicomFile dicomFile = await DicomFile.OpenAsync(inputFile).ConfigureAwait(false);
-            engine.Anonymize(dicomFile.Dataset);
+            engine.AnonymizeDateset(dicomFile.Dataset);
             dicomFile.Save(outputFile);
             Console.WriteLine($"Finished processing '{inputFile}'!");
         }
