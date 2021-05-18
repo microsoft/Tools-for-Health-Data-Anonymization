@@ -1,0 +1,74 @@
+﻿using BenchmarkDotNet.Attributes;
+using Microsoft.Extensions.Logging;
+using Microsoft.Health.Fhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Tool;
+using System;
+using System.Collections.Generic;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+using Task = System.Threading.Tasks.Task;
+
+namespace Microsoft.Health.Fhir.Anonymizer.Benchmarks
+{
+    //these are better set via the command line for running the benchmarks:
+    //[ShortRunJob(RuntimeMoniker.NetCoreApp31)]
+    //[ShortRunJob(RuntimeMoniker.NetCoreApp50)]
+    //[MemoryDiagnoser]
+    [CsvMeasurementsExporter]
+    [RPlotExporter]
+    public class FullFlow
+    {
+        private readonly string inputFolder = @"C:\onecseweek21\samples\input";
+        private readonly string outputFolder = @"C:\onecseweek21\samples\output";
+        private readonly AnonymizationToolOptions toolOptions = new AnonymizationToolOptions();
+
+        public IEnumerable<BenchmarkConfig> Configs()
+        {
+            yield return new BenchmarkConfig("Default", "configuration-sample.json");
+            yield return new BenchmarkConfig("Presidio", "configuration-sample-presidio.json");
+        }        
+
+        [Benchmark]
+        [ArgumentsSource(nameof(Configs))]
+        public async Task AnonymizeJsonFiles(BenchmarkConfig config)
+        {
+            await new FilesAnonymizerForJsonFormatResource(config.FullPath, inputFolder, outputFolder, toolOptions)
+                                .AnonymizeAsync()
+                                .ConfigureAwait(false);
+        }
+
+        #region GlobalSetup
+        //note: this does not seem to get called, to be investigated.
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<Program>();
+
+        [GlobalSetup]
+        public void GlobalSetup()
+        {
+            Console.WriteLine("// GlobalSetup");
+            AnonymizerLogging.LoggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddFilter("Microsoft", LogLevel.Warning)
+                       .AddFilter("System", LogLevel.Warning)
+                       .AddFilter("Fhir.Anonymizer", LogLevel.Debug)
+                       .AddConsole();
+            });
+
+            _logger.LogDebug("// GlobalSetup from logger");
+        }
+        #endregion
+    }
+
+    public class BenchmarkConfig
+    {
+        public BenchmarkConfig(string name, string fileName)
+        {
+            Name = name;
+            FileName = fileName;
+        }
+
+        public string Name { get; set; }
+        public string FileName { get; set; }
+        public string FullPath => @"C:\onecseweek21\samples\" + FileName;
+
+        public override string ToString() => Name;
+    }
+}
