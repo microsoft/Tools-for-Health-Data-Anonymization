@@ -1,6 +1,7 @@
 <Project>
   
   <PropertyGroup>
+    <Version>2.2.0</Version>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\CustomAnalysisRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
