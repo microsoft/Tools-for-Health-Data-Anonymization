@@ -51,7 +51,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-
         private void InitializeProcessors(AnonymizerDefaultSettings defaultSettings)
         {
             _processors.Add(AnonymizerMethod.Redact.ToString().ToUpperInvariant(), new RedactProcessor(defaultSettings.RedactDefaultSetting));

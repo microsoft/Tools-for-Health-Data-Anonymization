@@ -15,7 +15,7 @@
     <PackageReference Include="Ensure.That" Version="9.2.0" />
     <PackageReference Include="fo-dicom" Version="4.0.7" />
     <PackageReference Include="fo-dicom.NetCore" Version="4.0.7" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0-preview.1.21102.12" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NuGet.CommandLine" Version="5.8.1">
       <PrivateAssets>all</PrivateAssets>
