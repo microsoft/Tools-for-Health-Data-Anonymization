@@ -14,6 +14,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationValidatorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngineTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Api\AnalyzerApiMock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Api\AnonymizerApiMock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Api\PresidioApiHandlerTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Api\PresidioApiHandlerMock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeNavExtensionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeVisitorExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementTypeExtensionsTests.cs" />

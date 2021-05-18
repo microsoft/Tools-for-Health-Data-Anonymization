@@ -62,7 +62,7 @@
     {"path": "FamilyMemberHistory.deceased", "method": "redact"},
     {"path": "FamilyMemberHistory.condition.onset as Age", "method": "perturb", "span": 0.1, "rangeType": "proportional", "roundTo": 0},
     {"path": "FamilyMemberHistory.condition.onset", "method": "redact"},
-    {"path": "ClinicalImpression.description", "method": "redact"},  
+    {"path": "ClinicalImpression.description", "method": "presidio"},  
     {"path": "ClinicalImpression.summary", "method": "redact"},
     {"path": "ClinicalImpression.finding.basis", "method": "redact"},
     {"path": "DetectedIssue.detail", "method": "redact"},
@@ -188,6 +188,9 @@
       "879",
       "884",
       "893"
-    ]
+    ],
+    "presidioAnalyzedLanguage": "en",
+    "presidioAnalyzerUrl": "http://127.0.0.1:5002",
+    "presidioAnonymizerUrl": "http://127.0.0.1:5001"
   }
 }  

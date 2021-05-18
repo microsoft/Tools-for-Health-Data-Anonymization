@@ -6,6 +6,7 @@ using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Fhir.Anonymizer.Api;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
@@ -121,7 +122,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             _processors[AnonymizerMethod.Perturb.ToString().ToUpperInvariant()] = new PerturbProcessor();
             _processors[AnonymizerMethod.Keep.ToString().ToUpperInvariant()] = new KeepProcessor();
             _processors[AnonymizerMethod.Generalize.ToString().ToUpperInvariant()] = new GeneralizeProcessor();
-            _processors[AnonymizerMethod.Presidio.ToString().ToUpperInvariant()] = new PresidioProcessor(configurationManager.GetParameterConfiguration().PresidioAnalyzerUrl, configurationManager.GetParameterConfiguration().PresidioAnonymizerUrl);
+            _processors[AnonymizerMethod.Presidio.ToString().ToUpperInvariant()] = new PresidioProcessor(
+                PresidioApiHandler.Instantiate(configurationManager.GetParameterConfiguration()));
         }
     }
 }
