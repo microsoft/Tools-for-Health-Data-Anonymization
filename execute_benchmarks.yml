@@ -1,0 +1,22 @@
+trigger:
+- master
+
+pool:
+  vmImage: windows-latest
+
+steps:
+- task: WindowsMachineFileCopy@2
+  inputs:
+    SourcePath: 'filessource'
+    MachineNames: 'list,of,machnes'
+    AdminUserName: 'benchmark_runnet'
+    AdminPassword: '$(benchmark.password)'
+    TargetPath: 'c:\fhircli\benchmarks'
+- task: PowerShellOnTargetMachines@3
+  inputs:
+    Machines: 'list,of,machnes'
+    UserName: 'benchmark_runner'
+    UserPassword: '$(benchmark.password)'
+    ScriptType: 'FilePath'
+    ScriptPath: 'c:\fhircli\benchmarks\run_benchmarks.ps1'
+    ScriptArguments: 'args'
