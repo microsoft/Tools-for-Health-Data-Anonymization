@@ -527,10 +527,14 @@ In cases of free text in the FHIR file format, it's possible to anonymize only s
 1. [Docker](https://docs.docker.com/get-docker/)
 
 ### Follow the instructions to enable Presidio:
-1. Download Presidio's docker-compose file and execute it:
+1. Run Presidio docker images:
 ```
-curl https://raw.githubusercontent.com/microsoft/presidio/main/docker-compose.yml --output docker-compose.yml
-docker-compose up
+docker pull mcr.microsoft.com/presidio-analyzer
+docker pull mcr.microsoft.com/presidio-anonymizer
+
+# Run containers with default ports
+docker run -d -p 5001:3000 mcr.microsoft.com/presidio-analyzer:latest
+docker run -d -p 5002:3000 mcr.microsoft.com/presidio-anonymizer:latest
 ```
 2. Edit your configuration file, and specify `presidio` as method, to the path you desire. For example:
 ```
