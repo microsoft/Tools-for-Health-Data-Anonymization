@@ -17,9 +17,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Benchmarks
     [RPlotExporter]
     public class FullFlow
     {
-        private readonly string inputFolder = @"C:\onecseweek21\samples\input";
-        private readonly string outputFolder = @"C:\onecseweek21\samples\output";
-        private readonly AnonymizationToolOptions toolOptions = new AnonymizationToolOptions();
+        private readonly string inputFolder = @"C:\fhircli\benchmarks\samples\input";
+        private readonly string outputFolder = @"C:\fhircli\benchmarks\samples\output";
+        private readonly AnonymizationToolOptions toolOptions = new AnonymizationToolOptions { IsRecursive = true };
 
         public IEnumerable<BenchmarkConfig> Configs()
         {
@@ -67,7 +67,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Benchmarks
 
         public string Name { get; set; }
         public string FileName { get; set; }
-        public string FullPath => @"C:\onecseweek21\samples\" + FileName;
+        public string FullPath => @"C:\fhircli\benchmarks\samples\config\" + FileName;
 
         public override string ToString() => Name;
     }
