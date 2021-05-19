@@ -1,5 +1,11 @@
 trigger:
-- master
+  none
+
+variables:
+  benchmarkRoot: c:/fhircli/benchmarks
+  benchmarkRunnerAccountName: benchmark_runner
+  benchmarkMachines: fhir-cli-benchmarks
+  ServiceConnectionId: 81264a6f-8ced-45f8-8b1f-20830309bd66
 
 pool:
   vmImage: windows-latest
@@ -8,15 +14,22 @@ steps:
 - task: WindowsMachineFileCopy@2
   inputs:
     SourcePath: 'filessource'
-    MachineNames: 'list,of,machnes'
-    AdminUserName: 'benchmark_runnet'
+    MachineNames: '$(benchmarkMachines)'
+    AdminUserName: '$(benchmarkRunnerAccountName)'
     AdminPassword: '$(benchmark.password)'
-    TargetPath: 'c:\fhircli\benchmarks'
+    TargetPath: '$(benchmarkRoot)\src'
+- task: WindowsMachineFileCopy@2
+  inputs:
+    SourcePath: 'filessource'
+    MachineNames: '$(benchmarkMachines)'
+    AdminUserName: '$(benchmarkRunnerAccountName)'
+    AdminPassword: '$(benchmark.password)'
+    TargetPath: '$(benchmarkRoot)\src'
 - task: PowerShellOnTargetMachines@3
   inputs:
-    Machines: 'list,of,machnes'
-    UserName: 'benchmark_runner'
+    Machines: '$(benchmarkMachines)'
+    UserName: '$(benchmarkRunnerAccountName)'
     UserPassword: '$(benchmark.password)'
     ScriptType: 'FilePath'
-    ScriptPath: 'c:\fhircli\benchmarks\run_benchmarks.ps1'
+    ScriptPath: '$(benchmarkRoot)\src\run_benchmarks.ps1'
     ScriptArguments: 'args'
