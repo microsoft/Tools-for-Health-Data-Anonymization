@@ -7,6 +7,9 @@ using System.Collections.Generic;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Benchmarks
 {
+    /// <summary>
+    /// This class is an example on how to create benchmarks for specific methods
+    /// </summary> 
     [ShortRunJob(RuntimeMoniker.NetCoreApp31)]
     [ShortRunJob(RuntimeMoniker.NetCoreApp50)]
     [MemoryDiagnoser]
