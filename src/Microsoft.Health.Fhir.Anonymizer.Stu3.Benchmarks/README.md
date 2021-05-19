@@ -1,10 +1,18 @@
 ﻿To run, use the following command:
 
 ```
-Microsoft.Health.Fhir.Anonymizer.Benchmarks\\> dotnet run -c Release -- --job medium --memory --runtimes netcoreapp3.1 netcoreapp5.0 --filter *FullFlow*
+src/Microsoft.Health.Fhir.Anonymizer.Benchmarks\\> dotnet run -c Release -- --job medium --memory --runtimes netcoreapp3.1 --filter *FullFlow*
 ```
 
-## Prerequisites for Plots
+## Runtimes
+
+You can benchmark on multiple runtimes by specifying them on the `--runtimes` argument:
+
+```
+src/Microsoft.Health.Fhir.Anonymizer.Benchmarks\\> dotnet run -c Release -- --job medium --memory --runtimes netcoreapp3.1 netcoreapp5.0 --filter *FullFlow*
+```
+
+## Prerequisites for generating Plots
 
 1. Perl
    - `winget install --id="ActiveState.ActivePerl" --exact`
