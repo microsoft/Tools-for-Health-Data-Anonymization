@@ -21,6 +21,7 @@
 &nbsp;&nbsp; [Substitute method](#Substitute-method)  
 &nbsp;&nbsp; [Perturb method](#Perturb-method)  
 &nbsp;&nbsp; [Generalize method](#Generalize-method)  
+&nbsp;&nbsp; [Using Presidio to de-identify PII in free text fields](#Using-Presidio-to-de-identify-PII-in-free-text-fields)
 [Resources](#resources)  
 &nbsp;&nbsp; [FAQ](#faq)  
 [Contributing](#contributing)
@@ -517,6 +518,42 @@ Since the output of FHIR expression is flexible, users should provide expression
 ## Current limitations
 1. We support FHIR data in R4 and STU 3, JSON format. Support for XML is planned.
 2. De-identification of fields within Extensions is not supported. 
+
+## Using Presidio to de-identify PII in free text fields
+[Presidio](https://github.com/Microsoft/presidio) helps to ensure sensitive data is properly managed and governed. It provides fast identification and anonymization modules for private entities in text such as credit card numbers, names, locations, social security numbers, bitcoin wallets, US phone numbers, financial data and more.
+
+In cases of free text in the FHIR file format, it's possible to anonymize only sensitive data, leaving the rest of the text in place.
+### Pre-requisites
+1. [Docker](https://docs.docker.com/get-docker/)
+
+### Follow the instructions to enable Presidio:
+1. Download Presidio's docker-compose file and execute it:
+```
+curl https://raw.githubusercontent.com/microsoft/presidio/main/docker-compose.yml --output docker-compose.yml
+docker-compose up
+```
+2. Edit your configuration file, and specify `presidio` as method, to the path you desire. For example:
+```
+{"path": "ClinicalImpression.description", "method": "presidio"},
+{"path": "text", "method": "presidio"},
+```
+3. Edit you configuration file, and add the required settings to connect to Presidio:
+```
+"parameters": {
+    "dateShiftKey": "",
+    "dateShiftScope": "resource",
+    ...
+    "presidioAnalyzedLanguage": "en",
+    "presidioAnalyzerUrl": "http://127.0.0.1:5002",
+    "presidioAnonymizerUrl": "http://127.0.0.1:5001"
+  }
+```
+4. You can now run the FHIR Tools CLI.
+
+#### Here is an example of an output:
+```
+"...in <DATE_TIME>. Saw Dr. <PERSON> re her <PERSON> foot. He put her in a boot and wheelchair for <DATE_TIME> and it resolved well."
+```
 
 ## FAQ
 
