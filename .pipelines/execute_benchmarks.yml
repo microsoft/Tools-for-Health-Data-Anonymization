@@ -2,7 +2,7 @@ trigger:
   none
 
 variables:
-  - group: my-variable-group
+  - group: Benchmark-pipeline-variable
 
 parameters:
 - name: BenchmarkJobType
