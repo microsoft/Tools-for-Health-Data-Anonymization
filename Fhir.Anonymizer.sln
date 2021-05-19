@@ -52,12 +52,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anony
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".pipelines", ".pipelines", "{5D160BDD-8CAF-4589-8716-26EB49445D15}"
 	ProjectSection(SolutionItems) = preProject
-		execute_benchmarks.yml = execute_benchmarks.yml
+		.pipelines\execute_benchmarks.yml = .pipelines\execute_benchmarks.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{628B8661-EE00-4AA0-99A4-1CF2C9ED1EED}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{1448A6AF-C0E5-44D1-85A1-F4C3DE5656B7}"
 	ProjectSection(SolutionItems) = preProject
-		run_benchmarks.ps1 = run_benchmarks.ps1
+		.pipelines\scripts\run_benchmarks.ps1 = .pipelines\scripts\run_benchmarks.ps1
 	EndProjectSection
 EndProject
 Global
@@ -162,7 +162,7 @@ Global
 		{8BAD1364-4C47-443A-95E9-DB624FDF78C8} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{DA3123C7-D0C4-4636-8A85-DF1F52A04794} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{25E50A5F-41A8-4BF3-8DE6-1BBF061E12C4} = {4273D1F5-D916-4291-8B60-7D74202D425E}
-		{628B8661-EE00-4AA0-99A4-1CF2C9ED1EED} = {5D160BDD-8CAF-4589-8716-26EB49445D15}
+		{1448A6AF-C0E5-44D1-85A1-F4C3DE5656B7} = {5D160BDD-8CAF-4589-8716-26EB49445D15}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19A940B3-FA97-4729-AC91-EE68070BCFC1}
