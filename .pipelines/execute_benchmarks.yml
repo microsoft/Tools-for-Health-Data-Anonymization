@@ -2,10 +2,13 @@ trigger:
   none
 
 variables:
-  benchmarkRoot: c:/fhircli/benchmarks
-  benchmarkRunnerAccountName: benchmark_runner
-  benchmarkMachines: fhir-cli-benchmarks
-  ServiceConnectionId: 81264a6f-8ced-45f8-8b1f-20830309bd66
+  - group: my-variable-group
+
+parameters:
+- name: BenchmarkJobType
+  type: string
+  values: [ short,medium,long ]
+  default: short
 
 pool:
   vmImage: windows-latest
@@ -13,23 +16,25 @@ pool:
 steps:
 - task: WindowsMachineFileCopy@2
   inputs:
-    SourcePath: 'filessource'
-    MachineNames: '$(benchmarkMachines)'
-    AdminUserName: '$(benchmarkRunnerAccountName)'
-    AdminPassword: '$(benchmark.password)'
-    TargetPath: '$(benchmarkRoot)\src'
+    SourcePath: '$(Build.Repository.LocalPath)\samples'
+    MachineNames: '$(Benchmark.VMResourceGroup)'
+    AdminUserName: '$(Benchmark.VMAccountName)'
+    AdminPassword: '$(Benchmark.VMPassword)'
+    TargetPath: '$(Benchmark.RootPath)\samples'
+    CleanTargetBeforeCopy: true
 - task: WindowsMachineFileCopy@2
   inputs:
-    SourcePath: 'filessource'
-    MachineNames: '$(benchmarkMachines)'
+    SourcePath: '$(Build.Repository.LocalPath)\src'
+    MachineNames: '$(Benchmark.VMResourceGroup)'
     AdminUserName: '$(benchmarkRunnerAccountName)'
-    AdminPassword: '$(benchmark.password)'
-    TargetPath: '$(benchmarkRoot)\src'
+    AdminPassword: '$(Benchmark.VMPassword)'
+    TargetPath: '$(Benchmark.RootPath)\src'
+    CleanTargetBeforeCopy: true
 - task: PowerShellOnTargetMachines@3
   inputs:
-    Machines: '$(benchmarkMachines)'
-    UserName: '$(benchmarkRunnerAccountName)'
-    UserPassword: '$(benchmark.password)'
+    Machines: '$(Benchmark.VMResourceGroup)'
+    UserName: '$(Benchmark.VMAccountName)'
+    UserPassword: '$(Benchmark.VMPassword)'
     ScriptType: 'FilePath'
-    ScriptPath: '$(benchmarkRoot)\src\run_benchmarks.ps1'
-    ScriptArguments: 'args'
+    ScriptPath: '$(Benchmark.RootPath)\src\run_benchmarks.ps1'
+    ScriptArguments:  ${{ parameters.BenchmarkJobType }}
