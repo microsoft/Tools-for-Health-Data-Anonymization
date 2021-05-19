@@ -16,9 +16,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
     {
         internal static async Task AnonymizeAsync(AnonymizerOptions options)
         {
-            try
-            {
-                var engine = new AnonymizerEngine(
+            var engine = new AnonymizerEngine(
                     options.ConfigurationFilePath,
                     new AnonymizerSettings()
                     {
@@ -26,41 +24,35 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
                         AutoValidate = options.AutoValidate,
                         ValidateInput = options.ValidateInput,
                     });
-                if (options.InputFile != null && options.OutputFile != null)
-                {
-                    await AnonymizeOneFile(options.InputFile, options.OutputFile, engine);
-                }
-                else if (options.InputFolder != null && options.OutputFolder != null)
-                {
-                    if (IsSameDirectory(options.InputFolder, options.OutputFolder))
-                    {
-                        throw new Exception("Input and output folders are the same! Please choose another folder.");
-                    }
-
-                    Directory.CreateDirectory(options.OutputFolder);
-
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
-                    var num = 0;
-                    foreach (string file in Directory.EnumerateFiles(options.InputFolder, "*.dcm", SearchOption.AllDirectories))
-                    {
-                        Console.WriteLine(file);
-                        await AnonymizeOneFile(file, Path.Join(options.OutputFolder, Path.GetFileName(file)), engine);
-                        num++;
-                    }
-
-                    sw.Stop();
-                    TimeSpan ts = sw.Elapsed;
-                    Console.WriteLine("{1} files costed for anonymization is: {0}ms", ts.TotalMilliseconds, num);
-                }
-                else
-                {
-                    Console.WriteLine($"Invalid command line. Please specify inputFile( or inputFolder) and outputFile( or outputFolder) at the same time.");
-                }
-            }
-            catch (Exception ex)
+            if (options.InputFile != null && options.OutputFile != null)
             {
-                Console.WriteLine($"Process failed! {ex}");
+                await AnonymizeOneFile(options.InputFile, options.OutputFile, engine);
+            }
+            else if (options.InputFolder != null && options.OutputFolder != null)
+            {
+                if (IsSameDirectory(options.InputFolder, options.OutputFolder))
+                {
+                    Console.Error.WriteLine("Input and output folders are the same! Please choose another folder.");
+                }
+
+                Directory.CreateDirectory(options.OutputFolder);
+
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                var num = 0;
+                foreach (string file in Directory.EnumerateFiles(options.InputFolder, "*.dcm", SearchOption.AllDirectories))
+                {
+                    await AnonymizeOneFile(file, Path.Join(options.OutputFolder, Path.GetFileName(file)), engine);
+                    num++;
+                }
+
+                sw.Stop();
+                TimeSpan ts = sw.Elapsed;
+                Console.WriteLine("{1} files costed for anonymization is: {0}ms", ts.TotalMilliseconds, num);
+            }
+            else
+            {
+                Console.Error.WriteLine($"Invalid command line. Please specify inputFile( or inputFolder) and outputFile( or outputFolder) at the same time.");
             }
         }
 
