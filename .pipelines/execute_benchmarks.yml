@@ -14,40 +14,9 @@ pool:
   vmImage: windows-latest
 
 steps:
-
-- task: AzureFileCopy@4
+- task: DotNetCoreCLI@2
   inputs:
-    SourcePath: '$(Build.Repository.LocalPath)\samples'
-    azureSubscription: 'FHIR-CLI-BENCHMARK-TEST'
-    Destination: 'AzureVMs'
-    resourceGroup: 'FHIR-CLI-BENCHMARKS'
-    storage: 'fhirclibenchmarkstorage'
-    ResourceFilteringMethod: 'tags'
-    MachineNames: 'vmType:benchmark'
-    vmsAdminUserName: '$(Benchmark.VMAccountName)'
-    vmsAdminPassword: '$(Benchmark.VMPassword)'
-    TargetPath: '$(Benchmark.RootPath)\samples'
-    CleanTargetBeforeCopy: true
+    command: 'run'
+    arguments: '-c Release -- --job ${{ parameters.BenchmarkJobType }} --memory --runtimes netcoreapp3.1 --filter *FullFlow*'
+    workingDirectory: '$(Build.SourcesDirectory)\src\Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks'
 
-- task: AzureFileCopy@4
-  inputs:
-    SourcePath: '$(Build.Repository.LocalPath)\src'
-    azureSubscription: 'FHIR-CLI-BENCHMARK-TEST'
-    Destination: 'AzureVMs'
-    resourceGroup: 'FHIR-CLI-BENCHMARKS'
-    storage: 'fhirclibenchmarkstorage'
-    ResourceFilteringMethod: 'tags'
-    MachineNames: 'vmType:benchmark'
-    vmsAdminUserName: '$(Benchmark.VMAccountName)'
-    vmsAdminPassword: '$(Benchmark.VMPassword)'
-    TargetPath: '$(Benchmark.RootPath)\src'
-    CleanTargetBeforeCopy: true
-
-- task: PowerShellOnTargetMachines@3
-  inputs:
-    Machines: '$(Benchmark.VMResourceGroup)'
-    UserName: '$(Benchmark.VMAccountName)'
-    UserPassword: '$(Benchmark.VMPassword)'
-    ScriptType: 'FilePath'
-    ScriptPath: '$(Benchmark.RootPath)\src\run_benchmarks.ps1'
-    ScriptArguments:  ${{ parameters.BenchmarkJobType }}
