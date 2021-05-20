@@ -1,0 +1,41 @@
+trigger: none
+
+pool:
+  vmImage: 'windows-latest'
+
+parameters:
+- name: benchmarkJobType
+  type: string
+  values: [ dry, short, medium, long ]
+  default: dry
+
+steps:
+  - task: UseDotNet@2
+    displayName: "Install .NET Core 3.1 SDK"
+    inputs:
+      version: 3.1.x
+      packageType: sdk
+
+  - powershell: dotnet --info
+    displayName: ".NET Core Information"
+
+  - task: DockerInstaller@0
+        inputs:
+          dockerVersion: '17.09.0-ce'
+  
+  - powershell: docker --version
+    displayName: "Docker Information"       
+
+  - powershell: |
+      docker pull mcr.microsoft.com/presidio-analyzer
+      docker pull mcr.microsoft.com/presidio-anonymizer
+      docker run -d -p 5001:3000 mcr.microsoft.com/presidio-analyzer:latest
+      docker run -d -p 5002:3000 mcr.microsoft.com/presidio-anonymizer:latest
+      docker ps
+    displayName: "Setup Presidio"   
+  
+  - powershell: 
+    inputs:
+      filePath: 'scripts/run_benchmark.ps1'
+      arguments: '-JobType ${{ parameters.benchmarkJobType }}'
+      workingDirectory: '$(Build.WorkingDirectory)/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks'
