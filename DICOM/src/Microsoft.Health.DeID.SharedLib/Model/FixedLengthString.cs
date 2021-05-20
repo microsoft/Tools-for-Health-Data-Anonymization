@@ -39,7 +39,6 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             {
                 value = sourceValue + new string('0', length - sourceValue.Length);
             }
-
         }
 
         public override string ToString()
