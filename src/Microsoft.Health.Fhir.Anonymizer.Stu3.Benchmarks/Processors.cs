@@ -11,7 +11,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Benchmarks
     /// This class is an example on how to create benchmarks for specific methods
     /// </summary> 
     [ShortRunJob(RuntimeMoniker.NetCoreApp31)]
-    [ShortRunJob(RuntimeMoniker.NetCoreApp50)]
+    [ShortRunJob(RuntimeMoniker.Net50)]
     [MemoryDiagnoser]
     [CsvMeasurementsExporter]
     [RPlotExporter]

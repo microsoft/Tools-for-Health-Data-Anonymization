@@ -9,7 +9,7 @@ src/Microsoft.Health.Fhir.Anonymizer.Benchmarks\\> dotnet run -c Release -- --jo
 You can benchmark on multiple runtimes by specifying them on the `--runtimes` argument:
 
 ```
-src/Microsoft.Health.Fhir.Anonymizer.Benchmarks\\> dotnet run -c Release -- --job medium --memory --runtimes netcoreapp3.1 netcoreapp5.0 --filter *FullFlow*
+src/Microsoft.Health.Fhir.Anonymizer.Benchmarks\\> dotnet run -c Release -- --job medium --memory --runtimes netcoreapp3.1 net5.0 --filter *FullFlow*
 ```
 
 ## Prerequisites for generating Plots
