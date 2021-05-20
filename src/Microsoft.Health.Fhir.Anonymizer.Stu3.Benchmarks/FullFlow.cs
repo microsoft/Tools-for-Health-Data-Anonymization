@@ -35,26 +35,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Benchmarks
                                 .AnonymizeAsync()
                                 .ConfigureAwait(false);
         }
-
-        #region GlobalSetup
-        //note: this does not seem to get called, to be investigated.
-        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<Program>();
-
-        [GlobalSetup]
-        public void GlobalSetup()
-        {
-            Console.WriteLine("// GlobalSetup");
-            AnonymizerLogging.LoggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddFilter("Microsoft", LogLevel.Warning)
-                       .AddFilter("System", LogLevel.Warning)
-                       .AddFilter("Fhir.Anonymizer", LogLevel.Debug)
-                       .AddConsole();
-            });
-
-            _logger.LogDebug("// GlobalSetup from logger");
-        }
-        #endregion
     }
 
     public class BenchmarkConfig
