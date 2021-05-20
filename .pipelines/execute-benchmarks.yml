@@ -20,11 +20,11 @@ steps:
     displayName: ".NET Core Information"
 
   - task: DockerInstaller@0
-        inputs:
-          dockerVersion: '17.09.0-ce'
+    inputs:
+      dockerVersion: '17.09.0-ce'
   
   - powershell: docker --version
-    displayName: "Docker Information"       
+    displayName: "Docker Information"
 
   - powershell: |
       docker pull mcr.microsoft.com/presidio-analyzer
@@ -32,10 +32,16 @@ steps:
       docker run -d -p 5001:3000 mcr.microsoft.com/presidio-analyzer:latest
       docker run -d -p 5002:3000 mcr.microsoft.com/presidio-anonymizer:latest
       docker ps
-    displayName: "Setup Presidio"   
-  
-  - powershell: 
+    displayName: "Setup Presidio"
+
+  - task: PowerShell@2
     inputs:
       filePath: 'scripts/run_benchmark.ps1'
       arguments: '-JobType ${{ parameters.benchmarkJobType }}'
       workingDirectory: '$(Build.WorkingDirectory)/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.WorkingDirectory)/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts'
+      ArtifactName: 'benchmark-artifacts'
+      publishLocation: 'Container'
