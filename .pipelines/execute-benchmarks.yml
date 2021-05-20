@@ -26,6 +26,7 @@ steps:
   - powershell: docker --version
     displayName: "Docker Information"
 
+  - powershell: .\"C:\:Program Files\Docker\Docker\DockerCli.exe" -SwitchDaemon
   - powershell: |
       docker pull mcr.microsoft.com/presidio-analyzer
       docker pull mcr.microsoft.com/presidio-anonymizer
@@ -38,7 +39,7 @@ steps:
     inputs:
       filePath: 'scripts/run_benchmark.ps1'
       arguments: '-JobType ${{ parameters.benchmarkJobType }}'
-      workingDirectory: '$(Build.WorkingDirectory)/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks'
+      workingDirectory: 'src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks'
 
   - task: PublishBuildArtifacts@1
     inputs:
