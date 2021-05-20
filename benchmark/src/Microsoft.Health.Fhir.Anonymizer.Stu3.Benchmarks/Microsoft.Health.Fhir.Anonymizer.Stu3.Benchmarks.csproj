@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.csproj" />
-    <ProjectReference Include="..\Microsoft.Health.Fhir.Anonymizer.Stu3.Core\Microsoft.Health.Fhir.Anonymizer.Stu3.Core.csproj" />
+    <ProjectReference Include="..\..\..\src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.csproj" />
+    <ProjectReference Include="..\..\..\src\Microsoft.Health.Fhir.Anonymizer.Stu3.Core\Microsoft.Health.Fhir.Anonymizer.Stu3.Core.csproj" />
   </ItemGroup>
 
 </Project>

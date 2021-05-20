@@ -1,24 +1,21 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Microsoft.Extensions.Logging;
-using Microsoft.Health.Fhir.Anonymizer.Core;
+using BenchmarkDotNet.Environments;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
 using Microsoft.Health.Fhir.Anonymizer.Tool;
-using System;
 using System.Collections.Generic;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
+using System.IO;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Benchmarks
 {
-    //these are better set via the command line for running the benchmarks:
-    //[ShortRunJob(RuntimeMoniker.NetCoreApp31)]
-    //[ShortRunJob(RuntimeMoniker.NetCoreApp50)]
-    //[MemoryDiagnoser]
+    [MemoryDiagnoser]
     [CsvMeasurementsExporter]
-    [RPlotExporter]
     public class FullFlow
     {
-        private readonly string inputFolder = @"C:\fhircli\benchmarks\samples\input";
-        private readonly string outputFolder = @"C:\fhircli\benchmarks\samples\output";
+        public static readonly string RootPath = Path.Combine(Directory.GetDirectoryRoot(Directory.GetCurrentDirectory()),"fhircli","benchmark");
+        private readonly string inputFolder =  Path.Combine(RootPath,"input");
+        private readonly string outputFolder = Path.Combine(RootPath,"output");
         private readonly AnonymizationToolOptions toolOptions = new AnonymizationToolOptions { IsRecursive = true };
 
         public IEnumerable<BenchmarkConfig> Configs()
@@ -47,7 +44,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Benchmarks
 
         public string Name { get; set; }
         public string FileName { get; set; }
-        public string FullPath => @"C:\fhircli\benchmarks\samples\config\" + FileName;
+        public string FullPath => Path.Combine(FullFlow.RootPath,"config",FileName);
 
         public override string ToString() => Name;
     }
