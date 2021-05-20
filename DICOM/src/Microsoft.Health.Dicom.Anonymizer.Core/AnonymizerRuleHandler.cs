@@ -71,7 +71,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         private AnonymizerDicomTagRule SelectDicomRule(DicomItem item)
         {
-            foreach ( var rule in _rulesByTag)
+            foreach (var rule in _rulesByTag)
             {
                 if (string.Equals(item.Tag.DictionaryEntry.Keyword, rule.Tag?.DictionaryEntry.Keyword, StringComparison.CurrentCultureIgnoreCase)
                 || string.Equals(item.ValueRepresentation.Code, rule.VR?.Code, StringComparison.InvariantCultureIgnoreCase)

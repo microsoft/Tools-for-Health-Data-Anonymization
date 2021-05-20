@@ -153,7 +153,6 @@ namespace De.ID.Function.Shared.UnitTests
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
-
         [Theory]
         [MemberData(nameof(GetHmac512HashFixedLengthStringData))]
 
