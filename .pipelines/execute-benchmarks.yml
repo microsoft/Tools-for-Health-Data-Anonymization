@@ -35,14 +35,22 @@ steps:
       docker ps
     displayName: "Setup Presidio"
 
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.WorkingDirectory)/samples/fhir-stu3-files'
+      Contents: '**'
+      TargetFolder: '$(Agent.TempDirectory)/fhircli/benchmarks/samples/input'
+      CleanTargetFolder: true
+
   - task: PowerShell@2
     inputs:
       filePath: 'scripts/run_benchmark.ps1'
       arguments: '-JobType ${{ parameters.benchmarkJobType }}'
+      pwsh: true
       workingDirectory: 'src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks'
 
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: '$(Build.WorkingDirectory)/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts'
+      PathtoPublish: 'src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts'
       ArtifactName: 'benchmark-artifacts'
       publishLocation: 'Container'
