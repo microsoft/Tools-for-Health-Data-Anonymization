@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AdditionalFiles Remove="D:\Projects\git\FHIR-Tools-for-Anonymization\\stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="GenerateSampleConfig.py" />
   </ItemGroup>
 

@@ -5,6 +5,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Dicom;
 using Dicom.IO.Buffer;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
@@ -40,7 +42,7 @@ namespace UnitTests
             yield return new object[] { DicomTag.Event​Timer​Names, "TestTimer", "967df06624010af6b86a019e26aff938976a82e947e96331d8f1fdf387a88089" }; // LO
             yield return new object[] { DicomTag.Strain​Additional​Information, "TestInformation", "70267ad9b166401a6cd6939564dcb70264bb5a62809948e83eebc1a233f43617" }; // UT
             yield return new object[] { DicomTag.Derivation​Description, "TestDescription", "79a5ed3e37eba9bcd14cc30759916ad5df394047a2fed4ad69f1d8ec5edc5337" }; // ST
-            yield return new object[] { DicomTag.Pixel​Data​Provider​URL, "TEST", "2e7acefff0307262cef6f503fa7019257f3f9d47fc987fb2c5a31ae4f4d3c022" }; // LT
+            yield return new object[] { DicomTag.Pixel​Data​Provider​URL, "http://test", "4983fd14ec2878e50c454764a0d02654ae76fe1001557847b031435100acc9a1" }; // LT
         }
 
         public static IEnumerable<object[]> GetSupportedVRItemForCryptoHashButOutputExceedLengthLimitation()
@@ -109,11 +111,12 @@ namespace UnitTests
         public void GivenADataSetWithDicomElementOB_WhenCryptoHash_ValueWillBeHashed()
         {
             var tag = DicomTag.PixelData;
-            var item = new DicomOtherByte(tag, Convert.FromBase64String("test"));
+            var item = new DicomOtherByte(tag, Encoding.UTF8.GetBytes("test"));
             var dataset = new DicomDataset(item);
 
             Processor.Process(dataset, item, null, new DicomCryptoHashSetting() { CryptoHashKey = "123" });
-            Assert.Equal(Convert.FromBase64String("w/6pPBK4e4ZFIc7W6+6qqXH4A0rUg4km8IK59Rjt75Q="), dataset.GetDicomItem<DicomOtherByte>(tag).Get<byte[]>());
+            var resultBytes = dataset.GetDicomItem<DicomOtherByte>(tag).Get<byte[]>();
+            Assert.Equal("a7f5c8c626f994482813230854f66700e626208f52d913b9bd6b4e039aab0f41", string.Concat(resultBytes.Select(b => b.ToString("x2"))));
         }
 
         [Fact]
@@ -131,7 +134,8 @@ namespace UnitTests
             var enumerator = ((DicomFragmentSequence)dataset.GetDicomItem<DicomItem>(tag)).GetEnumerator();
             while (enumerator.MoveNext())
             {
-                Assert.Equal(Convert.FromBase64String("GtEBG8QlAopjolcUAoegjTjQ8gPkvfBjsHes9uymUak ="), enumerator.Current.Data);
+                var resultString = string.Concat(enumerator.Current.Data.Select(b => b.ToString("x2")));
+                Assert.Equal("1ad1011bc425028a63a257140287a08d38d0f203e4bdf063b077acf6eca651a9", resultString);
             }
         }
 
