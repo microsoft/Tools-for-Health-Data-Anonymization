@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  presidio-anonymizer:
+    image: mcr.microsoft.com/presidio-anonymizer
+    environment:
+      - PORT=5001
+    ports:
+      - "5001:5001"
+  presidio-analyzer:
+    image: mcr.microsoft.com/presidio-anonymizer    
+    environment:
+      - PORT=5001
+    ports:
+      - "5002:5001"
+  fhircli-benchmark:
+    image: fhircli-benchmark
+    privileged: true
+    command: --job ${JOB_TYPE} --filter *FullFlow*
+    volumes:
+      - type: bind
+        source: C:/fhircli/dockerout
+        target: /benchmark/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts
+    build:
+      context: .
+      dockerfile: benchmark/Dockerfile
+    depends_on: 
+      - presidio-analyzer
+      - presidio-anonymizer
