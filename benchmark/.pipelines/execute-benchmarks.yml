@@ -18,26 +18,13 @@ steps:
     displayName: "Docker Information"
 
   - powershell: |
-      docker pull mcr.microsoft.com/presidio-analyzer
-      docker pull mcr.microsoft.com/presidio-anonymizer
-      docker run -d -p 5001:5001 mcr.microsoft.com/presidio-analyzer:latest
-      docker run -d -p 5002:5001 mcr.microsoft.com/presidio-anonymizer:latest
-      docker ps
-    displayName: "Setup Presidio"
-
-  - task: PowerShell@2
-    displayName: "Build Benchmark container"
-    inputs:
-      targetType: 'inline'
-      script: 'docker build -t fhircli-benchmark -f benchmark/Dockerfile .'
-      pwsh: true
+      ${env.JOB_TYPE}=${{ parameters.benchmarkJobType }}
+      docker-compose build
+    displayName: "Docker-compose build"
   
-  - task: PowerShell@2
-    displayName: "Run Benchmark container"
-    inputs:
-      targetType: 'inline'
-      script: 'docker run --mount src=$(Build.StagingDirectory),target=/benchmark/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts,type=bind --privileged  fhircli-benchmark --job ${{ parameters.benchmarkJobType }} --filter *FullFlow*'
-      pwsh: true  
+  - powershell: |
+      docker-compose up
+    displayName: "Docker-compose up" 
 
   - task: PublishBuildArtifacts@1
     displayName: "Collect Results"
@@ -45,3 +32,4 @@ steps:
       PathtoPublish: '$(Build.StagingDirectory)'
       ArtifactName: 'benchmark-artifacts'
       publishLocation: 'Container'
+
