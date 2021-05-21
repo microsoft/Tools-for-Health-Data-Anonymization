@@ -18,7 +18,7 @@ services:
     command: --job ${JOB_TYPE} --filter *FullFlow*
     volumes:
       - type: bind
-        source: $(ARTIFACT_PATH)
+        source: ${ARTIFACT_PATH}
         target: /benchmark/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts
     build:
       context: .
