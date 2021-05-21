@@ -9,6 +9,10 @@ parameters:
   values: [ dry, short, medium, long ]
   default: dry
 
+variables:
+- name: JOB_TYPE
+  value: '${{ parameters.benchmarkJobType }}'
+
 steps:
   - task: DockerInstaller@0
     inputs:
@@ -18,7 +22,6 @@ steps:
     displayName: "Docker Information"
 
   - powershell: |
-      Write-Host "##vso[task.setvariable variable=JOB_TYPE;]'${{ parameters.benchmarkJobType }}'"
       docker-compose build
     displayName: "Docker-compose build"
   
