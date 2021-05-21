@@ -12,6 +12,8 @@ parameters:
 variables:
 - name: JOB_TYPE
   value: '${{ parameters.benchmarkJobType }}'
+- name: ARTIFACT_PATH
+  value: $(Build.StagingDirectory)
 
 steps:
   - task: DockerInstaller@0
