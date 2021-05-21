@@ -25,15 +25,22 @@ steps:
       docker ps
     displayName: "Setup Presidio"
 
-  - powershell: |
-      docker build -t fhircli-benchmark -f benchmark/Dockerfile .
+  - task: PowerShell@2
     displayName: "Build Benchmark container"
+    inputs:
+      targetType: 'inline'
+      script: 'docker build -t fhircli-benchmark -f benchmark/Dockerfile .'
+      pwsh: true
   
-  - powershell: |
-      docker run --mount src=$(Build.StagingDirectory),target=/benchmark/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts,type=bind --privileged -it fhircli-benchmark --job ${{ parameters.benchmarkJobType }} --filter *FullFlow*
+  - task: PowerShell@2
     displayName: "Run Benchmark container"
+    inputs:
+      targetType: 'inline'
+      script: 'docker run --mount src=$(Build.StagingDirectory),target=/benchmark/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts,type=bind --privileged  fhircli-benchmark --job ${{ parameters.benchmarkJobType }} --filter *FullFlow*'
+      pwsh: true  
 
   - task: PublishBuildArtifacts@1
+    displayName: "Collect Results"
     inputs:
       PathtoPublish: '$(Build.StagingDirectory)'
       ArtifactName: 'benchmark-artifacts'
