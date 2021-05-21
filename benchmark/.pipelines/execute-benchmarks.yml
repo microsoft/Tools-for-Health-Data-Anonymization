@@ -10,15 +10,6 @@ parameters:
   default: dry
 
 steps:
-  - task: UseDotNet@2
-    displayName: "Install .NET Core 3.1 SDK"
-    inputs:
-      version: 3.1.x
-      packageType: sdk
-
-  - powershell: dotnet --info
-    displayName: ".NET Core Information"
-
   - task: DockerInstaller@0
     inputs:
       dockerVersion: '17.09.0-ce'
@@ -26,7 +17,6 @@ steps:
   - powershell: docker --version
     displayName: "Docker Information"
 
-  - powershell: .\"C:\:Program Files\Docker\Docker\DockerCli.exe" -SwitchDaemon
   - powershell: |
       docker pull mcr.microsoft.com/presidio-analyzer
       docker pull mcr.microsoft.com/presidio-anonymizer
@@ -35,22 +25,16 @@ steps:
       docker ps
     displayName: "Setup Presidio"
 
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: '$(Build.WorkingDirectory)/samples/fhir-stu3-files'
-      Contents: '**'
-      TargetFolder: '$(Agent.TempDirectory)/fhircli/benchmarks/samples/input'
-      CleanTargetFolder: true
-
-  - task: PowerShell@2
-    inputs:
-      filePath: 'scripts/run_benchmark.ps1'
-      arguments: '-JobType ${{ parameters.benchmarkJobType }}'
-      pwsh: true
-      workingDirectory: 'src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks'
+  - powershell: |
+      docker build -t fhircli-benchmark -f benchmark/Dockerfile .
+    displayName: "Build Benchmark container"
+  
+  - powershell: |
+      docker run --mount src=$(Build.StagingDirectory),target=/benchmark/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts,type=bind --privileged -it fhircli-benchmark --job ${{ parameters.benchmarkJobType }} --filter *FullFlow*
+    displayName: "Run Benchmark container"
 
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: 'src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts'
+      PathtoPublish: '$(Build.StagingDirectory)'
       ArtifactName: 'benchmark-artifacts'
       publishLocation: 'Container'
