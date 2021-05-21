@@ -6,11 +6,17 @@ The benchmarks are implemented using [BenchmarkDotNet](https://benchmarkdotnet.o
 
 ## Running the benchmark locally
 
+### Prerequisites
+
+The `presidio-analyzer` and `presidio-anonymizer` docker container need to be running and listening on port 5001 and 5002.
+
+### Manually
+
 1. Copy the two configuration files from `config/` to `c:\benchmark\config (win)` or `/benchmark/config (linux)`
 2. Copy `input` (or use your own set of input files) to `c:\benchmark\input` or `/benchmark/input`
 3. Run the benchmark from command line:
 
-```cli
+```powershell
 # choose the jobtype: dry/short/medium/long
 # from the root of the repo:
 $> cd benchmark\src\Microsoft.Health.Fhir.Anonymizer.Benchmarks
@@ -21,26 +27,38 @@ $> dotnet run -c Release -- --job <jobtype> --filter *FullFlow* --runtimes netco
 >
 > It is possible to adjust the runtimes and expected outputs. [More information](https://benchmarkdotnet.org/articles/guides/console-args.html).
 
-## Docker
+### Docker
 
 There is a Dockerfile available, that allows the benchmarks to be run from a container. Ensure the `\<repo-root\>/benchmark/input` and `\<repo-root\>/benchmark/config` have valid files.
 
-```cli
+```powershell
 # from the root of the repo:
 $> docker build -t fhircli-benchmark -f benchmark/Dockerfile .
-$> docker run -- privileged -it fhircli-benchmark --job <jobtype> --filter *FullFlow* --runtimes netcoreapp3.1
+$> docker run --privileged -it fhircli-benchmark --job <jobtype> --filter *FullFlow* --runtimes netcoreapp3.1
 ```
 
-### Getting the results from the container
+#### Getting the results from the container
 
 You can access the results by mounting a local folder when running the container:
 
-```cli
+```powershell
  $> docker run --privileged --mount src=c:/fhircli/dockerout,target=/benchmark/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts,type=bind fhircli-benchmark --job dry --filter *FullFlow*
 ```
 
 - `src`: the folder on the host machine that should be mounted. Ensure the directory exists.
 - `target`: the folder where BenchmarkDotNet stores the results by default.
+
+### Docker Compose
+
+There is a `docker-compose.yml` in the root of the repository, which can be used as follows:
+
+```powershell
+# set the environment variables manually
+$> $env:JOB_TYPE='dry'
+$> $env:ARTIFACT_PATH='<path-to-artifacts>'
+$> docker compose build
+$> docker compose up
+```
 
 ## ADO Pipeline
 
