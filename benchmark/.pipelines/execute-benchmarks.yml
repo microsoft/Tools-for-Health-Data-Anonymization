@@ -20,8 +20,8 @@ steps:
   - powershell: |
       docker pull mcr.microsoft.com/presidio-analyzer
       docker pull mcr.microsoft.com/presidio-anonymizer
-      docker run -d -p 5001:3000 mcr.microsoft.com/presidio-analyzer:latest
-      docker run -d -p 5002:3000 mcr.microsoft.com/presidio-anonymizer:latest
+      docker run -d -p 5001:5001 mcr.microsoft.com/presidio-analyzer:latest
+      docker run -d -p 5002:5001 mcr.microsoft.com/presidio-anonymizer:latest
       docker ps
     displayName: "Setup Presidio"
 
