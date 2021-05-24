@@ -12,7 +12,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class RemoveProcessor : IAnonymizerProcessor
     {
-        public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo = null, IDicomAnonymizationSetting settings = null)
+        public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
         {
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));

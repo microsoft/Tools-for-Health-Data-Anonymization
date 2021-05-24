@@ -19,36 +19,35 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class DateShiftProcessor : IAnonymizerProcessor
     {
-        private readonly DicomDateShiftSetting _defaultSetting;
+        private readonly DicomDateShiftSetting _ruleSetting;
 
-        public DateShiftProcessor(DicomDateShiftSetting defaultSetting = null)
+        public DateShiftProcessor(IDicomAnonymizationSetting ruleSetting = null)
         {
-            _defaultSetting = defaultSetting ?? new DicomDateShiftSetting();
+            _ruleSetting = (DicomDateShiftSetting)(ruleSetting ?? new DicomDateShiftSetting());
         }
 
-        public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo, IDicomAnonymizationSetting settings = null)
+        public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context)
         {
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
-            EnsureArg.IsNotNull(basicInfo, nameof(basicInfo));
+            EnsureArg.IsNotNull(context, nameof(context));
 
             if (!IsValidItemForDateShift(item))
             {
                 throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Dateshift is not supported for {item.ValueRepresentation}");
             }
 
-            var dateShiftSetting = (DicomDateShiftSetting)(settings ?? _defaultSetting);
             var dateShiftFunction = new DateShiftFunction(new DateShiftSetting()
             {
-                DateShiftRange = dateShiftSetting.DateShiftRange,
-                DateShiftKey = dateShiftSetting.DateShiftKey,
+                DateShiftRange = _ruleSetting.DateShiftRange,
+                DateShiftKey = _ruleSetting.DateShiftKey,
             })
             {
-                DateShiftKeyPrefix = dateShiftSetting.DateShiftScope switch
+                DateShiftKeyPrefix = _ruleSetting.DateShiftScope switch
                 {
-                    DateShiftScope.StudyInstance => basicInfo.StudyInstanceUID ?? string.Empty,
-                    DateShiftScope.SeriesInstance => basicInfo.StudyInstanceUID ?? string.Empty,
-                    DateShiftScope.SopInstance => basicInfo.SopInstanceUID ?? string.Empty,
+                    DateShiftScope.StudyInstance => context.StudyInstanceUID ?? string.Empty,
+                    DateShiftScope.SeriesInstance => context.StudyInstanceUID ?? string.Empty,
+                    DateShiftScope.SopInstance => context.SopInstanceUID ?? string.Empty,
                     _ => string.Empty,
                 },
             };

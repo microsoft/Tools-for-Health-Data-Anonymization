@@ -30,18 +30,18 @@ namespace UnitTests.AnonymizationConfigurations
 
         public static IEnumerable<object[]> GetDicomConfigs()
         {
-            yield return new object[] { " { \"tag\": \"(0040,1001)\" , \"method\": \"redact\" } ", null, new DicomTag(0x0040, 0x1001), null, "redact", false, false, null };
+            yield return new object[] { " { \"tag\": \"(0040,1001)\" , \"method\": \"redact\" } ", null, new DicomTag(0x0040, 0x1001), null, "redact", false, false, new DicomRedactSetting { EnablePartialAgeForRedact = false, EnablePartialDatesForRedact = false } };
             yield return new object[] { " { \"tag\": \"00401001\" , \"method\": \"redact\", \"setting\":\"redactCustomerSetting\" } ", null, new DicomTag(0x0040, 0x1001), null, "redact", false, false, new DicomRedactSetting { EnablePartialAgeForRedact = true, EnablePartialDatesForRedact = false } };
             yield return new object[] { " { \"tag\": \"00401001\" , \"method\": \"redact\", \"params\": {\"enablePartialDatesForRedact\" : true}, \"setting\":\"redactCustomerSetting\" } ", null, new DicomTag(0x0040, 0x1001), null, "redact", false, false, new DicomRedactSetting { EnablePartialAgeForRedact = true, EnablePartialDatesForRedact = true } };
             yield return new object[] { " { \"tag\": \"0040,1001\" , \"method\": \"redact\", \"params\": {\"enablePartialDatesForRedact\" : true} } ", null, new DicomTag(0x0040, 0x1001), null, "redact", false, false, new DicomRedactSetting { EnablePartialAgeForRedact = false, EnablePartialDatesForRedact = true } };
 
-            yield return new object[] { " { \"tag\": \"PatientName\" , \"method\": \"perturb\" } ", null, new DicomTag(0x0010, 0x0010), null, "perturb", false, false, null };
+            yield return new object[] { " { \"tag\": \"PatientName\" , \"method\": \"perturb\" } ", null, new DicomTag(0x0010, 0x0010), null, "perturb", false, false, new DicomPerturbSetting { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Proportional, Distribution = PerturbDistribution.Uniform } };
             yield return new object[] { " { \"tag\": \"PatientName\" , \"method\": \"perturb\" , \"params\": {\"Span\" : \"10\"} } ", null, new DicomTag(0x0010, 0x0010), null, "perturb", false, false, new DicomPerturbSetting { Span = 10, RoundTo = 2, RangeType = PerturbRangeType.Proportional, Distribution = PerturbDistribution.Uniform } };
             yield return new object[] { "{ \"tag\": \"PatientName\" , \"method\": \"perturb\" , \"params\": {\"roundTo\" : \"3\"} , \"setting\": \"perturbCustomerSetting\" }", null, new DicomTag(0x0010, 0x0010), null, "perturb", false, false, new DicomPerturbSetting { Span = 1, RoundTo = 3, RangeType = PerturbRangeType.Fixed, Distribution = PerturbDistribution.Uniform } };
             yield return new object[] { "{ \"tag\": \"PatientName\" , \"method\": \"perturb\" , \"setting\": \"perturbCustomerSetting\" }", null, new DicomTag(0x0010, 0x0010), null, "perturb", false, false, new DicomPerturbSetting { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Fixed, Distribution = PerturbDistribution.Uniform } };
 
             yield return new object[] { " { \"tag\": \"DA\" , \"method\": \"dateshift\", \"params\": {\"dateShiftScope\" : \"SOPInstance\"} }", DicomVR.DA, null, null, "dateshift", true, false, new DicomDateShiftSetting { DateShiftKey = "123", DateShiftScope = DateShiftScope.SopInstance, DateShiftRange = 50 } };
-            yield return new object[] { " { \"tag\": \"DA\" , \"method\": \"dateshift\" } ", DicomVR.DA, null, null, "dateshift", true, false, null };
+            yield return new object[] { " { \"tag\": \"DA\" , \"method\": \"dateshift\" } ", DicomVR.DA, null, null, "dateshift", true, false, new DicomDateShiftSetting { DateShiftKey = "123", DateShiftScope = DateShiftScope.SeriesInstance, DateShiftRange = 50 } };
             yield return new object[] { " { \"tag\": \"DA\" , \"method\": \"dateshift\", \"setting\":\"dateShiftCustomerSetting\" } ", DicomVR.DA, null, null, "dateshift", true, false, new DicomDateShiftSetting { DateShiftKey = "123", DateShiftScope = DateShiftScope.SopInstance, DateShiftRange = 100 } };
             yield return new object[] { " { \"tag\": \"DA\" , \"method\": \"dateshift\", \"params\": {\"dateShiftScope\" : \"SeriesInstance\"}, \"setting\":\"dateShiftCustomerSetting\" } ", DicomVR.DA, null, null, "dateshift", true, false, new DicomDateShiftSetting { DateShiftKey = "123", DateShiftScope = DateShiftScope.SeriesInstance, DateShiftRange = 100 } };
 
@@ -64,7 +64,7 @@ namespace UnitTests.AnonymizationConfigurations
         [MemberData(nameof(GetDicomConfigs))]
         public void GivenADicomRule_WhenCreateDicomRule_DicomRuleShouldBeCreateCorrectly(string config, DicomVR vr, DicomTag tag, DicomMaskedTag maskedTag, string method, bool isVRRule, bool isMasked, IDicomAnonymizationSetting ruleSettings)
         {
-            var rule = AnonymizerDicomTagRule.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config), _configuration);
+            var rule = AnonymizerRuleHandlers.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config), _configuration);
 
             Assert.Equal(vr, rule.VR);
             Assert.Equal(tag, rule.Tag);
@@ -79,7 +79,7 @@ namespace UnitTests.AnonymizationConfigurations
         [MemberData(nameof(GetInvalidConfigs))]
         public void GivenAnInvalidDicomRule_WhenCreateDicomRule_ExceptionWillBeThrown(string config)
         {
-            Assert.Throws<AnonymizationConfigurationException>(() => AnonymizerDicomTagRule.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config), _configuration));
+            Assert.Throws<AnonymizationConfigurationException>(() => AnonymizerRuleHandlers.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config), _configuration));
         }
     }
 }

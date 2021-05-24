@@ -17,10 +17,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         public AnonymizerConfigurationManager(AnonymizerConfiguration configuration)
         {
             _configuration = configuration;
-            DicomTagRules = _configuration.DicomTagRules?.Select(entry => AnonymizerDicomTagRule.CreateAnonymizationDicomRule(entry, _configuration)).ToArray();
+            DicomTagRules = _configuration.DicomTagRules?.Select(entry => AnonymizerRuleHandlers.CreateAnonymizationDicomRule(entry, _configuration)).ToArray();
         }
 
-        public AnonymizerDicomTagRule[] DicomTagRules { get; private set; } = null;
+        public AnonymizerRuleHandlers[] DicomTagRules { get; private set; } = null;
 
         public static AnonymizerConfigurationManager CreateFromSettingsInJson(string settingsInJson)
         {

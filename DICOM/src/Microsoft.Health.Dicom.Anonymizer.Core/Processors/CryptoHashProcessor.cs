@@ -19,14 +19,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class CryptoHashProcessor : IAnonymizerProcessor
     {
-        private readonly DicomCryptoHashSetting _defaultSetting;
+        private readonly DicomCryptoHashSetting _ruleSetting;
 
-        public CryptoHashProcessor(DicomCryptoHashSetting defaultSetting = null)
+        public CryptoHashProcessor(IDicomAnonymizationSetting ruleSetting = null)
         {
-            _defaultSetting = defaultSetting ?? new DicomCryptoHashSetting();
+            _ruleSetting = (DicomCryptoHashSetting)(ruleSetting ?? new DicomCryptoHashSetting());
         }
 
-        public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo = null, IDicomAnonymizationSetting settings = null)
+        public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
         {
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
@@ -36,8 +36,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"CryptoHash is not supported for {item.ValueRepresentation}");
             }
 
-            var cryptoHashSetting = (DicomCryptoHashSetting)(settings ?? _defaultSetting);
-            var cryptoHashKey = Encoding.UTF8.GetBytes(cryptoHashSetting.CryptoHashKey);
+            var cryptoHashKey = Encoding.UTF8.GetBytes(_ruleSetting.CryptoHashKey);
 
             var encoding = Encoding.UTF8;
             if (item is DicomStringElement)

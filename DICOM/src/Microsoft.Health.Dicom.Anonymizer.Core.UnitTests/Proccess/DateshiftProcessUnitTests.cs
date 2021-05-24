@@ -83,8 +83,8 @@ namespace UnitTests
                 { DicomTag.SOPInstanceUID, "789" },
                 { tag, value },
             };
-
-            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), ExtractBasicInformation(dataset), new DicomDateShiftSetting() { DateShiftKey = "123", DateShiftScope = DateShiftScope.SopInstance });
+            var newProcessor = new DateShiftProcessor(new DicomDateShiftSetting() { DateShiftKey = "123", DateShiftScope = DateShiftScope.SopInstance });
+            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), ExtractBasicInformation(dataset));
             Assert.InRange(Utility.ParseDicomDate(dataset.GetDicomItem<DicomElement>(tag).Get<string>()), Utility.ParseDicomDate(minExpectedValue), Utility.ParseDicomDate(maxExpectedValue));
         }
 
@@ -99,8 +99,8 @@ namespace UnitTests
                 { DicomTag.SOPInstanceUID, "789" },
                 { tag, value },
             };
-
-            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), ExtractBasicInformation(dataset), new DicomDateShiftSetting() { DateShiftKey = "123", DateShiftScope = DateShiftScope.SeriesInstance });
+            var newProcessor = new DateShiftProcessor(new DicomDateShiftSetting() { DateShiftKey = "123", DateShiftScope = DateShiftScope.SeriesInstance });
+            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), ExtractBasicInformation(dataset));
             Assert.InRange(Utility.ParseDicomDateTime(dataset.GetDicomItem<DicomElement>(tag).Get<string>()).DateValue, Utility.ParseDicomDateTime(minExpectedValue).DateValue, Utility.ParseDicomDateTime(maxExpectedValue).DateValue);
         }
 
@@ -133,15 +133,15 @@ namespace UnitTests
             Assert.Throws<AnonymizationOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence), ExtractBasicInformation(dataset)));
         }
 
-        private DicomBasicInformation ExtractBasicInformation(DicomDataset dataset)
+        private ProcessContext ExtractBasicInformation(DicomDataset dataset)
         {
-            var basicInfo = new DicomBasicInformation
+            var context = new ProcessContext
             {
                 StudyInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.StudyInstanceUID, string.Empty),
                 SopInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.SOPInstanceUID, string.Empty),
                 SeriesInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.SeriesInstanceUID, string.Empty),
             };
-            return basicInfo;
+            return context;
         }
     }
 }

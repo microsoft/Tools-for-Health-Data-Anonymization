@@ -34,7 +34,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
         [DataMember(Name = "encrypt")]
         public DicomEncryptionSetting EncryptDefaultSetting { get; set; } = new DicomEncryptionSetting();
 
-        [DataMember(Name = "cryptohash")]
+        [DataMember(Name = "cryptoHash")]
         public DicomCryptoHashSetting CryptoHashDefaultSetting { get; set; } = new DicomCryptoHashSetting();
 
         [DataMember(Name = "redact")]
@@ -42,7 +42,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
 
         public IDicomAnonymizationSetting GetDefaultSetting(string method)
         {
-            return method switch
+            return method.ToLower() switch
             {
                 "perturb" => PerturbDefaultSetting,
                 "substitute" => SubstituteDefaultSetting,

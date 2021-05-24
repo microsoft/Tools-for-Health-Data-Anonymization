@@ -3,14 +3,19 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using Dicom;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
+namespace Microsoft.Health.Dicom.Anonymizer.Core.Model
 {
-    public interface IAnonymizerProcessor
+    public class ProcessContext
     {
-        public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context);
+        public HashSet<string> VisitedNodes { get; set; } = new HashSet<string>();
+
+        public string StudyInstanceUID { get; set; }
+
+        public string SeriesInstanceUID { get; set; }
+
+        public string SopInstanceUID { get; set; }
     }
 }

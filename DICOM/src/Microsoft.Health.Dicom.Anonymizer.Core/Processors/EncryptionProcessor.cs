@@ -20,14 +20,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class EncryptionProcessor : IAnonymizerProcessor
     {
-        private readonly DicomEncryptionSetting _defaultSetting;
+        private readonly DicomEncryptionSetting _ruleSetting;
 
-        public EncryptionProcessor(DicomEncryptionSetting defaultSetting = null)
+        public EncryptionProcessor(IDicomAnonymizationSetting ruleSetting = null)
         {
-            _defaultSetting = defaultSetting ?? new DicomEncryptionSetting();
+            _ruleSetting = (DicomEncryptionSetting)(ruleSetting ?? new DicomEncryptionSetting());
         }
 
-        public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo = null, IDicomAnonymizationSetting settings = null)
+        public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
         {
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
@@ -37,8 +37,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Encrypt is not supported for {item.ValueRepresentation}");
             }
 
-            var encryptSetting = (DicomEncryptionSetting)(settings ?? _defaultSetting);
-            var key = Encoding.UTF8.GetBytes(string.IsNullOrEmpty(encryptSetting.EncryptKey) ? Guid.NewGuid().ToString("N") : encryptSetting.EncryptKey);
+            var key = Encoding.UTF8.GetBytes(string.IsNullOrEmpty(_ruleSetting.EncryptKey) ? Guid.NewGuid().ToString("N") : _ruleSetting.EncryptKey);
             var encoding = DicomEncoding.Default;
             try
             {

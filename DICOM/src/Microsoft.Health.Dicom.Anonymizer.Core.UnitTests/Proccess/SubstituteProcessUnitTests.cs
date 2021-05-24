@@ -89,7 +89,9 @@ namespace UnitTests
             {
                 { tag, value },
             };
-            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), null, settings);
+
+            var newProcessor = new SubstituteProcessor(settings);
+            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.Equal(replaceWith, dataset.GetDicomItem<DicomElement>(tag).Get<string>());
         }
 
@@ -103,8 +105,8 @@ namespace UnitTests
             {
                 { tag, value },
             };
-
-            Assert.Throws<AnonymizationConfigurationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), null, settings));
+            var newProcessor = new SubstituteProcessor(settings);
+            Assert.Throws<AnonymizationConfigurationException>(() => newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
         }
 
         [Theory]
@@ -118,7 +120,8 @@ namespace UnitTests
             };
 
             dataset.AutoValidate = false;
-            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), null, settings);
+            var newProcessor = new SubstituteProcessor(settings);
+            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.Equal(replaceWith, dataset.GetDicomItem<DicomElement>(tag).Get<string>());
         }
 
@@ -131,7 +134,8 @@ namespace UnitTests
                 { tag, (ushort)10 },
             };
 
-            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), null, new DicomSubstituteSetting { ReplaceWith = "20" });
+            var newProcessor = new SubstituteProcessor(new DicomSubstituteSetting { ReplaceWith = "20" });
+            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.True(dataset.GetDicomItem<DicomElement>(tag).Get<ushort>() == 20);
         }
 
@@ -156,7 +160,8 @@ namespace UnitTests
                 { tag, 10U },
             };
 
-            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), null, new DicomSubstituteSetting { ReplaceWith = "20" });
+            var newProcessor = new SubstituteProcessor(new DicomSubstituteSetting { ReplaceWith = "20" });
+            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.True(dataset.GetDicomItem<DicomElement>(tag).Get<uint>() == 20);
         }
 
@@ -169,7 +174,8 @@ namespace UnitTests
                 { tag, 10D },
             };
 
-            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), null, new DicomSubstituteSetting { ReplaceWith = "20" });
+            var newProcessor = new SubstituteProcessor(new DicomSubstituteSetting { ReplaceWith = "20" });
+            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.True(dataset.GetDicomItem<DicomElement>(tag).Get<double>() == 20);
         }
 
@@ -182,7 +188,8 @@ namespace UnitTests
                 { tag, 10F },
             };
 
-            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), null, new DicomSubstituteSetting { ReplaceWith = "20" });
+            var newProcessor = new SubstituteProcessor(new DicomSubstituteSetting { ReplaceWith = "20" });
+            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.True(dataset.GetDicomItem<DicomElement>(tag).Get<float>() == 20);
         }
 
