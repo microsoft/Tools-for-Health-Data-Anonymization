@@ -13,7 +13,7 @@ variables:
 - name: JOB_TYPE
   value: '${{ parameters.benchmarkJobType }}'
 - name: ARTIFACT_PATH
-  value: $(Build.StagingDirectory)
+  value: $(Build.ArtifactStagingDirectory)
 
 steps:
   - task: DockerCompose@0
@@ -27,7 +27,7 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: "Collect Results"
     inputs:
-      PathtoPublish: '$(Build.StagingDirectory)'
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'benchmark-artifacts'
       publishLocation: 'Container'
 
