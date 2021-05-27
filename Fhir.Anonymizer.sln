@@ -48,7 +48,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anony
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool", "src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.csproj", "{DA3123C7-D0C4-4636-8A85-DF1F52A04794}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks", "src\Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks\Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks.csproj", "{25E50A5F-41A8-4BF3-8DE6-1BBF061E12C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks", "benchmark\src\Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks\Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks.csproj", "{25E50A5F-41A8-4BF3-8DE6-1BBF061E12C4}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

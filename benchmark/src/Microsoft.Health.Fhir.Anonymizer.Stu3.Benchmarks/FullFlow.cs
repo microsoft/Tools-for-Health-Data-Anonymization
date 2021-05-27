@@ -5,6 +5,7 @@ using BenchmarkDotNet.Running;
 using Microsoft.Health.Fhir.Anonymizer.Tool;
 using System.Collections.Generic;
 using System.IO;
+using System;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Benchmarks
@@ -13,7 +14,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Benchmarks
     [CsvMeasurementsExporter]
     public class FullFlow
     {
-        public static readonly string RootPath = Path.Combine(Directory.GetDirectoryRoot(Directory.GetCurrentDirectory()),"fhircli","benchmark");
+        public static readonly string RootPath = Environment.GetEnvironmentVariable("FHIRCLIBENCHMARKROOT");
         private readonly string inputFolder =  Path.Combine(RootPath,"input");
         private readonly string outputFolder = Path.Combine(RootPath,"output");
         private readonly AnonymizationToolOptions toolOptions = new AnonymizationToolOptions { IsRecursive = true };

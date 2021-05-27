@@ -7,7 +7,7 @@ services:
     ports:
       - "5001:5001"
   presidio-analyzer:
-    image: mcr.microsoft.com/presidio-analyzer    
+    image: mcr.microsoft.com/presidio-analyzer
     environment:
       - PORT=5001
     ports:
@@ -23,6 +23,6 @@ services:
     build:
       context: .
       dockerfile: benchmark/Dockerfile
-    depends_on: 
+    depends_on:
       - presidio-analyzer
       - presidio-anonymizer

@@ -16,20 +16,12 @@ variables:
   value: $(Build.StagingDirectory)
 
 steps:
-  - task: DockerInstaller@0
+  - task: DockerCompose@0
+    displayName: Start Benchmark tests
     inputs:
-      dockerVersion: '17.09.0-ce'
-  
-  - powershell: docker --version
-    displayName: "Docker Information"
-
-  - powershell: |
-      docker-compose build
-    displayName: "Docker-compose build"
-  
-  - powershell: |
-      docker-compose up
-    displayName: "Docker-compose up" 
+        action: Run services
+        dockerComposeFile: docker-compose.yml
+        buildImages: true
 
   - task: PublishBuildArtifacts@1
     displayName: "Collect Results"
