@@ -22,6 +22,7 @@ steps:
         action: Run services
         dockerComposeFile: docker-compose.yml
         buildImages: true
+        detached: false
 
   - task: PublishBuildArtifacts@1
     displayName: "Collect Results"
