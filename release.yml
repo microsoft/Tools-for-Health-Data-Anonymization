@@ -6,7 +6,11 @@ variables:
   testProjects: "**/*Tests/*.csproj"
   publishProject: "**/*Tool/*.csproj"
   buildConfiguration: 'Release'
-  version: 'Preview'
+  major: 2
+  minor: 2
+  patch: 0
+  buildnum: $[counter(format('{0}.{1}.{2}',variables['major'],variables['minor'], variables['patch']), 1)]
+  version: $(major).$(minor).$(patch).$(bulidnum)
 
 steps:
 - task: DotNetCoreCLI@2
@@ -31,15 +35,6 @@ steps:
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     publishWebProjects: false
     zipAfterPublish: True
-
-- task: PowerShell@2
-  displayName: 'parse build version'
-  inputs:
-    targetType: 'inline'
-    script: |
-      [xml]$props = Get-Content .\Directory.Build.props
-      $version = Select-Xml -Xml $props -XPath "//Version"
-      Write-Host "##vso[task.setvariable variable=version;]$version"
       
 - task: DotNetCoreCLI@2
   displayName: 'dotnet pack nugets'
@@ -52,7 +47,7 @@ steps:
     nobuild: true
     zipAfterPublish: true
   env:
-    nuget_version: $(version)-$(build.buildNumber)
+    nuget_version: $(version)
 
 # Publish artifacts
 - task: PublishBuildArtifacts@1
