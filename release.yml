@@ -8,9 +8,9 @@ variables:
   buildConfiguration: 'Release'
   major: 2
   minor: 2
-  patch: 1
-  buildnum: 4
-  version: $(major).$(minor).$(patch).$(bulidnum)
+  patch: 0
+  buildnum: $[counter(format('{0}.{1}.{2}',variables['major'],variables['minor'], variables['patch']), 1)]
+  version: $(major).$(minor).$(patch).$(buildnum)
 
 steps:
 - script: echo $(version)
