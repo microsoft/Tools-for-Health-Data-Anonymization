@@ -8,12 +8,13 @@ using Dicom;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
     public class AnonymizerEngine
     {
-        private readonly AnonymizerRuleHandlers[] _rules;
+        private readonly AnonymizerRule[] _rules;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly AnonymizerSettings _anonymizerSettings;
 
@@ -25,13 +26,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, AnonymizerSettings anonymizerSettings = null)
         {
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerSettings();
-            _rules = configurationManager.DicomTagRules;
+            _rules = configurationManager.CreateAnonymizerRules();
             _logger.LogDebug("AnonymizerEngine initialized successfully");
         }
 
-        public void AnonymizeDateset(DicomDataset dataset)
+        public void AnonymizeDataset(DicomDataset dataset)
         {
-            var context = ExtractBasicInformation(dataset);
+            var context = InitContext(dataset);
             ValidateInput(dataset);
             dataset.AutoValidate = _anonymizerSettings.AutoValidate;
             foreach (var rule in _rules)
@@ -44,7 +45,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 {
                     if (_anonymizerSettings.SkipFailedItem)
                     {
-                        _logger.LogWarning($"Fail to handle rule {rule.Content}.", ex.Message);
+                        _logger.LogWarning($"Fail to handle rule {rule.Description}.", ex.Message);
                     }
                     else
                     {
@@ -62,7 +63,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        private ProcessContext ExtractBasicInformation(DicomDataset dataset)
+        private ProcessContext InitContext(DicomDataset dataset)
         {
             var context = new ProcessContext
             {

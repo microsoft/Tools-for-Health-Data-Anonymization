@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Health.Dicom.Anonymizer.Core;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
+using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 using Xunit;
 
 namespace UnitTests.AnonymizationConfigurations
@@ -32,7 +33,8 @@ namespace UnitTests.AnonymizationConfigurations
         [MemberData(nameof(GetInvalidConfigsForRuleParsing))]
         public void GivenAnInvalidConfigForRuleParsing_WhenCreateAnonymizerConfigurationManager_ExceptionShouldBeThrown(string configFilePath)
         {
-            Assert.Throws<AnonymizationConfigurationException>(() => AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath));
+            var manager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
+            Assert.Throws<AnonymizationConfigurationException>(() => manager.CreateAnonymizerRules());
         }
 
         [Fact]
@@ -40,14 +42,11 @@ namespace UnitTests.AnonymizationConfigurations
         {
             var configFilePath = "./TestConfigurations/configuration-test-sample.json";
             var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
-            var dicomRules = configurationManager.DicomTagRules;
+            var dicomRules = configurationManager.CreateAnonymizerRules();
             Assert.True(dicomRules.Any());
 
-            Assert.Single(configurationManager.DicomTagRules.Where(r => "(0008,0050)".Equals(r.Tag?.ToString())));
-            Assert.Single(configurationManager.DicomTagRules.Where(r => "DA".Equals(r.VR?.ToString())));
-
-            var settings = configurationManager.GetDefaultSettings();
-            Assert.True(settings != null);
+            Assert.Single(dicomRules.Where(r => r is AnonymizerTagRule rule && "(0008,0050)".Equals(rule.Tag?.ToString())));
+            Assert.Single(dicomRules.Where(r => r is AnonymizerVRRule rule && "DA".Equals(rule.VR?.ToString())));
         }
     }
 }

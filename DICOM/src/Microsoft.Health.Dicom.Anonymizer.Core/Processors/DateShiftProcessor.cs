@@ -32,6 +32,17 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(item, nameof(item));
             EnsureArg.IsNotNull(context, nameof(context));
 
+            /*
+            Type[] tps = new Type[2];
+            tps[0] = typeof(DicomTag);
+            tps[1] = typeof(string);
+            var test = item.GetType().GetConstructor(tps);
+            object[] obj = new object[2];
+            obj[0] = item.Tag;
+            obj[1] = (object)("123".ToArray());
+            var t = test.Invoke(obj);
+            */
+
             if (!IsValidItemForDateShift(item))
             {
                 throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Dateshift is not supported for {item.ValueRepresentation}");

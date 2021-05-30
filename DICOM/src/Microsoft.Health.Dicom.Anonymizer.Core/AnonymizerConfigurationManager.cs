@@ -3,9 +3,11 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 using Newtonsoft.Json;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
@@ -13,21 +15,22 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
     public sealed class AnonymizerConfigurationManager
     {
         private readonly AnonymizerConfiguration _configuration;
+        private readonly AnonymizerRuleFactory _ruleFactory;
 
-        public AnonymizerConfigurationManager(AnonymizerConfiguration configuration)
+        public AnonymizerConfigurationManager(AnonymizerConfiguration configuration, IAnonymizerProcessorFactory processorFactory)
         {
             _configuration = configuration;
-            DicomTagRules = _configuration.DicomTagRules?.Select(entry => AnonymizerRuleHandlers.CreateAnonymizationDicomRule(entry, _configuration)).ToArray();
+            _ruleFactory = new AnonymizerRuleFactory(_configuration, processorFactory);
         }
 
-        public AnonymizerRuleHandlers[] DicomTagRules { get; private set; } = null;
+        public AnonymizerRule[] DicomRules { get; private set; } = null;
 
         public static AnonymizerConfigurationManager CreateFromSettingsInJson(string settingsInJson)
         {
             try
             {
                 var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(settingsInJson);
-                return new AnonymizerConfigurationManager(configuration);
+                return new AnonymizerConfigurationManager(configuration, new DicomProcessorFactory());
             }
             catch (JsonException innerException)
             {
@@ -48,9 +51,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        public AnonymizerDefaultSettings GetDefaultSettings()
+        public AnonymizerRule[] CreateAnonymizerRules()
         {
-            return _configuration.DefaultSettings;
+            return _configuration.DicomRules?.Select(entry => _ruleFactory.CreateAnonymizationDicomRule(entry)).ToArray();
         }
     }
 }
