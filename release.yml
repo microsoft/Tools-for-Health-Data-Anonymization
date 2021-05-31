@@ -13,8 +13,6 @@ variables:
   version: $(major).$(minor).$(patch).$(buildnum)
 
 steps:
-- script: echo $(version)
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
