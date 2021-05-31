@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Linq;
 using Dicom;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
@@ -14,19 +15,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
     public class AnonymizerEngine
     {
-        private readonly AnonymizerRule[] _rules;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly AnonymizerSettings _anonymizerSettings;
+        private readonly AnonymizerConfigurationManager _configurationManager;
+        private readonly IAnonymizerRuleFactory _ruleFactory;
 
         public AnonymizerEngine(string configFilePath = "configuration.json", AnonymizerSettings anonymizerSettings = null)
             : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath), anonymizerSettings)
         {
         }
 
-        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, AnonymizerSettings anonymizerSettings = null)
+        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, AnonymizerSettings anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null)
         {
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerSettings();
-            _rules = configurationManager.CreateAnonymizerRules();
+            _configurationManager = configurationManager;
+            _ruleFactory = ruleFactory ?? new AnonymizerRuleFactory(_configurationManager.GetConfiguration(), new DicomProcessorFactory());
             _logger.LogDebug("AnonymizerEngine initialized successfully");
         }
 
@@ -35,7 +38,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             var context = InitContext(dataset);
             ValidateInput(dataset);
             dataset.AutoValidate = _anonymizerSettings.AutoValidate;
-            foreach (var rule in _rules)
+
+            var rules = _configurationManager.GetConfiguration().DicomRules?.Select(entry => _ruleFactory.CreateAnonymizationDicomRule(entry)).ToArray();
+            foreach (var rule in rules)
             {
                 try
                 {

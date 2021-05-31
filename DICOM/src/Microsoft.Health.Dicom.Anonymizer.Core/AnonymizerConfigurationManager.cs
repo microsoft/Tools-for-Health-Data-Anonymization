@@ -15,22 +15,18 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
     public sealed class AnonymizerConfigurationManager
     {
         private readonly AnonymizerConfiguration _configuration;
-        private readonly AnonymizerRuleFactory _ruleFactory;
 
-        public AnonymizerConfigurationManager(AnonymizerConfiguration configuration, IAnonymizerProcessorFactory processorFactory)
+        public AnonymizerConfigurationManager(AnonymizerConfiguration configuration)
         {
             _configuration = configuration;
-            _ruleFactory = new AnonymizerRuleFactory(_configuration, processorFactory);
         }
-
-        public AnonymizerRule[] DicomRules { get; private set; } = null;
 
         public static AnonymizerConfigurationManager CreateFromSettingsInJson(string settingsInJson)
         {
             try
             {
                 var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(settingsInJson);
-                return new AnonymizerConfigurationManager(configuration, new DicomProcessorFactory());
+                return new AnonymizerConfigurationManager(configuration);
             }
             catch (JsonException innerException)
             {
@@ -51,9 +47,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        public AnonymizerRule[] CreateAnonymizerRules()
+        public AnonymizerConfiguration GetConfiguration()
         {
-            return _configuration.DicomRules?.Select(entry => _ruleFactory.CreateAnonymizationDicomRule(entry)).ToArray();
+            return _configuration;
         }
     }
 }

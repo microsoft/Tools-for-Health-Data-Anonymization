@@ -16,7 +16,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
-    public class AnonymizerRuleFactory
+    public class AnonymizerRuleFactory : IAnonymizerRuleFactory
     {
         private AnonymizerDefaultSettings _defaultSettings;
 
