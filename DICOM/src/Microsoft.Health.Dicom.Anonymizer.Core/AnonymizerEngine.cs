@@ -44,7 +44,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             {
                 try
                 {
-                    rule.HandleRule(dataset, context);
+                    rule.Handle(dataset, context);
                 }
                 catch (Exception ex)
                 {
