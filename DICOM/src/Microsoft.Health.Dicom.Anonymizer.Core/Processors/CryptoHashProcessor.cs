@@ -19,11 +19,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class CryptoHashProcessor : IAnonymizerProcessor
     {
-        private readonly DicomCryptoHashSetting _ruleSetting;
+        private readonly CryptoHashFunction _cryptoHashFunction;
 
         public CryptoHashProcessor(IDicomAnonymizationSetting ruleSetting = null)
         {
-            _ruleSetting = (DicomCryptoHashSetting)(ruleSetting ?? new DicomCryptoHashSetting());
+             var setting = (DicomCryptoHashSetting)(ruleSetting ?? new DicomCryptoHashSetting());
+             var cryptoHashKey = Encoding.UTF8.GetBytes(setting.CryptoHashKey);
+             _cryptoHashFunction = new CryptoHashFunction(cryptoHashKey);
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
@@ -37,18 +39,16 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"CryptoHash is not supported for {item.ValueRepresentation}");
             }
 
-            var cryptoHashKey = Encoding.UTF8.GetBytes(_ruleSetting.CryptoHashKey);
-
             var encoding = Encoding.UTF8;
             if (item is DicomStringElement)
             {
-                var encryptedValues = ((DicomStringElement)item).Get<string[]>().Select(x => GetCryptoHashString(x, cryptoHashKey));
+                var encryptedValues = ((DicomStringElement)item).Get<string[]>().Select(x => GetCryptoHashString(x));
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, encryptedValues.ToArray());
             }
             else if (item is DicomOtherByte)
             {
                 var valueBytes = ((DicomOtherByte)item).Get<byte[]>();
-                var encryptesBytes = CryptoHashFunction.ComputeHmacSHA256Hash(valueBytes, cryptoHashKey);
+                var encryptesBytes = _cryptoHashFunction.ComputeHmacSHA256Hash(valueBytes);
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, encryptesBytes);
             }
             else if (item is DicomFragmentSequence)
@@ -61,7 +61,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
                 while (enumerator.MoveNext())
                 {
-                    element.Fragments.Add(new MemoryByteBuffer(CryptoHashFunction.ComputeHmacSHA256Hash(enumerator.Current.Data, cryptoHashKey)));
+                    element.Fragments.Add(new MemoryByteBuffer(_cryptoHashFunction.ComputeHmacSHA256Hash(enumerator.Current.Data)));
                 }
 
                 dicomDataset.AddOrUpdate(element);
@@ -78,9 +78,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             return supportedVR.Contains(item.ValueRepresentation.Code) || item is DicomFragmentSequence;
         }
 
-        public string GetCryptoHashString(string input, byte[] cryptoHashKey)
+        public string GetCryptoHashString(string input)
         {
-            var resultBytes = CryptoHashFunction.ComputeHmacSHA256Hash(Encoding.UTF8.GetBytes(input), cryptoHashKey);
+            var resultBytes = _cryptoHashFunction.ComputeHmacSHA256Hash(Encoding.UTF8.GetBytes(input));
             return resultBytes == null ? null : string.Concat(resultBytes.Select(b => b.ToString("x2")));
         }
     }

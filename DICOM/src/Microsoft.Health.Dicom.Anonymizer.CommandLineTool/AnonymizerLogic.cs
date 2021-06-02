@@ -20,7 +20,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
                     options.ConfigurationFilePath,
                     new AnonymizerSettings()
                     {
-                        SkipFailedItem = options.SkipFailedItem,
                         AutoValidate = options.AutoValidate,
                         ValidateInput = options.ValidateInput,
                     });

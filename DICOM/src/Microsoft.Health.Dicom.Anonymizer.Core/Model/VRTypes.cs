@@ -3,14 +3,14 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Newtonsoft.Json.Linq;
+using System;
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
+namespace Microsoft.Health.Dicom.Anonymizer.Core.Model
 {
-    public interface IAnonymizerRuleFactory
+    public class VRTypes
     {
-        AnonymizerRule CreateAnonymizationDicomRule(JObject rule);
+        public Type ElementType { get; set; }
 
-        AnonymizerRule[] CreateAnonymizationDicomRule(JObject[] rule);
+        public Type ValueType { get; set; }
     }
 }

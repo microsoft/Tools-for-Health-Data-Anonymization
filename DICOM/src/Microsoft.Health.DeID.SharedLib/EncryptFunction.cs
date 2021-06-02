@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using Newtonsoft.Json;
+using Microsoft.Health.DeID.SharedLib.Settings;
 
 namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
@@ -15,8 +15,14 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
     {
         // AES Initialization Vector length is 16 bytes
         private const int AesIvSize = 16;
+        private EncryptionSetting _encryptionSetting;
 
-        public static byte[] EncryptContentWithAES(string plainText, byte[] key, Encoding encoding = null)
+        public EncryptFunction(EncryptionSetting encryptionSetting)
+        {
+            _encryptionSetting = encryptionSetting;
+        }
+
+        public byte[] EncryptContentWithAES(string plainText, Encoding encoding = null)
         {
             if (plainText == string.Empty)
             {
@@ -29,20 +35,20 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             }
 
             encoding ??= Encoding.UTF8;
-            return EncryptContentWithAES(encoding.GetBytes(plainText), key);
+            return EncryptContentWithAES(encoding.GetBytes(plainText));
         }
 
-        public static byte[] EncryptContentWithAES(Stream plainStream, byte[] key)
+        public byte[] EncryptContentWithAES(Stream plainStream)
         {
             if (plainStream == null)
             {
                 return null;
             }
 
-            return EncryptContentWithAES(StreamToByte(plainStream), key);
+            return EncryptContentWithAES(StreamToByte(plainStream));
         }
 
-        public static byte[] EncryptContentWithAES(byte[] plainBytes, byte[] key)
+        public byte[] EncryptContentWithAES(byte[] plainBytes)
         {
             if (plainBytes == null)
             {
@@ -56,7 +62,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
              */
             using Aes aes = Aes.Create();
             byte[] iv = aes.IV;
-            aes.Key = key;
+            aes.Key = _encryptionSetting.AesKey;
             ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
             var encryptedBytes = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
@@ -69,7 +75,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             return result;
         }
 
-        public static byte[] DecryptContentWithAES(string cipherText, byte[] key)
+        public byte[] DecryptContentWithAES(string cipherText)
         {
             if (cipherText == string.Empty)
             {
@@ -82,20 +88,20 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             }
 
             var byteData = Encoding.UTF8.GetBytes(cipherText);
-            return DecryptContentWithAES(byteData, key);
+            return DecryptContentWithAES(byteData);
         }
 
-        public static byte[] DecryptContentWithAES(Stream cipherStream, byte[] key)
+        public byte[] DecryptContentWithAES(Stream cipherStream)
         {
             if (cipherStream == null)
             {
                 return null;
             }
 
-            return DecryptContentWithAES(StreamToByte(cipherStream), key);
+            return DecryptContentWithAES(StreamToByte(cipherStream));
         }
 
-        public static byte[] DecryptContentWithAES(byte[] cipherBytes, byte[] key)
+        public byte[] DecryptContentWithAES(byte[] cipherBytes)
         {
             if (cipherBytes == null)
             {
@@ -121,24 +127,24 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
             // Get decryptor
             using Aes aes = Aes.Create();
-            aes.Key = key;
+            aes.Key = _encryptionSetting.AesKey;
             aes.IV = iv;
             ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
             return decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
         }
 
-        public static byte[] EncryptContentWithRSA(string plainText, byte[] key)
+        public byte[] EncryptContentWithRSA(string plainText)
         {
             if (plainText == null)
             {
                 return null;
             }
 
-            return EncryptContentWithRSA(Encoding.UTF8.GetBytes(plainText), key);
+            return EncryptContentWithRSA(Encoding.UTF8.GetBytes(plainText));
         }
 
-        public static byte[] EncryptContentWithRSA(Stream plainStream, byte[] key)
+        public byte[] EncryptContentWithRSA(Stream plainStream)
         {
             if (plainStream == null)
             {
@@ -152,10 +158,10 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 result = streamReader.ToArray();
             }
 
-            return EncryptContentWithRSA(result, key);
+            return EncryptContentWithRSA(result);
         }
 
-        public static byte[] EncryptContentWithRSA(byte[] plainBytes, byte[] publicKey, bool doPadding = true)
+        public byte[] EncryptContentWithRSA(byte[] plainBytes, bool doPadding = true)
         {
             if (plainBytes == null)
             {
@@ -167,7 +173,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 byte[] encryptedData;
                 using (RSACryptoServiceProvider rSA = new RSACryptoServiceProvider())
                 {
-                    rSA.ImportRSAPublicKey(publicKey, out _);
+                    rSA.ImportRSAPublicKey(_encryptionSetting.PublicKey, out _);
                     encryptedData = rSA.Encrypt(plainBytes, doPadding);
                 }
 
@@ -180,7 +186,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             }
         }
 
-        public static byte[] DecryptContentWithRSA(byte[] cipherBytes, byte[] privateKey, bool doPadding = true)
+        public byte[] DecryptContentWithRSA(byte[] cipherBytes, bool doPadding = true)
         {
             if (cipherBytes == null)
             {
@@ -192,7 +198,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 byte[] encryptedData;
                 using (RSACryptoServiceProvider rSA = new RSACryptoServiceProvider())
                 {
-                    rSA.ImportRSAPrivateKey(privateKey, out _);
+                    rSA.ImportRSAPrivateKey(_encryptionSetting.PrivateKey, out _);
                     encryptedData = rSA.Decrypt(cipherBytes, doPadding);
                 }
 
@@ -205,7 +211,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             }
         }
 
-        public static byte[] DecryptContentWithRSA(string cipherText, byte[] privateKey, bool doPadding = true)
+        public byte[] DecryptContentWithRSA(string cipherText, bool doPadding = true)
         {
             if (cipherText == string.Empty)
             {
@@ -217,20 +223,20 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 return null;
             }
 
-            return DecryptContentWithRSA(Convert.FromBase64String(cipherText), privateKey, doPadding);
+            return DecryptContentWithRSA(Convert.FromBase64String(cipherText), doPadding);
         }
 
-        public static byte[] DecryptContentWithRSA(Stream cipherStream, byte[] privateKey, bool doPadding = true)
+        public byte[] DecryptContentWithRSA(Stream cipherStream, bool doPadding = true)
         {
             if (cipherStream == null)
             {
                 return null;
             }
 
-            return DecryptContentWithRSA(StreamToByte(cipherStream), privateKey, doPadding);
+            return DecryptContentWithRSA(StreamToByte(cipherStream), doPadding);
         }
 
-        private static byte[] StreamToByte(Stream inputStream)
+        private byte[] StreamToByte(Stream inputStream)
         {
             if (inputStream == null)
             {

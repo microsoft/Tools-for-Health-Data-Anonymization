@@ -47,21 +47,9 @@ namespace UnitTests
         public DicomDataset Dataset { get; set; }
 
         [Fact]
-        public void GivenDicomDataSet_SetAutoValidationTrue_IfSkipFailedItem_WhenAnonymizeWithUnsupportedOperation_OriginalValueWillBeReturned()
+        public void GivenDicomDataSet_SetAutoValidationTrue_WhenAnonymizeWithUnsupportedOperation_ExceptionWillBeThrown()
         {
-            var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json");
-            engine.AnonymizeDataset(Dataset);
-            var dicomFile = DicomFile.Open("DicomResults/UnchangedValue.dcm");
-            foreach (var item in Dataset)
-            {
-                Assert.Equal(((DicomElement)item).Get<string>(), dicomFile.Dataset.GetString(item.Tag));
-            }
-        }
-
-        [Fact]
-        public void GivenDicomDataSet_SetAutoValidationTrue_IfNotSkipFailedItem_WhenAnonymizeWithUnsupportedOperation_ExceptionWillBeThrown()
-        {
-            var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerSettings() { SkipFailedItem = false });
+            var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerSettings() { });
             Assert.Throws<AnonymizationOperationException>(() => engine.AnonymizeDataset(Dataset));
         }
 

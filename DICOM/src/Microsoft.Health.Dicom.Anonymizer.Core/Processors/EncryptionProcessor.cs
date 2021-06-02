@@ -10,6 +10,7 @@ using System.Text;
 using Dicom;
 using Dicom.IO.Buffer;
 using EnsureThat;
+using Microsoft.Health.DeID.SharedLib.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
@@ -20,11 +21,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class EncryptionProcessor : IAnonymizerProcessor
     {
-        private readonly DicomEncryptionSetting _ruleSetting;
+        private readonly EncryptFunction _encryptFunction;
 
         public EncryptionProcessor(IDicomAnonymizationSetting ruleSetting = null)
         {
-            _ruleSetting = (DicomEncryptionSetting)(ruleSetting ?? new DicomEncryptionSetting());
+            var setting = (DicomEncryptionSetting)(ruleSetting ?? new DicomEncryptionSetting());
+            var key = Encoding.UTF8.GetBytes(string.IsNullOrEmpty(setting.EncryptKey) ? Guid.NewGuid().ToString("N") : setting.EncryptKey);
+            _encryptFunction = new EncryptFunction(new EncryptionSetting() { AesKey = key });
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
@@ -37,13 +40,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Encrypt is not supported for {item.ValueRepresentation}");
             }
 
-            var key = Encoding.UTF8.GetBytes(string.IsNullOrEmpty(_ruleSetting.EncryptKey) ? Guid.NewGuid().ToString("N") : _ruleSetting.EncryptKey);
             var encoding = DicomEncoding.Default;
             try
             {
                 if (item is DicomStringElement)
                 {
-                    var encryptedValues = ((DicomStringElement)item).Get<string[]>().Where(x => !string.IsNullOrEmpty(x)).Select(x => Convert.ToBase64String(EncryptFunction.EncryptContentWithAES(encoding.GetBytes(x), key)));
+                    var encryptedValues = ((DicomStringElement)item).Get<string[]>().Where(x => !string.IsNullOrEmpty(x)).Select(x => Convert.ToBase64String(_encryptFunction.EncryptContentWithAES(encoding.GetBytes(x))));
                     if (encryptedValues.Count() != 0)
                     {
                         dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, encryptedValues.ToArray());
@@ -52,7 +54,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 else if (item is DicomOtherByte)
                 {
                     var valueBytes = ((DicomOtherByte)item).Get<byte[]>();
-                    var encryptesBytes = EncryptFunction.EncryptContentWithAES(valueBytes, key);
+                    var encryptesBytes = _encryptFunction.EncryptContentWithAES(valueBytes);
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, encryptesBytes);
                 }
                 else if (item is DicomFragmentSequence)
@@ -66,7 +68,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
                     while (enumerator.MoveNext())
                     {
-                        element.Fragments.Add(new MemoryByteBuffer(EncryptFunction.EncryptContentWithAES(enumerator.Current.Data, key)));
+                        element.Fragments.Add(new MemoryByteBuffer(_encryptFunction.EncryptContentWithAES(enumerator.Current.Data)));
                     }
 
                     dicomDataset.AddOrUpdate(element);

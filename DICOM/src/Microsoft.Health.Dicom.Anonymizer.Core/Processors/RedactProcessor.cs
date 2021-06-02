@@ -16,11 +16,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class RedactProcessor : IAnonymizerProcessor
     {
-        private DicomRedactSetting _ruleSetting;
+        private RedactFunction _redactFunction;
 
         public RedactProcessor(IDicomAnonymizationSetting ruleSetting)
         {
-            _ruleSetting = (DicomRedactSetting)(ruleSetting ?? new DicomRedactSetting());
+            _redactFunction = new RedactFunction((DicomRedactSetting)(ruleSetting ?? new DicomRedactSetting()));
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
@@ -28,15 +28,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            var redactFunction = new RedactFunction(_ruleSetting);
-
             var redactedValues = new List<string>() { };
             if (item.ValueRepresentation == DicomVR.AS)
             {
                 var values = ((DicomAgeString)item).Get<string[]>();
                 foreach (var value in values)
                 {
-                    var result = Utility.AgeToString(redactFunction.RedactAge(Utility.ParseAge(value)));
+                    var result = Utility.AgeToString(_redactFunction.RedactAge(Utility.ParseAge(value)));
                     if (result != null)
                     {
                         redactedValues.Add(result);
@@ -46,10 +44,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             if (item.ValueRepresentation == DicomVR.DA)
             {
-                var values = ((DicomDate)item).Get<string[]>();
+                var values = Utility.ParseDicomDate((DicomDate)item);
                 foreach (var value in values)
                 {
-                    var result = redactFunction.RedactDateTime(Utility.ParseDicomDate(value));
+                    var result = _redactFunction.RedactDateTime(value);
                     if (result != null)
                     {
                         redactedValues.Add(Utility.GenerateDicomDateString((DateTimeOffset)result));
@@ -59,10 +57,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             if (item.ValueRepresentation == DicomVR.DT)
             {
-                var values = ((DicomDateTime)item).Get<string[]>();
+                var values = Utility.ParseDicomDateTime((DicomDateTime)item);
                 foreach (var value in values)
                 {
-                    var result = redactFunction.RedactDateTime(Utility.ParseDicomDateTime(value));
+                    var result = _redactFunction.RedactDateTime(value);
                     if (result != null)
                     {
                         redactedValues.Add(Utility.GenerateDicomDateTimeString(result));

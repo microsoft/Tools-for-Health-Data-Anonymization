@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using Dicom;
 using Dicom.IO.Buffer;
+using Microsoft.Health.DeID.SharedLib.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
@@ -122,7 +123,8 @@ namespace UnitTests
 
         private string Decryption(string encryptedValue, string key)
         {
-            return Encoding.UTF8.GetString(EncryptFunction.DecryptContentWithAES(Convert.FromBase64String(encryptedValue), Encoding.UTF8.GetBytes("0000000000000000")));
+            var encryptFunction = new EncryptFunction(new EncryptionSetting() { AesKey = Encoding.UTF8.GetBytes("0000000000000000") });
+            return Encoding.UTF8.GetString(encryptFunction.DecryptContentWithAES(Convert.FromBase64String(encryptedValue)));
         }
 
         [Fact]
@@ -133,7 +135,8 @@ namespace UnitTests
             var dataset = new DicomDataset(item);
 
             Processor.Process(dataset, item);
-            Assert.Equal(Encoding.UTF8.GetBytes("test"), EncryptFunction.DecryptContentWithAES(dataset.GetDicomItem<DicomOtherByte>(tag).Get<byte[]>(), Encoding.UTF8.GetBytes(_defaultEncryptKey)));
+            var encryptFunction = new EncryptFunction(new EncryptionSetting() { AesKey = Encoding.UTF8.GetBytes(_defaultEncryptKey) });
+            Assert.Equal(Encoding.UTF8.GetBytes("test"), encryptFunction.DecryptContentWithAES(dataset.GetDicomItem<DicomOtherByte>(tag).Get<byte[]>()));
         }
 
         [Fact]
@@ -149,9 +152,10 @@ namespace UnitTests
             Processor.Process(dataset, item);
 
             var enumerator = ((DicomFragmentSequence)dataset.GetDicomItem<DicomItem>(tag)).GetEnumerator();
+            var encryptFunction = new EncryptFunction(new EncryptionSetting() { AesKey = Encoding.UTF8.GetBytes(_defaultEncryptKey) });
             while (enumerator.MoveNext())
             {
-                Assert.Equal(Encoding.UTF8.GetBytes("fragment"), EncryptFunction.DecryptContentWithAES(enumerator.Current.Data, Encoding.UTF8.GetBytes(_defaultEncryptKey)));
+                Assert.Equal(Encoding.UTF8.GetBytes("fragment"), encryptFunction.DecryptContentWithAES(enumerator.Current.Data));
             }
         }
 

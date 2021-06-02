@@ -39,24 +39,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             ValidateInput(dataset);
             dataset.AutoValidate = _anonymizerSettings.AutoValidate;
 
-            var rules = _configurationManager.GetConfiguration().DicomRules?.Select(entry => _ruleFactory.CreateAnonymizationDicomRule(entry)).ToArray();
+            var rules = _ruleFactory.CreateAnonymizationDicomRule(_configurationManager.GetConfiguration().RuleContent);
             foreach (var rule in rules)
             {
-                try
-                {
-                    rule.Handle(dataset, context);
-                }
-                catch (Exception ex)
-                {
-                    if (_anonymizerSettings.SkipFailedItem)
-                    {
-                        _logger.LogWarning($"Fail to handle rule {rule.Description}.", ex.Message);
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                rule.Handle(dataset, context);
+                _logger.LogDebug($"Successfully handle rule {rule.Description}.");
             }
         }
 

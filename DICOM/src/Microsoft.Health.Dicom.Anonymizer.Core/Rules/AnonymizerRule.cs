@@ -23,7 +23,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
         public IAnonymizerProcessor Processor { get; set; }
 
-        public void Handle(DicomDataset dataset, ProcessContext context)
+        public virtual void Handle(DicomDataset dataset, ProcessContext context)
         {
             var locatedItems = LocateDicomTag(dataset, context);
 

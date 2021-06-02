@@ -33,6 +33,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             _processorFactory = processorFactory;
         }
 
+        public AnonymizerRule[] CreateAnonymizationDicomRule(JObject[] rule)
+        {
+            return rule?.Select(entry => CreateAnonymizationDicomRule(entry)).ToArray();
+        }
+
         public AnonymizerRule CreateAnonymizationDicomRule(JObject rule)
         {
             EnsureArg.IsNotNull(rule, nameof(rule));

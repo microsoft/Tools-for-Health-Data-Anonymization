@@ -11,7 +11,7 @@ using Microsoft.Health.Dicom.DeID.SharedLib.Model;
 
 namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
-    public class PerturbFunction
+    public static class PerturbFunction
     {
         public static AgeValue Perturb(AgeValue value, PerturbSetting perturbSetting)
         {
