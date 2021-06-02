@@ -59,7 +59,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             else if (item.ValueRepresentation == DicomVR.DT)
             {
                 var values = Utility.ParseDicomDateTime((DicomDateTime)item);
-                var results = new List<object>();
+                var results = new List<string>();
                 foreach (var dateObject in values)
                 {
                     dateObject.DateValue = _dateShiftFunction.ShiftDateTime(dateObject.DateValue);
