@@ -19,7 +19,7 @@ services:
     volumes:
       - type: bind
         source: ${ARTIFACT_PATH}
-        target: benchmark/src/Microsoft.Health.Fhir.Anonymizer.Stu3.Benchmarks/BenchmarkDotNet.Artifacts
+        target: /benchmark/BenchmarkDotNet.Artifacts
     build:
       context: .
       dockerfile: benchmark/Dockerfile
