@@ -118,7 +118,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetStringValueToPerturb))]
         public void GivenAValueString_WhenPerturb_PerturbedValueShouldBeReturned(string value, PerturbSetting perturbSetting, decimal lowerBound, decimal upperBound)
         {
-            var result = PerturbFunction.Perturb(value, perturbSetting);
+            var function = new PerturbFunction(perturbSetting);
+            var result = function.Perturb(value);
             Assert.IsType<string>(result);
             Assert.InRange(decimal.Parse(result), lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(decimal.Parse(result)) <= perturbSetting.RoundTo);
@@ -128,7 +129,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetAgeValueToPerturb))]
         public void GivenAgeValue_WhenPerturb_PerturbedValueShouldBeReturned(AgeValue value, PerturbSetting perturbSetting, uint lowerBound, uint upperBound)
         {
-            var result = PerturbFunction.Perturb(value, perturbSetting);
+            var function = new PerturbFunction(perturbSetting);
+            var result = function.Perturb(value);
             Assert.InRange(result.Age, lowerBound, upperBound);
             Assert.Equal(value.AgeType, value.AgeType);
         }
@@ -137,7 +139,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetDecimalToPerturb))]
         public void GivenADecimal_WhenPerturb_PerturbedValueShouldBeReturned(decimal value, PerturbSetting perturbSetting, decimal lowerBound, decimal upperBound)
         {
-            var result = PerturbFunction.Perturb(value, perturbSetting);
+            var function = new PerturbFunction(perturbSetting);
+            var result = function.Perturb(value);
             Assert.InRange(result, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(result) <= perturbSetting.RoundTo);
             Assert.IsType<decimal>(result);
@@ -147,7 +150,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetDoubleToPerturb))]
         public void GivenADouble_WhenPerturb_PerturbedValueShouldBeReturned(double value, PerturbSetting perturbSetting, double lowerBound, double upperBound)
         {
-            var result = PerturbFunction.Perturb(value, perturbSetting);
+            var function = new PerturbFunction(perturbSetting);
+            var result = function.Perturb(value);
             Assert.InRange(result, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces((decimal)result) <= perturbSetting.RoundTo);
             Assert.IsType<double>(result);
@@ -157,7 +161,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetFloatToPerturb))]
         public void GivenAFloat_WhenPerturb_PerturbedValueShouldBeReturned(float value, PerturbSetting perturbSetting, float lowerBound, float upperBound)
         {
-            var result = PerturbFunction.Perturb(value, perturbSetting);
+            var function = new PerturbFunction(perturbSetting);
+            var result = function.Perturb(value);
             Assert.InRange(result, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces((decimal)result) <= perturbSetting.RoundTo);
             Assert.IsType<float>(result);
@@ -167,7 +172,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetIntegerToPerturb))]
         public void GivenAnInteger_WhenPerturb_PerturbedValueShouldBeReturned(int value, PerturbSetting perturbSetting, int lowerBound, int upperBound)
         {
-            var result = PerturbFunction.Perturb(value, perturbSetting);
+            var function = new PerturbFunction(perturbSetting);
+            var result = function.Perturb(value);
             Assert.InRange(result, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(result) <= perturbSetting.RoundTo);
             Assert.IsType<int>(result);
@@ -177,7 +183,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetUnsignedIntegerToPerturb))]
         public void GivenAnUnsignedInteger_WhenPerturb_PerturbedValueShouldBeReturned(uint value, PerturbSetting perturbSetting, uint lowerBound, uint upperBound)
         {
-            var result = PerturbFunction.Perturb(value, perturbSetting);
+            var function = new PerturbFunction(perturbSetting);
+            var result = function.Perturb(value);
             Assert.InRange(result, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(result) <= perturbSetting.RoundTo);
             Assert.IsType<uint>(result);
@@ -187,7 +194,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetIntegerToPerturb))]
         public void GivenShortInteger_WhenPerturb_PerturbedValueShouldBeReturned(short value, PerturbSetting perturbSetting, short lowerBound, short upperBound)
         {
-            var result = PerturbFunction.Perturb(value, perturbSetting);
+            var function = new PerturbFunction(perturbSetting);
+            var result = function.Perturb(value);
             Assert.InRange(result, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(result) <= perturbSetting.RoundTo);
             Assert.IsType<short>(result);
@@ -197,7 +205,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetUnsignedIntegerToPerturb))]
         public void GivenAnUnsignedShortInteger_WhenPerturb_PerturbedValueShouldBeReturned(ushort value, PerturbSetting perturbSetting, ushort lowerBound, ushort upperBound)
         {
-            var result = PerturbFunction.Perturb(value, perturbSetting);
+            var function = new PerturbFunction(perturbSetting);
+            var result = function.Perturb(value);
             Assert.InRange(result, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(result) <= perturbSetting.RoundTo);
             Assert.IsType<ushort>(result);
@@ -207,7 +216,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetIntegerToPerturb))]
         public void GivenALongInteger_WhenPerturb_PerturbedValueShouldBeReturned(long value, PerturbSetting perturbSetting, long lowerBound, long upperBound)
         {
-            var result = PerturbFunction.Perturb(value, perturbSetting);
+            var function = new PerturbFunction(perturbSetting);
+            var result = function.Perturb(value);
             Assert.InRange(result, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(result) <= perturbSetting.RoundTo);
             Assert.IsType<long>(result);
@@ -217,7 +227,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetUnsignedIntegerToPerturb))]
         public void GivenAnUnsignedLongInteger_WhenPerturb_PerturbedValueShouldBeReturned(ulong value, PerturbSetting perturbSetting, ulong lowerBound, ulong upperBound)
         {
-            var result = PerturbFunction.Perturb(value, perturbSetting);
+            var function = new PerturbFunction(perturbSetting);
+            var result = function.Perturb(value);
             Assert.InRange(result, lowerBound, upperBound);
             Assert.True(GetDecimalPlaces(result) <= perturbSetting.RoundTo);
             Assert.IsType<ulong>(result);

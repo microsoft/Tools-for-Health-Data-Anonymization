@@ -13,11 +13,15 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
     public class CryptoHashFunction
     {
-        private byte[] _hashKey;
+        private HMAC _hmac;
 
         public CryptoHashFunction(byte[] hashKey = null)
         {
-            _hashKey = hashKey;
+            _hmac = new HMACSHA256();
+            if (hashKey != null)
+            {
+                _hmac = new HMACSHA256(hashKey);
+            }
         }
 
         public byte[] ComputeHmacSHA256Hash(byte[] input)
@@ -27,13 +31,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 return input;
             }
 
-            HMAC hmac = new HMACSHA256();
-            if (_hashKey != null)
-            {
-                hmac = new HMACSHA256(_hashKey);
-            }
-
-            return hmac.ComputeHash(input);
+            return _hmac.ComputeHash(input);
         }
 
         public byte[] ComputeHmacSHA256Hash(Stream input)
@@ -43,13 +41,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 return null;
             }
 
-            HMAC hmac = new HMACSHA256();
-            if (_hashKey != null)
-            {
-                hmac = new HMACSHA256(_hashKey);
-            }
-
-            return hmac.ComputeHash(input);
+            return _hmac.ComputeHash(input);
         }
 
         public byte[] ComputeHmacSHA256Hash(string input, Encoding encoding = null)

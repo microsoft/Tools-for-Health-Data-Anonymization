@@ -16,10 +16,9 @@ using Microsoft.Health.Dicom.DeID.SharedLib;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
-
     public class PerturbProcessor : IAnonymizerProcessor
     {
-        private DicomPerturbSetting _ruleSetting;
+        private PerturbFunction _perturbFunction;
 
         private readonly Dictionary<DicomVR, VRTypes> _numericValueTypeMapping = new Dictionary<DicomVR, VRTypes>()
         {
@@ -42,7 +41,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
         public PerturbProcessor(IDicomAnonymizationSetting ruleSetting = null)
         {
-            _ruleSetting = (DicomPerturbSetting)(ruleSetting ?? new DicomPerturbSetting());
+            _perturbFunction = new PerturbFunction((DicomPerturbSetting)(ruleSetting ?? new DicomPerturbSetting()));
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
@@ -57,7 +56,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             if (item.ValueRepresentation == DicomVR.AS)
             {
-                var values = ((DicomAgeString)item).Get<string[]>().Select(Utility.ParseAge).Select(x => PerturbFunction.Perturb(x, _ruleSetting));
+                var values = ((DicomAgeString)item).Get<string[]>().Select(Utility.ParseAge).Select(x => _perturbFunction.Perturb(x));
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(Utility.AgeToString).ToArray());
             }
             else
@@ -81,43 +80,43 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             var valueType = values.GetValue(0).GetType();
             if (valueType == typeof(decimal))
             {
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<decimal>().ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<decimal>().Select(_perturbFunction.Perturb).ToArray());
             }
             else if (valueType == typeof(double))
             {
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<double>().ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<double>().Select(_perturbFunction.Perturb).ToArray());
             }
             else if (valueType == typeof(float))
             {
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<float>().ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<float>().Select(_perturbFunction.Perturb).ToArray());
             }
             else if (valueType == typeof(int))
             {
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<int>().ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<int>().Select(_perturbFunction.Perturb).ToArray());
             }
             else if (valueType == typeof(uint))
             {
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<uint>().ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<uint>().Select(_perturbFunction.Perturb).ToArray());
             }
             else if (valueType == typeof(short))
             {
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<short>().ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<short>().Select(_perturbFunction.Perturb).ToArray());
             }
             else if (valueType == typeof(ushort))
             {
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<ushort>().ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<ushort>().Select(_perturbFunction.Perturb).ToArray());
             }
             else if (valueType == typeof(long))
             {
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<long>().ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<long>().Select(_perturbFunction.Perturb).ToArray());
             }
             else if (valueType == typeof(ulong))
             {
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<ulong>().ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<ulong>().Select(_perturbFunction.Perturb).ToArray());
             }
             else
             {
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<string>().ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<string>().Select(_perturbFunction.Perturb).ToArray());
             }
         }
 

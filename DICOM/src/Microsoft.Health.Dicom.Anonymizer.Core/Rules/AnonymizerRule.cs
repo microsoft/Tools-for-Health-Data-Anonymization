@@ -11,7 +11,7 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
-    public class AnonymizerRule
+    public abstract class AnonymizerRule
     {
         public AnonymizerRule(string method, string description, IDicomAnonymizationSetting ruleSetting, IAnonymizerProcessorFactory processorFactory)
         {
@@ -34,9 +34,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             }
         }
 
-        public virtual List<DicomItem> LocateDicomTag(DicomDataset dataset, ProcessContext context)
-        {
-            return null;
-        }
+        public abstract List<DicomItem> LocateDicomTag(DicomDataset dataset, ProcessContext context);
     }
 }
