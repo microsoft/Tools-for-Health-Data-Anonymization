@@ -20,7 +20,7 @@ namespace De.ID.Function.Shared.UnitTests
             yield return new object[] { "5.234", new PerturbSetting() { Span = 6, RoundTo = 2, RangeType = PerturbRangeType.Fixed }, 2.23, 8.23 };
             yield return new object[] { "5", new PerturbSetting() { Span = 0, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 5, 5 };
             yield return new object[] { "5.0", new PerturbSetting() { Span = 0.4, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, 4, 6 };
-            yield return new object[] { "5.234", new PerturbSetting() { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, 2.617, 7.851 };
+            yield return new object[] { "5.234", new PerturbSetting() { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, 2.62, 7.85 };
         }
 
         public static IEnumerable<object[]> GetDecimalToPerturb()
@@ -43,7 +43,7 @@ namespace De.ID.Function.Shared.UnitTests
             yield return new object[] { 12e-2D, new PerturbSetting() { Span = 2, RoundTo = 2, RangeType = PerturbRangeType.Fixed }, -0.88D, 1.12D };
             yield return new object[] { 5D, new PerturbSetting() { Span = 0, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 5D, 5D };
             yield return new object[] { 5.0D, new PerturbSetting() { Span = 0.4, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, 4D, 6D };
-            yield return new object[] { 5.234D, new PerturbSetting() { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, 2.617D, 7.851D };
+            yield return new object[] { 5.234D, new PerturbSetting() { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, 2.62D, 7.85D };
             yield return new object[] { 12e-2D, new PerturbSetting() { Span = 4, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, -0.12D, 0.36D };
         }
 
@@ -55,7 +55,7 @@ namespace De.ID.Function.Shared.UnitTests
             yield return new object[] { 12e-2F, new PerturbSetting() { Span = 2, RoundTo = 2, RangeType = PerturbRangeType.Fixed }, -0.88F, 1.12F };
             yield return new object[] { 5F, new PerturbSetting() { Span = 0, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 5F, 5F };
             yield return new object[] { 5.0F, new PerturbSetting() { Span = 0.4, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, 4F, 6F };
-            yield return new object[] { 5.234F, new PerturbSetting() { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, 2.617F, 7.851F };
+            yield return new object[] { 5.234F, new PerturbSetting() { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, 2.62F, 7.85F };
             yield return new object[] { 12e-2F, new PerturbSetting() { Span = 4, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, -0.12F, 0.36F };
         }
 

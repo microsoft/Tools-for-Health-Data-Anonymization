@@ -46,7 +46,7 @@ namespace UnitTests
             yield return new object[] { DicomTag.Stage​Number, "1234", new DicomPerturbSetting() { Span = 1, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 617, 1851 }; // IS
             yield return new object[] { DicomTag.Event​Elapsed​Times, "1234.5", new DicomPerturbSetting() { Span = 1000, RoundTo = 2, RangeType = PerturbRangeType.Fixed }, 734.5, 1734.5 }; // DS
             yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345", new DicomPerturbSetting() { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, 6172.5, 18517.5 }; // FD
-            yield return new object[] { DicomTag.Examined​Body​Thickness, "12345", new DicomPerturbSetting() { Span = 1, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 6172.5, 18517.5 }; // FL
+            yield return new object[] { DicomTag.Examined​Body​Thickness, "12345", new DicomPerturbSetting() { Span = 1, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 6173, 18518 }; // FL
             yield return new object[] { DicomTag.Doppler​Sample​Volume​X​Position, "12345", new DicomPerturbSetting() { Span = 1, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 6173, 18518 }; // SL
             yield return new object[] { DicomTag.Pixel​Intensity​Relationship​Sign, "12345", new DicomPerturbSetting() { Span = 10000, RoundTo = 2, RangeType = PerturbRangeType.Fixed }, 7345, 17345 }; // SS
             yield return new object[] { DicomTag.Referenced​Content​Item​Identifier, "12345", new DicomPerturbSetting() { Span = 100000, RoundTo = 2, RangeType = PerturbRangeType.Fixed }, 0, 62345 }; // UL
