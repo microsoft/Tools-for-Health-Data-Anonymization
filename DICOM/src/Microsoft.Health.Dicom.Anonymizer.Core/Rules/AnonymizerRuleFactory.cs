@@ -33,22 +33,22 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             _processorFactory = processorFactory;
         }
 
-        public AnonymizerRule[] CreateAnonymizationDicomRule(JObject[] rule)
+        public AnonymizerRule[] CreateAnonymizationDicomRule(JObject[] ruleContent)
         {
-            return rule?.Select(entry => CreateAnonymizationDicomRule(entry)).ToArray();
+            return ruleContent?.Select(entry => CreateAnonymizationDicomRule(entry)).ToArray();
         }
 
-        public AnonymizerRule CreateAnonymizationDicomRule(JObject rule)
+        public AnonymizerRule CreateAnonymizationDicomRule(JObject ruleContent)
         {
-            EnsureArg.IsNotNull(rule, nameof(rule));
+            EnsureArg.IsNotNull(ruleContent, nameof(ruleContent));
 
             // Parse and validate method
-            if (!rule.ContainsKey(Constants.MethodKey))
+            if (!ruleContent.ContainsKey(Constants.MethodKey))
             {
                 throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, "Missing method in rule config");
             }
 
-            var method = rule[Constants.MethodKey].ToString();
+            var method = ruleContent[Constants.MethodKey].ToString();
             var supportedMethods = Enum.GetNames(typeof(AnonymizerMethod)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
             if (!supportedMethods.Contains(method))
             {
@@ -57,20 +57,20 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
             // Parse and validate settings
             JObject parameters = null;
-            if (rule.ContainsKey(Constants.Parameters))
+            if (ruleContent.ContainsKey(Constants.Parameters))
             {
-                parameters = rule[Constants.Parameters].ToObject<JObject>();
+                parameters = ruleContent[Constants.Parameters].ToObject<JObject>();
             }
 
             IDicomAnonymizationSetting ruleSetting = _defaultSettings.GetDefaultSetting(method);
-            if (rule.ContainsKey(Constants.RuleSetting))
+            if (ruleContent.ContainsKey(Constants.RuleSetting))
             {
-                if (_customizedSettings == null || !_customizedSettings.ContainsKey(rule[Constants.RuleSetting].ToString()))
+                if (_customizedSettings == null || !_customizedSettings.ContainsKey(ruleContent[Constants.RuleSetting].ToString()))
                 {
-                    throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, $"Customized setting {rule[Constants.RuleSetting]} not defined");
+                    throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, $"Customized setting {ruleContent[Constants.RuleSetting]} not defined");
                 }
 
-                var settings = _customizedSettings[rule[Constants.RuleSetting].ToString()];
+                var settings = _customizedSettings[ruleContent[Constants.RuleSetting].ToString()];
 
                 if (parameters != null)
                 {
@@ -97,28 +97,28 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             ruleSetting?.Validate();
 
             // Parse and validate tag
-            if (rule.ContainsKey(Constants.TagKey))
+            if (ruleContent.ContainsKey(Constants.TagKey))
             {
-                var content = rule[Constants.TagKey].ToString();
+                var content = ruleContent[Constants.TagKey].ToString();
 
                 try
                 {
                     var tag = DicomTag.Parse(content);
-                    return new AnonymizerTagRule(tag, method, ruleSetting, rule.ToString(), _processorFactory);
+                    return new AnonymizerTagRule(tag, method, ruleSetting, ruleContent.ToString(), _processorFactory);
                 }
                 catch (Exception)
                 {
                     try
                     {
                         var tag = DicomMaskedTag.Parse(content);
-                        return new AnonymizerMaskedTagRule(tag, method, ruleSetting, rule.ToString(), _processorFactory);
+                        return new AnonymizerMaskedTagRule(tag, method, ruleSetting, ruleContent.ToString(), _processorFactory);
                     }
                     catch
                     {
                         try
                         {
                             var vr = DicomVR.Parse(content);
-                            return new AnonymizerVRRule(vr, method, ruleSetting, rule.ToString(), _processorFactory);
+                            return new AnonymizerVRRule(vr, method, ruleSetting, ruleContent.ToString(), _processorFactory);
                         }
                         catch
                         {
@@ -126,7 +126,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                             {
                                 var dicomTags = new DicomTag(0, 0);
                                 DicomTag tag = (DicomTag)dicomTags.GetType().GetField(content).GetValue(dicomTags);
-                                return new AnonymizerTagRule(tag, method, ruleSetting, rule.ToString(), _processorFactory);
+                                return new AnonymizerTagRule(tag, method, ruleSetting, ruleContent.ToString(), _processorFactory);
                             }
                             catch
                             {

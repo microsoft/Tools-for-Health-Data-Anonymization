@@ -25,7 +25,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
                     });
             if (options.InputFile != null && options.OutputFile != null)
             {
-                await AnonymizeOneFile(options.InputFile, options.OutputFile, engine);
+                await AnonymizeOneFile(options.InputFile, options.OutputFile, engine, options.SkipFailedItem);
             }
             else if (options.InputFolder != null && options.OutputFolder != null)
             {
@@ -41,7 +41,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
                 var num = 0;
                 foreach (string file in Directory.EnumerateFiles(options.InputFolder, "*.dcm", SearchOption.AllDirectories))
                 {
-                    await AnonymizeOneFile(file, Path.Join(options.OutputFolder, Path.GetFileName(file)), engine);
+                    await AnonymizeOneFile(file, Path.Join(options.OutputFolder, Path.GetFileName(file)), engine, options.SkipFailedItem);
                     num++;
                 }
 
@@ -65,11 +65,26 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
             return string.Equals(inputFolderPath, outputFolderPath, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        internal static async Task AnonymizeOneFile(string inputFile, string outputFile, AnonymizerEngine engine)
+        internal static async Task AnonymizeOneFile(string inputFile, string outputFile, AnonymizerEngine engine, bool skipFailedItem)
         {
             DicomFile dicomFile = await DicomFile.OpenAsync(inputFile).ConfigureAwait(false);
-            engine.AnonymizeDataset(dicomFile.Dataset);
-            dicomFile.Save(outputFile);
+            try
+            {
+                engine.AnonymizeDataset(dicomFile.Dataset);
+                dicomFile.Save(outputFile);
+            }
+            catch
+            {
+                if (skipFailedItem)
+                {
+                    Console.WriteLine($"Fail and skip the file '{inputFile}'!");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
             Console.WriteLine($"Finished processing '{inputFile}'!");
         }
     }
