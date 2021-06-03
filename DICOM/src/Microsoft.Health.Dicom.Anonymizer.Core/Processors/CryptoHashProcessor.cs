@@ -33,6 +33,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
+            var test = item.GetType().GetMethods();
             if (dicomDataset.AutoValidate && !IsValidItemForCryptoHash(item))
             {
                 throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"CryptoHash is not supported for {item.ValueRepresentation}");

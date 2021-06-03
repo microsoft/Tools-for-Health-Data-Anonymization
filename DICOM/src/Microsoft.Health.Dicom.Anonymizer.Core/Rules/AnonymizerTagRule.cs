@@ -30,6 +30,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
         public override List<DicomItem> LocateDicomTag(DicomDataset dataset, ProcessContext context)
         {
+            EnsureArg.IsNotNull(dataset, nameof(dataset));
+            EnsureArg.IsNotNull(context, nameof(context));
+
             var locatedItems = new List<DicomItem>() { dataset.GetDicomItem<DicomItem>(Tag) };
             return locatedItems.Where(x => x != null && !context.VisitedNodes.Contains(x.Tag.ToString())).ToList();
         }

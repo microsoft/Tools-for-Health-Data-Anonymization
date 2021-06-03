@@ -105,13 +105,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        public static string[] SplitValues(string stringValue)
-        {
-            return string.IsNullOrEmpty(stringValue)
-                    ? Array.Empty<string>()
-                    : stringValue.Split('\\');
-        }
-
         public static AgeValue ParseAge(string age)
         {
             if (string.IsNullOrEmpty(age))
