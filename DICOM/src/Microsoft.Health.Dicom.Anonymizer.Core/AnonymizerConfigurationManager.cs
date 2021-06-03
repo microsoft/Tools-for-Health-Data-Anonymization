@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 using Newtonsoft.Json;
@@ -18,11 +19,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public AnonymizerConfigurationManager(AnonymizerConfiguration configuration)
         {
+            EnsureArg.IsNotNull(configuration, nameof(configuration));
+
             _configuration = configuration;
         }
 
         public static AnonymizerConfigurationManager CreateFromSettingsInJson(string settingsInJson)
         {
+            EnsureArg.IsNotNull(settingsInJson, nameof(settingsInJson));
+
             try
             {
                 var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(settingsInJson);
@@ -36,6 +41,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public static AnonymizerConfigurationManager CreateFromConfigurationFile(string configFilePath)
         {
+            EnsureArg.IsNotNull(configFilePath, nameof(configFilePath));
+
             try
             {
                 var content = File.ReadAllText(configFilePath);

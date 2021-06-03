@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using Dicom;
+using EnsureThat;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
@@ -27,6 +28,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, AnonymizerSettings anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null)
         {
+            EnsureArg.IsNotNull(configurationManager, nameof(configurationManager));
+
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerSettings();
             _configurationManager = configurationManager;
             _ruleFactory = ruleFactory ?? new AnonymizerRuleFactory(_configurationManager.GetConfiguration(), new DicomProcessorFactory());
@@ -35,6 +38,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public void AnonymizeDataset(DicomDataset dataset)
         {
+            EnsureArg.IsNotNull(dataset, nameof(dataset));
+
             var context = InitContext(dataset);
             ValidateInput(dataset);
             dataset.AutoValidate = _anonymizerSettings.AutoValidate;
