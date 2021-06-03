@@ -122,6 +122,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
         public bool IsValidItemForPerturb(DicomItem item)
         {
+            EnsureArg.IsNotNull(item, nameof(item));
+
             var supportedVR = Enum.GetNames(typeof(PerturbSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
             return supportedVR.Contains(item.ValueRepresentation.Code) && !(item is DicomFragmentSequence);
         }

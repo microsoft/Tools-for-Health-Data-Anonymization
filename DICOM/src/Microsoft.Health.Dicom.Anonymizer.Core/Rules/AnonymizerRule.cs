@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using Dicom;
+using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
@@ -13,9 +14,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
     public abstract class AnonymizerRule
     {
-        public AnonymizerRule(string method, string description, IDicomAnonymizationSetting ruleSetting, IAnonymizerProcessorFactory processorFactory)
+        public AnonymizerRule(string method, string description, IDicomAnonymizationSetting ruleSetting = null, IAnonymizerProcessorFactory processorFactory = null)
         {
+            EnsureArg.IsNotNull(method, nameof(method));
+            EnsureArg.IsNotNull(description, nameof(description));
+
             Description = description;
+            processorFactory ??= new DicomProcessorFactory();
             Processor = processorFactory.CreateProcessor(method, ruleSetting);
         }
 
@@ -23,8 +28,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
         public IAnonymizerProcessor Processor { get; set; }
 
-        public virtual void Handle(DicomDataset dataset, ProcessContext context)
+        public void Handle(DicomDataset dataset, ProcessContext context)
         {
+            EnsureArg.IsNotNull(dataset, nameof(dataset));
+            EnsureArg.IsNotNull(context, nameof(context));
+
             var locatedItems = LocateDicomTag(dataset, context);
 
             foreach (var item in locatedItems)

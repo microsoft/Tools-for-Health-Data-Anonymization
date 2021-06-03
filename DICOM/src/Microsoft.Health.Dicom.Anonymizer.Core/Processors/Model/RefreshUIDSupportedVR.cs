@@ -3,14 +3,25 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.Model
+namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model
 {
-    public class DicomBasicInformation
+    public enum PerturbSupportedVR
     {
-        public string StudyInstanceUID { get; set; }
-
-        public string SeriesInstanceUID { get; set; }
-
-        public string SopInstanceUID { get; set; }
+        AS,
+        DS,
+        FL,
+        OF,
+        FD,
+        OD,
+        IS,
+        SL,
+        SS,
+        US,
+        OW,
+        UL,
+        OL,
+        UV,
+        OV,
+        SV,
     }
 }

@@ -53,8 +53,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             };
             if (item.ValueRepresentation == DicomVR.DA)
             {
-                var values = Utility.ParseDicomDate((DicomDate)item).Select(x => _dateShiftFunction.ShiftDateTime(x)).Where(x => !DateTimeUtility.IndicateAgeOverThreshold(x));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(x => Utility.GenerateDicomDateString(x)).ToArray());
+                var values = Utility.ParseDicomDate((DicomDate)item).Select(_dateShiftFunction.ShiftDateTime).Where(x => !DateTimeUtility.IndicateAgeOverThreshold(x));
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(Utility.GenerateDicomDateString).ToArray());
             }
             else if (item.ValueRepresentation == DicomVR.DT)
             {
@@ -75,6 +75,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
         public bool IsValidItemForDateShift(DicomItem item)
         {
+            EnsureArg.IsNotNull(item, nameof(item));
+
             var supportedVR = Enum.GetNames(typeof(DateShiftSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
             return supportedVR.Contains(item.ValueRepresentation.Code);
         }

@@ -41,8 +41,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                     }
                 }
             }
-
-            if (item.ValueRepresentation == DicomVR.DA)
+            else if (item.ValueRepresentation == DicomVR.DA)
             {
                 var values = Utility.ParseDicomDate((DicomDate)item);
                 foreach (var value in values)
@@ -54,8 +53,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                     }
                 }
             }
-
-            if (item.ValueRepresentation == DicomVR.DT)
+            else if (item.ValueRepresentation == DicomVR.DT)
             {
                 var values = Utility.ParseDicomDateTime((DicomDateTime)item);
                 foreach (var value in values)
@@ -67,8 +65,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                     }
                 }
             }
-
-            if (item.ValueRepresentation == DicomVR.SQ)
+            else if (item.ValueRepresentation == DicomVR.SQ)
             {
                 dicomDataset.AddOrUpdate<DicomDataset>(DicomVR.SQ, item.Tag);
                 return;

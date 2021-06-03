@@ -3,11 +3,14 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dicom;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
@@ -20,29 +23,37 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            if (!(item is DicomElement) || item.ValueRepresentation != DicomVR.UI)
+            if (!IsValidItemForRefreshUID(item))
             {
                 throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Invalid refresh UID operation for item {item}");
             }
 
-            string replaced;
+            string replacedUID;
             DicomUID uid;
             var old = ((DicomElement)item).Get<string>();
 
             if (ReplacedUIDs.ContainsKey(old))
             {
-                replaced = ReplacedUIDs[old];
-                uid = new DicomUID(replaced, "Anonymized UID", DicomUidType.Unknown);
+                replacedUID = ReplacedUIDs[old];
+                uid = new DicomUID(replacedUID, "Anonymized UID", DicomUidType.Unknown);
             }
             else
             {
                 uid = DicomUIDGenerator.GenerateDerivedFromUUID();
-                replaced = uid.UID;
-                ReplacedUIDs[old] = replaced;
+                replacedUID = uid.UID;
+                ReplacedUIDs[old] = replacedUID;
             }
 
             var newItem = new DicomUniqueIdentifier(item.Tag, uid);
             dicomDataset.AddOrUpdate(newItem);
+        }
+
+        public bool IsValidItemForRefreshUID(DicomItem item)
+        {
+            EnsureArg.IsNotNull(item, nameof(item));
+
+            var supportedVR = Enum.GetNames(typeof(RefreshUIDSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+            return supportedVR.Contains(item.ValueRepresentation.Code);
         }
     }
 }

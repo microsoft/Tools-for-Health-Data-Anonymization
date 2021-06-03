@@ -22,6 +22,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             : base(method, description, ruleSetting, processorFactory)
         {
             EnsureArg.IsNotNull(maskedTag, nameof(maskedTag));
+
             MaskedTag = maskedTag;
         }
 
@@ -38,7 +39,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 }
             }
 
-            return locatedItems.Where(x => x != null && !context.VisitedNodes.Contains(x.Tag.ToString())).ToList();
+            return locatedItems.Where(x => !context.VisitedNodes.Contains(x.Tag.ToString())).ToList();
         }
     }
 }

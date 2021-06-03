@@ -12,12 +12,5 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         internal const string MethodKey = "method";
         internal const string Parameters = "params";
         internal const string RuleSetting = "setting";
-
-        internal const string RedactDefaultSetting = "redactDefaultSetting";
-        internal const string PerturbDefaultSetting = "perturbDefaultSetting";
-        internal const string EncryptDefaultSetting = "encryptDefaultSetting";
-        internal const string CryptoHashDefaultSetting = "cryptoHashDefaultSetting";
-        internal const string DateShiftDefaultSetting = "dateShiftDefaultSetting";
-        internal const string SubstituteDefaultSetting = "substituteDefaultSetting";
     }
 }

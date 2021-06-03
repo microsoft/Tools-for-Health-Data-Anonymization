@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Dicom;
+using EnsureThat;
 using Microsoft.Health.Dicom.DeID.SharedLib.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
@@ -17,23 +18,31 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
     {
         public static DateTimeOffset[] ParseDicomDate(DicomDate item)
         {
+            EnsureArg.IsNotNull(item, nameof(item));
+
             return item.Get<string[]>().Select(ParseDicomDate).ToArray();
         }
 
         public static DateTimeOffset ParseDicomDate(string date)
         {
+            EnsureArg.IsNotNull(date, nameof(date));
+
             return DateTimeOffset.ParseExact(date, "yyyyMMdd", CultureInfo.InvariantCulture);
         }
 
         public static DateTimeObject[] ParseDicomDateTime(DicomDateTime item)
         {
+            EnsureArg.IsNotNull(item, nameof(item));
+
             return item.Get<string[]>().Select(ParseDicomDateTime).ToArray();
         }
 
-        public static DateTimeObject ParseDicomDateTime(string date)
+        public static DateTimeObject ParseDicomDateTime(string dateTime)
         {
+            EnsureArg.IsNotNull(dateTime, nameof(dateTime));
+
             Regex dateTimeRegex = new Regex(@"^((?<year>\d{4})(?<month>\d{2})(?<day>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(\.(?<millisecond>\d{1,6}))?(?<timeZone>(?<sign>-|\+)(?<timeZoneHour>\d{2})(?<timeZoneMinute>\d{2}))?)(\s*)");
-            var matches = dateTimeRegex.Matches(date);
+            var matches = dateTimeRegex.Matches(dateTime);
             if (matches.Count != 1)
             {
                 throw new Exception();

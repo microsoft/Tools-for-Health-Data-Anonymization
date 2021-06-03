@@ -33,7 +33,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            var test = item.GetType().GetMethods();
             if (dicomDataset.AutoValidate && !IsValidItemForCryptoHash(item))
             {
                 throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"CryptoHash is not supported for {item.ValueRepresentation}");
@@ -42,7 +41,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             var encoding = Encoding.UTF8;
             if (item is DicomStringElement)
             {
-                var encryptedValues = ((DicomStringElement)item).Get<string[]>().Select(x => GetCryptoHashString(x));
+                var encryptedValues = ((DicomStringElement)item).Get<string[]>().Select(GetCryptoHashString);
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, encryptedValues.ToArray());
             }
             else if (item is DicomOtherByte)
@@ -74,12 +73,16 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
         public bool IsValidItemForCryptoHash(DicomItem item)
         {
+            EnsureArg.IsNotNull(item, nameof(item));
+
             var supportedVR = Enum.GetNames(typeof(CryptoHashSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
             return supportedVR.Contains(item.ValueRepresentation.Code) || item is DicomFragmentSequence;
         }
 
         public string GetCryptoHashString(string input)
         {
+            EnsureArg.IsNotNull(input, nameof(input));
+
             var resultBytes = _cryptoHashFunction.ComputeHmacSHA256Hash(Encoding.UTF8.GetBytes(input));
             return resultBytes == null ? null : string.Concat(resultBytes.Select(b => b.ToString("x2")));
         }

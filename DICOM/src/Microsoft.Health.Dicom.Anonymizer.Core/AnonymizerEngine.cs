@@ -20,8 +20,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         private readonly AnonymizerConfigurationManager _configurationManager;
         private readonly IAnonymizerRuleFactory _ruleFactory;
 
-        public AnonymizerEngine(string configFilePath = "configuration.json", AnonymizerSettings anonymizerSettings = null)
-            : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath), anonymizerSettings)
+        public AnonymizerEngine(string configFilePath = "configuration.json", AnonymizerSettings anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null)
+            : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath), anonymizerSettings, ruleFactory)
         {
         }
 

@@ -6,6 +6,7 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Health.DeID.SharedLib.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Newtonsoft.Json;
@@ -13,11 +14,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings
 {
-    public class DicomEncryptionSetting : IDicomAnonymizationSetting
+    public class DicomEncryptionSetting : EncryptionSetting, IDicomAnonymizationSetting
     {
         public string EncryptKey { get; set; } = Guid.NewGuid().ToString("N");
-
-        public EncryptFunctionTypes EncryptFunction { get; set; }
 
         public IDicomAnonymizationSetting CreateFromRuleSettings(string settings)
         {

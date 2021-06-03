@@ -5,23 +5,8 @@
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model
 {
-    public enum PerturbSupportedVR
+    public enum RefreshUIDSupportedVR
     {
-        AS,
-        DS,
-        FL,
-        OF,
-        FD,
-        OD,
-        IS,
-        SL,
-        SS,
-        US,
-        OW,
-        UL,
-        OL,
-        UV,
-        OV,
-        SV,
+        UI,
     }
 }
