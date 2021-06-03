@@ -8,13 +8,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Health.DeID.SharedLib.Settings;
 using Microsoft.Health.Dicom.DeID.SharedLib;
 using Xunit;
 
 namespace De.ID.Function.Shared.UnitTests
 {
-    public class EncrypTests
+    public class EncryptTests
     {
+        private EncryptFunction encryptFunction;
+
+        public EncryptTests()
+        {
+            encryptFunction = new EncryptFunction(new EncryptionSetting() { AesKey = Key, PublicKey = PublicKey, PrivateKey = PrivateKey });
+        }
+
         private byte[] Key => Encoding.UTF8.GetBytes("704ab12c8e3e46d4bea600ef62a6bec7");
 
         private byte[] PublicKey => Convert.FromBase64String("MIGJAoGBAKZV0G4nJSkjkswoOpD9ULZluVib4vtq/tH3H1vaTEkLqrQ+f6hrJn471uPfeVvRgj2fjcoAgvHrisOTeiFUSdkbBQIlCaV1QuUgkIGSV+FDilK253rX3yFG6B5NWCGKGwd9FRhp1omTI/8YHrb5AYR81jFzsiSndsyn7zrvVluJAgMBAAE=");
@@ -115,8 +123,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetTextDataToEncrypt))]
         public void GivenAnOriginalText_WhenEncrypt_ResultShouldBeValidAndDecryptable(string originalText)
         {
-            var cipherText = EncryptFunction.EncryptContentWithAES(originalText, Key);
-            var plainText = EncryptFunction.DecryptContentWithAES(cipherText, Key);
+            var cipherText = encryptFunction.EncryptContentWithAES(originalText);
+            var plainText = encryptFunction.DecryptContentWithAES(cipherText);
             Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
         }
 
@@ -124,8 +132,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetBytesDataToEncrypt))]
         public void GivenAnOriginalBytes_WhenEncrypt_ResultShouldBeValidAndDecryptable(byte[] originalBytes)
         {
-            var cipherText = EncryptFunction.EncryptContentWithAES(originalBytes, Key);
-            var plainText = EncryptFunction.DecryptContentWithAES(cipherText, Key);
+            var cipherText = encryptFunction.EncryptContentWithAES(originalBytes);
+            var plainText = encryptFunction.DecryptContentWithAES(cipherText);
             Assert.Equal(originalBytes, plainText);
         }
 
@@ -133,8 +141,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetStreamDataToEncrypt))]
         public void GivenAnOriginalStream_WhenEncrypt_ResultShouldBeValidAndDecryptable(Stream originalStream)
         {
-            var cipherText = EncryptFunction.EncryptContentWithAES(originalStream, Key);
-            var plainText = EncryptFunction.DecryptContentWithAES(cipherText, Key);
+            var cipherText = encryptFunction.EncryptContentWithAES(originalStream);
+            var plainText = encryptFunction.DecryptContentWithAES(cipherText);
             Assert.Equal(StreamToByte(originalStream), plainText);
         }
 
@@ -142,7 +150,7 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetBytesDataToDecryptUsingAES))]
         public void GivenAnEncryptedBytes_WhenDecrypt_OriginalTextShouldBeReturned(byte[] cipherText, string originalText)
         {
-            var plainText = EncryptFunction.DecryptContentWithAES(cipherText, Key);
+            var plainText = encryptFunction.DecryptContentWithAES(cipherText);
             Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
         }
 
@@ -150,7 +158,7 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetStreamDataToDecryptUsingAES))]
         public void GivenAnEncryptedStream_WhenDecrypt_OriginalTextShouldBeReturned(Stream cipherText, string originalText)
         {
-            var plainText = EncryptFunction.DecryptContentWithAES(cipherText, Key);
+            var plainText = encryptFunction.DecryptContentWithAES(cipherText);
             Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
         }
 
@@ -158,22 +166,22 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetInvalidFormatTextDataToDecrypt))]
         public void GivenAInvalidForamtText_WhenDecrypt_ExceptionShouldBeThrown(string cipherText)
         {
-            Assert.Throws<FormatException>(() => EncryptFunction.DecryptContentWithAES(cipherText, Key));
+            Assert.Throws<FormatException>(() => encryptFunction.DecryptContentWithAES(cipherText));
         }
 
         [Theory]
         [MemberData(nameof(GetInvalidCryptoGraphicTextDataToDecrypt))]
         public void GivenAInvalidCryptoGraphicText_WhenDecrypt_ExceptionShouldBeThrown(string cipherText)
         {
-            Assert.Throws<CryptographicException>(() => EncryptFunction.DecryptContentWithAES(cipherText, Key));
+            Assert.Throws<CryptographicException>(() => encryptFunction.DecryptContentWithAES(cipherText));
         }
 
         [Theory]
         [MemberData(nameof(GetTextDataToEncrypt))]
         public void GivenAnOriginalText_WhenEncryptWithRSA_ResultShouldBeValidAndDecryptable(string originalText)
         {
-            var cipherText = EncryptFunction.EncryptContentWithRSA(originalText, PublicKey);
-            var plainText = EncryptFunction.DecryptContentWithRSA(cipherText, PrivateKey);
+            var cipherText = encryptFunction.EncryptContentWithRSA(originalText);
+            var plainText = encryptFunction.DecryptContentWithRSA(cipherText);
             Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
         }
 
@@ -181,9 +189,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetBytesDataToEncrypt))]
         public void GivenAnOriginalBytes_WhenEncryptWithRSA_ResultShouldBeValidAndDecryptable(byte[] originalBytes)
         {
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            var cipherText = EncryptFunction.EncryptContentWithRSA(originalBytes, rsa.ExportRSAPublicKey());
-            var plainText = EncryptFunction.DecryptContentWithRSA(cipherText, rsa.ExportRSAPrivateKey());
+            var cipherText = encryptFunction.EncryptContentWithRSA(originalBytes);
+            var plainText = encryptFunction.DecryptContentWithRSA(cipherText);
             Assert.Equal(originalBytes, plainText);
         }
 
@@ -191,9 +198,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetStreamDataToEncrypt))]
         public void GivenAnOriginalStream_WhenEncryptWithRSA_ResultShouldBeValidAndDecryptable(Stream originalStream)
         {
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            var cipherText = EncryptFunction.EncryptContentWithRSA(originalStream, rsa.ExportRSAPublicKey());
-            var plainText = EncryptFunction.DecryptContentWithRSA(cipherText, rsa.ExportRSAPrivateKey());
+            var cipherText = encryptFunction.EncryptContentWithRSA(originalStream);
+            var plainText = encryptFunction.DecryptContentWithRSA(cipherText);
             Assert.Equal(StreamToByte(originalStream), plainText);
         }
 
@@ -201,7 +207,7 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetBytesDataToDecryptUsingRSA))]
         public void GivenAnEncryptedBytes_WhenDecryptUsingRSA_OriginalTextShouldBeReturned(byte[] cipherText, string originalText)
         {
-            var plainText = EncryptFunction.DecryptContentWithRSA(cipherText, PrivateKey);
+            var plainText = encryptFunction.DecryptContentWithRSA(cipherText);
             Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
         }
 
@@ -209,7 +215,7 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetStreamDataToDecryptUsingRSA))]
         public void GivenAnEncryptedStream_WhenDecryptUsingRSA_OriginalTextShouldBeReturned(Stream cipherText, string originalText)
         {
-            var plainText = EncryptFunction.DecryptContentWithRSA(cipherText, PrivateKey);
+            var plainText = encryptFunction.DecryptContentWithRSA(cipherText);
             Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
         }
 

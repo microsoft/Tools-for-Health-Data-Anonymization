@@ -6,16 +6,28 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
+using Dicom;
 using Microsoft.Health.Dicom.DeID.SharedLib.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
     public class Utility
     {
+        public static DateTimeOffset[] ParseDicomDate(DicomDate item)
+        {
+            return item.Get<string[]>().Select(ParseDicomDate).ToArray();
+        }
+
         public static DateTimeOffset ParseDicomDate(string date)
         {
             return DateTimeOffset.ParseExact(date, "yyyyMMdd", CultureInfo.InvariantCulture);
+        }
+
+        public static DateTimeObject[] ParseDicomDateTime(DicomDateTime item)
+        {
+            return item.Get<string[]>().Select(ParseDicomDateTime).ToArray();
         }
 
         public static DateTimeObject ParseDicomDateTime(string date)

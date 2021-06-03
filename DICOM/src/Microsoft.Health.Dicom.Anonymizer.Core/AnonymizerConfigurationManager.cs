@@ -3,9 +3,11 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 using Newtonsoft.Json;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
@@ -17,10 +19,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         public AnonymizerConfigurationManager(AnonymizerConfiguration configuration)
         {
             _configuration = configuration;
-            DicomTagRules = _configuration.DicomTagRules?.Select(entry => AnonymizerDicomTagRule.CreateAnonymizationDicomRule(entry, _configuration)).ToArray();
         }
-
-        public AnonymizerDicomTagRule[] DicomTagRules { get; private set; } = null;
 
         public static AnonymizerConfigurationManager CreateFromSettingsInJson(string settingsInJson)
         {
@@ -48,9 +47,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        public AnonymizerDefaultSettings GetDefaultSettings()
+        public AnonymizerConfiguration GetConfiguration()
         {
-            return _configuration.DefaultSettings;
+            return _configuration;
         }
     }
 }

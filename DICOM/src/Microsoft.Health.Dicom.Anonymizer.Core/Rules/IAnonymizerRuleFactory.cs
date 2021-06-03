@@ -3,12 +3,14 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
-{
-    public class AnonymizerSettings
-    {
-        public bool ValidateInput { get; set; } = false;
+using Newtonsoft.Json.Linq;
 
-        public bool AutoValidate { get; set; } = true;
+namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
+{
+    public interface IAnonymizerRuleFactory
+    {
+        AnonymizerRule CreateAnonymizationDicomRule(JObject rule);
+
+        AnonymizerRule[] CreateAnonymizationDicomRule(JObject[] rule);
     }
 }

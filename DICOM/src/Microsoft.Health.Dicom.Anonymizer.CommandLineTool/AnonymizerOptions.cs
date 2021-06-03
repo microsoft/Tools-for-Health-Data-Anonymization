@@ -27,7 +27,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
         [Option('v', "autoValidate", Required = false, Default = true, HelpText = "Auto validate output value when anonymizing.")]
         public bool AutoValidate { get; set; }
 
-        [Option('s', "skipFailedItem", Required = false, Default = true, HelpText = "Skip failed items when anonymizing and maintain the original value.")]
+        [Option('s', "skipFailedItem", Required = false, Default = true, HelpText = "Skip failed DICOM file when anonymizing.")]
         public bool SkipFailedItem { get; set; }
 
         [Option("validateInput", Required = false, Default = false, HelpText = "Validate input DICOM data items.")]

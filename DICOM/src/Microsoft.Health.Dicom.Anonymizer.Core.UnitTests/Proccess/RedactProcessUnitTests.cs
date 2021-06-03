@@ -36,9 +36,10 @@ namespace UnitTests
 
             var itemList = dataset.ToArray();
 
+            var newProcessor = new RedactProcessor(new DicomRedactSetting() { EnablePartialDatesForRedact = true });
             foreach (var item in itemList)
             {
-                Processor.Process(dataset, item, null, new DicomRedactSetting { EnablePartialDatesForRedact = true });
+                newProcessor.Process(dataset, item);
             }
 
             Assert.Equal("20210101000000.000000+0800", dataset.GetDicomItem<DicomElement>(tag1).Get<string>());
@@ -59,9 +60,10 @@ namespace UnitTests
 
             var itemList = dataset.ToArray();
 
+            var newProcessor = new RedactProcessor(new DicomRedactSetting() { EnablePartialDatesForRedact = true });
             foreach (var item in itemList)
             {
-                Processor.Process(dataset, item, null, new DicomRedactSetting { EnablePartialDatesForRedact = true });
+                newProcessor.Process(dataset, item);
             }
 
             Assert.Equal("20210101", dataset.GetDicomItem<DicomElement>(tag1).Get<string>());
@@ -82,9 +84,10 @@ namespace UnitTests
 
             var itemList = dataset.ToArray();
 
+            var newProcessor = new RedactProcessor(new DicomRedactSetting() { EnablePartialAgeForRedact = true });
             foreach (var item in itemList)
             {
-                Processor.Process(dataset, item, null, new DicomRedactSetting { EnablePartialAgeForRedact = true });
+                newProcessor.Process(dataset, item);
             }
 
             Assert.Equal(string.Empty, dataset.GetDicomItem<DicomElement>(tag1).Get<string>());

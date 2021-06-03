@@ -3,12 +3,14 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
+namespace Microsoft.Health.DeID.SharedLib.Settings
 {
-    public class AnonymizerSettings
+    public class EncryptionSetting
     {
-        public bool ValidateInput { get; set; } = false;
+        public byte[] AesKey { get; set; }
 
-        public bool AutoValidate { get; set; } = true;
+        public byte[] PublicKey { get; set; }
+
+        public byte[] PrivateKey { get; set; }
     }
 }

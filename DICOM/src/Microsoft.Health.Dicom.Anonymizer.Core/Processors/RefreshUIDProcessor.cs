@@ -8,7 +8,6 @@ using Dicom;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
@@ -16,7 +15,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         public Dictionary<string, string> ReplacedUIDs { get; } = new Dictionary<string, string>();
 
-        public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo = null, IDicomAnonymizationSetting settings = null)
+        public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
         {
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));

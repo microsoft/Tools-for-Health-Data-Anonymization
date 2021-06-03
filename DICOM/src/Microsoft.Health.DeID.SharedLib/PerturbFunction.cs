@@ -13,30 +13,33 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
     public class PerturbFunction
     {
-        public static AgeValue Perturb(AgeValue value, PerturbSetting perturbSetting)
-        {
-            EnsureArg.IsNotNull(perturbSetting, nameof(perturbSetting));
+        private PerturbSetting _perturbSetting;
 
-            var result = Perturb(value.Age, perturbSetting);
+        public PerturbFunction(PerturbSetting perturbSetting = null)
+        {
+            _perturbSetting = perturbSetting ?? new PerturbSetting();
+            _perturbSetting.Validate();
+        }
+
+        public AgeValue Perturb(AgeValue value)
+        {
+            var result = Perturb(value.Age);
             return new AgeValue(result, value.AgeType);
         }
 
-        public static decimal Perturb(decimal value, PerturbSetting perturbSetting)
+        public decimal Perturb(decimal value)
         {
-            EnsureArg.IsNotNull(perturbSetting, nameof(perturbSetting));
-
-            var noise = (decimal)Noise((double)value, perturbSetting);
-            return Math.Round(value + noise, perturbSetting.RoundTo);
+            var noise = (decimal)Noise((double)value);
+            return Math.Round(value + noise, _perturbSetting.RoundTo);
         }
 
-        public static string Perturb(string value, PerturbSetting perturbSetting)
+        public string Perturb(string value)
         {
             EnsureArg.IsNotNull(value, nameof(value));
-            EnsureArg.IsNotNull(perturbSetting, nameof(perturbSetting));
 
             if (decimal.TryParse(value, out decimal originValue))
             {
-                var perturbedValue = Perturb(originValue, perturbSetting);
+                var perturbedValue = Perturb(originValue);
                 return perturbedValue.ToString();
             }
             else
@@ -45,88 +48,59 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             }
         }
 
-        public static double Perturb(double value, PerturbSetting perturbSetting)
+        public double Perturb(double value)
         {
-            EnsureArg.IsNotNull(perturbSetting, nameof(perturbSetting));
-
-            var noise = Noise(value, perturbSetting);
-            return Math.Round(value + noise, perturbSetting.RoundTo);
+            return Math.Round(value + Noise(value), _perturbSetting.RoundTo);
         }
 
-        public static float Perturb(float value, PerturbSetting perturbSetting)
+        public float Perturb(float value)
         {
-            EnsureArg.IsNotNull(perturbSetting, nameof(perturbSetting));
-
-            var noise = Noise(value, perturbSetting);
-            return (float)Math.Round(value + noise, perturbSetting.RoundTo);
+            return (float)Math.Round(value + Noise(value), _perturbSetting.RoundTo);
         }
 
-        public static int Perturb(int value, PerturbSetting perturbSetting)
+        public int Perturb(int value)
         {
-            EnsureArg.IsNotNull(perturbSetting, nameof(perturbSetting));
-
-            perturbSetting.RoundTo = 0;
-            var noise = Noise(value, perturbSetting);
-            return (int)Math.Round(value + noise, perturbSetting.RoundTo);
+            return (int)Math.Round(value + Noise(value), 0);
         }
 
-        public static short Perturb(short value, PerturbSetting perturbSetting)
+        public short Perturb(short value)
         {
-            EnsureArg.IsNotNull(perturbSetting, nameof(perturbSetting));
-
-            perturbSetting.RoundTo = 0;
-            var noise = Noise(value, perturbSetting);
-            return (short)Math.Round(value + noise, perturbSetting.RoundTo);
+            return (short)Math.Round(value + Noise(value), 0);
         }
 
-        public static long Perturb(long value, PerturbSetting perturbSetting)
+        public long Perturb(long value)
         {
-            EnsureArg.IsNotNull(perturbSetting, nameof(perturbSetting));
-
-            perturbSetting.RoundTo = 0;
-            var noise = Noise(value, perturbSetting);
-            return (long)Math.Round(value + noise, perturbSetting.RoundTo);
+            return (long)Math.Round(value + Noise(value), 0);
         }
 
-        public static uint Perturb(uint value, PerturbSetting perturbSetting)
+        public uint Perturb(uint value)
         {
-            EnsureArg.IsNotNull(perturbSetting, nameof(perturbSetting));
-
-            perturbSetting.RoundTo = 0;
-            var noise = Noise(value, perturbSetting);
-            return (uint)Math.Round(value + noise < 0 ? 0 : value + noise, perturbSetting.RoundTo);
+            var noise = Noise(value);
+            return (uint)Math.Round(value + noise < 0 ? 0 : value + noise, 0);
         }
 
-        public static ushort Perturb(ushort value, PerturbSetting perturbSetting)
+        public ushort Perturb(ushort value)
         {
-            EnsureArg.IsNotNull(perturbSetting, nameof(perturbSetting));
+            var noise = Noise(value);
 
-            perturbSetting.RoundTo = 0;
-            var noise = Noise(value, perturbSetting);
-
-            return (ushort)Math.Round(value + noise < 0 ? 0 : value + noise, perturbSetting.RoundTo);
+            return (ushort)Math.Round(value + noise < 0 ? 0 : value + noise, 0);
         }
 
-        public static ulong Perturb(ulong value, PerturbSetting perturbSetting)
+        public ulong Perturb(ulong value)
         {
-            EnsureArg.IsNotNull(perturbSetting, nameof(perturbSetting));
-
-            perturbSetting.RoundTo = 0;
-            var noise = Noise(value, perturbSetting);
-            return (ulong)Math.Round(value + noise < 0 ? 0 : value + noise, perturbSetting.RoundTo);
+            var noise = Noise(value);
+            return (ulong)Math.Round(value + noise < 0 ? 0 : value + noise, 0);
         }
 
-        private static double Noise(double value, PerturbSetting perturbSetting)
+        private double Noise(double value)
         {
-            perturbSetting.Validate();
-
-            var span = perturbSetting.Span;
-            if (perturbSetting.RangeType == PerturbRangeType.Proportional)
+            var span = _perturbSetting.Span;
+            if (_perturbSetting.RangeType == PerturbRangeType.Proportional)
             {
-                span = Math.Abs(value * perturbSetting.Span);
+                span = Math.Abs(value * _perturbSetting.Span);
             }
 
-            return perturbSetting.NoiseFunction == null ? ContinuousUniform.Sample(-1 * span / 2, span / 2) : perturbSetting.NoiseFunction(span);
+            return _perturbSetting.NoiseFunction == null ? ContinuousUniform.Sample(-1 * span / 2, span / 2) : _perturbSetting.NoiseFunction(span);
         }
     }
 }

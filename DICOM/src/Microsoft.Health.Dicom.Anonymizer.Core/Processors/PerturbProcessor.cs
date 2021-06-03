@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Dicom;
 using EnsureThat;
@@ -17,14 +18,33 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class PerturbProcessor : IAnonymizerProcessor
     {
-        private DicomPerturbSetting _defaultSetting;
+        private PerturbFunction _perturbFunction;
 
-        public PerturbProcessor(DicomPerturbSetting defaultSetting = null)
+        private readonly Dictionary<DicomVR, VRTypes> _numericValueTypeMapping = new Dictionary<DicomVR, VRTypes>()
         {
-            _defaultSetting = defaultSetting ?? new DicomPerturbSetting();
+            { DicomVR.DS, new VRTypes() { ElementType = typeof(DicomDecimalString), ValueType = typeof(decimal[]) } },
+            { DicomVR.FL, new VRTypes() { ElementType = typeof(DicomFloatingPointSingle), ValueType = typeof(float[]) } },
+            { DicomVR.OF, new VRTypes() { ElementType = typeof(DicomOtherFloat), ValueType = typeof(float[]) } },
+            { DicomVR.FD, new VRTypes() { ElementType = typeof(DicomFloatingPointDouble), ValueType = typeof(double[]) } },
+            { DicomVR.OD, new VRTypes() { ElementType = typeof(DicomOtherDouble), ValueType = typeof(double[]) } },
+            { DicomVR.IS, new VRTypes() { ElementType = typeof(DicomIntegerString), ValueType = typeof(int[]) } },
+            { DicomVR.SL, new VRTypes() { ElementType = typeof(DicomSignedLong), ValueType = typeof(int[]) } },
+            { DicomVR.SS, new VRTypes() { ElementType = typeof(DicomSignedShort), ValueType = typeof(short[]) } },
+            { DicomVR.US, new VRTypes() { ElementType = typeof(DicomUnsignedShort), ValueType = typeof(ushort[]) } },
+            { DicomVR.OW, new VRTypes() { ElementType = typeof(DicomOtherWord), ValueType = typeof(ushort[]) } },
+            { DicomVR.UL, new VRTypes() { ElementType = typeof(DicomUnsignedLong), ValueType = typeof(uint[]) } },
+            { DicomVR.OL, new VRTypes() { ElementType = typeof(DicomOtherLong), ValueType = typeof(uint[]) } },
+            { DicomVR.UV, new VRTypes() { ElementType = typeof(DicomUnsignedVeryLong), ValueType = typeof(ulong[]) } },
+            { DicomVR.OV, new VRTypes() { ElementType = typeof(DicomOtherVeryLong), ValueType = typeof(ulong[]) } },
+            { DicomVR.SV, new VRTypes() { ElementType = typeof(DicomSignedVeryLong), ValueType = typeof(long[]) } },
+        };
+
+        public PerturbProcessor(IDicomAnonymizationSetting ruleSetting = null)
+        {
+            _perturbFunction = new PerturbFunction((DicomPerturbSetting)(ruleSetting ?? new DicomPerturbSetting()));
         }
 
-        public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo = null, IDicomAnonymizationSetting settings = null)
+        public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
         {
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
@@ -34,87 +54,69 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Perturb is not supported for {item.ValueRepresentation}");
             }
 
-            var perturbSetting = (DicomPerturbSetting)(settings ?? _defaultSetting);
-
             if (item.ValueRepresentation == DicomVR.AS)
             {
-                var values = ((DicomAgeString)item).Get<string[]>().Select(Utility.ParseAge).Select(x => PerturbFunction.Perturb(x, perturbSetting));
+                var values = ((DicomAgeString)item).Get<string[]>().Select(Utility.ParseAge).Select(x => _perturbFunction.Perturb(x));
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(Utility.AgeToString).ToArray());
             }
-            else if (item.ValueRepresentation == DicomVR.DS)
+            else
             {
-                var values = ((DicomDecimalString)item).Get<decimal[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                var elementType = _numericValueTypeMapping[item.ValueRepresentation].ElementType;
+                var valueType = _numericValueTypeMapping[item.ValueRepresentation].ValueType;
+
+                // Get numeric value using reflection.
+                var valueObj = elementType.GetMethod("Get").MakeGenericMethod(valueType).Invoke(item, new object[] { -1 });
+                PerturbNumericValue(dicomDataset, item, valueObj as Array);
             }
-            else if (item.ValueRepresentation == DicomVR.FL)
+        }
+
+        private void PerturbNumericValue(DicomDataset dicomDataset, DicomItem item, Array values)
+        {
+            if (values.Length == 0)
             {
-                var values = ((DicomFloatingPointSingle)item).Get<float[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                return;
             }
-            else if (item.ValueRepresentation == DicomVR.OF)
+
+            var valueType = values.GetValue(0).GetType();
+            if (valueType == typeof(decimal))
             {
-                var values = ((DicomOtherFloat)item).Get<float[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<decimal>().Select(_perturbFunction.Perturb).ToArray());
             }
-            else if (item.ValueRepresentation == DicomVR.FD)
+            else if (valueType == typeof(double))
             {
-                var values = ((DicomFloatingPointDouble)item).Get<double[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<double>().Select(_perturbFunction.Perturb).ToArray());
             }
-            else if (item.ValueRepresentation == DicomVR.OD)
+            else if (valueType == typeof(float))
             {
-                var values = ((DicomOtherDouble)item).Get<double[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<float>().Select(_perturbFunction.Perturb).ToArray());
             }
-            else if (item.ValueRepresentation == DicomVR.IS)
+            else if (valueType == typeof(int))
             {
-                var values = ((DicomIntegerString)item).Get<int[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<int>().Select(_perturbFunction.Perturb).ToArray());
             }
-            else if (item.ValueRepresentation == DicomVR.SL)
+            else if (valueType == typeof(uint))
             {
-                var values = ((DicomSignedLong)item).Get<int[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<uint>().Select(_perturbFunction.Perturb).ToArray());
             }
-            else if (item.ValueRepresentation == DicomVR.SS)
+            else if (valueType == typeof(short))
             {
-                var values = ((DicomSignedShort)item).Get<short[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<short>().Select(_perturbFunction.Perturb).ToArray());
             }
-            else if (item.ValueRepresentation == DicomVR.US)
+            else if (valueType == typeof(ushort))
             {
-                var values = ((DicomUnsignedShort)item).Get<ushort[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<ushort>().Select(_perturbFunction.Perturb).ToArray());
             }
-            else if (item.ValueRepresentation == DicomVR.OW)
+            else if (valueType == typeof(long))
             {
-                var values = ((DicomOtherWord)item).Get<ushort[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<long>().Select(_perturbFunction.Perturb).ToArray());
             }
-            else if (item.ValueRepresentation == DicomVR.UL)
+            else if (valueType == typeof(ulong))
             {
-                var values = ((DicomUnsignedLong)item).Get<uint[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<ulong>().Select(_perturbFunction.Perturb).ToArray());
             }
-            else if (item.ValueRepresentation == DicomVR.OL)
+            else
             {
-                var values = ((DicomOtherLong)item).Get<uint[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
-            }
-            else if (item.ValueRepresentation == DicomVR.UV)
-            {
-                var values = ((DicomUnsignedVeryLong)item).Get<ulong[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
-            }
-            else if (item.ValueRepresentation == DicomVR.OV)
-            {
-                var values = ((DicomOtherVeryLong)item).Get<ulong[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
-            }
-            else if (item.ValueRepresentation == DicomVR.SV)
-            {
-                var values = ((DicomSignedVeryLong)item).Get<long[]>().Select(x => PerturbFunction.Perturb(x, perturbSetting));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Cast<string>().Select(_perturbFunction.Perturb).ToArray());
             }
         }
 

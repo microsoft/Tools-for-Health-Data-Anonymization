@@ -13,7 +13,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
     public class AnonymizerConfiguration
     {
         [DataMember(Name = "rules")]
-        public JObject[] DicomTagRules { get; set; }
+        public JObject[] RuleContent { get; set; }
 
         [DataMember(Name = "defaultSettings")]
         public AnonymizerDefaultSettings DefaultSettings { get; set; }

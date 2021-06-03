@@ -3,44 +3,48 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
+using System;
+using System.Linq;
 using Dicom;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
+using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
     public class AnonymizerEngine
     {
-        private readonly Dictionary<string, IAnonymizerProcessor> _processors = new Dictionary<string, IAnonymizerProcessor> { };
-        private readonly AnonymizerDicomTagRule[] _rulesByTag;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly AnonymizerSettings _anonymizerSettings;
-        private readonly AnonymizerRuleHandler _ruleHandler;
+        private readonly AnonymizerConfigurationManager _configurationManager;
+        private readonly IAnonymizerRuleFactory _ruleFactory;
 
         public AnonymizerEngine(string configFilePath = "configuration.json", AnonymizerSettings anonymizerSettings = null)
             : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath), anonymizerSettings)
         {
         }
 
-        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, AnonymizerSettings anonymizerSettings = null)
+        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, AnonymizerSettings anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null)
         {
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerSettings();
-            InitializeProcessors(configurationManager.GetDefaultSettings());
-            _rulesByTag = configurationManager.DicomTagRules;
-            _ruleHandler = new AnonymizerRuleHandler(_rulesByTag, _processors)
-            {
-                SkipFailedItem = _anonymizerSettings.SkipFailedItem,
-            };
+            _configurationManager = configurationManager;
+            _ruleFactory = ruleFactory ?? new AnonymizerRuleFactory(_configurationManager.GetConfiguration(), new DicomProcessorFactory());
             _logger.LogDebug("AnonymizerEngine initialized successfully");
         }
 
-        public void AnonymizeDateset(DicomDataset dataset)
+        public void AnonymizeDataset(DicomDataset dataset)
         {
+            var context = InitContext(dataset);
             ValidateInput(dataset);
             dataset.AutoValidate = _anonymizerSettings.AutoValidate;
-            _ruleHandler.Handle(dataset);
+
+            var rules = _ruleFactory.CreateAnonymizationDicomRule(_configurationManager.GetConfiguration().RuleContent);
+            foreach (var rule in rules)
+            {
+                rule.Handle(dataset, context);
+                _logger.LogDebug($"Successfully handle rule {rule.Description}.");
+            }
         }
 
         private void ValidateInput(DicomDataset dataset)
@@ -51,17 +55,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        private void InitializeProcessors(AnonymizerDefaultSettings defaultSettings)
+        private ProcessContext InitContext(DicomDataset dataset)
         {
-            _processors.Add(AnonymizerMethod.Redact.ToString().ToUpperInvariant(), new RedactProcessor(defaultSettings.RedactDefaultSetting));
-            _processors.Add(AnonymizerMethod.Keep.ToString().ToUpperInvariant(), new KeepProcessor());
-            _processors.Add(AnonymizerMethod.Remove.ToString().ToUpperInvariant(), new RemoveProcessor());
-            _processors.Add(AnonymizerMethod.RefreshUID.ToString().ToUpperInvariant(), new RefreshUIDProcessor());
-            _processors.Add(AnonymizerMethod.Substitute.ToString().ToUpperInvariant(), new SubstituteProcessor(defaultSettings.SubstituteDefaultSetting));
-            _processors.Add(AnonymizerMethod.Perturb.ToString().ToUpperInvariant(), new PerturbProcessor(defaultSettings.PerturbDefaultSetting));
-            _processors.Add(AnonymizerMethod.Encrypt.ToString().ToUpperInvariant(), new EncryptionProcessor(defaultSettings.EncryptDefaultSetting));
-            _processors.Add(AnonymizerMethod.CryptoHash.ToString().ToUpperInvariant(), new CryptoHashProcessor(defaultSettings.CryptoHashDefaultSetting));
-            _processors.Add(AnonymizerMethod.DateShift.ToString().ToUpperInvariant(), new DateShiftProcessor(defaultSettings.DateShiftDefaultSetting));
+            var context = new ProcessContext
+            {
+                StudyInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.StudyInstanceUID, string.Empty),
+                SopInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.SOPInstanceUID, string.Empty),
+                SeriesInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.SeriesInstanceUID, string.Empty),
+            };
+            return context;
         }
     }
 }

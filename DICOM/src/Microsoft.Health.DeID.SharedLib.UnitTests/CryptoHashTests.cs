@@ -133,7 +133,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetHmac512HashStringData))]
         public void GivenAString_WhenComputeHmac512_CorrectHashShouldBeReturned(string input, string expectedHash)
         {
-            var hashData = CryptoHashFunction.ComputeHmacHash(input, new HMACSHA512(Encoding.UTF8.GetBytes(TestHashKey)));
+            var function = new CryptoHashFunction();
+            var hashData = function.ComputeHmacHash(input, new HMACSHA512(Encoding.UTF8.GetBytes(TestHashKey)));
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -141,7 +142,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetHmac512HashBytesData))]
         public void GivenABytes_WhenComputeHmac512_CorrectHashShouldBeReturned(byte[] input, string expectedHash)
         {
-            var hashData = CryptoHashFunction.ComputeHmacHash(input, new HMACSHA512(Encoding.UTF8.GetBytes(TestHashKey)));
+            var function = new CryptoHashFunction();
+            var hashData = function.ComputeHmacHash(input, new HMACSHA512(Encoding.UTF8.GetBytes(TestHashKey)));
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -149,7 +151,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetHmac512HashStreamData))]
         public void GivenAStream_WhenComputeHmac512_CorrectHashShouldBeReturned(Stream input, string expectedHash)
         {
-            var hashData = CryptoHashFunction.ComputeHmacHash(input, new HMACSHA512(Encoding.UTF8.GetBytes(TestHashKey)));
+            var function = new CryptoHashFunction();
+            var hashData = function.ComputeHmacHash(input, new HMACSHA512(Encoding.UTF8.GetBytes(TestHashKey)));
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -158,7 +161,8 @@ namespace De.ID.Function.Shared.UnitTests
 
         public void GivenFixedLengthString_WhenComputeHmac512_CorrectHashShouldBeReturned(FixedLengthString input, string expectedHash)
         {
-            var hashData = CryptoHashFunction.ComputeHmacHash(input, new HMACSHA512(Encoding.UTF8.GetBytes(TestHashKey)));
+            var function = new CryptoHashFunction();
+            var hashData = function.ComputeHmacHash(input, new HMACSHA512(Encoding.UTF8.GetBytes(TestHashKey)));
             Assert.Equal(expectedHash, hashData.ToString());
         }
 
@@ -166,7 +170,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetHmacHashStringData))]
         public void GivenAString_WhenComputeHmac_CorrectHashShouldBeReturned(string input, string expectedHash)
         {
-            var hashData = CryptoHashFunction.ComputeHmacSHA256Hash(input, Encoding.UTF8.GetBytes(TestHashKey));
+            var function = new CryptoHashFunction(Encoding.UTF8.GetBytes(TestHashKey));
+            var hashData = function.ComputeHmacSHA256Hash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -175,7 +180,8 @@ namespace De.ID.Function.Shared.UnitTests
 
         public void GivenBytes_WhenComputeHmac_CorrectHashShouldBeReturned(byte[] input, string expectedHash)
         {
-            var hashData = CryptoHashFunction.ComputeHmacSHA256Hash(input, Encoding.UTF8.GetBytes(TestHashKey));
+            var function = new CryptoHashFunction(Encoding.UTF8.GetBytes(TestHashKey));
+            var hashData = function.ComputeHmacSHA256Hash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -184,7 +190,8 @@ namespace De.ID.Function.Shared.UnitTests
 
         public void GivenStream_WhenComputeHmac_CorrectHashShouldBeReturned(Stream input, string expectedHash)
         {
-            var hashData = CryptoHashFunction.ComputeHmacSHA256Hash(input, Encoding.UTF8.GetBytes(TestHashKey));
+            var function = new CryptoHashFunction(Encoding.UTF8.GetBytes(TestHashKey));
+            var hashData = function.ComputeHmacSHA256Hash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -193,7 +200,8 @@ namespace De.ID.Function.Shared.UnitTests
 
         public void GivenFixedLengthString_WhenComputeHmac_CorrectHashShouldBeReturned(FixedLengthString input, string expectedHash)
         {
-            var hashData = CryptoHashFunction.ComputeHmacSHA256Hash(input, Encoding.UTF8.GetBytes(TestHashKey));
+            var function = new CryptoHashFunction(Encoding.UTF8.GetBytes(TestHashKey));
+            var hashData = function.ComputeHmacSHA256Hash(input);
             Assert.Equal(expectedHash, hashData.ToString());
         }
     }

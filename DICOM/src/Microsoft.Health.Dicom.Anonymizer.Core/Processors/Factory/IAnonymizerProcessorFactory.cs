@@ -3,12 +3,13 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
-{
-    public class AnonymizerSettings
-    {
-        public bool ValidateInput { get; set; } = false;
+using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
+using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 
-        public bool AutoValidate { get; set; } = true;
+namespace Microsoft.Health.Dicom.Anonymizer.Core
+{
+    public interface IAnonymizerProcessorFactory
+    {
+        public IAnonymizerProcessor CreateProcessor(string method, IDicomAnonymizationSetting ruleSetting = null);
     }
 }

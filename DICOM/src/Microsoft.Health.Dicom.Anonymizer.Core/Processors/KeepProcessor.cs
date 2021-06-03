@@ -11,7 +11,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class KeepProcessor : IAnonymizerProcessor
     {
-        public void Process(DicomDataset dicomDataset, DicomItem item, DicomBasicInformation basicInfo = null, IDicomAnonymizationSetting settings = null)
+        public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
         {
         }
     }
