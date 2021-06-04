@@ -3,16 +3,14 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Newtonsoft.Json.Linq;
-
-namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings
+namespace Microsoft.Health.DeID.SharedLib.Settings
 {
-    public interface IDicomAnonymizationSetting
+    public class CryptoHashSetting
     {
-        IDicomAnonymizationSetting CreateFromRuleSettings(string settings);
+        public string CryptoHashKey { get; set; }
 
-        IDicomAnonymizationSetting CreateFromRuleSettings(JObject settings);
-
-        void Validate();
+        public void Validate()
+        {
+        }
     }
 }

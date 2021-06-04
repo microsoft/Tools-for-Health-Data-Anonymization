@@ -11,6 +11,7 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Dicom.DeID.SharedLib;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace UnitTests
@@ -19,7 +20,8 @@ namespace UnitTests
     {
         public PerturbProcessUnitTests()
         {
-            Processor = new PerturbProcessor(new DicomPerturbSetting() { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Proportional });
+            var json = "{\"span\": \"1\",\"roundTo\": \"2\", \"rangeType\": \"Proportional\"}";
+            Processor = new PerturbProcessor(JObject.Parse(json));
         }
 
         public PerturbProcessor Processor { get; set; }
@@ -43,14 +45,14 @@ namespace UnitTests
 
         public static IEnumerable<object[]> GetValidVRItemForPerturb()
         {
-            yield return new object[] { DicomTag.Stage​Number, "1234", new DicomPerturbSetting() { Span = 1, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 617, 1851 }; // IS
-            yield return new object[] { DicomTag.Event​Elapsed​Times, "1234.5", new DicomPerturbSetting() { Span = 1000, RoundTo = 2, RangeType = PerturbRangeType.Fixed }, 734.5, 1734.5 }; // DS
-            yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345", new DicomPerturbSetting() { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Proportional }, 6172.5, 18517.5 }; // FD
-            yield return new object[] { DicomTag.Examined​Body​Thickness, "12345", new DicomPerturbSetting() { Span = 1, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 6173, 18518 }; // FL
-            yield return new object[] { DicomTag.Doppler​Sample​Volume​X​Position, "12345", new DicomPerturbSetting() { Span = 1, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 6173, 18518 }; // SL
-            yield return new object[] { DicomTag.Pixel​Intensity​Relationship​Sign, "12345", new DicomPerturbSetting() { Span = 10000, RoundTo = 2, RangeType = PerturbRangeType.Fixed }, 7345, 17345 }; // SS
-            yield return new object[] { DicomTag.Referenced​Content​Item​Identifier, "12345", new DicomPerturbSetting() { Span = 100000, RoundTo = 2, RangeType = PerturbRangeType.Fixed }, 0, 62345 }; // UL
-            yield return new object[] { DicomTag.Warning​Reason, "10", null, 5, 15 }; // FS
+            yield return new object[] { DicomTag.Stage​Number, "1234", JObject.Parse("{\"span\": \"1\",\"roundTo\": \"0\", \"rangeType\": \"Proportional\"}"), 617, 1851 }; // IS
+            yield return new object[] { DicomTag.Event​Elapsed​Times, "1234.5", JObject.Parse("{\"span\": \"1000\",\"roundTo\": \"2\", \"rangeType\": \"Fixed\"}"), 734.5, 1734.5 }; // DS
+            yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345", JObject.Parse("{\"span\": \"1\",\"roundTo\": \"2\", \"rangeType\": \"Proportional\"}"), 6172.5, 18517.5 }; // FD
+            yield return new object[] { DicomTag.Examined​Body​Thickness, "12345", JObject.Parse("{\"span\": \"1\",\"roundTo\": \"0\", \"rangeType\": \"Proportional\"}"), 6173, 18518 }; // FL
+            yield return new object[] { DicomTag.Doppler​Sample​Volume​X​Position, "12345", JObject.Parse("{\"span\": \"1\",\"roundTo\": \"0\", \"rangeType\": \"Proportional\"}"), 6173, 18518 }; // SL
+            yield return new object[] { DicomTag.Pixel​Intensity​Relationship​Sign, "12345", JObject.Parse("{\"span\": \"10000\",\"roundTo\": \"2\", \"rangeType\": \"Fixed\"}"), 7345, 17345 }; // SS
+            yield return new object[] { DicomTag.Referenced​Content​Item​Identifier, "12345", JObject.Parse("{\"span\": \"100000\",\"roundTo\": \"2\", \"rangeType\": \"Fixed\"}"), 0, 62345 }; // UL
+            yield return new object[] { DicomTag.Warning​Reason, "10", JObject.Parse("{}"), 5, 15 }; // FS
         }
 
         [Theory]
@@ -67,7 +69,7 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(GetValidVRItemForPerturb))]
-        public void GivenADataSetWithValidVRForPerturb_WhenPerturb_ValueWillBePerturbed(DicomTag tag, string value, DicomPerturbSetting settings, decimal minExpectedValue, decimal maxExpectedValue)
+        public void GivenADataSetWithValidVRForPerturb_WhenPerturb_ValueWillBePerturbed(DicomTag tag, string value, JObject settings, decimal minExpectedValue, decimal maxExpectedValue)
         {
             var dataset = new DicomDataset
             {
@@ -89,7 +91,7 @@ namespace UnitTests
             var item = new DicomAgeString(tag, "050Y");
             var dataset = new DicomDataset(item);
 
-            var newProcessor = new PerturbProcessor(new DicomPerturbSetting() { Span = 1, RoundTo = 2, RangeType = PerturbRangeType.Proportional });
+            var newProcessor = new PerturbProcessor(JObject.Parse("{\"span\": \"1\",\"roundTo\": \"2\", \"rangeType\": \"Proportional\"}"));
             newProcessor.Process(dataset, item);
             Assert.InRange(int.Parse(dataset.GetDicomItem<DicomAgeString>(tag).Get<string>().Substring(0, 3)), 25, 75);
         }

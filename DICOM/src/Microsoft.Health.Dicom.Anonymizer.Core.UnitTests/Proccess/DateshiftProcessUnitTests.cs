@@ -11,8 +11,7 @@ using Microsoft.Health.Dicom.Anonymizer.Core;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace UnitTests
@@ -21,7 +20,8 @@ namespace UnitTests
     {
         public DateshiftProcessUnitTests()
         {
-            Processor = new DateShiftProcessor(new DicomDateShiftSetting() { DateShiftKey = "test" });
+            var json = "{\"dateShiftKey\": \"test\"}";
+            Processor = new DateShiftProcessor(JObject.Parse(json));
         }
 
         public DateShiftProcessor Processor { get; set; }
@@ -83,7 +83,7 @@ namespace UnitTests
                 { DicomTag.SOPInstanceUID, "789" },
                 { tag, value },
             };
-            var newProcessor = new DateShiftProcessor(new DicomDateShiftSetting() { DateShiftKey = "123", DateShiftScope = DateShiftScope.SopInstance });
+            var newProcessor = new DateShiftProcessor(JObject.Parse("{\"DateShiftKey\" : \"123\", \"DateShiftScope\" : \"SopInstance\"}"));
             newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), ExtractBasicInformation(dataset));
             Assert.InRange(Utility.ParseDicomDate(dataset.GetDicomItem<DicomElement>(tag).Get<string>()), Utility.ParseDicomDate(minExpectedValue), Utility.ParseDicomDate(maxExpectedValue));
         }
@@ -99,7 +99,7 @@ namespace UnitTests
                 { DicomTag.SOPInstanceUID, "789" },
                 { tag, value },
             };
-            var newProcessor = new DateShiftProcessor(new DicomDateShiftSetting() { DateShiftKey = "123", DateShiftScope = DateShiftScope.SeriesInstance });
+            var newProcessor = new DateShiftProcessor(JObject.Parse("{\"DateShiftKey\" : \"123\", \"DateShiftScope\" : \"SeriesInstance\"}"));
             newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), ExtractBasicInformation(dataset));
             Assert.InRange(Utility.ParseDicomDateTime(dataset.GetDicomItem<DicomElement>(tag).Get<string>()).DateValue, Utility.ParseDicomDateTime(minExpectedValue).DateValue, Utility.ParseDicomDateTime(maxExpectedValue).DateValue);
         }

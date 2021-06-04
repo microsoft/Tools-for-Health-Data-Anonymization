@@ -9,19 +9,20 @@ using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
     public abstract class AnonymizerRule
     {
-        public AnonymizerRule(string method, string description, IDicomAnonymizationSetting ruleSetting = null, IAnonymizerProcessorFactory processorFactory = null)
+        public AnonymizerRule(string method, string description, JObject ruleSetting = null, IAnonymizerProcessorFactory processorFactory = null, IDeIDSettingsFactory settingsFactory = null)
         {
             EnsureArg.IsNotNull(method, nameof(method));
             EnsureArg.IsNotNull(description, nameof(description));
 
             Description = description;
             processorFactory ??= new DicomProcessorFactory();
-            Processor = processorFactory.CreateProcessor(method, ruleSetting);
+            Processor = processorFactory.CreateProcessor(method, ruleSetting, settingsFactory);
         }
 
         public string Description { get; set; }

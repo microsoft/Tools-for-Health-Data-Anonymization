@@ -12,6 +12,7 @@ using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
@@ -24,13 +25,16 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
         private IAnonymizerProcessorFactory _processorFactory;
 
-        public AnonymizerRuleFactory(AnonymizerConfiguration configuration, IAnonymizerProcessorFactory processorFactory = null)
+        private IDeIDSettingsFactory _settingsFactory;
+
+        public AnonymizerRuleFactory(AnonymizerConfiguration configuration, IAnonymizerProcessorFactory processorFactory = null, IDeIDSettingsFactory settingsFactory = null)
         {
             EnsureArg.IsNotNull(configuration, nameof(configuration));
 
             _defaultSettings = configuration.DefaultSettings;
             _customizedSettings = configuration.CustomizedSettings;
             _processorFactory = processorFactory;
+            _settingsFactory = settingsFactory;
         }
 
         public AnonymizerRule[] CreateAnonymizationDicomRule(JObject[] ruleContent)
@@ -62,7 +66,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 parameters = ruleContent[Constants.Parameters].ToObject<JObject>();
             }
 
-            IDicomAnonymizationSetting ruleSetting = _defaultSettings.GetDefaultSetting(method);
+            JObject ruleSetting = _defaultSettings.GetDefaultSetting(method);
             if (ruleContent.ContainsKey(Constants.RuleSetting))
             {
                 if (_customizedSettings == null || !_customizedSettings.ContainsKey(ruleContent[Constants.RuleSetting].ToString()))
@@ -70,31 +74,20 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                     throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, $"Customized setting {ruleContent[Constants.RuleSetting]} not defined");
                 }
 
-                var settings = _customizedSettings[ruleContent[Constants.RuleSetting].ToString()];
-
-                if (parameters != null)
-                {
-                    settings.Merge(parameters, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Concat });
-                }
-
-                ruleSetting = AnonymizerDefaultSettings.DicomSettingsMapping[method].CreateFromRuleSettings(settings);
+                ruleSetting = _customizedSettings[ruleContent[Constants.RuleSetting].ToString()];
             }
-            else if (parameters != null)
+
+            if (parameters != null)
             {
-                var propertyKeys = parameters.Properties().Select(x => x.Name);
-                ruleSetting = _defaultSettings.GetDefaultSetting(method);
-                foreach (var prop in ruleSetting.GetType().GetProperties())
+                if (ruleSetting == null)
                 {
-                    if (!propertyKeys.Contains(prop.Name, StringComparer.InvariantCultureIgnoreCase))
-                    {
-                        parameters.Add(prop.Name, prop.GetValue(ruleSetting)?.ToString());
-                    }
+                    ruleSetting = parameters;
                 }
-
-                ruleSetting = AnonymizerDefaultSettings.DicomSettingsMapping[method].CreateFromRuleSettings(parameters);
+                else
+                {
+                    ruleSetting.Merge(parameters, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Concat });
+                }
             }
-
-            ruleSetting?.Validate();
 
             // Parse and validate tag
             if (ruleContent.ContainsKey(Constants.TagKey))
@@ -104,21 +97,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 try
                 {
                     var tag = DicomTag.Parse(content);
-                    return new AnonymizerTagRule(tag, method, ruleSetting, ruleContent.ToString(), _processorFactory);
+                    return new AnonymizerTagRule(tag, method, ruleSetting, ruleContent.ToString(), _processorFactory, _settingsFactory);
                 }
                 catch (Exception)
                 {
                     try
                     {
                         var tag = DicomMaskedTag.Parse(content);
-                        return new AnonymizerMaskedTagRule(tag, method, ruleSetting, ruleContent.ToString(), _processorFactory);
+                        return new AnonymizerMaskedTagRule(tag, method, ruleSetting, ruleContent.ToString(), _processorFactory, _settingsFactory);
                     }
                     catch
                     {
                         try
                         {
                             var vr = DicomVR.Parse(content);
-                            return new AnonymizerVRRule(vr, method, ruleSetting, ruleContent.ToString(), _processorFactory);
+                            return new AnonymizerVRRule(vr, method, ruleSetting, ruleContent.ToString(), _processorFactory, _settingsFactory);
                         }
                         catch
                         {
@@ -126,7 +119,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                             {
                                 var dicomTags = new DicomTag(0, 0);
                                 DicomTag tag = (DicomTag)dicomTags.GetType().GetField(content).GetValue(dicomTags);
-                                return new AnonymizerTagRule(tag, method, ruleSetting, ruleContent.ToString(), _processorFactory);
+                                return new AnonymizerTagRule(tag, method, ruleSetting, ruleContent.ToString(), _processorFactory, _settingsFactory);
                             }
                             catch
                             {

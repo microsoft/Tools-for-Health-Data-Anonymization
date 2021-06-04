@@ -12,6 +12,7 @@ using Dicom.IO.Buffer;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace UnitTests
@@ -20,7 +21,8 @@ namespace UnitTests
     {
         public CryptoHashProcessUnitTests()
         {
-            Processor = new CryptoHashProcessor(new DicomCryptoHashSetting() { CryptoHashKey = "test" });
+            var json = "{\"cryptoHashKey\": \"123\"}";
+            Processor = new CryptoHashProcessor(JObject.Parse(json));
         }
 
         public CryptoHashProcessor Processor { get; set; }
@@ -90,8 +92,7 @@ namespace UnitTests
                 { tag, value },
             };
             dataset.AutoValidate = false;
-            var newProcessor = new CryptoHashProcessor(new DicomCryptoHashSetting() { CryptoHashKey = "123" });
-            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
+            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.Equal(result, dataset.GetDicomItem<DicomElement>(tag).Get<string>());
         }
 
@@ -104,8 +105,7 @@ namespace UnitTests
                 { tag, value },
             };
 
-            var newProcessor = new CryptoHashProcessor(new DicomCryptoHashSetting() { CryptoHashKey = "123" });
-            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
+            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.Equal(result, dataset.GetDicomItem<DicomElement>(tag).Get<string>());
         }
 
@@ -116,8 +116,7 @@ namespace UnitTests
             var item = new DicomOtherByte(tag, Encoding.UTF8.GetBytes("test"));
             var dataset = new DicomDataset(item);
 
-            var newProcessor = new CryptoHashProcessor(new DicomCryptoHashSetting() { CryptoHashKey = "123" });
-            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
+            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             var resultBytes = dataset.GetDicomItem<DicomOtherByte>(tag).Get<byte[]>();
             Assert.Equal("a7f5c8c626f994482813230854f66700e626208f52d913b9bd6b4e039aab0f41", string.Concat(resultBytes.Select(b => b.ToString("x2"))));
         }
@@ -132,8 +131,7 @@ namespace UnitTests
 
             var dataset = new DicomDataset(item);
 
-            var newProcessor = new CryptoHashProcessor(new DicomCryptoHashSetting() { CryptoHashKey = "123" });
-            newProcessor.Process(dataset, dataset.GetDicomItem<DicomOtherByteFragment>(tag));
+            Processor.Process(dataset, dataset.GetDicomItem<DicomOtherByteFragment>(tag));
 
             var enumerator = ((DicomFragmentSequence)dataset.GetDicomItem<DicomItem>(tag)).GetEnumerator();
             while (enumerator.MoveNext())

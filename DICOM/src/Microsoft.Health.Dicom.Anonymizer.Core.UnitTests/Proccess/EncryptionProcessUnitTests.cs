@@ -12,19 +12,18 @@ using Dicom.IO.Buffer;
 using Microsoft.Health.DeID.SharedLib.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Dicom.DeID.SharedLib;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace UnitTests
 {
     public class EncryptionProcessUnitTests
     {
-        private string _defaultEncryptKey = "1234567812345678";
-
         public EncryptionProcessUnitTests()
         {
-            Processor = new EncryptionProcessor(new DicomEncryptionSetting() { EncryptKey = _defaultEncryptKey });
+            var encryptObj = "{\"encryptKey\": \"123456781234567812345678\"}";
+            Processor = new EncryptionProcessor(JObject.Parse(encryptObj));
         }
 
         public EncryptionProcessor Processor { get; set; }
@@ -96,7 +95,7 @@ namespace UnitTests
                 { tag, value },
             };
             dataset.AutoValidate = false;
-            var newProcessor = new EncryptionProcessor(new DicomEncryptionSetting() { EncryptKey = "0000000000000000" });
+            var newProcessor = new EncryptionProcessor(JObject.Parse("{\"encryptKey\": \"0000000000000000\"}"));
             newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             var test = dataset.GetDicomItem<DicomElement>(tag).Get<string>();
 
@@ -113,7 +112,7 @@ namespace UnitTests
                 { tag, value },
             };
 
-            var newProcessor = new EncryptionProcessor(new DicomEncryptionSetting() { EncryptKey = "0000000000000000" });
+            var newProcessor = new EncryptionProcessor(JObject.Parse("{\"encryptKey\": \"0000000000000000\"}"));
             newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             var test = dataset.GetDicomItem<DicomElement>(tag).Get<string>();
 
@@ -123,7 +122,7 @@ namespace UnitTests
 
         private string Decryption(string encryptedValue, string key)
         {
-            var encryptFunction = new EncryptFunction(new EncryptionSetting() { AesKey = Encoding.UTF8.GetBytes("0000000000000000") });
+            var encryptFunction = new EncryptFunction(new EncryptionSetting() { EncryptKey = "0000000000000000" });
             return Encoding.UTF8.GetString(encryptFunction.DecryptContentWithAES(Convert.FromBase64String(encryptedValue)));
         }
 
@@ -135,7 +134,7 @@ namespace UnitTests
             var dataset = new DicomDataset(item);
 
             Processor.Process(dataset, item);
-            var encryptFunction = new EncryptFunction(new EncryptionSetting() { AesKey = Encoding.UTF8.GetBytes(_defaultEncryptKey) });
+            var encryptFunction = new EncryptFunction(new EncryptionSetting() { EncryptKey = "123456781234567812345678" });
             Assert.Equal(Encoding.UTF8.GetBytes("test"), encryptFunction.DecryptContentWithAES(dataset.GetDicomItem<DicomOtherByte>(tag).Get<byte[]>()));
         }
 
@@ -152,7 +151,7 @@ namespace UnitTests
             Processor.Process(dataset, item);
 
             var enumerator = ((DicomFragmentSequence)dataset.GetDicomItem<DicomItem>(tag)).GetEnumerator();
-            var encryptFunction = new EncryptFunction(new EncryptionSetting() { AesKey = Encoding.UTF8.GetBytes(_defaultEncryptKey) });
+            var encryptFunction = new EncryptFunction(new EncryptionSetting() { EncryptKey = "123456781234567812345678" });
             while (enumerator.MoveNext())
             {
                 Assert.Equal(Encoding.UTF8.GetBytes("fragment"), encryptFunction.DecryptContentWithAES(enumerator.Current.Data));

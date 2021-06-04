@@ -16,5 +16,9 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib.Settings
         public bool EnablePartialAgeForRedact { get; set; } = false;
 
         public List<string> RestrictedZipCodeTabulationAreas { get; set; }
+
+        public void Validate()
+        {
+        }
     }
 }

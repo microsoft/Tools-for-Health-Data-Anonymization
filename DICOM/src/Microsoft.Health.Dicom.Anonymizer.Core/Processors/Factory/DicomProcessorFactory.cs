@@ -5,21 +5,22 @@
 
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
     public class DicomProcessorFactory : IAnonymizerProcessorFactory
     {
-        public IAnonymizerProcessor CreateProcessor(string method, IDicomAnonymizationSetting ruleSetting = null)
+        public IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null, IDeIDSettingsFactory settingsFactory = null)
         {
             return method.ToLower() switch
             {
-                "perturb" => new PerturbProcessor(ruleSetting),
-                "substitute" => new SubstituteProcessor(ruleSetting),
-                "dateshift" => new DateShiftProcessor(ruleSetting),
-                "encrypt" => new EncryptionProcessor(ruleSetting),
-                "cryptohash" => new CryptoHashProcessor(ruleSetting),
-                "redact" => new RedactProcessor(ruleSetting),
+                "perturb" => new PerturbProcessor(settingObject, settingsFactory),
+                "substitute" => new SubstituteProcessor(settingObject),
+                "dateshift" => new DateShiftProcessor(settingObject, settingsFactory),
+                "encrypt" => new EncryptionProcessor(settingObject, settingsFactory),
+                "cryptohash" => new CryptoHashProcessor(settingObject, settingsFactory),
+                "redact" => new RedactProcessor(settingObject, settingsFactory),
                 "remove" => new RemoveProcessor(),
                 "refreshuid" => new RefreshUIDProcessor(),
                 "keep" => new KeepProcessor(),

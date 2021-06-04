@@ -8,17 +8,22 @@ using Dicom;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class SubstituteProcessor : IAnonymizerProcessor
     {
-        private DicomSubstituteSetting _ruleSetting;
+        private string _replaceWith = "Anonymous";
 
-        public SubstituteProcessor(IDicomAnonymizationSetting ruleSetting)
+        public SubstituteProcessor(JObject settingObject)
         {
-            _ruleSetting = (DicomSubstituteSetting)(ruleSetting ?? new DicomSubstituteSetting());
+            EnsureArg.IsNotNull(settingObject, nameof(settingObject));
+
+            if (settingObject.TryGetValue("replaceWith", StringComparison.OrdinalIgnoreCase, out JToken replaced))
+            {
+                _replaceWith = replaced.ToString();
+            }
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
@@ -35,23 +40,23 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             {
                 if (item is DicomOtherWord)
                 {
-                    dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, ushort.Parse(_ruleSetting.ReplaceWith));
+                    dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, ushort.Parse(_replaceWith));
                 }
                 else if (item is DicomOtherLong)
                 {
-                    dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, uint.Parse(_ruleSetting.ReplaceWith));
+                    dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, uint.Parse(_replaceWith));
                 }
                 else if (item is DicomOtherDouble)
                 {
-                    dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, double.Parse(_ruleSetting.ReplaceWith));
+                    dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, double.Parse(_replaceWith));
                 }
                 else if (item is DicomOtherFloat)
                 {
-                    dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, float.Parse(_ruleSetting.ReplaceWith));
+                    dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, float.Parse(_replaceWith));
                 }
                 else
                 {
-                    dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, _ruleSetting.ReplaceWith);
+                    dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, _replaceWith);
                 }
             }
             catch (Exception ex)

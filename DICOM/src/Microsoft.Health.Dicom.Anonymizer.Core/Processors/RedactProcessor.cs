@@ -11,6 +11,8 @@ using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Dicom.DeID.SharedLib;
+using Microsoft.Health.Dicom.DeID.SharedLib.Settings;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
@@ -18,9 +20,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private RedactFunction _redactFunction;
 
-        public RedactProcessor(IDicomAnonymizationSetting ruleSetting)
+        public RedactProcessor(JObject settingObject, IDeIDSettingsFactory settingFactory = null)
         {
-            _redactFunction = new RedactFunction((DicomRedactSetting)(ruleSetting ?? new DicomRedactSetting()));
+            EnsureArg.IsNotNull(settingObject, nameof(settingObject));
+
+            settingFactory ??= new DeIDSettingsFactory();
+            var redactSetting = settingFactory.CreateAnonymizerSetting<RedactSetting>(settingObject);
+            _redactFunction = new RedactFunction(redactSetting);
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)

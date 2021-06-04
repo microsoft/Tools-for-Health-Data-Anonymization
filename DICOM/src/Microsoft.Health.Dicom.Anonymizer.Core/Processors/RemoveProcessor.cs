@@ -6,7 +6,6 @@
 using Dicom;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {

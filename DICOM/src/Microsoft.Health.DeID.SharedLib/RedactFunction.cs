@@ -17,13 +17,12 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         private static readonly int AgeThreshold = 89;
         private static readonly string ReplacementDigit = "0";
         private static readonly int InitialDigitsCount = 3;
+        private RedactSetting _redactSetting;
 
-        public RedactFunction(RedactSetting redactSetting)
+        public RedactFunction(RedactSetting redactSetting = null)
         {
-            Settings = redactSetting;
+            _redactSetting = redactSetting ?? new RedactSetting();
         }
-
-        public RedactSetting Settings { get; set; }
 
         public string RedactDateTime(string dateTime, string dateTimeFormat = null, IFormatProvider provider = null)
         {
@@ -32,7 +31,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 return null;
             }
 
-            if (Settings.EnablePartialDatesForRedact)
+            if (_redactSetting.EnablePartialDatesForRedact)
             {
                 DateTimeOffset date = DateTimeUtility.ParseDateTime(dateTime, dateTimeFormat, provider);
                 return DateTimeUtility.IndicateAgeOverThreshold(date) ? null : date.Year.ToString();
@@ -47,7 +46,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         {
             EnsureArg.IsNotNull<DateTimeOffset>(dateTime, nameof(dateTime));
 
-            if (Settings.EnablePartialDatesForRedact)
+            if (_redactSetting.EnablePartialDatesForRedact)
             {
                 if (DateTimeUtility.IndicateAgeOverThreshold(dateTime))
                 {
@@ -66,7 +65,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         {
             EnsureArg.IsNotNull(dateObject, nameof(dateObject));
 
-            if (Settings.EnablePartialDatesForRedact)
+            if (_redactSetting.EnablePartialDatesForRedact)
             {
                 if (DateTimeUtility.IndicateAgeOverThreshold(dateObject.DateValue))
                 {
@@ -84,7 +83,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public int? RedactAge(int age)
         {
-            if (Settings.EnablePartialAgeForRedact)
+            if (_redactSetting.EnablePartialAgeForRedact)
             {
                 if (age > AgeThreshold)
                 {
@@ -106,7 +105,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 return null;
             }
 
-            if (Settings.EnablePartialAgeForRedact)
+            if (_redactSetting.EnablePartialAgeForRedact)
             {
                 if (age > AgeThreshold)
                 {
@@ -123,7 +122,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public AgeValue RedactAge(AgeValue age)
         {
-            if (Settings.EnablePartialAgeForRedact)
+            if (_redactSetting.EnablePartialAgeForRedact)
             {
                 if (age.AgeToYearsOld() > AgeThreshold)
                 {
@@ -140,9 +139,9 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public string RedactPostalCode(string postalCode)
         {
-            if (Settings.EnablePartialZipCodesForRedact)
+            if (_redactSetting.EnablePartialZipCodesForRedact)
             {
-                if (Settings.RestrictedZipCodeTabulationAreas != null && Settings.RestrictedZipCodeTabulationAreas.Any(x => postalCode.StartsWith(x)))
+                if (_redactSetting.RestrictedZipCodeTabulationAreas != null && _redactSetting.RestrictedZipCodeTabulationAreas.Any(x => postalCode.StartsWith(x)))
                 {
                     postalCode = Regex.Replace(postalCode, @"\d", ReplacementDigit);
                 }

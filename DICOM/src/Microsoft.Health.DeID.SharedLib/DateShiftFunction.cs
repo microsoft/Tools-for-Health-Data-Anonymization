@@ -13,8 +13,9 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
     public class DateShiftFunction
     {
-        public DateShiftFunction(DateShiftSetting dateShiftSetting)
+        public DateShiftFunction(DateShiftSetting dateShiftSetting = null)
         {
+            dateShiftSetting ??= new DateShiftSetting();
             if (dateShiftSetting != null)
             {
                 DateShiftKey = dateShiftSetting.DateShiftKey;

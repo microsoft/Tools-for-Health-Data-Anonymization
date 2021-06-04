@@ -18,7 +18,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
     public class AnonymizerVRRule : AnonymizerRule
     {
-        public AnonymizerVRRule(DicomVR vr, string method, IDicomAnonymizationSetting ruleSetting, string description, IAnonymizerProcessorFactory processorFactory)
+        public AnonymizerVRRule(DicomVR vr, string method, JObject ruleSetting, string description, IAnonymizerProcessorFactory processorFactory = null, IDeIDSettingsFactory settingsFactory = null)
             : base(method, description, ruleSetting, processorFactory)
         {
             EnsureArg.IsNotNull(vr, nameof(vr));

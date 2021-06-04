@@ -9,6 +9,7 @@ using Dicom;
 using Dicom.IO.Buffer;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace UnitTests
@@ -17,7 +18,7 @@ namespace UnitTests
     {
         public RedactProcessUnitTests()
         {
-            Processor = new RedactProcessor(new DicomRedactSetting() { EnablePartialDatesForRedact = false });
+            Processor = new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"false\"}"));
         }
 
         public RedactProcessor Processor { get; set; }
@@ -36,7 +37,7 @@ namespace UnitTests
 
             var itemList = dataset.ToArray();
 
-            var newProcessor = new RedactProcessor(new DicomRedactSetting() { EnablePartialDatesForRedact = true });
+            var newProcessor = new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"true\"}"));
             foreach (var item in itemList)
             {
                 newProcessor.Process(dataset, item);
@@ -60,7 +61,7 @@ namespace UnitTests
 
             var itemList = dataset.ToArray();
 
-            var newProcessor = new RedactProcessor(new DicomRedactSetting() { EnablePartialDatesForRedact = true });
+            var newProcessor = new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"true\"}"));
             foreach (var item in itemList)
             {
                 newProcessor.Process(dataset, item);
@@ -84,7 +85,7 @@ namespace UnitTests
 
             var itemList = dataset.ToArray();
 
-            var newProcessor = new RedactProcessor(new DicomRedactSetting() { EnablePartialAgeForRedact = true });
+            var newProcessor = new RedactProcessor(JObject.Parse("{\"EnablePartialAgeForRedact\" : \"true\"}"));
             foreach (var item in itemList)
             {
                 newProcessor.Process(dataset, item);
@@ -152,7 +153,7 @@ namespace UnitTests
 
             var itemList = dataset.ToArray();
 
-            var redactProcess = new RedactProcessor(new DicomRedactSetting() { });
+            var redactProcess = new RedactProcessor(JObject.Parse("{}"));
             foreach (var item in itemList)
             {
                 redactProcess.Process(dataset, item);

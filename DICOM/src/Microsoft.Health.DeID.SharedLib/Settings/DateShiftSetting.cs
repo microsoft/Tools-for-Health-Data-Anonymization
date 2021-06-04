@@ -12,5 +12,9 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib.Settings
         public string DateShiftKey { get; set; } = string.Empty;
 
         public string DateShiftKeyPrefix { get; set; } = string.Empty;
+
+        public void Validate()
+        {
+        }
     }
 }

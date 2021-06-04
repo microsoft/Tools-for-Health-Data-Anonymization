@@ -9,11 +9,13 @@ using System.Text;
 using Dicom;
 using Dicom.IO.Buffer;
 using EnsureThat;
+using Microsoft.Health.DeID.SharedLib.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Dicom.DeID.SharedLib;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
@@ -21,11 +23,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private readonly EncryptFunction _encryptFunction;
 
-        public EncryptionProcessor(IDicomAnonymizationSetting ruleSetting = null)
+        public EncryptionProcessor(JObject settingObject, IDeIDSettingsFactory settingFactory = null)
         {
-            var setting = (DicomEncryptionSetting)(ruleSetting ?? new DicomEncryptionSetting());
-            setting.AesKey = Encoding.UTF8.GetBytes(string.IsNullOrEmpty(setting.EncryptKey) ? Guid.NewGuid().ToString("N") : setting.EncryptKey);
-            _encryptFunction = new EncryptFunction(setting);
+            EnsureArg.IsNotNull(settingObject, nameof(settingObject));
+
+            settingFactory ??= new DeIDSettingsFactory();
+            var encryptionSetting = settingFactory.CreateAnonymizerSetting<EncryptionSetting>(settingObject);
+            _encryptFunction = new EncryptFunction(encryptionSetting);
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)

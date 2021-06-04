@@ -18,8 +18,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
     public class AnonymizerTagRule : AnonymizerRule
     {
-        public AnonymizerTagRule(DicomTag tag, string method, IDicomAnonymizationSetting ruleSetting, string description, IAnonymizerProcessorFactory processorFactory)
-            : base(method, description, ruleSetting, processorFactory)
+        public AnonymizerTagRule(DicomTag tag, string method, JObject ruleSetting, string description, IAnonymizerProcessorFactory processorFactory = null, IDeIDSettingsFactory settingsFactory = null)
+            : base(method, description, ruleSetting, processorFactory, settingsFactory)
         {
             EnsureArg.IsNotNull(tag, nameof(tag));
 

@@ -3,44 +3,36 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
 {
     [DataContract]
     public class AnonymizerDefaultSettings
     {
-        public static Dictionary<string, IDicomAnonymizationSetting> DicomSettingsMapping = new Dictionary<string, IDicomAnonymizationSetting>()
-        {
-            { "perturb", new DicomPerturbSetting() },
-            { "substitute", new DicomSubstituteSetting() },
-            { "dateshift", new DicomDateShiftSetting() },
-            { "encrypt", new DicomEncryptionSetting() },
-            { "cryptohash", new DicomCryptoHashSetting() },
-            { "redact", new DicomRedactSetting() },
-        };
-
         [DataMember(Name = "perturb")]
-        public DicomPerturbSetting PerturbDefaultSetting { get; set; } = new DicomPerturbSetting();
+        public JObject PerturbDefaultSetting { get; set; }
 
         [DataMember(Name = "substitute")]
-        public DicomSubstituteSetting SubstituteDefaultSetting { get; set; } = new DicomSubstituteSetting();
+        public JObject SubstituteDefaultSetting { get; set; }
 
         [DataMember(Name = "dateshift")]
-        public DicomDateShiftSetting DateShiftDefaultSetting { get; set; } = new DicomDateShiftSetting();
+        public JObject DateShiftDefaultSetting { get; set; }
 
         [DataMember(Name = "encrypt")]
-        public DicomEncryptionSetting EncryptDefaultSetting { get; set; } = new DicomEncryptionSetting();
+        public JObject EncryptDefaultSetting { get; set; }
 
         [DataMember(Name = "cryptoHash")]
-        public DicomCryptoHashSetting CryptoHashDefaultSetting { get; set; } = new DicomCryptoHashSetting();
+        public JObject CryptoHashDefaultSetting { get; set; }
 
         [DataMember(Name = "redact")]
-        public DicomRedactSetting RedactDefaultSetting { get; set; } = new DicomRedactSetting();
+        public JObject RedactDefaultSetting { get; set; }
 
-        public IDicomAnonymizationSetting GetDefaultSetting(string method)
+        public JObject GetDefaultSetting(string method)
         {
             return method.ToLower() switch
             {

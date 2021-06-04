@@ -3,13 +3,12 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System;
-using System.Linq;
 using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
@@ -32,7 +31,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerSettings();
             _configurationManager = configurationManager;
-            _ruleFactory = ruleFactory ?? new AnonymizerRuleFactory(_configurationManager.GetConfiguration(), new DicomProcessorFactory());
+            _ruleFactory = ruleFactory ?? new AnonymizerRuleFactory(_configurationManager.GetConfiguration(), new DicomProcessorFactory(), new DeIDSettingsFactory());
             _logger.LogDebug("AnonymizerEngine initialized successfully");
         }
 

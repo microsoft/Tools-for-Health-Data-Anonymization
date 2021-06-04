@@ -14,23 +14,26 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Dicom.DeID.SharedLib;
 using Microsoft.Health.Dicom.DeID.SharedLib.Settings;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class DateShiftProcessor : IAnonymizerProcessor
     {
         private readonly DateShiftFunction _dateShiftFunction;
-        private readonly DateShiftScope _dateShiftScope;
+        private readonly DateShiftScope _dateShiftScope = DateShiftScope.SopInstance;
 
-        public DateShiftProcessor(IDicomAnonymizationSetting ruleSetting = null)
+        public DateShiftProcessor(JObject settingObject, IDeIDSettingsFactory settingFactory = null)
         {
-            var setting = (DicomDateShiftSetting)(ruleSetting ?? new DicomDateShiftSetting());
-            _dateShiftFunction = new DateShiftFunction(new DateShiftSetting()
+            EnsureArg.IsNotNull(settingObject, nameof(settingObject));
+
+            settingFactory ??= new DeIDSettingsFactory();
+            var dateShiftSetting = settingFactory.CreateAnonymizerSetting<DateShiftSetting>(settingObject);
+            _dateShiftFunction = new DateShiftFunction(dateShiftSetting);
+            if (settingObject.TryGetValue("DateShiftScope", StringComparison.OrdinalIgnoreCase, out JToken scope))
             {
-                DateShiftRange = setting.DateShiftRange,
-                DateShiftKey = setting.DateShiftKey,
-            });
-            _dateShiftScope = setting.DateShiftScope;
+                _dateShiftScope = (DateShiftScope)Enum.Parse(typeof(DateShiftScope), scope.ToString());
+            }
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context)

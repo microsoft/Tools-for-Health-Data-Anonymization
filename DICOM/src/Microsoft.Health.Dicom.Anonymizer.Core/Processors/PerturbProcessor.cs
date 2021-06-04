@@ -13,6 +13,7 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Dicom.DeID.SharedLib;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
@@ -39,9 +40,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             { DicomVR.SV, new VRTypes() { ElementType = typeof(DicomSignedVeryLong), ValueType = typeof(long[]) } },
         };
 
-        public PerturbProcessor(IDicomAnonymizationSetting ruleSetting = null)
+        public PerturbProcessor(JObject settingObject, IDeIDSettingsFactory settingFactory = null)
         {
-            _perturbFunction = new PerturbFunction((DicomPerturbSetting)(ruleSetting ?? new DicomPerturbSetting()));
+            EnsureArg.IsNotNull(settingObject, nameof(settingObject));
+
+            settingFactory ??= new DeIDSettingsFactory();
+            var perturbSetting = settingFactory.CreateAnonymizerSetting<PerturbSetting>(settingObject);
+            _perturbFunction = new PerturbFunction(perturbSetting);
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)

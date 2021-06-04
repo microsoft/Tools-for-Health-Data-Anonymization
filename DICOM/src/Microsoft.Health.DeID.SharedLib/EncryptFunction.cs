@@ -15,11 +15,16 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
     {
         // AES Initialization Vector length is 16 bytes
         private const int AesIvSize = 16;
-        private EncryptionSetting _encryptionSetting;
+        private byte[] _aesKey;
+        private byte[] _privateKey;
+        private byte[] _publicKey;
 
-        public EncryptFunction(EncryptionSetting encryptionSetting)
+        public EncryptFunction(EncryptionSetting encryptionSetting = null)
         {
-            _encryptionSetting = encryptionSetting;
+            encryptionSetting ??= new EncryptionSetting();
+            _aesKey = Encoding.UTF8.GetBytes(encryptionSetting.EncryptKey ?? Guid.NewGuid().ToString("N"));
+            _privateKey = Encoding.UTF8.GetBytes(encryptionSetting.PrivateKey ?? string.Empty);
+            _publicKey = Encoding.UTF8.GetBytes(encryptionSetting.PublicKey ?? string.Empty);
         }
 
         public byte[] EncryptContentWithAES(string plainText, Encoding encoding = null)
@@ -62,7 +67,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
              */
             using Aes aes = Aes.Create();
             byte[] iv = aes.IV;
-            aes.Key = _encryptionSetting.AesKey;
+            aes.Key = _aesKey;
             ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
             var encryptedBytes = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
@@ -127,7 +132,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
             // Get decryptor
             using Aes aes = Aes.Create();
-            aes.Key = _encryptionSetting.AesKey;
+            aes.Key = _aesKey;
             aes.IV = iv;
             ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
@@ -173,7 +178,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 byte[] encryptedData;
                 using (RSACryptoServiceProvider rSA = new RSACryptoServiceProvider())
                 {
-                    rSA.ImportRSAPublicKey(_encryptionSetting.PublicKey, out _);
+                    rSA.ImportRSAPublicKey(_publicKey, out _);
                     encryptedData = rSA.Encrypt(plainBytes, doPadding);
                 }
 
@@ -198,7 +203,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 byte[] encryptedData;
                 using (RSACryptoServiceProvider rSA = new RSACryptoServiceProvider())
                 {
-                    rSA.ImportRSAPrivateKey(_encryptionSetting.PrivateKey, out _);
+                    rSA.ImportRSAPrivateKey(_privateKey, out _);
                     encryptedData = rSA.Decrypt(cipherBytes, doPadding);
                 }
 

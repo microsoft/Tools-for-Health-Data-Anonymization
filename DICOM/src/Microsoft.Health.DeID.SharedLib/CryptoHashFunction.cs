@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using EnsureThat;
+using Microsoft.Health.DeID.SharedLib.Settings;
 
 namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
@@ -15,12 +16,16 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
     {
         private HMAC _hmac;
 
-        public CryptoHashFunction(byte[] hashKey = null)
+        public CryptoHashFunction(CryptoHashSetting cryptoHashSetting = null)
         {
-            _hmac = new HMACSHA256();
-            if (hashKey != null)
+            cryptoHashSetting ??= new CryptoHashSetting();
+            if (cryptoHashSetting.CryptoHashKey != null)
             {
-                _hmac = new HMACSHA256(hashKey);
+                _hmac = new HMACSHA256(Encoding.UTF8.GetBytes(cryptoHashSetting.CryptoHashKey));
+            }
+            else
+            {
+                _hmac = new HMACSHA256();
             }
         }
 
