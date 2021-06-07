@@ -16,7 +16,7 @@ namespace De.ID.Function.Shared.UnitTests
 {
     public class EncryptTests
     {
-        private EncryptFunction encryptFunction;
+        private readonly EncryptFunction encryptFunction;
 
         public EncryptTests()
         {

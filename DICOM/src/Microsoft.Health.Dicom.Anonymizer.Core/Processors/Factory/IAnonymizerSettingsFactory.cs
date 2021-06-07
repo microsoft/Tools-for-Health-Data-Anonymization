@@ -3,7 +3,6 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core

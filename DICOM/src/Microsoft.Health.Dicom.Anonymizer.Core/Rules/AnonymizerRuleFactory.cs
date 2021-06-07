@@ -11,21 +11,19 @@ using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
     public class AnonymizerRuleFactory : IAnonymizerRuleFactory
     {
-        private AnonymizerDefaultSettings _defaultSettings;
+        private readonly AnonymizerDefaultSettings _defaultSettings;
 
-        private Dictionary<string, JObject> _customizedSettings;
+        private readonly Dictionary<string, JObject> _customizedSettings;
 
-        private IAnonymizerProcessorFactory _processorFactory;
+        private readonly IAnonymizerProcessorFactory _processorFactory;
 
-        private IAnonymizerSettingsFactory _settingsFactory;
+        private readonly IAnonymizerSettingsFactory _settingsFactory;
 
         public AnonymizerRuleFactory(AnonymizerConfiguration configuration, IAnonymizerProcessorFactory processorFactory = null, IAnonymizerSettingsFactory settingsFactory = null)
         {
@@ -71,7 +69,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             {
                 if (_customizedSettings == null || !_customizedSettings.ContainsKey(ruleContent[Constants.RuleSetting].ToString()))
                 {
-                    throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, $"Customized setting {ruleContent[Constants.RuleSetting]} not defined");
+                    throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingRuleSettings, $"Customized setting {ruleContent[Constants.RuleSetting]} not defined");
                 }
 
                 ruleSetting = _customizedSettings[ruleContent[Constants.RuleSetting].ToString()];

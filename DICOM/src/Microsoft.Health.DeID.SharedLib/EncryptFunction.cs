@@ -15,9 +15,9 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
     {
         // AES Initialization Vector length is 16 bytes
         private const int AesIvSize = 16;
-        private byte[] _aesKey;
-        private byte[] _privateKey;
-        private byte[] _publicKey;
+        private readonly byte[] _aesKey;
+        private readonly byte[] _privateKey;
+        private readonly byte[] _publicKey;
 
         public EncryptFunction(EncryptionSetting encryptionSetting = null)
         {

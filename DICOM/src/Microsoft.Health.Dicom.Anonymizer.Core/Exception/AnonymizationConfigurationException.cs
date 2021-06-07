@@ -10,13 +10,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Exceptions
 {
     public class AnonymizationConfigurationException : DicomAnonymizationException
     {
-        public AnonymizationConfigurationException(DicomAnonymizationErrorCode templateManagementErrorCode, string message)
-            : base(templateManagementErrorCode, message)
+        public AnonymizationConfigurationException(DicomAnonymizationErrorCode dicomAnonymizerErrorCode, string message)
+            : base(dicomAnonymizerErrorCode, message)
         {
         }
 
-        public AnonymizationConfigurationException(DicomAnonymizationErrorCode templateManagementErrorCode, string message, Exception innerException)
-            : base(templateManagementErrorCode, message, innerException)
+        public AnonymizationConfigurationException(DicomAnonymizationErrorCode dicomAnonymizerErrorCode, string message, Exception innerException)
+            : base(dicomAnonymizerErrorCode, message, innerException)
         {
         }
     }

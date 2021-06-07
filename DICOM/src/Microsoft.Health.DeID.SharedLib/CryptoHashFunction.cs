@@ -14,19 +14,12 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
     public class CryptoHashFunction
     {
-        private HMAC _hmac;
+        private readonly HMAC _hmac;
 
         public CryptoHashFunction(CryptoHashSetting cryptoHashSetting = null)
         {
             cryptoHashSetting ??= new CryptoHashSetting();
-            if (cryptoHashSetting.CryptoHashKey != null)
-            {
-                _hmac = new HMACSHA256(Encoding.UTF8.GetBytes(cryptoHashSetting.CryptoHashKey));
-            }
-            else
-            {
-                _hmac = new HMACSHA256();
-            }
+            _hmac = cryptoHashSetting.CryptoHashKey == null ? new HMACSHA256() : new HMACSHA256(Encoding.UTF8.GetBytes(cryptoHashSetting.CryptoHashKey));
         }
 
         public byte[] ComputeHmacSHA256Hash(byte[] input)

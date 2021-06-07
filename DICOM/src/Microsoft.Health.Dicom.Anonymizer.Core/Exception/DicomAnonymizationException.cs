@@ -10,18 +10,18 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Exceptions
 {
     public class DicomAnonymizationException : Exception
     {
-        public DicomAnonymizationException(DicomAnonymizationErrorCode templateManagementErrorCode, string message)
+        public DicomAnonymizationException(DicomAnonymizationErrorCode dicomAnonymizerErrorCode, string message)
             : base(message)
         {
-            TemplateManagementErrorCode = templateManagementErrorCode;
+            DicomAnonymizerErrorCode = dicomAnonymizerErrorCode;
         }
 
-        public DicomAnonymizationException(DicomAnonymizationErrorCode templateManagementErrorCode, string message, Exception innerException)
+        public DicomAnonymizationException(DicomAnonymizationErrorCode dicomAnonymizerErrorCode, string message, Exception innerException)
             : base(message, innerException)
         {
-            TemplateManagementErrorCode = templateManagementErrorCode;
+            DicomAnonymizerErrorCode = dicomAnonymizerErrorCode;
         }
 
-        public DicomAnonymizationErrorCode TemplateManagementErrorCode { get; }
+        public DicomAnonymizationErrorCode DicomAnonymizerErrorCode { get; }
     }
 }

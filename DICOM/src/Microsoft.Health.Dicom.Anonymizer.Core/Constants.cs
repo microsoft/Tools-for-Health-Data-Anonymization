@@ -8,7 +8,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
     internal static class Constants
     {
         internal const string TagKey = "tag";
-        internal const string VRKey = "VR";
         internal const string MethodKey = "method";
         internal const string Parameters = "params";
         internal const string RuleSetting = "setting";

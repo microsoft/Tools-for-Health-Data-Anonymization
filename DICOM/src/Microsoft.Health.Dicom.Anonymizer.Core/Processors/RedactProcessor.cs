@@ -15,9 +15,12 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
+    /// <summary>
+    /// Used to erase value but maintain the DICOM item.
+    /// </summary>
     public class RedactProcessor : IAnonymizerProcessor
     {
-        private RedactFunction _redactFunction;
+        private readonly RedactFunction _redactFunction;
 
         public RedactProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
         {

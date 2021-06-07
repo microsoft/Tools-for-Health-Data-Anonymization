@@ -19,7 +19,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class PerturbProcessor : IAnonymizerProcessor
     {
-        private PerturbFunction _perturbFunction;
+        private readonly PerturbFunction _perturbFunction;
 
         private readonly Dictionary<DicomVR, VRTypes> _numericValueTypeMapping = new Dictionary<DicomVR, VRTypes>()
         {

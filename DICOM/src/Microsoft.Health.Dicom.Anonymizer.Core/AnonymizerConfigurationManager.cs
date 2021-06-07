@@ -3,12 +3,9 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
-using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 using Newtonsoft.Json;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
@@ -24,13 +21,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             _configuration = configuration;
         }
 
-        public static AnonymizerConfigurationManager CreateFromSettingsInJson(string settingsInJson)
+        public static AnonymizerConfigurationManager CreateFromJsonConfiguration(string jsonConfiguration)
         {
-            EnsureArg.IsNotNull(settingsInJson, nameof(settingsInJson));
+            EnsureArg.IsNotNull(jsonConfiguration, nameof(jsonConfiguration));
 
             try
             {
-                var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(settingsInJson);
+                var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(jsonConfiguration);
                 return new AnonymizerConfigurationManager(configuration);
             }
             catch (JsonException innerException)
@@ -46,7 +43,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             try
             {
                 var content = File.ReadAllText(configFilePath);
-                return CreateFromSettingsInJson(content);
+                return CreateFromJsonConfiguration(content);
             }
             catch (IOException innerException)
             {

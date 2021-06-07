@@ -15,7 +15,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
     public abstract class AnonymizerRule
     {
-        private IAnonymizerProcessor _processor;
+        private readonly IAnonymizerProcessor _processor;
 
         public AnonymizerRule(string method, string description, JObject ruleSetting = null, IAnonymizerProcessorFactory processorFactory = null, IAnonymizerSettingsFactory settingsFactory = null)
         {

@@ -14,7 +14,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class SubstituteProcessor : IAnonymizerProcessor
     {
-        private string _replaceWith = "Anonymous";
+        private readonly string _replaceWith = "Anonymous";
 
         public SubstituteProcessor(JObject settingObject)
         {

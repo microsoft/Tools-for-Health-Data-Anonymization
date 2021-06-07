@@ -13,7 +13,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
     public class PerturbFunction
     {
-        private PerturbSetting _perturbSetting;
+        private readonly PerturbSetting _perturbSetting;
 
         public PerturbFunction(PerturbSetting perturbSetting = null)
         {
@@ -29,7 +29,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public decimal Perturb(decimal value)
         {
-            var noise = (decimal)Noise((double)value);
+            var noise = (decimal)GenerateNoise((double)value);
             return Math.Round(value + noise, _perturbSetting.RoundTo);
         }
 
@@ -50,49 +50,49 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public double Perturb(double value)
         {
-            return Math.Round(value + Noise(value), _perturbSetting.RoundTo);
+            return Math.Round(value + GenerateNoise(value), _perturbSetting.RoundTo);
         }
 
         public float Perturb(float value)
         {
-            return (float)Math.Round(value + Noise(value), _perturbSetting.RoundTo);
+            return (float)Math.Round(value + GenerateNoise(value), _perturbSetting.RoundTo);
         }
 
         public int Perturb(int value)
         {
-            return (int)Math.Round(value + Noise(value), 0);
+            return (int)Math.Round(value + GenerateNoise(value), 0);
         }
 
         public short Perturb(short value)
         {
-            return (short)Math.Round(value + Noise(value), 0);
+            return (short)Math.Round(value + GenerateNoise(value), 0);
         }
 
         public long Perturb(long value)
         {
-            return (long)Math.Round(value + Noise(value), 0);
+            return (long)Math.Round(value + GenerateNoise(value), 0);
         }
 
         public uint Perturb(uint value)
         {
-            var noise = Noise(value);
+            var noise = GenerateNoise(value);
             return (uint)Math.Round(value + noise < 0 ? 0 : value + noise, 0);
         }
 
         public ushort Perturb(ushort value)
         {
-            var noise = Noise(value);
+            var noise = GenerateNoise(value);
 
             return (ushort)Math.Round(value + noise < 0 ? 0 : value + noise, 0);
         }
 
         public ulong Perturb(ulong value)
         {
-            var noise = Noise(value);
+            var noise = GenerateNoise(value);
             return (ulong)Math.Round(value + noise < 0 ? 0 : value + noise, 0);
         }
 
-        private double Noise(double value)
+        private double GenerateNoise(double value)
         {
             var span = _perturbSetting.Span;
             if (_perturbSetting.RangeType == PerturbRangeType.Proportional)

@@ -17,7 +17,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         private static readonly int AgeThreshold = 89;
         private static readonly string ReplacementDigit = "0";
         private static readonly int InitialDigitsCount = 3;
-        private RedactSetting _redactSetting;
+        private readonly RedactSetting _redactSetting;
 
         public RedactFunction(RedactSetting redactSetting = null)
         {

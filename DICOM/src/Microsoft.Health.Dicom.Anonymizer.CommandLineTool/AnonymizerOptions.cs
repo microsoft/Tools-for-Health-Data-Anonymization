@@ -24,8 +24,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
         [Option('O', "outputFolder", Required = false, HelpText = "Output folder")]
         public string OutputFolder { get; set; }
 
-        [Option('v', "autoValidate", Required = false, Default = true, HelpText = "Auto validate output value when anonymizing.")]
-        public bool AutoValidate { get; set; }
+        [Option('v', "ValidateOutput", Required = false, Default = true, HelpText = "Validate output DICOM data items.")]
+        public bool ValidateOutput { get; set; }
 
         [Option('s', "skipFailedItem", Required = false, Default = true, HelpText = "Skip failed DICOM file when anonymizing.")]
         public bool SkipFailedItem { get; set; }

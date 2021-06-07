@@ -5,7 +5,6 @@
 
 using System;
 using System.Linq;
-using System.Text;
 using Dicom;
 using Dicom.IO.Buffer;
 using EnsureThat;

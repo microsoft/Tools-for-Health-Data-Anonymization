@@ -18,11 +18,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
         {
             var engine = new AnonymizerEngine(
                     options.ConfigurationFilePath,
-                    new AnonymizerSettings()
-                    {
-                        ValidateOutput = options.AutoValidate,
-                        ValidateInput = options.ValidateInput,
-                    });
+                    new AnonymizerSettings(options.ValidateInput, options.ValidateOutput));
             if (options.InputFile != null && options.OutputFile != null)
             {
                 await AnonymizeOneFileAsync(options.InputFile, options.OutputFile, engine, options.SkipFailedItem);

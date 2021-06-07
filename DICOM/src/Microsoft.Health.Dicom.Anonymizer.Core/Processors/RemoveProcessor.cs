@@ -9,6 +9,9 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
+    /// <summary>
+    /// Used to remove the entire DICOM item.
+    /// </summary>
     public class RemoveProcessor : IAnonymizerProcessor
     {
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)

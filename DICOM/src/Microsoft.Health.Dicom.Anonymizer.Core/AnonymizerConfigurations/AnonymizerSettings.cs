@@ -7,8 +7,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizerSettings
     {
-        public bool ValidateInput { get; set; } = false;
+        public AnonymizerSettings(bool validateInput = false, bool validateOutput = true)
+        {
+            ValidateInput = validateInput;
+            ValidateOutput = validateOutput;
+        }
 
-        public bool ValidateOutput { get; set; } = true;
+        public bool ValidateInput { get; }
+
+        public bool ValidateOutput { get; }
+
     }
 }

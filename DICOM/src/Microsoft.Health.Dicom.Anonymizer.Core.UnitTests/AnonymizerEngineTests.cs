@@ -54,7 +54,7 @@ namespace UnitTests
         }
 
         [Fact]
-        public void GivenDicomDataSet_SetAutoValidationTrue_WhenAnonymize_ValidDicomDatasetWillBeReturn()
+        public void GivenDicomDataSet_SetValidationOutputTrue_WhenAnonymize_ValidDicomDatasetWillBeReturn()
         {
             var engine = new AnonymizerEngine("./TestConfigurations/configuration-test-engine.json");
             engine.AnonymizeDataset(Dataset);
@@ -66,9 +66,9 @@ namespace UnitTests
         }
 
         [Fact]
-        public void GivenDicomDataSet_SetAutoValidationFalse_WhenAnonymizeWithUnsupportedOperation_InvalidDicomDatasetWillBeReturn()
+        public void GivenDicomDataSet_SetValidationOutputFalse_WhenAnonymizeWithUnsupportedOperation_InvalidDicomDatasetWillBeReturn()
         {
-            var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerSettings() { ValidateOutput = false });
+            var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerSettings(false, false));
             engine.AnonymizeDataset(Dataset);
             var dicomFile = DicomFile.Open("DicomResults/Invalid-String-Format.dcm");
             foreach (var item in Dataset)

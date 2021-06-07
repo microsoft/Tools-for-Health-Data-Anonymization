@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anon
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.CommandLineTool", "src\Microsoft.Health.Dicom.Anonymizer.CommandLineTool\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.csproj", "{AE4E4A8F-26B4-46A0-BA2B-4138C064C9F1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.CommanLineTool.UnitTests", "src\Microsoft.Health.Dicom.Anonymizer.CommanLineTool.UnitTests\Microsoft.Health.Dicom.Anonymizer.CommanLineTool.UnitTests.csproj", "{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.CommandLineTool.UnitTests", "src\Microsoft.Health.Dicom.Anonymizer.CommanLineTool.UnitTests\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.UnitTests.csproj", "{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.Core.UnitTests", "src\Microsoft.Health.Dicom.Anonymizer.Core.UnitTests\Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.csproj", "{3E24E184-32D4-4AA3-9F07-351D6981071E}"
 EndProject
