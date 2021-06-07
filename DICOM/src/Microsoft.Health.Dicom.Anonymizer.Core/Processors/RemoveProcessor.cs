@@ -18,5 +18,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             dicomDataset.Remove(item.Tag);
         }
+
+        public bool IsSupportedVR(DicomItem item)
+        {
+            return true;
+        }
     }
 }

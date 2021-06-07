@@ -39,8 +39,20 @@ namespace UnitTests
             yield return new object[] { DicomTag.Referenced​Waveform​Channels, "12345\\1234" }; // US
         }
 
-        public static IEnumerable<object[]> GetValidVRItemForRefreshUID()
+        public static IEnumerable<object[]> GetItemWithStringValueForRefreshUID()
         {
+            yield return new object[] { DicomTag.RetrieveAETitle, "TEST" }; // AE
+            yield return new object[] { DicomTag.PatientAge, "100Y" }; // AS
+            yield return new object[] { DicomTag.Query​Retrieve​Level, "0" }; // CS
+            yield return new object[] { DicomTag.Event​Elapsed​Times, "1234.5" }; // DS
+            yield return new object[] { DicomTag.Stage​Number, "1234" }; // IS
+            yield return new object[] { DicomTag.Patient​Telephone​Numbers, "TEST" }; // SH
+            yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345" }; // FD
+            yield return new object[] { DicomTag.Examined​Body​Thickness, "12345" }; // FL
+            yield return new object[] { DicomTag.Doppler​Sample​Volume​X​Position, "12345" }; // SL
+            yield return new object[] { DicomTag.Real​World​Value​First​Value​Mapped, "12345" }; // SS
+            yield return new object[] { DicomTag.Referenced​Content​Item​Identifier, "12345" }; // UL
+            yield return new object[] { DicomTag.Referenced​Waveform​Channels, "12345\\1234" }; // US
             yield return new object[] { DicomTag.Instance​Creator​UID, "1234567890" }; // UI
             yield return new object[] { DicomTag.SOP​Class​UID, "1234567890" }; // UI
             yield return new object[] { DicomTag.SOP​Classes​In​Study, "1234567890" }; // UI
@@ -48,25 +60,25 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(GetUnsupportedVRItemForRefreshUID))]
-        public void GivenADataSetWithUnsupportedVRForRefreshUID_WhenRefreshUID_ExceptionWillBeThrown(DicomTag tag, string value)
+        public void GivenUnsupportedVRForRefreshUID_WhenCheckVRIsSupported_ResultWillBeFalse(DicomTag tag, string value)
         {
             var dataset = new DicomDataset
             {
                 { tag, value },
             };
 
-            Assert.Throws<AnonymizationOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
+            Assert.False(Processor.IsSupportedVR(dataset.GetDicomItem<DicomElement>(tag)));
         }
 
         [Theory]
-        [MemberData(nameof(GetValidVRItemForRefreshUID))]
-        public void GivenADataSetWithValidVRForRefreshUID_WhenRefreshUID_CorrectResultWillBeReturned(DicomTag tag, string value)
+        [MemberData(nameof(GetItemWithStringValueForRefreshUID))]
+        public void GivenADataSetForRefreshUID_WhenRefreshUID_NewUIDWillBeReturned(DicomTag tag, string value)
         {
             var dataset = new DicomDataset
             {
                 { tag, value },
             };
-
+            dataset.AutoValidate = false;
             Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.NotEqual(value, dataset.GetDicomItem<DicomElement>(tag).Get<string>());
         }
@@ -101,7 +113,7 @@ namespace UnitTests
             item.Fragments.Add(new MemoryByteBuffer(Convert.FromBase64String("fragment")));
 
             var dataset = new DicomDataset(item);
-            Assert.Throws<AnonymizationOperationException>(() => Processor.Process(dataset, item));
+            Assert.Throws<InvalidCastException>(() => Processor.Process(dataset, item));
         }
 
         [Fact]
@@ -117,7 +129,7 @@ namespace UnitTests
             sps2.Add(new DicomSequence(DicomTag.ScheduledProtocolCodeSequence, spcs3));
             dataset.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2));
 
-            Assert.Throws<AnonymizationOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence)));
+            Assert.Throws<InvalidCastException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence)));
         }
     }
 }

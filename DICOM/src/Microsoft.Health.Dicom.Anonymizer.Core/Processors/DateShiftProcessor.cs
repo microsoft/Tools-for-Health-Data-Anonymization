@@ -42,11 +42,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(item, nameof(item));
             EnsureArg.IsNotNull(context, nameof(context));
 
-            if (!IsValidItemForDateShift(item))
-            {
-                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Dateshift is not supported for {item.ValueRepresentation}");
-            }
-
             _dateShiftFunction.DateShiftKeyPrefix = _dateShiftScope switch
             {
                 DateShiftScope.StudyInstance => context.StudyInstanceUID ?? string.Empty,
@@ -74,9 +69,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, results.ToArray());
             }
+            else
+            {
+                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"DateShift is not supported for {item.ValueRepresentation}");
+            }
         }
 
-        public bool IsValidItemForDateShift(DicomItem item)
+        public bool IsSupportedVR(DicomItem item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
 

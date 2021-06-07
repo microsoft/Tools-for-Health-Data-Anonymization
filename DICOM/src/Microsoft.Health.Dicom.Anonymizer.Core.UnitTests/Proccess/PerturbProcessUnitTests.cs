@@ -158,7 +158,7 @@ namespace UnitTests
 
             var dataset = new DicomDataset(item);
 
-            Assert.Throws<AnonymizationOperationException>(() => Processor.Process(dataset, item));
+            Assert.Throws<System.Reflection.TargetException>(() => Processor.Process(dataset, item));
         }
 
         [Fact]

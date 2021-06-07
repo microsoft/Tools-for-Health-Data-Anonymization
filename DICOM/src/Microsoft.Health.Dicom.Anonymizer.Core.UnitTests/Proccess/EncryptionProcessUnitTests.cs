@@ -122,7 +122,7 @@ namespace UnitTests
 
         private string Decryption(string encryptedValue, string key)
         {
-            var encryptFunction = new EncryptFunction(new EncryptionSetting() { EncryptKey = "0000000000000000" });
+            var encryptFunction = new EncryptFunction(new EncryptionSetting() { EncryptKey = key });
             return Encoding.UTF8.GetString(encryptFunction.DecryptContentWithAES(Convert.FromBase64String(encryptedValue)));
         }
 

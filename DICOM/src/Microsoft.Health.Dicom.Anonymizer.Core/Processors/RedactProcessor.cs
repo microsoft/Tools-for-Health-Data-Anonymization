@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Dicom;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
@@ -85,6 +84,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             {
                 dicomDataset.AddOrUpdate<string>(item.ValueRepresentation, item.Tag, values: null);
             }
+        }
+
+        public bool IsSupportedVR(DicomItem item)
+        {
+            return true;
         }
     }
 }

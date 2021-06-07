@@ -31,11 +31,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            if (item is DicomOtherByte || item is DicomSequence || item is DicomFragmentSequence)
-            {
-                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Invalid perturb operation for item {item}");
-            }
-
             try
             {
                 if (item is DicomOtherWord)
@@ -63,6 +58,16 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             {
                 throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Invalid replace value", ex);
             }
+        }
+
+        public bool IsSupportedVR(DicomItem item)
+        {
+            if (item is DicomOtherByte || item is DicomSequence || item is DicomFragmentSequence)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

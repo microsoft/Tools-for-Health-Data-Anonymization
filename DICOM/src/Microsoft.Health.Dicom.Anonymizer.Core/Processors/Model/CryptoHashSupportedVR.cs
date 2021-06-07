@@ -7,6 +7,16 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model
 {
     public enum CryptoHashSupportedVR
     {
+        AE,
+        AS,
+        CS,
+        UI,
+        DS,
+        IS,
+        SH,
+        DA,
+        DT,
+        TM,
         PN,
         UC,
         LO,

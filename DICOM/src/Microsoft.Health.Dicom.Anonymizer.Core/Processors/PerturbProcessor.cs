@@ -54,11 +54,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            if (!IsValidItemForPerturb(item))
-            {
-                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Perturb is not supported for {item.ValueRepresentation}");
-            }
-
             if (item.ValueRepresentation == DicomVR.AS)
             {
                 var values = ((DicomAgeString)item).Get<string[]>().Select(Utility.ParseAge).Select(x => _perturbFunction.Perturb(x));
@@ -66,6 +61,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
             else
             {
+                if (!_numericValueTypeMapping.ContainsKey(item.ValueRepresentation))
+                {
+                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Perturb is not supported for {item.ValueRepresentation}");
+                }
+
                 var elementType = _numericValueTypeMapping[item.ValueRepresentation].ElementType;
                 var valueType = _numericValueTypeMapping[item.ValueRepresentation].ValueType;
 
@@ -125,7 +125,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
         }
 
-        public bool IsValidItemForPerturb(DicomItem item)
+        public bool IsSupportedVR(DicomItem item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
 

@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using Dicom;
 using EnsureThat;
+using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
@@ -37,8 +38,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
             foreach (var item in locatedItems)
             {
-                _processor.Process(dataset, item, context);
-                context.VisitedNodes.Add(item.Tag.ToString());
+                if (_processor.IsSupportedVR(item))
+                {
+                    _processor.Process(dataset, item, context);
+                    context.VisitedNodes.Add(item.Tag.ToString());
+                }
+                else
+                {
+                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Rule {Description} is not supported for the item with VR {item.ValueRepresentation}");
+                }
             }
         }
 

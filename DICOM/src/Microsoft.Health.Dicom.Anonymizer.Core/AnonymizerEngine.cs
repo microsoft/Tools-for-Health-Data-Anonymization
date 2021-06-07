@@ -41,7 +41,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
             var context = InitContext(dataset);
             ValidateInput(dataset);
-            dataset.AutoValidate = _anonymizerSettings.AutoValidate;
+            dataset.AutoValidate = false;
 
             var rules = _ruleFactory.CreateAnonymizationDicomRule(_configurationManager.GetConfiguration().RuleContent);
             foreach (var rule in rules)
@@ -49,11 +49,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 rule.Handle(dataset, context);
                 _logger.LogDebug($"Successfully handle rule {rule.Description}.");
             }
+
+            ValidateOutput(dataset);
         }
 
         private void ValidateInput(DicomDataset dataset)
         {
             if (_anonymizerSettings.ValidateInput)
+            {
+                dataset.Validate();
+            }
+        }
+
+        private void ValidateOutput(DicomDataset dataset)
+        {
+            if (_anonymizerSettings.ValidateOutput)
             {
                 dataset.Validate();
             }

@@ -9,6 +9,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
     {
         public bool ValidateInput { get; set; } = false;
 
-        public bool AutoValidate { get; set; } = true;
+        public bool ValidateOutput { get; set; } = true;
     }
 }

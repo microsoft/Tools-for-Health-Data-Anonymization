@@ -37,11 +37,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            if (dicomDataset.AutoValidate && !IsValidItemForEncrypt(item))
-            {
-                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Encrypt is not supported for {item.ValueRepresentation}");
-            }
-
             try
             {
                 if (item is DicomStringElement)
@@ -78,10 +73,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                     throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Encrypt is not supported for {item.ValueRepresentation}");
                 }
             }
-            catch (DicomValidationException ex)
+            catch (Exception ex)
             {
                 // The length for encrypted output will varies, which may invalid even we check VR in advance.
-                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Encrypt is not supported for {item.ValueRepresentation}", ex);
+                if (ex is DicomValidationException)
+                {
+                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Encrypt is not supported for {item.ValueRepresentation}", ex);
+                }
+
+                throw;
             }
         }
 
@@ -90,7 +90,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             return Convert.ToBase64String(_encryptFunction.EncryptContentWithAES(DicomEncoding.Default.GetBytes(plainString)));
         }
 
-        public bool IsValidItemForEncrypt(DicomItem item)
+        public bool IsSupportedVR(DicomItem item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
 

@@ -38,10 +38,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(item, nameof(item));
 
             var test = item.GetType().GetMethods();
-            if (dicomDataset.AutoValidate && !IsValidItemForCryptoHash(item))
-            {
-                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"CryptoHash is not supported for {item.ValueRepresentation}");
-            }
 
             var encoding = Encoding.UTF8;
             if (item is DicomStringElement)
@@ -76,7 +72,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
         }
 
-        public bool IsValidItemForCryptoHash(DicomItem item)
+        public bool IsSupportedVR(DicomItem item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
 

@@ -5,12 +5,13 @@
 
 using Dicom;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public interface IAnonymizerProcessor
     {
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context);
+
+        bool IsSupportedVR(DicomItem item);
     }
 }
