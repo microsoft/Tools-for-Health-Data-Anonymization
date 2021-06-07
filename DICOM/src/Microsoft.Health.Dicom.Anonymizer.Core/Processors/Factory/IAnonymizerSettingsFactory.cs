@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
-    public interface IDeIDSettingsFactory
+    public interface IAnonymizerSettingsFactory
     {
         public T CreateAnonymizerSetting<T>(JObject settings);
     }

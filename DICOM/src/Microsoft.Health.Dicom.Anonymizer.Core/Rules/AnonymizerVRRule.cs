@@ -18,7 +18,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
     public class AnonymizerVRRule : AnonymizerRule
     {
-        public AnonymizerVRRule(DicomVR vr, string method, JObject ruleSetting, string description, IAnonymizerProcessorFactory processorFactory = null, IDeIDSettingsFactory settingsFactory = null)
+        public AnonymizerVRRule(DicomVR vr, string method, JObject ruleSetting, string description, IAnonymizerProcessorFactory processorFactory = null, IAnonymizerSettingsFactory settingsFactory = null)
             : base(method, description, ruleSetting, processorFactory)
         {
             EnsureArg.IsNotNull(vr, nameof(vr));
@@ -33,7 +33,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             EnsureArg.IsNotNull(dataset, nameof(dataset));
             EnsureArg.IsNotNull(context, nameof(context));
 
-            var locatedItems = new List<DicomItem>() { };
+            var locatedItems = new List<DicomItem>();
             foreach (var item in dataset)
             {
                 if (string.Equals(item.ValueRepresentation.Code, VR?.Code))

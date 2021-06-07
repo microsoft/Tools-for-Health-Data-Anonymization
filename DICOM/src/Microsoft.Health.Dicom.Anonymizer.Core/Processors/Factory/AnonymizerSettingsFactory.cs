@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings
 {
-    public class DeIDSettingsFactory : IDeIDSettingsFactory
+    public class AnonymizerSettingsFactory : IAnonymizerSettingsFactory
     {
         public object CreateAnonymizerSetting(Type settingType, JObject settingObject)
         {

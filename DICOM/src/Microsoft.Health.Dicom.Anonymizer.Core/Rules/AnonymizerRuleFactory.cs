@@ -25,9 +25,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
         private IAnonymizerProcessorFactory _processorFactory;
 
-        private IDeIDSettingsFactory _settingsFactory;
+        private IAnonymizerSettingsFactory _settingsFactory;
 
-        public AnonymizerRuleFactory(AnonymizerConfiguration configuration, IAnonymizerProcessorFactory processorFactory = null, IDeIDSettingsFactory settingsFactory = null)
+        public AnonymizerRuleFactory(AnonymizerConfiguration configuration, IAnonymizerProcessorFactory processorFactory = null, IAnonymizerSettingsFactory settingsFactory = null)
         {
             EnsureArg.IsNotNull(configuration, nameof(configuration));
 

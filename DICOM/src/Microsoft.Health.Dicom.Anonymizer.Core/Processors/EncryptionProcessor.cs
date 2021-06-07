@@ -23,11 +23,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private readonly EncryptFunction _encryptFunction;
 
-        public EncryptionProcessor(JObject settingObject, IDeIDSettingsFactory settingFactory = null)
+        public EncryptionProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
         {
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
-            settingFactory ??= new DeIDSettingsFactory();
+            settingFactory ??= new AnonymizerSettingsFactory();
             var encryptionSetting = settingFactory.CreateAnonymizerSetting<EncryptionSetting>(settingObject);
             _encryptFunction = new EncryptFunction(encryptionSetting);
         }
@@ -78,15 +78,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                     throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Encrypt is not supported for {item.ValueRepresentation}");
                 }
             }
-            catch (Exception ex)
+            catch (DicomValidationException ex)
             {
                 // The length for encrypted output will varies, which may invalid even we check VR in advance.
-                if (ex is DicomValidationException)
-                {
-                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Encrypt is not supported for {item.ValueRepresentation}", ex);
-                }
-
-                throw;
+                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Encrypt is not supported for {item.ValueRepresentation}", ex);
             }
         }
 

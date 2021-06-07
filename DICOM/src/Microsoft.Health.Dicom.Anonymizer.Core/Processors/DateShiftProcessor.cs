@@ -23,11 +23,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         private readonly DateShiftFunction _dateShiftFunction;
         private readonly DateShiftScope _dateShiftScope = DateShiftScope.SopInstance;
 
-        public DateShiftProcessor(JObject settingObject, IDeIDSettingsFactory settingFactory = null)
+        public DateShiftProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
         {
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
-            settingFactory ??= new DeIDSettingsFactory();
+            settingFactory ??= new AnonymizerSettingsFactory();
             var dateShiftSetting = settingFactory.CreateAnonymizerSetting<DateShiftSetting>(settingObject);
             _dateShiftFunction = new DateShiftFunction(dateShiftSetting);
             if (settingObject.TryGetValue("DateShiftScope", StringComparison.OrdinalIgnoreCase, out JToken scope))

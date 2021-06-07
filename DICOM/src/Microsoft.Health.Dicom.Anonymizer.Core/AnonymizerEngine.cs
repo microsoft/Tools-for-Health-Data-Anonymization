@@ -31,7 +31,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerSettings();
             _configurationManager = configurationManager;
-            _ruleFactory = ruleFactory ?? new AnonymizerRuleFactory(_configurationManager.GetConfiguration(), new DicomProcessorFactory(), new DeIDSettingsFactory());
+            _ruleFactory = ruleFactory ?? new AnonymizerRuleFactory(_configurationManager.GetConfiguration(), new DicomProcessorFactory(), new AnonymizerSettingsFactory());
             _logger.LogDebug("AnonymizerEngine initialized successfully");
         }
 

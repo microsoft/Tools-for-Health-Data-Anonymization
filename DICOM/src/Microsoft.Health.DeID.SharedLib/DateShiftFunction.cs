@@ -16,19 +16,16 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         public DateShiftFunction(DateShiftSetting dateShiftSetting = null)
         {
             dateShiftSetting ??= new DateShiftSetting();
-            if (dateShiftSetting != null)
-            {
-                DateShiftKey = dateShiftSetting.DateShiftKey;
-                DateShiftKeyPrefix = dateShiftSetting.DateShiftKeyPrefix;
-                DateShiftRange = dateShiftSetting.DateShiftRange;
-            }
+            DateShiftKey = dateShiftSetting.DateShiftKey;
+            DateShiftKeyPrefix = dateShiftSetting.DateShiftKeyPrefix;
+            DateShiftRange = dateShiftSetting.DateShiftRange;
         }
 
-        public string DateShiftKey { get; set; } = string.Empty;
+        public string DateShiftKey { get; set; }
 
-        public string DateShiftKeyPrefix { get; set; } = string.Empty;
+        public string DateShiftKeyPrefix { get; set; }
 
-        public uint DateShiftRange { get; set; } = 50;
+        public uint DateShiftRange { get; set; }
 
         public string ShiftDate(string inputString, string inputDateTimeFormat = null, string outputDateTimeFormat = null, IFormatProvider provider = null)
         {

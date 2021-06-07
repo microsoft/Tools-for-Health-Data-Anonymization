@@ -22,6 +22,8 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         public EncryptFunction(EncryptionSetting encryptionSetting = null)
         {
             encryptionSetting ??= new EncryptionSetting();
+            encryptionSetting.Validate();
+
             _aesKey = Encoding.UTF8.GetBytes(encryptionSetting.EncryptKey ?? Guid.NewGuid().ToString("N"));
             _privateKey = Encoding.UTF8.GetBytes(encryptionSetting.PrivateKey ?? string.Empty);
             _publicKey = Encoding.UTF8.GetBytes(encryptionSetting.PublicKey ?? string.Empty);

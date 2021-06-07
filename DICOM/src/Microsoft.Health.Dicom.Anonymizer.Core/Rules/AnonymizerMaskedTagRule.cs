@@ -14,7 +14,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
     public class AnonymizerMaskedTagRule : AnonymizerRule
     {
-        public AnonymizerMaskedTagRule(DicomMaskedTag maskedTag, string method, JObject ruleSetting, string description, IAnonymizerProcessorFactory processorFactory = null, IDeIDSettingsFactory settingsFactory = null)
+        public AnonymizerMaskedTagRule(DicomMaskedTag maskedTag, string method, JObject ruleSetting, string description, IAnonymizerProcessorFactory processorFactory = null, IAnonymizerSettingsFactory settingsFactory = null)
             : base(method, description, ruleSetting, processorFactory, settingsFactory)
         {
             EnsureArg.IsNotNull(maskedTag, nameof(maskedTag));
@@ -29,7 +29,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             EnsureArg.IsNotNull(dataset, nameof(dataset));
             EnsureArg.IsNotNull(context, nameof(context));
 
-            var locatedItems = new List<DicomItem>() { };
+            var locatedItems = new List<DicomItem>();
             foreach (var item in dataset)
             {
                 if (MaskedTag.IsMatch(item.Tag))

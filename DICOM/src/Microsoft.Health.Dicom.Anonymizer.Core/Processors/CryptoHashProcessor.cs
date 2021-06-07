@@ -23,11 +23,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private readonly CryptoHashFunction _cryptoHashFunction;
 
-        public CryptoHashProcessor(JObject settingObject, IDeIDSettingsFactory settingFactory = null)
+        public CryptoHashProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
         {
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
-            settingFactory ??= new DeIDSettingsFactory();
+            settingFactory ??= new AnonymizerSettingsFactory();
             var cryptoHashSetting = settingFactory.CreateAnonymizerSetting<CryptoHashSetting>(settingObject);
             _cryptoHashFunction = new CryptoHashFunction(cryptoHashSetting);
         }

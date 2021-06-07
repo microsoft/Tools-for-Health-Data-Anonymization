@@ -11,7 +11,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
     public class DicomProcessorFactory : IAnonymizerProcessorFactory
     {
-        public IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null, IDeIDSettingsFactory settingsFactory = null)
+        public IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null, IAnonymizerSettingsFactory settingsFactory = null)
         {
             return method.ToLower() switch
             {

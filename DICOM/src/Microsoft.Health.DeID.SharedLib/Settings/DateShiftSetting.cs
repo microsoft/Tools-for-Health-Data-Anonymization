@@ -3,6 +3,8 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using Microsoft.Health.Dicom.DeID.SharedLib.Exceptions;
+
 namespace Microsoft.Health.Dicom.DeID.SharedLib.Settings
 {
     public class DateShiftSetting
@@ -12,9 +14,5 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib.Settings
         public string DateShiftKey { get; set; } = string.Empty;
 
         public string DateShiftKeyPrefix { get; set; } = string.Empty;
-
-        public void Validate()
-        {
-        }
     }
 }

@@ -20,11 +20,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private RedactFunction _redactFunction;
 
-        public RedactProcessor(JObject settingObject, IDeIDSettingsFactory settingFactory = null)
+        public RedactProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
         {
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
-            settingFactory ??= new DeIDSettingsFactory();
+            settingFactory ??= new AnonymizerSettingsFactory();
             var redactSetting = settingFactory.CreateAnonymizerSetting<RedactSetting>(settingObject);
             _redactFunction = new RedactFunction(redactSetting);
         }
@@ -34,7 +34,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            var redactedValues = new List<string>() { };
+            var redactedValues = new List<string>();
             if (item.ValueRepresentation == DicomVR.AS)
             {
                 var values = ((DicomAgeString)item).Get<string[]>();
@@ -77,7 +77,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 return;
             }
 
-            if (redactedValues.Count() != 0)
+            if (redactedValues.Count != 0)
             {
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, redactedValues.ToArray());
             }

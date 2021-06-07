@@ -40,11 +40,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             { DicomVR.SV, new VRTypes() { ElementType = typeof(DicomSignedVeryLong), ValueType = typeof(long[]) } },
         };
 
-        public PerturbProcessor(JObject settingObject, IDeIDSettingsFactory settingFactory = null)
+        public PerturbProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
         {
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
-            settingFactory ??= new DeIDSettingsFactory();
+            settingFactory ??= new AnonymizerSettingsFactory();
             var perturbSetting = settingFactory.CreateAnonymizerSetting<PerturbSetting>(settingObject);
             _perturbFunction = new PerturbFunction(perturbSetting);
         }

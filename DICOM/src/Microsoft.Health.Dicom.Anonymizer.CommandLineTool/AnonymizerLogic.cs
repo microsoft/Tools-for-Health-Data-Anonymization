@@ -25,7 +25,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
                     });
             if (options.InputFile != null && options.OutputFile != null)
             {
-                await AnonymizeOneFile(options.InputFile, options.OutputFile, engine, options.SkipFailedItem);
+                await AnonymizeOneFileAsync(options.InputFile, options.OutputFile, engine, options.SkipFailedItem);
             }
             else if (options.InputFolder != null && options.OutputFolder != null)
             {
@@ -36,18 +36,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
 
                 Directory.CreateDirectory(options.OutputFolder);
 
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-                var num = 0;
                 foreach (string file in Directory.EnumerateFiles(options.InputFolder, "*.dcm", SearchOption.AllDirectories))
                 {
-                    await AnonymizeOneFile(file, Path.Join(options.OutputFolder, Path.GetFileName(file)), engine, options.SkipFailedItem);
-                    num++;
+                    await AnonymizeOneFileAsync(file, Path.Join(options.OutputFolder, Path.GetFileName(file)), engine, options.SkipFailedItem);
                 }
 
-                sw.Stop();
-                TimeSpan ts = sw.Elapsed;
-                Console.WriteLine("{1} files costed for anonymization is: {0}ms", ts.TotalMilliseconds, num);
+                Console.WriteLine("Anonymization finished!");
             }
             else
             {
@@ -65,7 +59,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
             return string.Equals(inputFolderPath, outputFolderPath, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        internal static async Task AnonymizeOneFile(string inputFile, string outputFile, AnonymizerEngine engine, bool skipFailedItem)
+        internal static async Task AnonymizeOneFileAsync(string inputFile, string outputFile, AnonymizerEngine engine, bool skipFailedItem)
         {
             DicomFile dicomFile = await DicomFile.OpenAsync(inputFile).ConfigureAwait(false);
             try
