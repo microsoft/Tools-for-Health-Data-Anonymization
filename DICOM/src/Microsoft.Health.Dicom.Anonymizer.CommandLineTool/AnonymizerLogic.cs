@@ -21,11 +21,16 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
                     new AnonymizerSettings(options.ValidateInput, options.ValidateOutput));
             if (options.InputFile != null && options.OutputFile != null)
             {
+                if (IsSamePath(options.InputFile, options.OutputFile))
+                {
+                    Console.Error.WriteLine("Input and output file path are the same! Please check files' name.");
+                }
+
                 await AnonymizeOneFileAsync(options.InputFile, options.OutputFile, engine, options.SkipFailedItem);
             }
             else if (options.InputFolder != null && options.OutputFolder != null)
             {
-                if (IsSameDirectory(options.InputFolder, options.OutputFolder))
+                if (IsSamePath(options.InputFolder, options.OutputFolder))
                 {
                     Console.Error.WriteLine("Input and output folders are the same! Please choose another folder.");
                 }
@@ -34,20 +39,20 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
 
                 foreach (string file in Directory.EnumerateFiles(options.InputFolder, "*.dcm", SearchOption.AllDirectories))
                 {
-                    await AnonymizeOneFileAsync(file, Path.Join(options.OutputFolder, Path.GetFileName(file)), engine, options.SkipFailedItem);
+                    await AnonymizeOneFileAsync(file, Path.Join(options.OutputFolder, Path.GetRelativePath(file, options.InputFolder)), engine, options.SkipFailedItem);
                 }
 
                 Console.WriteLine("Anonymization finished!");
             }
             else
             {
-                Console.Error.WriteLine($"Invalid command line. Please specify inputFile( or inputFolder) and outputFile( or outputFolder) at the same time.");
+                Console.Error.WriteLine("Invalid command line. Please specify inputFile( or inputFolder) and outputFile( or outputFolder) at the same time.");
             }
         }
 
-        private static bool IsSameDirectory(string inputFolder, string outputFolder)
+        private static bool IsSamePath(string inputPath, string outputFolder)
         {
-            string inputFolderPath = Path.GetFullPath(inputFolder)
+            string inputFolderPath = Path.GetFullPath(inputPath)
                 .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             string outputFolderPath = Path.GetFullPath(outputFolder)
                 .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
@@ -57,17 +62,19 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
 
         internal static async Task AnonymizeOneFileAsync(string inputFile, string outputFile, AnonymizerEngine engine, bool skipFailedItem)
         {
-            DicomFile dicomFile = await DicomFile.OpenAsync(inputFile).ConfigureAwait(false);
             try
             {
+                DicomFile dicomFile = await DicomFile.OpenAsync(inputFile).ConfigureAwait(false);
                 engine.AnonymizeDataset(dicomFile.Dataset);
                 dicomFile.Save(outputFile);
+
+                Console.WriteLine($"Finished processing '{inputFile}'!");
             }
-            catch
+            catch (Exception ex)
             {
                 if (skipFailedItem)
                 {
-                    Console.WriteLine($"Fail and skip the file '{inputFile}'!");
+                    Console.WriteLine($"Fail and skip the file '{inputFile}'! \r\n {ex.Message}");
                 }
                 else
                 {
@@ -75,7 +82,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
                 }
             }
 
-            Console.WriteLine($"Finished processing '{inputFile}'!");
         }
     }
 }

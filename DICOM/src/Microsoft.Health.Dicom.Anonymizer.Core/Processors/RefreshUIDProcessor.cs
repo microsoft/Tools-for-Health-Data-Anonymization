@@ -19,20 +19,17 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            string replacedUID;
             DicomUID uid;
             var old = ((DicomElement)item).Get<string>();
 
             if (ReplacedUIDs.ContainsKey(old))
             {
-                replacedUID = ReplacedUIDs[old];
-                uid = new DicomUID(replacedUID, "Anonymized UID", DicomUidType.Unknown);
+                uid = new DicomUID(ReplacedUIDs[old], "Anonymized UID", DicomUidType.Unknown);
             }
             else
             {
                 uid = DicomUIDGenerator.GenerateDerivedFromUUID();
-                replacedUID = uid.UID;
-                ReplacedUIDs[old] = replacedUID;
+                ReplacedUIDs[old] = uid.UID;
             }
 
             var newItem = new DicomUniqueIdentifier(item.Tag, uid);

@@ -31,8 +31,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerSettings();
             _configurationManager = configurationManager;
-            _ruleFactory = ruleFactory ?? new AnonymizerRuleFactory(_configurationManager.GetConfiguration(), new DicomProcessorFactory(), new AnonymizerSettingsFactory());
-            _logger.LogDebug("AnonymizerEngine initialized successfully");
+            _ruleFactory = ruleFactory ?? new AnonymizerRuleFactory(_configurationManager.Configuration, new DicomProcessorFactory(), new AnonymizerSettingsFactory());
+            _logger.LogDebug("Successfully initialized anonymizer engine.");
         }
 
         public void AnonymizeDataset(DicomDataset dataset)
@@ -43,11 +43,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             ValidateInput(dataset);
             dataset.AutoValidate = false;
 
-            var rules = _ruleFactory.CreateAnonymizationDicomRule(_configurationManager.GetConfiguration().RuleContent);
+            var rules = _ruleFactory.CreateAnonymizationDicomRule(_configurationManager.Configuration.RuleContent);
             foreach (var rule in rules)
             {
                 rule.Handle(dataset, context);
-                _logger.LogDebug($"Successfully handle rule {rule.Description}.");
+                _logger.LogDebug($"Successfully handled rule {rule.Description}.");
             }
 
             ValidateOutput(dataset);

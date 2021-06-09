@@ -37,9 +37,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            var test = item.GetType().GetMethods();
-
-            var encoding = Encoding.UTF8;
             if (item is DicomStringElement)
             {
                 var encryptedValues = ((DicomStringElement)item).Get<string[]>().Select(GetCryptoHashString);

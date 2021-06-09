@@ -21,39 +21,28 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             _configuration = configuration;
         }
 
+        public AnonymizerConfiguration Configuration
+        {
+            get
+            {
+                return _configuration;
+            }
+        }
+
         public static AnonymizerConfigurationManager CreateFromJsonConfiguration(string jsonConfiguration)
         {
             EnsureArg.IsNotNull(jsonConfiguration, nameof(jsonConfiguration));
 
-            try
-            {
-                var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(jsonConfiguration);
-                return new AnonymizerConfigurationManager(configuration);
-            }
-            catch (JsonException innerException)
-            {
-                throw new JsonException($"Failed to parse configuration file", innerException);
-            }
+            var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(jsonConfiguration);
+            return new AnonymizerConfigurationManager(configuration);
         }
 
         public static AnonymizerConfigurationManager CreateFromConfigurationFile(string configFilePath)
         {
             EnsureArg.IsNotNull(configFilePath, nameof(configFilePath));
 
-            try
-            {
-                var content = File.ReadAllText(configFilePath);
-                return CreateFromJsonConfiguration(content);
-            }
-            catch (IOException innerException)
-            {
-                throw new IOException($"Failed to read configuration file {configFilePath}", innerException);
-            }
-        }
-
-        public AnonymizerConfiguration GetConfiguration()
-        {
-            return _configuration;
+            var content = File.ReadAllText(configFilePath);
+            return CreateFromJsonConfiguration(content);
         }
     }
 }

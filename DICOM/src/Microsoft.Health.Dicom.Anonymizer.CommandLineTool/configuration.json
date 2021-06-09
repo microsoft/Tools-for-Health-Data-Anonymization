@@ -336,7 +336,7 @@
             "encryptFunction": "AES"
         },
         "substitute": {
-            "replaceWith": "ANONYNOUS"
+            "replaceWith": "ANONYMOUS"
         }
     },
     "customizedSettings": {

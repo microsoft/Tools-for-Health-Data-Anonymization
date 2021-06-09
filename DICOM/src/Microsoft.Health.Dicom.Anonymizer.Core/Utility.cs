@@ -14,8 +14,20 @@ using Microsoft.Health.Dicom.DeID.SharedLib.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
-    public class Utility
+    /// <summary>
+    /// Utility functions are used to parse DICOM data including DA, DT, AS. The format for these VR is given in DICOM standard.
+    /// http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part05/sect_6.2.html
+    /// </summary>
+    public static class Utility
     {
+        public static readonly Dictionary<string, AgeType> AgeTypeMapping = new Dictionary<string, AgeType>
+            {
+                { "Y", AgeType.Year },
+                { "M", AgeType.Month },
+                { "W", AgeType.Week },
+                { "D", AgeType.Day },
+            };
+
         public static DateTimeOffset[] ParseDicomDate(DicomDate item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
@@ -27,7 +39,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             EnsureArg.IsNotNull(date, nameof(date));
 
-            return DateTimeOffset.ParseExact(date, "yyyyMMdd", CultureInfo.InvariantCulture);
+            try
+            {
+                return DateTimeOffset.ParseExact(date, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                throw new DicomDataException("Invalid date value. The valid format is YYYYMMDD.");
+            }
         }
 
         public static DateTimeObject[] ParseDicomDateTime(DicomDateTime item)
@@ -45,7 +64,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             var matches = dateTimeRegex.Matches(dateTime);
             if (matches.Count != 1)
             {
-                throw new Exception();
+                throw new DicomDataException("Invalid date time value. The valid format is YYYYMMDDHHMMSS.FFFFFF&ZZXX.");
             }
 
             var groups = matches[0].Groups;
@@ -57,6 +76,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             int minute = groups["minute"].Success ? int.Parse(groups["minute"].Value) : 0;
             int second = groups["second"].Success ? int.Parse(groups["second"].Value) : 0;
             int millisecond = groups["millisecond"].Success ? int.Parse(groups["millisecond"].Value) : 0;
+            millisecond = millisecond > 999 ? int.Parse(millisecond.ToString().Substring(0, 3)) : millisecond;
 
             if (groups["timeZone"].Success)
             {
@@ -64,7 +84,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 int timeZoneMinute = int.Parse(groups["timeZoneMinute"].Value);
                 return new DateTimeObject()
                 {
-                    DateValue = new DateTimeOffset(year, month, day, hour, minute, second, millisecond > 999 ? int.Parse(millisecond.ToString().Substring(0, 3)) : millisecond, new TimeSpan(timeZoneHour, timeZoneMinute, 0)),
+                    DateValue = new DateTimeOffset(year, month, day, hour, minute, second, millisecond, new TimeSpan(timeZoneHour, timeZoneMinute, 0)),
                     HasTimeZone = true,
                 };
             }
@@ -95,7 +115,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 return null;
             }
 
-            if (date.HasTimeZone == null || !(bool)date.HasTimeZone)
+            if (!(bool)date.HasTimeZone)
             {
                 return date.DateValue.ToString("yyyyMMddhhmmss.ffffff", CultureInfo.InvariantCulture);
             }
@@ -112,19 +132,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 return null;
             }
 
-            Dictionary<string, AgeType> ageTypeMapping = new Dictionary<string, AgeType>
-            {
-                { "Y", AgeType.Year },
-                { "M", AgeType.Month },
-                { "W", AgeType.Week },
-                { "D", AgeType.Day },
-            };
-
-            foreach (var item in ageTypeMapping)
+            foreach (var item in AgeTypeMapping)
             {
                 if (new Regex(@"\d{3}" + item.Key).IsMatch(age))
                 {
-                    return new AgeValue(uint.Parse(age.Substring(0, 3)), item.Value);
+                    return new AgeValue(uint.Parse(age.Substring(0, Constants.AgeStringLength)), item.Value);
                 }
             }
 
@@ -134,35 +146,32 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
             else
             {
-                throw new Exception("Invalid age string");
+                throw new DicomDataException("Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY.");
             }
         }
 
         public static string AgeToString(AgeValue age)
         {
-            Dictionary<string, AgeType> ageTypeMapping = new Dictionary<string, AgeType>
-            {
-                { "Y", AgeType.Year },
-                { "M", AgeType.Month },
-                { "W", AgeType.Week },
-                { "D", AgeType.Day },
-            };
-
             if (age == null)
             {
                 return null;
             }
 
-            foreach (var item in ageTypeMapping)
+            foreach (var item in AgeTypeMapping)
             {
                 if (age.AgeType == item.Value)
                 {
-                    if (age.Age.ToString().Length > 3)
+                    // Age string only support 3 charaters
+                    if (age.Age <= 999)
                     {
-                        throw new Exception();
+                        return age.Age.ToString().PadLeft(Constants.AgeStringLength, '0') + item.Key;
+                    }
+                    else if (age.AgeToYearsOld() <= 999)
+                    {
+                        return age.AgeToYearsOld().ToString().PadLeft(Constants.AgeStringLength, '0') + item.Key;
                     }
 
-                    return age.Age.ToString().PadLeft(3, '0') + item.Key;
+                    throw new DicomDataException("Invalid age value for DICOM. The valid strings are nnnD, nnnW, nnnM, nnnY.");
                 }
             }
 

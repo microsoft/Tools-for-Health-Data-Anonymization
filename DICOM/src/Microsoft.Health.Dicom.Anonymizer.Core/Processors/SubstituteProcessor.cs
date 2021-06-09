@@ -33,19 +33,19 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             try
             {
-                if (item is DicomOtherWord)
+                if (item.ValueRepresentation == DicomVR.OW && !(item is DicomFragmentSequence))
                 {
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, ushort.Parse(_replaceWith));
                 }
-                else if (item is DicomOtherLong)
+                else if (item.ValueRepresentation == DicomVR.OL)
                 {
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, uint.Parse(_replaceWith));
                 }
-                else if (item is DicomOtherDouble)
+                else if (item.ValueRepresentation == DicomVR.OD)
                 {
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, double.Parse(_replaceWith));
                 }
-                else if (item is DicomOtherFloat)
+                else if (item.ValueRepresentation == DicomVR.OF)
                 {
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, float.Parse(_replaceWith));
                 }

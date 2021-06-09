@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31EA56C6-84A2-4BB6-80BB-71D4212773C6}"
-	ProjectSection(SolutionItems) = preProject
-		..\FHIR-Converter\Fhir.Directory.Build.props = ..\FHIR-Converter\Fhir.Directory.Build.props
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{BE752207-CC25-4CB2-A2A5-65EB7B415E44}"
 EndProject

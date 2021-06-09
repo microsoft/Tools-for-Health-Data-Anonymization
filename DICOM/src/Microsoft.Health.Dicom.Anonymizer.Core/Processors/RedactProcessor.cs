@@ -20,7 +20,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     /// </summary>
     public class RedactProcessor : IAnonymizerProcessor
     {
-        private readonly RedactFunction _redactFunction;
+        private RedactFunction _redactFunction;
 
         public RedactProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
         {

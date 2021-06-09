@@ -7,15 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AdditionalFiles Remove="D:\Projects\git\FHIR-Tools-for-Anonymization\\stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="GenerateSampleConfig.py" />
-    <None Remove="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
@@ -32,12 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Health.DeID.SharedLib\Microsoft.Health.DeID.SharedLib.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="configuration.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
