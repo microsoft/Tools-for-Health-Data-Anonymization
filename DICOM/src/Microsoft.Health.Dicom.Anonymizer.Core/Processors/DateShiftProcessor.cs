@@ -20,7 +20,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     /// <summary>
     /// With this method, the input date/dateTime/ value will be shifted within a specific range.
-    /// Dateshift function can only be used for date (DA) and date time (DT) types.
+    /// Dateshift function can only be used for date (DA) and datetime (DT) types.
     /// In rule setting, customers can define dateShiftRange, DateShiftKey and dateShiftScope.
     /// </summary>
     public class DateShiftProcessor : IAnonymizerProcessor

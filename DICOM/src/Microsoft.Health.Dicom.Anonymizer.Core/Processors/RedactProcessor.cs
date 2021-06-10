@@ -17,7 +17,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     /// <summary>
     /// Used to erase value but maintain the DICOM item.
-    /// The value will be erased by default. But for age (AS), date (DA) and date time (DT), users can enable partial redact
+    /// The value will be erased by default. But for age (AS), date (DA) and datetime (DT), users can enable partial redact
     /// </summary>
     public class RedactProcessor : IAnonymizerProcessor
     {

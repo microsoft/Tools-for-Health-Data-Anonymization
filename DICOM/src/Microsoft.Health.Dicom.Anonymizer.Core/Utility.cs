@@ -67,14 +67,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             var matches = dateTimeRegex.Matches(dateTime);
             if (matches.Count != 1)
             {
-                throw new DicomDataException("Invalid date time value. The valid format is YYYYMMDDHHMMSS.FFFFFF&ZZXX.");
+                throw new DicomDataException("Invalid datetime value. The valid format is YYYYMMDDHHMMSS.FFFFFF&ZZXX.");
             }
 
             var groups = matches[0].Groups;
 
-            int year = groups["year"].Success ? int.Parse(groups["year"].Value) : 0;
-            int month = groups["month"].Success ? int.Parse(groups["month"].Value) : 0;
-            int day = groups["day"].Success ? int.Parse(groups["day"].Value) : 0;
+            int year = groups["year"].Success ? int.Parse(groups["year"].Value) : 1;
+            int month = groups["month"].Success ? int.Parse(groups["month"].Value) : 1;
+            int day = groups["day"].Success ? int.Parse(groups["day"].Value) : 1;
             int hour = groups["hour"].Success ? int.Parse(groups["hour"].Value) : 0;
             int minute = groups["minute"].Success ? int.Parse(groups["minute"].Value) : 0;
             int second = groups["second"].Success ? int.Parse(groups["second"].Value) : 0;

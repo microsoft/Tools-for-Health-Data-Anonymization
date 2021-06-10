@@ -57,31 +57,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             }
 
             // Parse and validate settings
-            JObject parameters = null;
-            if (ruleContent.ContainsKey(Constants.Parameters))
-            {
-                parameters = ruleContent[Constants.Parameters].ToObject<JObject>();
-            }
-
-            JObject ruleSetting = _defaultSettings.GetDefaultSetting(method);
-            if (ruleContent.ContainsKey(Constants.RuleSetting))
-            {
-                if (_customSettings == null || !_customSettings.ContainsKey(ruleContent[Constants.RuleSetting].ToString()))
-                {
-                    throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingRuleSettings, $"Customized setting {ruleContent[Constants.RuleSetting]} not defined.");
-                }
-
-                ruleSetting = _customSettings[ruleContent[Constants.RuleSetting].ToString()];
-            }
-
-            if (ruleSetting == null)
-            {
-                ruleSetting = parameters;
-            }
-            else
-            {
-                ruleSetting.Merge(parameters, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Concat });
-            }
+            JObject ruleSetting = ExtractRuleSetting(ruleContent, method);
 
             // Parse and validate tag
             if (ruleContent.ContainsKey(Constants.TagKey))
@@ -112,6 +88,37 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             {
                 throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, "Missing tag in rule config.");
             }
+        }
+
+        private JObject ExtractRuleSetting(JObject ruleContent, string method)
+        {
+            JObject parameters = null;
+            if (ruleContent.ContainsKey(Constants.Parameters))
+            {
+                parameters = ruleContent[Constants.Parameters].ToObject<JObject>();
+            }
+
+            JObject ruleSetting = _defaultSettings.GetDefaultSetting(method);
+            if (ruleContent.ContainsKey(Constants.RuleSetting))
+            {
+                if (_customSettings == null || !_customSettings.ContainsKey(ruleContent[Constants.RuleSetting].ToString()))
+                {
+                    throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingRuleSettings, $"Customized setting {ruleContent[Constants.RuleSetting]} not defined.");
+                }
+
+                ruleSetting = _customSettings[ruleContent[Constants.RuleSetting].ToString()];
+            }
+
+            if (ruleSetting == null)
+            {
+                ruleSetting = parameters;
+            }
+            else
+            {
+                ruleSetting.Merge(parameters, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Concat });
+            }
+
+            return ruleSetting;
         }
 
         private bool TryParseDICOMTag(string tagContent, out DicomTag output)
