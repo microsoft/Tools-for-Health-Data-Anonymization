@@ -8,6 +8,9 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
+    /// <summary>
+    /// Keep the original value.
+    /// </summary>
     public class KeepProcessor : IAnonymizerProcessor
     {
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)

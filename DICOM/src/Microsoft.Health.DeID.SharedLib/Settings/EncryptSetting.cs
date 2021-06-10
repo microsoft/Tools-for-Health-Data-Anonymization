@@ -10,7 +10,7 @@ using Microsoft.Health.Dicom.DeID.SharedLib.Exceptions;
 
 namespace Microsoft.Health.DeID.SharedLib.Settings
 {
-    public class EncryptionSetting
+    public class EncryptSetting
     {
         public string EncryptKey { get; set; }
 

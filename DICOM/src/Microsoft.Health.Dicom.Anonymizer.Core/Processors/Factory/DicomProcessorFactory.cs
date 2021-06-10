@@ -11,16 +11,16 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
     public class DicomProcessorFactory : IAnonymizerProcessorFactory
     {
-        public IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null, IAnonymizerSettingsFactory settingsFactory = null)
+        public IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null)
         {
             return method.ToLower() switch
             {
-                "perturb" => new PerturbProcessor(settingObject, settingsFactory),
+                "perturb" => new PerturbProcessor(settingObject),
                 "substitute" => new SubstituteProcessor(settingObject),
-                "dateshift" => new DateShiftProcessor(settingObject, settingsFactory),
-                "encrypt" => new EncryptionProcessor(settingObject, settingsFactory),
-                "cryptohash" => new CryptoHashProcessor(settingObject, settingsFactory),
-                "redact" => new RedactProcessor(settingObject, settingsFactory),
+                "dateshift" => new DateShiftProcessor(settingObject),
+                "encrypt" => new EncryptProcessor(settingObject),
+                "cryptohash" => new CryptoHashProcessor(settingObject),
+                "redact" => new RedactProcessor(settingObject),
                 "remove" => new RemoveProcessor(),
                 "refreshuid" => new RefreshUIDProcessor(),
                 "keep" => new KeepProcessor(),

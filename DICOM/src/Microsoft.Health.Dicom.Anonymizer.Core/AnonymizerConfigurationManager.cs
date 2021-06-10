@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System.IO;
+using System.Text;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
 using Newtonsoft.Json;
@@ -29,20 +30,20 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        public static AnonymizerConfigurationManager CreateFromJsonConfiguration(string jsonConfiguration)
+        public static AnonymizerConfigurationManager CreateFromJson(string json)
         {
-            EnsureArg.IsNotNull(jsonConfiguration, nameof(jsonConfiguration));
+            EnsureArg.IsNotNull(json, nameof(json));
 
-            var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(jsonConfiguration);
+            var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(json);
             return new AnonymizerConfigurationManager(configuration);
         }
 
-        public static AnonymizerConfigurationManager CreateFromConfigurationFile(string configFilePath)
+        public static AnonymizerConfigurationManager CreateFromJsonFile(string jsonFilePath)
         {
-            EnsureArg.IsNotNull(configFilePath, nameof(configFilePath));
+            EnsureArg.IsNotNull(jsonFilePath, nameof(jsonFilePath));
 
-            var content = File.ReadAllText(configFilePath);
-            return CreateFromJsonConfiguration(content);
+            var content = File.ReadAllText(jsonFilePath, Encoding.UTF8);
+            return CreateFromJson(content);
         }
     }
 }

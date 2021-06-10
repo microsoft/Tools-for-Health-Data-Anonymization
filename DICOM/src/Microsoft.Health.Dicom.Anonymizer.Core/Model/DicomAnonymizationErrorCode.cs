@@ -13,6 +13,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Model
         MissingRuleSettings,
         InvalidRuleSettings,
 
-        UnsupportedAnonymizationFunction,
+        UnsupportedAnonymizationMethod,
     }
 }

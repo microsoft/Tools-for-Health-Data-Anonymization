@@ -9,22 +9,22 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib.Model
     {
         public AgeValue(uint age, AgeType ageType)
         {
-            Age = age;
+            Value = age;
             AgeType = ageType;
         }
 
-        public uint Age { get; } = 0;
+        public uint Value { get; } = 0;
 
         public AgeType AgeType { get; }
 
-        public decimal? AgeToYearsOld()
+        public decimal? AgeInYears()
         {
             return AgeType switch
             {
-                AgeType.Year => Age,
-                AgeType.Month => Age / 12,
-                AgeType.Week => Age / 52,
-                AgeType.Day => Age / 365,
+                AgeType.Year => Value,
+                AgeType.Month => Value / 12,
+                AgeType.Week => Value / 52,
+                AgeType.Day => Value / 365,
                 _ => null,
             };
         }

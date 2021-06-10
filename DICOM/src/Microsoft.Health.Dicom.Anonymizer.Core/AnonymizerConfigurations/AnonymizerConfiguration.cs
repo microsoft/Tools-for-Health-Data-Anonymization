@@ -18,7 +18,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
         [DataMember(Name = "defaultSettings")]
         public AnonymizerDefaultSettings DefaultSettings { get; set; }
 
-        [DataMember(Name = "customizedSettings")]
-        public Dictionary<string, JObject> CustomizedSettings { get; set; }
+        [DataMember(Name = "customSettings")]
+        public Dictionary<string, JObject> CustomSettings { get; set; }
     }
 }

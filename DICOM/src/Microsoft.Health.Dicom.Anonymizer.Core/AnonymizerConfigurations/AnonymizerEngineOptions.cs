@@ -5,9 +5,9 @@
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
 {
-    public class AnonymizerSettings
+    public class AnonymizerEngineOptions
     {
-        public AnonymizerSettings(bool validateInput = false, bool validateOutput = true)
+        public AnonymizerEngineOptions(bool validateInput = false, bool validateOutput = true)
         {
             ValidateInput = validateInput;
             ValidateOutput = validateOutput;

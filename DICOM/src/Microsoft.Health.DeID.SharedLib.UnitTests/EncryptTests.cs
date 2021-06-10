@@ -20,7 +20,7 @@ namespace De.ID.Function.Shared.UnitTests
 
         public EncryptTests()
         {
-            encryptFunction = new EncryptFunction(new EncryptionSetting() { EncryptKey = Key, PublicKey = PublicKey, PrivateKey = PrivateKey });
+            encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = Key, PublicKey = PublicKey, PrivateKey = PrivateKey });
         }
 
         private string Key => "704ab12c8e3e46d4bea600ef62a6bec7";

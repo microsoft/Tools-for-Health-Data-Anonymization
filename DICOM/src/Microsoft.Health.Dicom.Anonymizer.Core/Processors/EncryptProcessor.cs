@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Dicom;
 using Dicom.IO.Buffer;
@@ -18,16 +19,20 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
-    public class EncryptionProcessor : IAnonymizerProcessor
+    /// <summary>
+    /// We use AES-CBC algorithm to transform the value with an encryption key, and then replace the original value with a Base64 encoded representation of the encrypted value. 
+    /// </summary>
+    public class EncryptProcessor : IAnonymizerProcessor
     {
         private readonly EncryptFunction _encryptFunction;
+        private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(EncryptSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
 
-        public EncryptionProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
+        public EncryptProcessor(JObject settingObject)
         {
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
-            settingFactory ??= new AnonymizerSettingsFactory();
-            var encryptionSetting = settingFactory.CreateAnonymizerSetting<EncryptionSetting>(settingObject);
+            var settingFactory = new AnonymizerSettingsFactory();
+            var encryptionSetting = settingFactory.CreateAnonymizerSetting<EncryptSetting>(settingObject);
             _encryptFunction = new EncryptFunction(encryptionSetting);
         }
 
@@ -69,18 +74,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 }
                 else
                 {
-                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Encrypt is not supported for {item.ValueRepresentation}");
+                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Encrypt is not supported for {item.ValueRepresentation}.");
                 }
             }
-            catch (Exception ex)
+            catch (DicomValidationException ex)
             {
                 // The length for encrypted output will varies, which may invalid even we check VR in advance.
-                if (ex is DicomValidationException)
-                {
-                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Encrypt is not supported for {item.ValueRepresentation}", ex);
-                }
-
-                throw;
+                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Encrypt is not supported for {item.ValueRepresentation}.", ex);
             }
         }
 
@@ -93,8 +93,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            var supportedVR = Enum.GetNames(typeof(EncryptSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
-            return supportedVR.Contains(item.ValueRepresentation.Code) || item is DicomFragmentSequence;
+            return _supportedVR.Contains(item.ValueRepresentation.Code) || item is DicomFragmentSequence;
         }
     }
 }

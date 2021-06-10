@@ -23,7 +23,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public AgeValue Perturb(AgeValue value)
         {
-            var result = Perturb(value.Age);
+            var result = Perturb(value.Value);
             return new AgeValue(result, value.AgeType);
         }
 
@@ -44,7 +44,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             }
             else
             {
-                throw new DeIDFunctionException(DeIDFunctionErrorCode.DeIdFailed, "The value could not be perturbed");
+                throw new DeIDFunctionException(DeIDFunctionErrorCode.DeIdFailed, "The value could not be perturbed.");
             }
         }
 

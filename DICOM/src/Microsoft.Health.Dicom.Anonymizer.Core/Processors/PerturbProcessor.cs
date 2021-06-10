@@ -17,9 +17,14 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
+    /// <summary>
+    /// With perturb rule, you can replace specific values by adding noise.
+    /// Perturb function can be used for numeric values (ushort, short, uint, int, ulong, long, decimal, double, float).
+    /// </summary>
     public class PerturbProcessor : IAnonymizerProcessor
     {
         private PerturbFunction _perturbFunction;
+        private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(PerturbSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
 
         private readonly Dictionary<DicomVR, VRTypes> _numericValueTypeMapping = new Dictionary<DicomVR, VRTypes>()
         {
@@ -40,11 +45,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             { DicomVR.SV, new VRTypes() { ElementType = typeof(DicomSignedVeryLong), ValueType = typeof(long[]) } },
         };
 
-        public PerturbProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
+        public PerturbProcessor(JObject settingObject)
         {
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
-            settingFactory ??= new AnonymizerSettingsFactory();
+            var settingFactory = new AnonymizerSettingsFactory();
             var perturbSetting = settingFactory.CreateAnonymizerSetting<PerturbSetting>(settingObject);
             _perturbFunction = new PerturbFunction(perturbSetting);
         }
@@ -63,7 +68,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             {
                 if (!_numericValueTypeMapping.ContainsKey(item.ValueRepresentation))
                 {
-                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Perturb is not supported for {item.ValueRepresentation}");
+                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Perturb is not supported for {item.ValueRepresentation}.");
                 }
 
                 var elementType = _numericValueTypeMapping[item.ValueRepresentation].ElementType;
@@ -77,7 +82,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
         private void PerturbNumericValue(DicomDataset dicomDataset, DicomItem item, Array values)
         {
-            if (values.Length == 0)
+            if (values == null || values.Length == 0)
             {
                 return;
             }
@@ -129,8 +134,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            var supportedVR = Enum.GetNames(typeof(PerturbSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
-            return supportedVR.Contains(item.ValueRepresentation.Code) && !(item is DicomFragmentSequence);
+            return _supportedVR.Contains(item.ValueRepresentation.Code) && !(item is DicomFragmentSequence);
         }
     }
 }

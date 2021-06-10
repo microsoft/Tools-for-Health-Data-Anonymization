@@ -11,7 +11,5 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         internal const string MethodKey = "method";
         internal const string Parameters = "params";
         internal const string RuleSetting = "setting";
-
-        internal const int AgeStringLength = 3;
     }
 }

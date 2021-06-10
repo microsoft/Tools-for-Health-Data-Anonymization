@@ -18,16 +18,22 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
+    /// <summary>
+    /// With this method, the input date/dateTime/ value will be shifted within a specific range.
+    /// Dateshift function can only be used for date (DA) and date time (DT) types.
+    /// In rule setting, customers can define dateShiftRange, DateShiftKey and dateShiftScope.
+    /// </summary>
     public class DateShiftProcessor : IAnonymizerProcessor
     {
         private readonly DateShiftFunction _dateShiftFunction;
         private readonly DateShiftScope _dateShiftScope = DateShiftScope.SopInstance;
+        private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(DateShiftSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
 
-        public DateShiftProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
+        public DateShiftProcessor(JObject settingObject)
         {
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
-            settingFactory ??= new AnonymizerSettingsFactory();
+            var settingFactory = new AnonymizerSettingsFactory();
             var dateShiftSetting = settingFactory.CreateAnonymizerSetting<DateShiftSetting>(settingObject);
             _dateShiftFunction = new DateShiftFunction(dateShiftSetting);
             if (settingObject.TryGetValue("DateShiftScope", StringComparison.OrdinalIgnoreCase, out JToken scope))
@@ -71,7 +77,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
             else
             {
-                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"DateShift is not supported for {item.ValueRepresentation}");
+                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"DateShift is not supported for {item.ValueRepresentation}.");
             }
         }
 
@@ -79,8 +85,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            var supportedVR = Enum.GetNames(typeof(DateShiftSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
-            return supportedVR.Contains(item.ValueRepresentation.Code);
+            return _supportedVR.Contains(item.ValueRepresentation.Code);
         }
     }
 }

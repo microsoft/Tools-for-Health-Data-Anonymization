@@ -3,23 +3,19 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dicom;
 using EnsureThat;
-using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
     public class AnonymizerTagRule : AnonymizerRule
     {
-        public AnonymizerTagRule(DicomTag tag, string method, JObject ruleSetting, string description, IAnonymizerProcessorFactory processorFactory = null, IAnonymizerSettingsFactory settingsFactory = null)
-            : base(method, description, ruleSetting, processorFactory, settingsFactory)
+        public AnonymizerTagRule(DicomTag tag, string method, string description, IAnonymizerProcessorFactory processorFactory, JObject ruleSetting = null)
+            : base(method, description, processorFactory, ruleSetting)
         {
             EnsureArg.IsNotNull(tag, nameof(tag));
 

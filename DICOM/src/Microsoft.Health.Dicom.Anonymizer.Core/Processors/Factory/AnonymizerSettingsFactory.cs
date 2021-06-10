@@ -18,13 +18,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings
             EnsureArg.IsNotNull(settingType, nameof(settingType));
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
-            var setting = settingType.Assembly.CreateInstance("setting");
-            foreach (var prop in setting.GetType().GetProperties())
+            try
             {
-                prop.SetValue(setting, settingObject.GetValue(prop.Name, StringComparison.OrdinalIgnoreCase));
+                return settingObject.ToObject(settingType);
             }
-
-            return setting;
+            catch (Exception ex)
+            {
+                throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.InvalidRuleSettings, "Fail to parse anonymizer setting.", ex);
+            }
         }
 
         public T CreateAnonymizerSetting<T>(JObject settings)
@@ -37,7 +38,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings
             }
             catch (Exception ex)
             {
-                throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.InvalidRuleSettings, "Fail to parse anonymizer setting", ex);
+                throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.InvalidRuleSettings, "Fail to parse anonymizer setting.", ex);
             }
         }
     }

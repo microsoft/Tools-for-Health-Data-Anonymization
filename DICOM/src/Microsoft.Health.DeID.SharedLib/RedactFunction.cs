@@ -124,7 +124,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         {
             if (_redactSetting.EnablePartialAgeForRedact)
             {
-                if (age.AgeToYearsOld() > AgeThreshold)
+                if (age.AgeInYears() > AgeThreshold)
                 {
                     return null;
                 }

@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Dicom;
@@ -19,15 +20,21 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
+    /// <summary>
+    /// This function hash the value and outputs a Hex encoded representation.
+    /// The length of output string depends on the hash function (e.g. sha256 will output 64 bytes length), you should pay attention to the length limitation of output DICOM file. 
+    /// In cryptoHash setting, you can set cryptoHash key and cryptoHash function (only support sha256 for now) for cryptoHash.
+    /// </summary>
     public class CryptoHashProcessor : IAnonymizerProcessor
     {
         private readonly CryptoHashFunction _cryptoHashFunction;
+        private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(CryptoHashSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
 
-        public CryptoHashProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
+        public CryptoHashProcessor(JObject settingObject)
         {
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
-            settingFactory ??= new AnonymizerSettingsFactory();
+            var settingFactory = new AnonymizerSettingsFactory();
             var cryptoHashSetting = settingFactory.CreateAnonymizerSetting<CryptoHashSetting>(settingObject);
             _cryptoHashFunction = new CryptoHashFunction(cryptoHashSetting);
         }
@@ -65,7 +72,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
             else
             {
-                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"CryptoHash is not supported for {item.ValueRepresentation}");
+                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"CryptoHash is not supported for {item.ValueRepresentation}.");
             }
         }
 
@@ -73,8 +80,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            var supportedVR = Enum.GetNames(typeof(CryptoHashSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
-            return supportedVR.Contains(item.ValueRepresentation.Code) || item is DicomFragmentSequence;
+            return _supportedVR.Contains(item.ValueRepresentation.Code) || item is DicomFragmentSequence;
         }
 
         public string GetCryptoHashString(string input)
@@ -82,7 +88,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(input, nameof(input));
 
             var resultBytes = _cryptoHashFunction.ComputeHmacSHA256Hash(Encoding.UTF8.GetBytes(input));
-            return resultBytes == null ? null : string.Concat(resultBytes.Select(b => b.ToString("x2")));
+            return string.Concat(resultBytes.Select(b => b.ToString("x2")));
         }
     }
 }

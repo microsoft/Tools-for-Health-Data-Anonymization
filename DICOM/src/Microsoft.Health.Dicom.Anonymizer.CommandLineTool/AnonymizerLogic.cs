@@ -4,7 +4,6 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Dicom;
@@ -18,12 +17,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
         {
             var engine = new AnonymizerEngine(
                     options.ConfigurationFilePath,
-                    new AnonymizerSettings(options.ValidateInput, options.ValidateOutput));
+                    new AnonymizerEngineOptions(options.ValidateInput, options.ValidateOutput));
             if (options.InputFile != null && options.OutputFile != null)
             {
                 if (IsSamePath(options.InputFile, options.OutputFile))
                 {
-                    Console.Error.WriteLine("Input and output file path are the same! Please check files' name.");
+                    Console.Error.WriteLine("Input and output file path are the same! Please check file names.");
                 }
 
                 await AnonymizeOneFileAsync(options.InputFile, options.OutputFile, engine, options.SkipFailedItem);
@@ -35,11 +34,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
                     Console.Error.WriteLine("Input and output folders are the same! Please choose another folder.");
                 }
 
-                Directory.CreateDirectory(options.OutputFolder);
-
                 foreach (string file in Directory.EnumerateFiles(options.InputFolder, "*.dcm", SearchOption.AllDirectories))
                 {
-                    await AnonymizeOneFileAsync(file, Path.Join(options.OutputFolder, Path.GetRelativePath(file, options.InputFolder)), engine, options.SkipFailedItem);
+                    await AnonymizeOneFileAsync(file, Path.Join(options.OutputFolder, Path.GetRelativePath(options.InputFolder, file)), engine, options.SkipFailedItem);
                 }
 
                 Console.WriteLine("Anonymization finished!");
@@ -50,14 +47,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
             }
         }
 
-        private static bool IsSamePath(string inputPath, string outputFolder)
+        private static bool IsSamePath(string inputPath, string outputPath)
         {
-            string inputFolderPath = Path.GetFullPath(inputPath)
+            string inputFullPath = Path.GetFullPath(inputPath)
                 .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-            string outputFolderPath = Path.GetFullPath(outputFolder)
+            string outputFullPath = Path.GetFullPath(outputPath)
                 .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-            return string.Equals(inputFolderPath, outputFolderPath, StringComparison.InvariantCultureIgnoreCase);
+            return string.Equals(inputFullPath, outputFullPath, StringComparison.InvariantCultureIgnoreCase);
         }
 
         internal static async Task AnonymizeOneFileAsync(string inputFile, string outputFile, AnonymizerEngine engine, bool skipFailedItem)
@@ -66,7 +63,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
             {
                 DicomFile dicomFile = await DicomFile.OpenAsync(inputFile).ConfigureAwait(false);
                 engine.AnonymizeDataset(dicomFile.Dataset);
-                dicomFile.Save(outputFile);
+
+                if (!string.IsNullOrEmpty(Path.GetDirectoryName(outputFile)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
+                }
+
+                await dicomFile.SaveAsync(outputFile);
 
                 Console.WriteLine($"Finished processing '{inputFile}'!");
             }
@@ -74,7 +77,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
             {
                 if (skipFailedItem)
                 {
-                    Console.WriteLine($"Fail and skip the file '{inputFile}'! \r\n {ex.Message}");
+                    Console.WriteLine($"Failed to process the file {inputFile} and skipped. \r\n {ex.Message}");
                 }
                 else
                 {

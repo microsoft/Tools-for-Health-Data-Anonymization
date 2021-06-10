@@ -10,9 +10,13 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
+    /// <summary>
+    /// Replaces the content of a UID with a random one.
+    /// The processor makes sure the same original UID will be replaced with the same new UID.
+    /// </summary>
     public class RefreshUIDProcessor : IAnonymizerProcessor
     {
-        public Dictionary<string, string> ReplacedUIDs { get; } = new Dictionary<string, string>();
+        public static Dictionary<string, string> ReplacedUIDs { get; } = new Dictionary<string, string>();
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
         {

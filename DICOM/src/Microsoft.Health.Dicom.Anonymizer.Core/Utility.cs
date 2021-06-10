@@ -28,6 +28,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 { "D", AgeType.Day },
             };
 
+        public static readonly int AgeStringLength = 3;
+        public static readonly int MaxAgeValue = 999;
+
         public static DateTimeOffset[] ParseDicomDate(DicomDate item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
@@ -60,7 +63,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             EnsureArg.IsNotNull(dateTime, nameof(dateTime));
 
-            Regex dateTimeRegex = new Regex(@"^((?<year>\d{4})(?<month>\d{2})(?<day>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(\.(?<millisecond>\d{1,6}))?(?<timeZone>(?<sign>-|\+)(?<timeZoneHour>\d{2})(?<timeZoneMinute>\d{2}))?)(\s*)");
+            Regex dateTimeRegex = new Regex(@"^((?<year>\d{4})(?<month>\d{2})(?<day>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(\.(?<microsecond>\d{1,6}))?(?<timeZone>(?<sign>-|\+)(?<timeZoneHour>\d{2})(?<timeZoneMinute>\d{2}))?)(\s*)");
             var matches = dateTimeRegex.Matches(dateTime);
             if (matches.Count != 1)
             {
@@ -75,13 +78,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             int hour = groups["hour"].Success ? int.Parse(groups["hour"].Value) : 0;
             int minute = groups["minute"].Success ? int.Parse(groups["minute"].Value) : 0;
             int second = groups["second"].Success ? int.Parse(groups["second"].Value) : 0;
-            int millisecond = groups["millisecond"].Success ? int.Parse(groups["millisecond"].Value) : 0;
-            millisecond = millisecond > 999 ? int.Parse(millisecond.ToString().Substring(0, 3)) : millisecond;
+            int millisecond = groups["millisecond"].Success ? int.Parse(groups["millisecond"].Value) / 1000 : 0;
 
             if (groups["timeZone"].Success)
             {
-                int timeZoneHour = int.Parse(groups["timeZoneHour"].Value) * int.Parse(groups["sign"].Value + "1");
-                int timeZoneMinute = int.Parse(groups["timeZoneMinute"].Value);
+                int sign = int.Parse(groups["sign"].Value + "1");
+                int timeZoneHour = int.Parse(groups["timeZoneHour"].Value) * sign;
+                int timeZoneMinute = int.Parse(groups["timeZoneMinute"].Value) * sign;
                 return new DateTimeObject()
                 {
                     DateValue = new DateTimeOffset(year, month, day, hour, minute, second, millisecond, new TimeSpan(timeZoneHour, timeZoneMinute, 0)),
@@ -100,11 +103,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public static string GenerateDicomDateString(DateTimeOffset date)
         {
-            if (date == null)
-            {
-                return null;
-            }
-
             return date.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
         }
 
@@ -115,14 +113,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 return null;
             }
 
-            if (!(bool)date.HasTimeZone)
-            {
-                return date.DateValue.ToString("yyyyMMddhhmmss.ffffff", CultureInfo.InvariantCulture);
-            }
-            else
-            {
-                return date.DateValue.ToString("yyyyMMddHHmmss.ffffffzzz", CultureInfo.InvariantCulture).Replace(":", string.Empty);
-            }
+            return date.HasTimeZone == true
+                ? date.DateValue.ToString("yyyyMMddHHmmss.ffffffzzz", CultureInfo.InvariantCulture).Replace(":", string.Empty)
+                : date.DateValue.ToString("yyyyMMddhhmmss.ffffff", CultureInfo.InvariantCulture);
         }
 
         public static AgeValue ParseAge(string age)
@@ -136,7 +129,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             {
                 if (new Regex(@"\d{3}" + item.Key).IsMatch(age))
                 {
-                    return new AgeValue(uint.Parse(age.Substring(0, Constants.AgeStringLength)), item.Value);
+                    return new AgeValue(uint.Parse(age.Substring(0, AgeStringLength)), item.Value);
                 }
             }
 
@@ -162,13 +155,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 if (age.AgeType == item.Value)
                 {
                     // Age string only support 3 charaters
-                    if (age.Age <= 999)
+                    if (age.Value <= MaxAgeValue)
                     {
-                        return age.Age.ToString().PadLeft(Constants.AgeStringLength, '0') + item.Key;
+                        return age.Value.ToString().PadLeft(AgeStringLength, '0') + item.Key;
                     }
-                    else if (age.AgeToYearsOld() <= 999)
+                    else if (age.AgeInYears() <= MaxAgeValue)
                     {
-                        return age.AgeToYearsOld().ToString().PadLeft(Constants.AgeStringLength, '0') + item.Key;
+                        return age.AgeInYears().ToString().PadLeft(AgeStringLength, '0') + item.Key;
                     }
 
                     throw new DicomDataException("Invalid age value for DICOM. The valid strings are nnnD, nnnW, nnnM, nnnY.");

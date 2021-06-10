@@ -17,16 +17,17 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     /// <summary>
     /// Used to erase value but maintain the DICOM item.
+    /// The value will be erased by default. But for age (AS), date (DA) and date time (DT), users can enable partial redact
     /// </summary>
     public class RedactProcessor : IAnonymizerProcessor
     {
         private RedactFunction _redactFunction;
 
-        public RedactProcessor(JObject settingObject, IAnonymizerSettingsFactory settingFactory = null)
+        public RedactProcessor(JObject settingObject)
         {
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
-            settingFactory ??= new AnonymizerSettingsFactory();
+            var settingFactory = new AnonymizerSettingsFactory();
             var redactSetting = settingFactory.CreateAnonymizerSetting<RedactSetting>(settingObject);
             _redactFunction = new RedactFunction(redactSetting);
         }

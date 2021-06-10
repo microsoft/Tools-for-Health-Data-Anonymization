@@ -16,7 +16,7 @@
     ],
     "defaultSettings": {
         "perturb": {
-            "span": "1",
+            "span": 1,
             "roundTo": 2,
             "rangeType": "Proportional",
             "distribution": "Uniform"
@@ -24,11 +24,11 @@
         "dateShift": {
             "dateShiftKey": "123",
             "dateShiftScope": "SeriesInstance",
-            "dateShiftRange": "50"
+            "dateShiftRange": 50
         },
         "cryptoHash": {
             "cryptoHashKey": "123",
-            "cryptoHashFunction": "sha256"
+            "cryptoHashFunction": "hmacsha256"
         },
         "redact": {
             "enablePartialAgesForRedact": false,
@@ -39,10 +39,10 @@
             "encryptFunction": "AES"
         },
         "substitute": {
-            "replaceWith": "ANONYNOUS"
+            "replaceWith": "ANONYMOUS"
         }
     },
-    "customizedSettings": {
+    "customSettings": {
         "perturbCustomerSetting": {
             "span": "1",
             "roundTo": 2,

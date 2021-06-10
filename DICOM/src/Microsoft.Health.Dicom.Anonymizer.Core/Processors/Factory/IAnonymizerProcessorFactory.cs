@@ -10,6 +10,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
     public interface IAnonymizerProcessorFactory
     {
-        public IAnonymizerProcessor CreateProcessor(string anonymizeMethod, JObject ruleSetting = null, IAnonymizerSettingsFactory settingsFactory = null);
+        public IAnonymizerProcessor CreateProcessor(string anonymizeMethod, JObject ruleSetting = null);
     }
 }

@@ -131,7 +131,7 @@ namespace De.ID.Function.Shared.UnitTests
         {
             var function = new PerturbFunction(perturbSetting);
             var result = function.Perturb(value);
-            Assert.InRange(result.Age, lowerBound, upperBound);
+            Assert.InRange(result.Value, lowerBound, upperBound);
             Assert.Equal(value.AgeType, value.AgeType);
         }
 

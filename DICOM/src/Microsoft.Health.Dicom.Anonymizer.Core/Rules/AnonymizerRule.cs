@@ -17,14 +17,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
     {
         private readonly IAnonymizerProcessor _processor;
 
-        public AnonymizerRule(string method, string description, JObject ruleSetting = null, IAnonymizerProcessorFactory processorFactory = null, IAnonymizerSettingsFactory settingsFactory = null)
+        public AnonymizerRule(string method, string description, IAnonymizerProcessorFactory processorFactory, JObject ruleSetting = null)
         {
             EnsureArg.IsNotNull(method, nameof(method));
             EnsureArg.IsNotNull(description, nameof(description));
+            EnsureArg.IsNotNull(processorFactory, nameof(processorFactory));
 
             Description = description;
             processorFactory ??= new DicomProcessorFactory();
-            _processor = processorFactory.CreateProcessor(method, ruleSetting, settingsFactory);
+            _processor = processorFactory.CreateProcessor(method, ruleSetting);
         }
 
         public string Description { get; set; }
@@ -45,7 +46,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 }
                 else
                 {
-                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationFunction, $"Rule {Description} is not supported for the item with VR {item.ValueRepresentation}");
+                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Rule {Description} is not supported for the item with VR {item.ValueRepresentation}.");
                 }
             }
         }

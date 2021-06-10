@@ -23,10 +23,10 @@ namespace UnitTests
         public EncryptionProcessUnitTests()
         {
             var encryptObj = "{\"encryptKey\": \"123456781234567812345678\"}";
-            Processor = new EncryptionProcessor(JObject.Parse(encryptObj));
+            Processor = new EncryptProcessor(JObject.Parse(encryptObj));
         }
 
-        public EncryptionProcessor Processor { get; set; }
+        public EncryptProcessor Processor { get; set; }
 
         public static IEnumerable<object[]> GetUnsupportedVRItemForEncryption()
         {
@@ -95,7 +95,7 @@ namespace UnitTests
                 { tag, value },
             };
             dataset.AutoValidate = false;
-            var newProcessor = new EncryptionProcessor(JObject.Parse("{\"encryptKey\": \"0000000000000000\"}"));
+            var newProcessor = new EncryptProcessor(JObject.Parse("{\"encryptKey\": \"0000000000000000\"}"));
             newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             var test = dataset.GetDicomItem<DicomElement>(tag).Get<string>();
 
@@ -112,7 +112,7 @@ namespace UnitTests
                 { tag, value },
             };
 
-            var newProcessor = new EncryptionProcessor(JObject.Parse("{\"encryptKey\": \"0000000000000000\"}"));
+            var newProcessor = new EncryptProcessor(JObject.Parse("{\"encryptKey\": \"0000000000000000\"}"));
             newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             var test = dataset.GetDicomItem<DicomElement>(tag).Get<string>();
 
@@ -122,7 +122,7 @@ namespace UnitTests
 
         private string Decryption(string encryptedValue, string key)
         {
-            var encryptFunction = new EncryptFunction(new EncryptionSetting() { EncryptKey = key });
+            var encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = key });
             return Encoding.UTF8.GetString(encryptFunction.DecryptContentWithAES(Convert.FromBase64String(encryptedValue)));
         }
 
@@ -134,7 +134,7 @@ namespace UnitTests
             var dataset = new DicomDataset(item);
 
             Processor.Process(dataset, item);
-            var encryptFunction = new EncryptFunction(new EncryptionSetting() { EncryptKey = "123456781234567812345678" });
+            var encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = "123456781234567812345678" });
             Assert.Equal(Encoding.UTF8.GetBytes("test"), encryptFunction.DecryptContentWithAES(dataset.GetDicomItem<DicomOtherByte>(tag).Get<byte[]>()));
         }
 
@@ -151,7 +151,7 @@ namespace UnitTests
             Processor.Process(dataset, item);
 
             var enumerator = ((DicomFragmentSequence)dataset.GetDicomItem<DicomItem>(tag)).GetEnumerator();
-            var encryptFunction = new EncryptFunction(new EncryptionSetting() { EncryptKey = "123456781234567812345678" });
+            var encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = "123456781234567812345678" });
             while (enumerator.MoveNext())
             {
                 Assert.Equal(Encoding.UTF8.GetBytes("fragment"), encryptFunction.DecryptContentWithAES(enumerator.Current.Data));

@@ -5,9 +5,9 @@
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Model
 {
-    public enum CryptoHashFunctionTypes
+    public enum EncryptFunctionType
     {
-        // Sha128 Sha512 could be supported in the future
-        Sha256,
+        // RSA could be supported in the future
+        AES,
     }
 }
