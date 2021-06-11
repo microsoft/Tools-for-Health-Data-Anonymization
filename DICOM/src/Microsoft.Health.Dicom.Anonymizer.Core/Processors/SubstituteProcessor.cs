@@ -6,6 +6,7 @@
 using System;
 using Dicom;
 using EnsureThat;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Newtonsoft.Json.Linq;
@@ -18,6 +19,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     public class SubstituteProcessor : IAnonymizerProcessor
     {
         private readonly string _replaceString = "Anonymous";
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<SubstituteProcessor>();
 
         public SubstituteProcessor(JObject settingObject)
         {
@@ -56,10 +58,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 {
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, _replaceString);
                 }
+
+                _logger.LogDebug($"The value of DICOM item '{item}' is substituted.");
             }
             catch (Exception ex)
             {
-                throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Invalid replace value.", ex);
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Invalid replace value.", ex);
             }
         }
 

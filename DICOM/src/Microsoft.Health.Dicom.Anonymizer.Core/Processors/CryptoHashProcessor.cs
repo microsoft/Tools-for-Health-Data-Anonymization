@@ -10,6 +10,7 @@ using System.Text;
 using Dicom;
 using Dicom.IO.Buffer;
 using EnsureThat;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.DeID.SharedLib.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
@@ -29,6 +30,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private readonly CryptoHashFunction _cryptoHashFunction;
         private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(CryptoHashSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<CryptoHashProcessor>();
 
         public CryptoHashProcessor(JObject settingObject)
         {
@@ -72,8 +74,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
             else
             {
-                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"CryptoHash is not supported for {item.ValueRepresentation}.");
+                throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"CryptoHash is not supported for {item.ValueRepresentation}.");
             }
+
+            _logger.LogDebug($"The value of DICOM item '{item}' is cryptoHashed.");
         }
 
         public bool IsSupportedVR(DicomItem item)

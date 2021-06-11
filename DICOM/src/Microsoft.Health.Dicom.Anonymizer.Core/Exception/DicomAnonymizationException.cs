@@ -4,7 +4,6 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Exceptions
 {

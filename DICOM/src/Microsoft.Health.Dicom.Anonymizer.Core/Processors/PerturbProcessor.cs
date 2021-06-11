@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dicom;
 using EnsureThat;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
@@ -25,6 +26,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private PerturbFunction _perturbFunction;
         private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(PerturbSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<PerturbProcessor>();
 
         private readonly Dictionary<DicomVR, VRTypes> _numericValueTypeMapping = new Dictionary<DicomVR, VRTypes>()
         {
@@ -68,7 +70,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             {
                 if (!_numericValueTypeMapping.ContainsKey(item.ValueRepresentation))
                 {
-                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Perturb is not supported for {item.ValueRepresentation}.");
+                    throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Perturb is not supported for {item.ValueRepresentation}.");
                 }
 
                 var elementType = _numericValueTypeMapping[item.ValueRepresentation].ElementType;
@@ -78,6 +80,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 var valueObj = elementType.GetMethod("Get").MakeGenericMethod(valueType).Invoke(item, new object[] { -1 });
                 PerturbNumericValue(dicomDataset, item, valueObj as Array);
             }
+
+            _logger.LogDebug($"The value of DICOM item '{item}' is perturbed.");
         }
 
         private void PerturbNumericValue(DicomDataset dicomDataset, DicomItem item, Array values)

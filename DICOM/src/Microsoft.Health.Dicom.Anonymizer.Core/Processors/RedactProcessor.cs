@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using Dicom;
 using EnsureThat;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Dicom.DeID.SharedLib;
@@ -22,6 +23,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     public class RedactProcessor : IAnonymizerProcessor
     {
         private RedactFunction _redactFunction;
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<RedactProcessor>();
 
         public RedactProcessor(JObject settingObject)
         {
@@ -88,6 +90,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             {
                 dicomDataset.AddOrUpdate<string>(item.ValueRepresentation, item.Tag, values: null);
             }
+
+            _logger.LogDebug($"The value of DICOM item '{item}' is redacted.");
         }
 
         public bool IsSupportedVR(DicomItem item)

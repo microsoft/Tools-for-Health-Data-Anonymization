@@ -47,13 +47,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             // Parse and validate method
             if (!ruleContent.ContainsKey(Constants.MethodKey))
             {
-                throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, "Missing method in rule config.");
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, "Missing method in rule config.");
             }
 
             var method = ruleContent[Constants.MethodKey].ToString();
             if (!_supportedMethods.Contains(method))
             {
-                throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationRule, $"Anonymization method {method} not supported.");
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationRule, $"Anonymization method {method} not supported.");
             }
 
             // Parse and validate settings
@@ -81,12 +81,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 }
                 else
                 {
-                    throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Invalid tag in rule config.");
+                    throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Invalid tag in rule config.");
                 }
             }
             else
             {
-                throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, "Missing tag in rule config.");
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, "Missing tag in rule config.");
             }
         }
 
@@ -103,7 +103,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             {
                 if (_customSettings == null || !_customSettings.ContainsKey(ruleContent[Constants.RuleSetting].ToString()))
                 {
-                    throw new AnonymizationConfigurationException(DicomAnonymizationErrorCode.MissingRuleSettings, $"Customized setting {ruleContent[Constants.RuleSetting]} not defined.");
+                    throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingRuleSettings, $"Customized setting {ruleContent[Constants.RuleSetting]} not defined.");
                 }
 
                 ruleSetting = _customSettings[ruleContent[Constants.RuleSetting].ToString()];

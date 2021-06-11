@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
@@ -33,9 +34,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         public static AnonymizerConfigurationManager CreateFromJson(string json)
         {
             EnsureArg.IsNotNull(json, nameof(json));
-
-            var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(json);
-            return new AnonymizerConfigurationManager(configuration);
+            try
+            {
+                var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(json);
+                return new AnonymizerConfigurationManager(configuration);
+            }
+            catch (JsonException innerException)
+            {
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.ParsingJsonConfigurationFailed, $"Failed to parse configuration file", innerException);
+            }
         }
 
         public static AnonymizerConfigurationManager CreateFromJsonFile(string jsonFilePath)

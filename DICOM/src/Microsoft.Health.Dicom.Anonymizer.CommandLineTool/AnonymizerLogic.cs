@@ -43,7 +43,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
             }
             else
             {
-                Console.Error.WriteLine("Invalid command line. Please specify inputFile( or inputFolder) and outputFile( or outputFolder) at the same time.");
+                Console.Error.WriteLine("Invalid parameters. Please specify inputFile( or inputFolder) and outputFile( or outputFolder) at the same time.");
             }
         }
 

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dicom;
 using EnsureThat;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
@@ -28,6 +29,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         private readonly DateShiftFunction _dateShiftFunction;
         private readonly DateShiftScope _dateShiftScope = DateShiftScope.SopInstance;
         private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(DateShiftSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<DateShiftProcessor>();
 
         public DateShiftProcessor(JObject settingObject)
         {
@@ -57,7 +59,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             };
             if (item.ValueRepresentation == DicomVR.DA)
             {
-                var values = Utility.ParseDicomDate((DicomDate)item).Select(_dateShiftFunction.ShiftDateTime).Where(x => !DateTimeUtility.IndicateAgeOverThreshold(x));
+                var values = Utility.ParseDicomDate((DicomDate)item)
+                    .Where(x => !DateTimeUtility.IndicateAgeOverThreshold(x)) // Age over 89 will be redacted.
+                    .Select(_dateShiftFunction.ShiftDateTime);
+
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(Utility.GenerateDicomDateString).ToArray());
             }
             else if (item.ValueRepresentation == DicomVR.DT)
@@ -77,8 +82,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
             else
             {
-                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"DateShift is not supported for {item.ValueRepresentation}.");
+                throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"DateShift is not supported for {item.ValueRepresentation}.");
             }
+
+            _logger.LogDebug($"The value of DICOM item '{item}' is shifted.");
         }
 
         public bool IsSupportedVR(DicomItem item)

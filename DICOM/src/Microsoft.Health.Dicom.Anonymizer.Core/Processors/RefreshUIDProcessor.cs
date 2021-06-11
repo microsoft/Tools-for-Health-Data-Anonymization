@@ -3,9 +3,11 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Dicom;
 using EnsureThat;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
@@ -16,28 +18,32 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     /// </summary>
     public class RefreshUIDProcessor : IAnonymizerProcessor
     {
-        public static Dictionary<string, string> ReplacedUIDs { get; } = new Dictionary<string, string>();
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<RefreshUIDProcessor>();
+
+        public static ConcurrentDictionary<string, string> ReplacedUIDs { get; } = new ConcurrentDictionary<string, string>();
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
         {
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            DicomUID uid;
-            var old = ((DicomElement)item).Get<string>();
+            DicomUID newUID;
+            var oldUID = ((DicomElement)item).Get<string>();
 
-            if (ReplacedUIDs.ContainsKey(old))
+            if (ReplacedUIDs.ContainsKey(oldUID))
             {
-                uid = new DicomUID(ReplacedUIDs[old], "Anonymized UID", DicomUidType.Unknown);
+                newUID = new DicomUID(ReplacedUIDs[oldUID], "Anonymized UID", DicomUidType.Unknown);
             }
             else
             {
-                uid = DicomUIDGenerator.GenerateDerivedFromUUID();
-                ReplacedUIDs[old] = uid.UID;
+                newUID = DicomUIDGenerator.GenerateDerivedFromUUID();
+                ReplacedUIDs[oldUID] = newUID.UID;
             }
 
-            var newItem = new DicomUniqueIdentifier(item.Tag, uid);
+            var newItem = new DicomUniqueIdentifier(item.Tag, newUID);
             dicomDataset.AddOrUpdate(newItem);
+
+            _logger.LogDebug($"The UID value of DICOM item '{item}' is refreshed.");
         }
 
         public bool IsSupportedVR(DicomItem item)

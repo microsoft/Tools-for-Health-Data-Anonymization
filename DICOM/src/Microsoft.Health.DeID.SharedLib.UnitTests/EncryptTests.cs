@@ -20,14 +20,10 @@ namespace De.ID.Function.Shared.UnitTests
 
         public EncryptTests()
         {
-            encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = Key, PublicKey = PublicKey, PrivateKey = PrivateKey });
+            encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = Key });
         }
 
         private string Key => "704ab12c8e3e46d4bea600ef62a6bec7";
-
-        private string PublicKey => Encoding.UTF8.GetString(Convert.FromBase64String("MIGJAoGBAKZV0G4nJSkjkswoOpD9ULZluVib4vtq/tH3H1vaTEkLqrQ+f6hrJn471uPfeVvRgj2fjcoAgvHrisOTeiFUSdkbBQIlCaV1QuUgkIGSV+FDilK253rX3yFG6B5NWCGKGwd9FRhp1omTI/8YHrb5AYR81jFzsiSndsyn7zrvVluJAgMBAAE="));
-
-        private string PrivateKey => Encoding.UTF8.GetString(Convert.FromBase64String("MIICXQIBAAKBgQCmVdBuJyUpI5LMKDqQ/VC2ZblYm+L7av7R9x9b2kxJC6q0Pn+oayZ+O9bj33lb0YI9n43KAILx64rDk3ohVEnZGwUCJQmldULlIJCBklfhQ4pStud6198hRugeTVghihsHfRUYadaJkyP/GB62+QGEfNYxc7Ikp3bMp+8671ZbiQIDAQABAoGALcAoxkOKGxinxfPCuCKU0raEFnU6J4E0ebgJLhCLLwRAfbc7Ea33Nn1rC95p2PF1a1G5hDhDzBrHXifwTb6LWPRp0a0WAY7CJVf4fjpir9gIRkyJLolU7nXcc6YH1g4iIsaizo3SXjNcYWHaN9qOYuoklSrJ7sJwJDjMRyauwUkCQQDQYeekgjYFnkpne2dkaxDN/e1iLlADkK8y+TYtPFTAhJ+GpsybuZb7ZUPiqC6UPsscHGKMoz3BEr8qIDU8vl/PAkEAzFgz0zdFjwErb83OjpjoR4h/9juGFQudhhodhFoAkTuAk9HyYdrEcOjJQ+XLC6CXOrqrjJsqGOEag+iHfNPNJwJAJwhvz4zkeaDw5vlioJi9iRhrgtyR+Fj9uFqeH1MRvQ4ao6pS4UieU3DginBeaT5p5VYbz6Q0SRot3MIztrEiWQJBAJQtRW9c/hijzX6ma6klohH1Hm1MXn82TATpPQwzQ4QM9MC8Fhn1TEtf0kplAKauzdrtb+ZmwdEGsnaCkHTpFTMCQQCIAZefqPSuzOdBl4yZLr78Uy0o6I07Ms59db9mNMefbfcO26RqiIHqN2TTDljk14KWYh9vhFX0pq7cJYIDgBCY"));
 
         public static IEnumerable<object[]> GetTextDataToEncrypt()
         {
@@ -176,50 +172,6 @@ namespace De.ID.Function.Shared.UnitTests
             Assert.Throws<CryptographicException>(() => encryptFunction.DecryptContentWithAES(cipherText));
         }
 
-        /*
-        [Theory]
-        [MemberData(nameof(GetTextDataToEncrypt))]
-        public void GivenAnOriginalText_WhenEncryptWithRSA_ResultShouldBeValidAndDecryptable(string originalText)
-        {
-            var cipherText = encryptFunction.EncryptContentWithRSA(originalText);
-            var plainText = encryptFunction.DecryptContentWithRSA(cipherText);
-            Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
-        }
-
-        [Theory]
-        [MemberData(nameof(GetBytesDataToEncrypt))]
-        public void GivenAnOriginalBytes_WhenEncryptWithRSA_ResultShouldBeValidAndDecryptable(byte[] originalBytes)
-        {
-            var cipherText = encryptFunction.EncryptContentWithRSA(originalBytes);
-            var plainText = encryptFunction.DecryptContentWithRSA(cipherText);
-            Assert.Equal(originalBytes, plainText);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetStreamDataToEncrypt))]
-        public void GivenAnOriginalStream_WhenEncryptWithRSA_ResultShouldBeValidAndDecryptable(Stream originalStream)
-        {
-            var cipherText = encryptFunction.EncryptContentWithRSA(originalStream);
-            var plainText = encryptFunction.DecryptContentWithRSA(cipherText);
-            Assert.Equal(StreamToByte(originalStream), plainText);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetBytesDataToDecryptUsingRSA))]
-        public void GivenAnEncryptedBytes_WhenDecryptUsingRSA_OriginalTextShouldBeReturned(byte[] cipherText, string originalText)
-        {
-            var plainText = encryptFunction.DecryptContentWithRSA(cipherText);
-            Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
-        }
-
-        [Theory]
-        [MemberData(nameof(GetStreamDataToDecryptUsingRSA))]
-        public void GivenAnEncryptedStream_WhenDecryptUsingRSA_OriginalTextShouldBeReturned(Stream cipherText, string originalText)
-        {
-            var plainText = encryptFunction.DecryptContentWithRSA(cipherText);
-            Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
-        }
-        */
         private static byte[] StreamToByte(Stream inputStream)
         {
             if (inputStream == null)

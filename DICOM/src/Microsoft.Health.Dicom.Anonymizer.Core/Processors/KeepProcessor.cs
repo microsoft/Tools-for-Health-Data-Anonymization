@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using Dicom;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
@@ -13,8 +14,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     /// </summary>
     public class KeepProcessor : IAnonymizerProcessor
     {
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<KeepProcessor>();
+
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
         {
+            _logger.LogDebug($"The value of DICOM item '{item}' is kept.");
         }
 
         public bool IsSupportedVR(DicomItem item)

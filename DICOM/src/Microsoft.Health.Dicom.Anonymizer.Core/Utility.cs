@@ -63,6 +63,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             EnsureArg.IsNotNull(dateTime, nameof(dateTime));
 
+            // Reference link http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part05/sect_6.2.html
             Regex dateTimeRegex = new Regex(@"^((?<year>\d{4})(?<month>\d{2})(?<day>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(\.(?<microsecond>\d{1,6}))?(?<timeZone>(?<sign>-|\+)(?<timeZoneHour>\d{2})(?<timeZoneMinute>\d{2}))?)(\s*)");
             var matches = dateTimeRegex.Matches(dateTime);
             if (matches.Count != 1)

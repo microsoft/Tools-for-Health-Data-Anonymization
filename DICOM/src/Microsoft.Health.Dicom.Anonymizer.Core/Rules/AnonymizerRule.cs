@@ -46,7 +46,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 }
                 else
                 {
-                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Rule {Description} is not supported for the item with VR {item.ValueRepresentation}.");
+                    throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Rule {Description} is not supported for the item with VR {item.ValueRepresentation}.");
                 }
             }
         }

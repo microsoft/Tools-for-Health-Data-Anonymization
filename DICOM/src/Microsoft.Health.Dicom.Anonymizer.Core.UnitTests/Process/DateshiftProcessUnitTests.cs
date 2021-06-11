@@ -69,7 +69,7 @@ namespace UnitTests
                 { tag, value },
             };
 
-            Assert.Throws<AnonymizationOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), ExtractBasicInformation(dataset)));
+            Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), ExtractBasicInformation(dataset)));
         }
 
         [Theory]
@@ -114,7 +114,7 @@ namespace UnitTests
 
             var dataset = new DicomDataset(item);
 
-            Assert.Throws<AnonymizationOperationException>(() => Processor.Process(dataset, item, ExtractBasicInformation(dataset)));
+            Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, item, ExtractBasicInformation(dataset)));
         }
 
         [Fact]
@@ -130,7 +130,7 @@ namespace UnitTests
             sps2.Add(new DicomSequence(DicomTag.ScheduledProtocolCodeSequence, spcs3));
             dataset.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2));
 
-            Assert.Throws<AnonymizationOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence), ExtractBasicInformation(dataset)));
+            Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence), ExtractBasicInformation(dataset)));
         }
 
         private ProcessContext ExtractBasicInformation(DicomDataset dataset)

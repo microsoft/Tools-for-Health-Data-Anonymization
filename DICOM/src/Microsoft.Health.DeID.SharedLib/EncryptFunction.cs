@@ -24,9 +24,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             encryptionSetting ??= new EncryptSetting();
             encryptionSetting.Validate();
 
-            _aesKey = Encoding.UTF8.GetBytes(encryptionSetting.EncryptKey ?? Guid.NewGuid().ToString("N"));
-            _privateKey = Encoding.UTF8.GetBytes(encryptionSetting.PrivateKey ?? string.Empty);
-            _publicKey = Encoding.UTF8.GetBytes(encryptionSetting.PublicKey ?? string.Empty);
+            _aesKey = Encoding.UTF8.GetBytes(encryptionSetting.EncryptKey);
         }
 
         public byte[] EncryptContentWithAES(string plainText, Encoding encoding = null)
@@ -139,108 +137,6 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
             return decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
-        }
-
-        public byte[] EncryptContentWithRSA(string plainText)
-        {
-            if (plainText == null)
-            {
-                return null;
-            }
-
-            return EncryptContentWithRSA(Encoding.UTF8.GetBytes(plainText));
-        }
-
-        public byte[] EncryptContentWithRSA(Stream plainStream)
-        {
-            if (plainStream == null)
-            {
-                return null;
-            }
-
-            byte[] result;
-            using (var streamReader = new MemoryStream())
-            {
-                plainStream.CopyTo(streamReader);
-                result = streamReader.ToArray();
-            }
-
-            return EncryptContentWithRSA(result);
-        }
-
-        public byte[] EncryptContentWithRSA(byte[] plainBytes, bool doPadding = true)
-        {
-            if (plainBytes == null)
-            {
-                return null;
-            }
-
-            try
-            {
-                byte[] encryptedData;
-                using (RSACryptoServiceProvider rSA = new RSACryptoServiceProvider())
-                {
-                    rSA.ImportRSAPublicKey(_publicKey, out _);
-                    encryptedData = rSA.Encrypt(plainBytes, doPadding);
-                }
-
-                return encryptedData;
-            }
-            catch (CryptographicException e)
-            {
-                Console.WriteLine(e.Message);
-                return null;
-            }
-        }
-
-        public byte[] DecryptContentWithRSA(byte[] cipherBytes, bool doPadding = true)
-        {
-            if (cipherBytes == null)
-            {
-                return null;
-            }
-
-            try
-            {
-                byte[] encryptedData;
-                using (RSACryptoServiceProvider rSA = new RSACryptoServiceProvider())
-                {
-                    rSA.ImportRSAPrivateKey(_privateKey, out _);
-                    encryptedData = rSA.Decrypt(cipherBytes, doPadding);
-                }
-
-                return encryptedData;
-            }
-            catch (CryptographicException e)
-            {
-                Console.WriteLine(e.Message);
-                return null;
-            }
-        }
-
-        public byte[] DecryptContentWithRSA(string cipherText, bool doPadding = true)
-        {
-            if (cipherText == string.Empty)
-            {
-                return new byte[] { };
-            }
-
-            if (cipherText == null)
-            {
-                return null;
-            }
-
-            return DecryptContentWithRSA(Convert.FromBase64String(cipherText), doPadding);
-        }
-
-        public byte[] DecryptContentWithRSA(Stream cipherStream, bool doPadding = true)
-        {
-            if (cipherStream == null)
-            {
-                return null;
-            }
-
-            return DecryptContentWithRSA(StreamToByte(cipherStream), doPadding);
         }
 
         private byte[] StreamToByte(Stream inputStream)

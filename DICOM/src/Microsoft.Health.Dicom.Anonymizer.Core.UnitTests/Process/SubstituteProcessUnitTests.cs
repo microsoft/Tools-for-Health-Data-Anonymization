@@ -9,7 +9,6 @@ using Dicom;
 using Dicom.IO.Buffer;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -85,7 +84,6 @@ namespace UnitTests
         [MemberData(nameof(GetValidSettingForSubstitute))]
         public void GivenADataSetWithValidVRForSubstitute_WhenSubstitute_ValueWillBeReplaced(DicomTag tag, string value, JObject settings, string replaceWith)
         {
-            // value = "00100010";
             var dataset = new DicomDataset
             {
                 { tag, value },
@@ -107,7 +105,7 @@ namespace UnitTests
                 { tag, value },
             };
             var newProcessor = new SubstituteProcessor(settings);
-            Assert.Throws<AnonymizationConfigurationException>(() => newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
+            Assert.Throws<AnonymizerConfigurationException>(() => newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
         }
 
         [Theory]
@@ -149,7 +147,7 @@ namespace UnitTests
                 { tag, (ushort)10 },
             };
 
-            Assert.Throws<AnonymizationConfigurationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
+            Assert.Throws<AnonymizerConfigurationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
         }
 
         [Fact]
@@ -204,7 +202,7 @@ namespace UnitTests
 
             var dataset = new DicomDataset(item);
 
-            Assert.Throws<AnonymizationConfigurationException>(() => Processor.Process(dataset, item));
+            Assert.Throws<AnonymizerConfigurationException>(() => Processor.Process(dataset, item));
         }
 
         [Fact]
@@ -220,7 +218,7 @@ namespace UnitTests
             sps2.Add(new DicomSequence(DicomTag.ScheduledProtocolCodeSequence, spcs3));
             dataset.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2));
 
-            Assert.Throws<AnonymizationConfigurationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence)));
+            Assert.Throws<AnonymizerConfigurationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence)));
         }
     }
 }

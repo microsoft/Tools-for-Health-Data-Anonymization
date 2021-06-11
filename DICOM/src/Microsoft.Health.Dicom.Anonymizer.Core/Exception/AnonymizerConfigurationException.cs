@@ -4,18 +4,17 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Exceptions
 {
-    public class AnonymizationOperationException : DicomAnonymizationException
+    public class AnonymizerConfigurationException : DicomAnonymizationException
     {
-        public AnonymizationOperationException(DicomAnonymizationErrorCode dicomAnonymizerErrorCode, string message)
+        public AnonymizerConfigurationException(DicomAnonymizationErrorCode dicomAnonymizerErrorCode, string message)
             : base(dicomAnonymizerErrorCode, message)
         {
         }
 
-        public AnonymizationOperationException(DicomAnonymizationErrorCode dicomAnonymizerErrorCode, string message, Exception innerException)
+        public AnonymizerConfigurationException(DicomAnonymizationErrorCode dicomAnonymizerErrorCode, string message, Exception innerException)
             : base(dicomAnonymizerErrorCode, message, innerException)
         {
         }

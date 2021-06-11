@@ -9,6 +9,7 @@ using System.Linq;
 using Dicom;
 using Dicom.IO.Buffer;
 using EnsureThat;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.DeID.SharedLib.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
@@ -26,6 +27,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private readonly EncryptFunction _encryptFunction;
         private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(EncryptSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<EncryptProcessor>();
 
         public EncryptProcessor(JObject settingObject)
         {
@@ -74,13 +76,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 }
                 else
                 {
-                    throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Encrypt is not supported for {item.ValueRepresentation}.");
+                    throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Encrypt is not supported for {item.ValueRepresentation}.");
                 }
+
+                _logger.LogDebug($"The value of DICOM item '{item}' is encrypted.");
             }
             catch (DicomValidationException ex)
             {
                 // The length for encrypted output will varies, which may invalid even we check VR in advance.
-                throw new AnonymizationOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Encrypt is not supported for {item.ValueRepresentation}.", ex);
+                throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Encrypt is not supported for {item.ValueRepresentation}.", ex);
             }
         }
 
