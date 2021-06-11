@@ -24,30 +24,21 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public byte[] ComputeHmacSHA256Hash(byte[] input)
         {
-            if (input == null)
-            {
-                return input;
-            }
+            EnsureArg.IsNotNull(input, nameof(input));
 
             return _hmac.ComputeHash(input);
         }
 
         public byte[] ComputeHmacSHA256Hash(Stream input)
         {
-            if (input == null)
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(input, nameof(input));
 
             return _hmac.ComputeHash(input);
         }
 
         public byte[] ComputeHmacSHA256Hash(string input, Encoding encoding = null)
         {
-            if (input == null)
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(input, nameof(input));
 
             encoding ??= Encoding.UTF8;
             return ComputeHmacSHA256Hash(encoding.GetBytes(input));
@@ -55,10 +46,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public FixedLengthString ComputeHmacSHA256Hash(FixedLengthString input)
         {
-            if (input == null)
-            {
-                return input;
-            }
+            EnsureArg.IsNotNull(input, nameof(input));
 
             var hashData = ComputeHmacSHA256Hash(input.ToString());
 
@@ -67,24 +55,16 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public byte[] ComputeHmacHash(byte[] input, HMAC hashAlgorithm)
         {
+            EnsureArg.IsNotNull(input, nameof(input));
             EnsureArg.IsNotNull(hashAlgorithm, nameof(hashAlgorithm));
-
-            if (input == null)
-            {
-                return null;
-            }
 
             return hashAlgorithm.ComputeHash(input);
         }
 
         public byte[] ComputeHmacHash(string input, HMAC hashAlgorithm, Encoding encoding = null)
         {
+            EnsureArg.IsNotNull(input, nameof(input));
             EnsureArg.IsNotNull(hashAlgorithm, nameof(hashAlgorithm));
-
-            if (input == null)
-            {
-                return null;
-            }
 
             encoding ??= Encoding.UTF8;
             return hashAlgorithm.ComputeHash(encoding.GetBytes(input));
@@ -92,24 +72,16 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public byte[] ComputeHmacHash(Stream input, HMAC hashAlgorithm)
         {
+            EnsureArg.IsNotNull(input, nameof(input));
             EnsureArg.IsNotNull(hashAlgorithm, nameof(hashAlgorithm));
-
-            if (input == null)
-            {
-                return null;
-            }
 
             return hashAlgorithm.ComputeHash(input);
         }
 
         public FixedLengthString ComputeHmacHash(FixedLengthString input, HMAC hashAlgorithm)
         {
+            EnsureArg.IsNotNull(input, nameof(input));
             EnsureArg.IsNotNull(hashAlgorithm, nameof(hashAlgorithm));
-
-            if (input == null)
-            {
-                return input;
-            }
 
             var hashData = ComputeHmacHash(input.ToString(), hashAlgorithm);
 

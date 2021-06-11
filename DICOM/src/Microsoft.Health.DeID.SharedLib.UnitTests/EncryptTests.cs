@@ -27,7 +27,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetTextDataToEncrypt()
         {
-            yield return new object[] { null };
             yield return new object[] { string.Empty };
             yield return new object[] { "abc" };
             yield return new object[] { "This is for test" };
@@ -38,7 +37,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetBytesDataToEncrypt()
         {
-            yield return new object[] { null };
             yield return new object[] { Encoding.UTF8.GetBytes(string.Empty) };
             yield return new object[] { Encoding.UTF8.GetBytes("abc") };
             yield return new object[] { Encoding.UTF8.GetBytes("This is for test") };
@@ -49,7 +47,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetStreamDataToEncrypt()
         {
-            yield return new object[] { null };
             yield return new object[] { new MemoryStream() };
             yield return new object[] { new MemoryStream(Encoding.UTF8.GetBytes("abc")) };
             yield return new object[] { new MemoryStream(Encoding.UTF8.GetBytes("This is for test")) };
@@ -60,7 +57,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetBytesDataToDecryptUsingAES()
         {
-            yield return new object[] { null, null };
             yield return new object[] { Convert.FromBase64String(string.Empty), string.Empty };
             yield return new object[] { Convert.FromBase64String("qpxGp6T9DP7wB0EYPQwOYVrScQ/pq3c0D+JQ+hjnfkY="), "abc" };
             yield return new object[] { Convert.FromBase64String("GI99peR2SpPfcqEgzr7/z7gxYym6qyVPPzvmGc8o8SSwqMpCsW0CRj3v6ZsxFCef"), "This is for test" };
@@ -71,7 +67,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetStreamDataToDecryptUsingAES()
         {
-            yield return new object[] { null, null };
             yield return new object[] { new MemoryStream(), string.Empty };
             yield return new object[] { new MemoryStream(Convert.FromBase64String("qpxGp6T9DP7wB0EYPQwOYVrScQ/pq3c0D+JQ+hjnfkY=")), "abc" };
             yield return new object[] { new MemoryStream(Convert.FromBase64String("GI99peR2SpPfcqEgzr7/z7gxYym6qyVPPzvmGc8o8SSwqMpCsW0CRj3v6ZsxFCef")), "This is for test" };
@@ -82,7 +77,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetBytesDataToDecryptUsingRSA()
         {
-            yield return new object[] { null, null };
             yield return new object[] { Convert.FromBase64String("gFFwULcgN3ZknzEXQKoFZa6ccflcOEzt675LS3e0Wv/A3PobHq8E04CUNK6KVrqJDnrF4Mas1/qLI2JNL3FCzDPcHMEUp4TscZS5s6zYMFSOB7dQfasUV45H74FnT58/b1qGvNYMAAyzMgXXF2+tnGfNoCZMK5JryAMEvL0qaxY="), string.Empty };
             yield return new object[] { Convert.FromBase64String("ijJ2ZaK8yoPfoeg6CFuxNJ3kmuahIXlFRjLNsQWD4GKbCImW1eLViBBArZ5un8xErpD9DoRyjdVRIKNeQGq//wJrPCR/lEOk6k2V3Xxx+sB7OH+HSHufSEhL2UMXqghUQNiwEQ59NysQK6fpq9a5n7fzgAd2fOfmTwQGngtxj0Q="), "abc" };
             yield return new object[] { Convert.FromBase64String("eSiv9qcZj4ma50T52JGVxX40U3fJOHjPnjQAMyX6MGHEn0gSAQi8SCpT4eVDg7DcPmGasOaAxiEFSOkS+Z/kSQlQKeDatQrKDxA9LcOTzA6H4dYmep6pUIvLhmyouZ0CBcg+J4syxFI35DbhnYFXhd5mQy8tWJybUaPhK90t3+s="), "This is for test" };
@@ -93,7 +87,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetStreamDataToDecryptUsingRSA()
         {
-            yield return new object[] { null, null };
             yield return new object[] { new MemoryStream(Convert.FromBase64String("gFFwULcgN3ZknzEXQKoFZa6ccflcOEzt675LS3e0Wv/A3PobHq8E04CUNK6KVrqJDnrF4Mas1/qLI2JNL3FCzDPcHMEUp4TscZS5s6zYMFSOB7dQfasUV45H74FnT58/b1qGvNYMAAyzMgXXF2+tnGfNoCZMK5JryAMEvL0qaxY=")), string.Empty };
             yield return new object[] { new MemoryStream(Convert.FromBase64String("ijJ2ZaK8yoPfoeg6CFuxNJ3kmuahIXlFRjLNsQWD4GKbCImW1eLViBBArZ5un8xErpD9DoRyjdVRIKNeQGq//wJrPCR/lEOk6k2V3Xxx+sB7OH+HSHufSEhL2UMXqghUQNiwEQ59NysQK6fpq9a5n7fzgAd2fOfmTwQGngtxj0Q=")), "abc" };
             yield return new object[] { new MemoryStream(Convert.FromBase64String("eSiv9qcZj4ma50T52JGVxX40U3fJOHjPnjQAMyX6MGHEn0gSAQi8SCpT4eVDg7DcPmGasOaAxiEFSOkS+Z/kSQlQKeDatQrKDxA9LcOTzA6H4dYmep6pUIvLhmyouZ0CBcg+J4syxFI35DbhnYFXhd5mQy8tWJybUaPhK90t3+s=")), "This is for test" };

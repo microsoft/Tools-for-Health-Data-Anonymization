@@ -36,10 +36,8 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 DateTimeOffset date = DateTimeUtility.ParseDateTime(dateTime, dateTimeFormat, provider);
                 return DateTimeUtility.IndicateAgeOverThreshold(date) ? null : date.Year.ToString();
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public DateTimeOffset? RedactDateTime(DateTimeOffset dateTime)
@@ -55,10 +53,8 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
                 return new DateTimeOffset(dateTime.Year, 1, 1, 0, 0, 0, default);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public DateTimeObject RedactDateTime(DateTimeObject dateObject)
@@ -75,10 +71,8 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 dateObject.DateValue = new DateTimeOffset(dateObject.DateValue.Year, 1, 1, 0, 0, 0, dateObject.HasTimeZone == null || !(bool)dateObject.HasTimeZone ? new TimeSpan(0, 0, 0) : dateObject.DateValue.Offset);
                 return dateObject;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public int? RedactAge(int age)
@@ -92,19 +86,12 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
                 return age;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
-        public decimal? RedactAge(decimal? age)
+        public decimal? RedactAge(decimal age)
         {
-            if (age == null)
-            {
-                return null;
-            }
-
             if (_redactSetting.EnablePartialAgeForRedact)
             {
                 if (age > AgeThreshold)
@@ -114,14 +101,14 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
                 return age;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public AgeValue RedactAge(AgeValue age)
         {
+            EnsureArg.IsNotNull(age, nameof(age));
+
             if (_redactSetting.EnablePartialAgeForRedact)
             {
                 if (age.AgeInYears() > AgeThreshold)
@@ -131,14 +118,14 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
                 return age;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public string RedactPostalCode(string postalCode)
         {
+            EnsureArg.IsNotNull(postalCode, nameof(postalCode));
+
             if (_redactSetting.EnablePartialZipCodesForRedact)
             {
                 if (_redactSetting.RestrictedZipCodeTabulationAreas != null && _redactSetting.RestrictedZipCodeTabulationAreas.Any(x => postalCode.StartsWith(x)))
@@ -153,10 +140,8 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
                 return postalCode;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 }

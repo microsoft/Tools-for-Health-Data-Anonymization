@@ -21,7 +21,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetHmacHashStringData()
         {
-            yield return new object[] { null, null };
             yield return new object[] { string.Empty, "6d6cd63284be4a47ba7aec4a3458939a95dcbdd5cd0438f23d7457099b4b917c" };
             yield return new object[] { "abc", "8f16771f9f8851b26f4d460fa17de93e2711c7e51337cb8a608a0f81e1c1b6ae" };
             yield return new object[] { "&*^%$@()=-,/", "33f6f7d6b3602bf5354dcb4b8d988982602349355f50f86798d8ce1ffd61521b" };
@@ -35,7 +34,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetHmacHashBytesData()
         {
-            yield return new object[] { null, null };
             yield return new object[] { Encoding.UTF8.GetBytes(string.Empty), "6d6cd63284be4a47ba7aec4a3458939a95dcbdd5cd0438f23d7457099b4b917c" };
             yield return new object[] { Encoding.UTF8.GetBytes("abc"), "8f16771f9f8851b26f4d460fa17de93e2711c7e51337cb8a608a0f81e1c1b6ae" };
             yield return new object[] { Encoding.UTF8.GetBytes("&*^%$@()=-,/"), "33f6f7d6b3602bf5354dcb4b8d988982602349355f50f86798d8ce1ffd61521b" };
@@ -49,7 +47,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetHmacHashStreamData()
         {
-            yield return new object[] { null, null };
             yield return new object[] { new MemoryStream(), "6d6cd63284be4a47ba7aec4a3458939a95dcbdd5cd0438f23d7457099b4b917c" };
             yield return new object[] { new MemoryStream(Encoding.UTF8.GetBytes("abc")), "8f16771f9f8851b26f4d460fa17de93e2711c7e51337cb8a608a0f81e1c1b6ae" };
             yield return new object[] { new MemoryStream(Encoding.UTF8.GetBytes("&*^%$@()=-,/")), "33f6f7d6b3602bf5354dcb4b8d988982602349355f50f86798d8ce1ffd61521b" };
@@ -76,7 +73,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetHmac512HashStringData()
         {
-            yield return new object[] { null, null };
             yield return new object[] { string.Empty, "79a898c707f0d60e2dc22f96854c1999540f4cdfce6463f74016aa18a3d1003628d47c4e745536afabbdb90d086fad14dadf8b4927cdf55d48b4078a1e9e4525" };
             yield return new object[] { "abc", "58585acd673067f96bea32a1c57bf3fc3fd5a42678567e72d5cb0ab7f08ea41dcf3a41af96c53948e13184ae6fe6cd0b8b4193fc593dfb2693b00c2b0ee7a316" };
             yield return new object[] { "&*^%$@()=-,/", "825483251c4ab2d89e6b8c1ec2e3b770cb805f7d044e6777b2c85d6ffab0c0ab2e14ceaac0291b105c131da7a3add580e07ea977f74652c4bc1d45b4d0fec3e6" };
@@ -104,7 +100,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetHmac512HashBytesData()
         {
-            yield return new object[] { null, null };
             yield return new object[] { Encoding.UTF8.GetBytes(string.Empty), "79a898c707f0d60e2dc22f96854c1999540f4cdfce6463f74016aa18a3d1003628d47c4e745536afabbdb90d086fad14dadf8b4927cdf55d48b4078a1e9e4525" };
             yield return new object[] { Encoding.UTF8.GetBytes("abc"), "58585acd673067f96bea32a1c57bf3fc3fd5a42678567e72d5cb0ab7f08ea41dcf3a41af96c53948e13184ae6fe6cd0b8b4193fc593dfb2693b00c2b0ee7a316" };
             yield return new object[] { Encoding.UTF8.GetBytes("&*^%$@()=-,/"), "825483251c4ab2d89e6b8c1ec2e3b770cb805f7d044e6777b2c85d6ffab0c0ab2e14ceaac0291b105c131da7a3add580e07ea977f74652c4bc1d45b4d0fec3e6" };
@@ -118,7 +113,6 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetHmac512HashStreamData()
         {
-            yield return new object[] { null, null };
             yield return new object[] { new MemoryStream(), "79a898c707f0d60e2dc22f96854c1999540f4cdfce6463f74016aa18a3d1003628d47c4e745536afabbdb90d086fad14dadf8b4927cdf55d48b4078a1e9e4525" };
             yield return new object[] { new MemoryStream(Encoding.UTF8.GetBytes("abc")), "58585acd673067f96bea32a1c57bf3fc3fd5a42678567e72d5cb0ab7f08ea41dcf3a41af96c53948e13184ae6fe6cd0b8b4193fc593dfb2693b00c2b0ee7a316" };
             yield return new object[] { new MemoryStream(Encoding.UTF8.GetBytes("&*^%$@()=-,/")), "825483251c4ab2d89e6b8c1ec2e3b770cb805f7d044e6777b2c85d6ffab0c0ab2e14ceaac0291b105c131da7a3add580e07ea977f74652c4bc1d45b4d0fec3e6" };

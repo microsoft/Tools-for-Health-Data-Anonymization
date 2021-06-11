@@ -48,14 +48,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             if (item is DicomStringElement)
             {
-                var encryptedValues = ((DicomStringElement)item).Get<string[]>().Select(GetCryptoHashString);
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, encryptedValues.ToArray());
+                var hashedValues = ((DicomStringElement)item).Get<string[]>().Select(GetCryptoHashString);
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, hashedValues.ToArray());
             }
             else if (item is DicomOtherByte)
             {
                 var valueBytes = ((DicomOtherByte)item).Get<byte[]>();
-                var encryptesBytes = _cryptoHashFunction.ComputeHmacSHA256Hash(valueBytes);
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, encryptesBytes);
+                var hashedBytes = _cryptoHashFunction.ComputeHmacSHA256Hash(valueBytes);
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, hashedBytes);
             }
             else if (item is DicomFragmentSequence)
             {

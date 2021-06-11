@@ -8,7 +8,6 @@ using System.Linq;
 using Dicom;
 using Dicom.IO.Buffer;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Newtonsoft.Json.Linq;
 using Xunit;
 

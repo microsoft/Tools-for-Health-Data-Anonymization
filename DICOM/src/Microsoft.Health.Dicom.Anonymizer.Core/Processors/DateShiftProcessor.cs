@@ -63,7 +63,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                     .Where(x => !DateTimeUtility.IndicateAgeOverThreshold(x)) // Age over 89 will be redacted.
                     .Select(_dateShiftFunction.ShiftDateTime);
 
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(Utility.GenerateDicomDateString).ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(Utility.GenerateDicomDateString).Where(x => x != null).ToArray());
             }
             else if (item.ValueRepresentation == DicomVR.DT)
             {
@@ -71,14 +71,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 var results = new List<string>();
                 foreach (var dateObject in values)
                 {
-                    dateObject.DateValue = _dateShiftFunction.ShiftDateTime(dateObject.DateValue);
                     if (!DateTimeUtility.IndicateAgeOverThreshold(dateObject.DateValue))
                     {
+                        dateObject.DateValue = _dateShiftFunction.ShiftDateTime(dateObject.DateValue);
                         results.Add(Utility.GenerateDicomDateTimeString(dateObject));
                     }
                 }
 
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, results.ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, results.Where(x => x != null).ToArray());
             }
             else
             {

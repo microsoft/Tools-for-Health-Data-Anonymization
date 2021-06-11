@@ -45,10 +45,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 var values = ((DicomAgeString)item).Get<string[]>();
                 foreach (var value in values)
                 {
-                    var result = Utility.AgeToString(_redactFunction.RedactAge(Utility.ParseAge(value)));
+                    var result = _redactFunction.RedactAge(Utility.ParseAge(value));
                     if (result != null)
                     {
-                        redactedValues.Add(result);
+                        redactedValues.Add(Utility.AgeToString(result));
                     }
                 }
             }

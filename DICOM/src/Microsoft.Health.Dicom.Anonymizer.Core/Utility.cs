@@ -109,10 +109,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public static string GenerateDicomDateTimeString(DateTimeObject date)
         {
-            if (date == null)
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(date, nameof(date));
 
             return date.HasTimeZone == true
                 ? date.DateValue.ToString("yyyyMMddHHmmss.ffffffzzz", CultureInfo.InvariantCulture).Replace(":", string.Empty)
@@ -121,10 +118,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public static AgeValue ParseAge(string age)
         {
-            if (string.IsNullOrEmpty(age))
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(age, nameof(age));
 
             foreach (var item in AgeTypeMapping)
             {
@@ -146,10 +140,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public static string AgeToString(AgeValue age)
         {
-            if (age == null)
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(age, nameof(age));
 
             foreach (var item in AgeTypeMapping)
             {

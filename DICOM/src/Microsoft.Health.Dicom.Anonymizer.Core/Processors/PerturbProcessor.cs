@@ -64,7 +64,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             if (item.ValueRepresentation == DicomVR.AS)
             {
                 var values = ((DicomAgeString)item).Get<string[]>().Select(Utility.ParseAge).Select(x => _perturbFunction.Perturb(x));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(Utility.AgeToString).ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(Utility.AgeToString).Where(x => x != null).ToArray());
             }
             else
             {

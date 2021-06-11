@@ -29,10 +29,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public string ShiftDate(string inputString, string inputDateTimeFormat = null, string outputDateTimeFormat = null, IFormatProvider provider = null)
         {
-            if (inputString == null)
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(inputString, nameof(inputString));
 
             var date = DateTimeUtility.ParseDateTime(inputString, inputDateTimeFormat, provider);
             var outputFormat = outputDateTimeFormat ?? DeIDGlobalSettings.OutputDateTimeFormat ?? inputDateTimeFormat ?? DateTimeUtility.GetDateTimeFormat(inputString, null);
@@ -46,10 +43,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public string ShiftDateTime(string inputString, string inputDateTimeFormat = null, string outputDateTimeFormat = null, IFormatProvider provider = null)
         {
-            if (inputString == null)
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(inputString, nameof(inputString));
 
             var date = DateTimeUtility.ParseDateTime(inputString, inputDateTimeFormat, provider);
             var outputFormat = outputDateTimeFormat ?? DeIDGlobalSettings.OutputDateTimeFormat ?? inputDateTimeFormat ?? DateTimeUtility.GetDateTimeFormat(inputString, null);

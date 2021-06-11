@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using EnsureThat;
 using Microsoft.Health.DeID.SharedLib.Settings;
 
 namespace Microsoft.Health.Dicom.DeID.SharedLib
@@ -16,8 +17,6 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         // AES Initialization Vector length is 16 bytes
         private const int AesIvSize = 16;
         private readonly byte[] _aesKey;
-        private readonly byte[] _privateKey;
-        private readonly byte[] _publicKey;
 
         public EncryptFunction(EncryptSetting encryptionSetting = null)
         {
@@ -29,14 +28,11 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public byte[] EncryptContentWithAES(string plainText, Encoding encoding = null)
         {
+            EnsureArg.IsNotNull(plainText, nameof(plainText));
+
             if (plainText == string.Empty)
             {
                 return new byte[] { };
-            }
-
-            if (plainText == null)
-            {
-                return null;
             }
 
             encoding ??= Encoding.UTF8;
@@ -45,20 +41,14 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public byte[] EncryptContentWithAES(Stream plainStream)
         {
-            if (plainStream == null)
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(plainStream, nameof(plainStream));
 
             return EncryptContentWithAES(StreamToByte(plainStream));
         }
 
         public byte[] EncryptContentWithAES(byte[] plainBytes)
         {
-            if (plainBytes == null)
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(plainBytes, nameof(plainBytes));
 
             /* Create AES encryptor:
              * Mode: CBC
@@ -82,14 +72,11 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public byte[] DecryptContentWithAES(string cipherText)
         {
+            EnsureArg.IsNotNull(cipherText, nameof(cipherText));
+
             if (cipherText == string.Empty)
             {
                 return new byte[] { };
-            }
-
-            if (cipherText == null)
-            {
-                return null;
             }
 
             var byteData = Encoding.UTF8.GetBytes(cipherText);
@@ -98,20 +85,14 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public byte[] DecryptContentWithAES(Stream cipherStream)
         {
-            if (cipherStream == null)
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(cipherStream, nameof(cipherStream));
 
             return DecryptContentWithAES(StreamToByte(cipherStream));
         }
 
         public byte[] DecryptContentWithAES(byte[] cipherBytes)
         {
-            if (cipherBytes == null)
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(cipherBytes, nameof(cipherBytes));
 
             if (cipherBytes.Length == 0)
             {
@@ -141,10 +122,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         private byte[] StreamToByte(Stream inputStream)
         {
-            if (inputStream == null)
-            {
-                return null;
-            }
+            EnsureArg.IsNotNull(inputStream, nameof(inputStream));
 
             inputStream.Position = 0;
             using var streamReader = new MemoryStream();
