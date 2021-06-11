@@ -62,27 +62,26 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             // Parse and validate tag
             if (ruleContent.ContainsKey(Constants.TagKey))
             {
+                var createRuleFuncs =
+                    new Func<string, string, string, IAnonymizerProcessorFactory, JObject, AnonymizerRule>[]
+                {
+                    TryCreateRule<DicomTag, AnonymizerTagRule>,
+                    TryCreateRule<DicomMaskedTag, AnonymizerMaskedTagRule>,
+                    TryCreateRule<DicomVR, AnonymizerVRRule>,
+                    TryCreateTagNameRule,
+                };
+
                 var tagContent = ruleContent[Constants.TagKey].ToString();
-                if (TryParseDICOMTag(tagContent, out DicomTag tag))
+                foreach (var func in createRuleFuncs)
                 {
-                    return new AnonymizerTagRule(tag, method, ruleContent.ToString(), _processorFactory, ruleSetting);
+                    var rule = func(tagContent, method, ruleContent.ToString(), _processorFactory, ruleSetting);
+                    if (rule != null)
+                    {
+                        return rule;
+                    }
                 }
-                else if (TryParseDICOMMaskedTag(tagContent, out DicomMaskedTag maskedTag))
-                {
-                    return new AnonymizerMaskedTagRule(maskedTag, method, ruleContent.ToString(), _processorFactory, ruleSetting);
-                }
-                else if (TryParseDICOMVR(tagContent, out DicomVR vr))
-                {
-                    return new AnonymizerVRRule(vr, method, ruleContent.ToString(), _processorFactory, ruleSetting);
-                }
-                else if (TryParseDICOMTagName(tagContent, out DicomTag tagByName))
-                {
-                    return new AnonymizerTagRule(tagByName, method, ruleContent.ToString(), _processorFactory, ruleSetting);
-                }
-                else
-                {
-                    throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Invalid tag in rule config.");
-                }
+
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Invalid tag in rule config.");
             }
             else
             {
@@ -121,59 +120,36 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             return ruleSetting;
         }
 
-        private bool TryParseDICOMTag(string tagContent, out DicomTag output)
+        private static AnonymizerRule TryCreateRule<TItem, TResult>(
+            string tagContent,
+            string method,
+            string description,
+            IAnonymizerProcessorFactory processorFactory,
+            JObject ruleSetting)
         {
             try
             {
-                output = DicomTag.Parse(tagContent);
-                return true;
+                var output = (TItem)typeof(TItem).GetMethod("Parse", new Type[] { typeof(string) }).Invoke(null, new object[] { tagContent });
+                return (AnonymizerRule)Activator.CreateInstance(
+                    typeof(TResult),
+                    new object[] { output, method, description, processorFactory, ruleSetting });
             }
             catch
             {
-                output = null;
-                return false;
+                return null;
             }
         }
 
-        private bool TryParseDICOMMaskedTag(string tagContent, out DicomMaskedTag output)
+        private static AnonymizerRule TryCreateTagNameRule(string tagContent, string method, string description, IAnonymizerProcessorFactory processorFactory, JObject ruleSetting)
         {
             try
             {
-                output = DicomMaskedTag.Parse(tagContent);
-                return true;
+                var output = (DicomTag)typeof(DicomTag).GetField(tagContent).GetValue(new DicomTag(0, 0));
+                return new AnonymizerTagRule(output, method, description, processorFactory, ruleSetting);
             }
             catch
             {
-                output = null;
-                return false;
-            }
-        }
-
-        private bool TryParseDICOMVR(string tagContent, out DicomVR output)
-        {
-            try
-            {
-                output = DicomVR.Parse(tagContent);
-                return true;
-            }
-            catch
-            {
-                output = null;
-                return false;
-            }
-        }
-
-        private bool TryParseDICOMTagName(string tagContent, out DicomTag output)
-        {
-            try
-            {
-                output = (DicomTag)typeof(DicomTag).GetField(tagContent).GetValue(new DicomTag(0, 0));
-                return true;
-            }
-            catch
-            {
-                output = null;
-                return false;
+                return null;
             }
         }
     }

@@ -4,7 +4,6 @@
 // -------------------------------------------------------------------------------------------------
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
@@ -20,26 +19,16 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<RefreshUIDProcessor>();
 
-        public static ConcurrentDictionary<string, string> ReplacedUIDs { get; } = new ConcurrentDictionary<string, string>();
+        public static ConcurrentDictionary<string, DicomUID> ReplacedUIDs { get; } = new ConcurrentDictionary<string, DicomUID>();
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
         {
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            DicomUID newUID;
-            var oldUID = ((DicomElement)item).Get<string>();
+            var oldUIDValue = ((DicomElement)item).Get<string>();
 
-            if (ReplacedUIDs.ContainsKey(oldUID))
-            {
-                newUID = new DicomUID(ReplacedUIDs[oldUID], "Anonymized UID", DicomUidType.Unknown);
-            }
-            else
-            {
-                newUID = DicomUIDGenerator.GenerateDerivedFromUUID();
-                ReplacedUIDs[oldUID] = newUID.UID;
-            }
-
+            DicomUID newUID = ReplacedUIDs.GetOrAdd(oldUIDValue, DicomUIDGenerator.GenerateDerivedFromUUID());
             var newItem = new DicomUniqueIdentifier(item.Tag, newUID);
             dicomDataset.AddOrUpdate(newItem);
 
