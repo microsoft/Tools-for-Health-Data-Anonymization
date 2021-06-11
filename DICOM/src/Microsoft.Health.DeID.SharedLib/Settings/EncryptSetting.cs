@@ -3,7 +3,6 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Health.Dicom.DeID.SharedLib.Exceptions;
@@ -37,12 +36,11 @@ namespace Microsoft.Health.DeID.SharedLib.Settings
 
             for (int i = 0; i < validSizes.Length; i++)
             {
-                for (int j = validSizes[i].MinSize; j <= validSizes[i].MaxSize; j += validSizes[i].SkipSize)
+                if (bitLength >= validSizes[i].MinSize
+                    && bitLength <= validSizes[i].MaxSize
+                    && (bitLength - validSizes[i].MinSize) % validSizes[i].SkipSize == 0)
                 {
-                    if (j == bitLength)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 

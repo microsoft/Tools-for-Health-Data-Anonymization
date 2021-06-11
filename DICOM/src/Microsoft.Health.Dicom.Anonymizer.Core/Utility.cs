@@ -78,7 +78,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             int hour = groups["hour"].Success ? int.Parse(groups["hour"].Value) : 0;
             int minute = groups["minute"].Success ? int.Parse(groups["minute"].Value) : 0;
             int second = groups["second"].Success ? int.Parse(groups["second"].Value) : 0;
-            int millisecond = groups["millisecond"].Success ? int.Parse(groups["millisecond"].Value) / 1000 : 0;
+            int millisecond = groups["microsecond"].Success ? int.Parse(groups["microsecond"].Value) / 1000 : 0;
 
             if (groups["timeZone"].Success)
             {
