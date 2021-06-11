@@ -22,7 +22,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     /// <summary>
     /// This function hash the value and outputs a Hex encoded representation.
-    /// The length of output string depends on the hash function (e.g. sha256 will output 64 bytes length), you should pay attention to the length limitation of output DICOM file. 
+    /// The length of output string depends on the hash function (e.g. sha256 will output 64 bytes length), you should pay attention to the length limitation of output DICOM file.
     /// In cryptoHash setting, you can set cryptoHash key and cryptoHash function (only support sha256 for now) for cryptoHash.
     /// </summary>
     public class CryptoHashProcessor : IAnonymizerProcessor

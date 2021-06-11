@@ -10,7 +10,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Model
 {
     public class ProcessContext
     {
-        public HashSet<DicomItem> VisitedNodes { get; set; } = new HashSet<DicomItem>();
+        public HashSet<string> VisitedNodes { get; set; } = new HashSet<string>();
 
         public string StudyInstanceUID { get; set; }
 

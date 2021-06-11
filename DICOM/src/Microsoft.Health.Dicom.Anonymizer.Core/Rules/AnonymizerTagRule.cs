@@ -31,7 +31,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
             var item = dataset.GetDicomItem<DicomItem>(Tag);
             var result = new List<DicomItem>();
-            if (item != null && !context.VisitedNodes.Contains(item))
+            if (item != null && !context.VisitedNodes.Contains(item.ToString()))
             {
                  result.Add(item);
             }

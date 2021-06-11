@@ -20,7 +20,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     /// <summary>
-    /// We use AES-CBC algorithm to transform the value with an encryption key, and then replace the original value with a Base64 encoded representation of the encrypted value. 
+    /// We use AES-CBC algorithm to transform the value with an encryption key, and then replace the original value with a Base64 encoded representation of the encrypted value.
     /// </summary>
     public class EncryptProcessor : IAnonymizerProcessor
     {

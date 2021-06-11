@@ -38,7 +38,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 }
             }
 
-            return locatedItems.Where(x => !context.VisitedNodes.Contains(x)).ToList();
+            return locatedItems.Where(x => !context.VisitedNodes.Contains(x.ToString())).ToList();
         }
     }
 }

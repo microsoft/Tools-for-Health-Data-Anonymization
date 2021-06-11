@@ -51,7 +51,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             _dateShiftFunction.DateShiftKeyPrefix = _dateShiftScope switch
             {
                 DateShiftScope.StudyInstance => context.StudyInstanceUID ?? string.Empty,
-                DateShiftScope.SeriesInstance => context.StudyInstanceUID ?? string.Empty,
+                DateShiftScope.SeriesInstance => context.SeriesInstanceUID ?? string.Empty,
                 DateShiftScope.SopInstance => context.SopInstanceUID ?? string.Empty,
                 _ => string.Empty,
             };

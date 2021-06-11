@@ -16,6 +16,5 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations
         public bool ValidateInput { get; }
 
         public bool ValidateOutput { get; }
-
     }
 }

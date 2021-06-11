@@ -42,7 +42,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 if (_processor.IsSupportedVR(item))
                 {
                     _processor.Process(dataset, item, context);
-                    context.VisitedNodes.Add(item);
+                    context.VisitedNodes.Add(item.ToString());
                 }
                 else
                 {

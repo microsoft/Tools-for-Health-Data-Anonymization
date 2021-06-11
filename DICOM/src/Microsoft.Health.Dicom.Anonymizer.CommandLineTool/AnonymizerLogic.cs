@@ -84,7 +84,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
                     throw;
                 }
             }
-
         }
     }
 }

@@ -6,7 +6,6 @@
 using Dicom;
 using Microsoft.Health.Dicom.Anonymizer.Core;
 using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
-using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Xunit;
 
 namespace UnitTests
