@@ -77,7 +77,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public int? RedactAge(int age)
         {
-            if (_redactSetting.EnablePartialAgeForRedact)
+            if (_redactSetting.EnablePartialAgesForRedact)
             {
                 if (age > AgeThreshold)
                 {
@@ -92,7 +92,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public decimal? RedactAge(decimal age)
         {
-            if (_redactSetting.EnablePartialAgeForRedact)
+            if (_redactSetting.EnablePartialAgesForRedact)
             {
                 if (age > AgeThreshold)
                 {
@@ -109,7 +109,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         {
             EnsureArg.IsNotNull(age, nameof(age));
 
-            if (_redactSetting.EnablePartialAgeForRedact)
+            if (_redactSetting.EnablePartialAgesForRedact)
             {
                 if (age.AgeInYears() > AgeThreshold)
                 {

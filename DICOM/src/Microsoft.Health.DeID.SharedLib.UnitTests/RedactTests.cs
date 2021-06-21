@@ -148,7 +148,7 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetAgeDataForPartialRedact))]
         public void GivenAnAge_WhenPartialRedact_ThenAgeOver89ShouldBeRedacted(int age)
         {
-            var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialAgeForRedact = true });
+            var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialAgesForRedact = true });
             var processResult = redactFunction.RedactAge(age);
             if (age > 89)
             {

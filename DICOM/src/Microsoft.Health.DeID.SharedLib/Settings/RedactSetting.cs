@@ -13,7 +13,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib.Settings
 
         public bool EnablePartialZipCodesForRedact { get; set; } = false;
 
-        public bool EnablePartialAgeForRedact { get; set; } = false;
+        public bool EnablePartialAgesForRedact { get; set; } = false;
 
         public List<string> RestrictedZipCodeTabulationAreas { get; set; }
     }

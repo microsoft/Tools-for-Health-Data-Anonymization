@@ -36,25 +36,25 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
             {
                 " { \"tag\": \"(0040,1001)\" , \"method\": \"redact\" } ",
                 new DicomTag(0x0040, 0x1001),
-                new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"false\", \"EnablePartialAgeForRedact\" : \"false\"}")),
+                new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"false\", \"EnablePartialAgesForRedact\" : \"false\"}")),
             };
             yield return new object[]
             {
                 " { \"tag\": \"00401001\" , \"method\": \"redact\", \"setting\":\"redactCustomerSetting\" } ",
                 new DicomTag(0x0040, 0x1001),
-                new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"false\", \"EnablePartialAgeForRedact\" : \"true\"}")),
+                new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"false\", \"EnablePartialAgesForRedact\" : \"true\"}")),
             };
             yield return new object[]
             {
                 " { \"tag\": \"00401001\" , \"method\": \"redact\", \"params\": {\"enablePartialDatesForRedact\" : true}, \"setting\":\"redactCustomerSetting\" } ",
                 new DicomTag(0x0040, 0x1001),
-                new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"true\", \"EnablePartialAgeForRedact\" : \"true\"}")),
+                new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"true\", \"EnablePartialAgesForRedact\" : \"true\"}")),
             };
             yield return new object[]
             {
                 " { \"tag\": \"0040,1001\" , \"method\": \"redact\", \"params\": {\"enablePartialDatesForRedact\" : true} } ",
                 new DicomTag(0x0040, 0x1001),
-                new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"true\", \"EnablePartialAgeForRedact\" : \"false\"}")),
+                new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"true\", \"EnablePartialAgesForRedact\" : \"false\"}")),
             };
         }
 

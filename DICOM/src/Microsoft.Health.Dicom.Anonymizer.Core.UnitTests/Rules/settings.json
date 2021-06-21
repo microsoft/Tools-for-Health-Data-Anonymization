@@ -16,7 +16,7 @@
             "cryptoHashFunction": "sha256"
         },
         "redact": {
-            "enablePartialAgeForRedact": false,
+            "enablePartialAgesForRedact": false,
             "enablePartialDatesForRedact": false
         },
         "encrypt": {
@@ -35,7 +35,7 @@
             "distribution": "Uniform"
         },
         "redactCustomerSetting": {
-            "enablePartialAgeForRedact": true,
+            "enablePartialAgesForRedact": true,
             "enablePartialDatesForRedact": false
         },
         "dateShiftCustomerSetting": {

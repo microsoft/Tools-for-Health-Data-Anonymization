@@ -84,7 +84,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 
             var itemList = dataset.ToArray();
 
-            var newProcessor = new RedactProcessor(JObject.Parse("{\"EnablePartialAgeForRedact\" : \"true\"}"));
+            var newProcessor = new RedactProcessor(JObject.Parse("{\"EnablePartialAgesForRedact\" : \"true\"}"));
             foreach (var item in itemList)
             {
                 newProcessor.Process(dataset, item);
