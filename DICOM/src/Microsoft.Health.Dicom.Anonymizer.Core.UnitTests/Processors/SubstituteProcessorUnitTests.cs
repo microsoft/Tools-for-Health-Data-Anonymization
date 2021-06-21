@@ -40,9 +40,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { DicomTag.Patient​Birth​Name, "Name", JObject.Parse("{\"ReplaceWith\" : \"Name=Name=Name\"}"), "Name=Name=Name" }; // PN
             yield return new object[] { DicomTag.Strain​Description, "​Description", JObject.Parse("{}"), "Anonymous" }; // UC
 
-            // AT element
-            //yield return new object[] { DicomTag.Dimension​Index​Pointer, "​00100010", JObject.Parse("{\"ReplaceWith\" : \"Name=Name=Name\"}"), "(1100,1100)" }; // AT
-
             // value element
             yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345", JObject.Parse("{\"ReplaceWith\" : \"23456\"}"), "23456" }; // FD
             yield return new object[] { DicomTag.Examined​Body​Thickness, "12345", JObject.Parse("{\"ReplaceWith\" : \"23456\"}"), "23456" }; // FL

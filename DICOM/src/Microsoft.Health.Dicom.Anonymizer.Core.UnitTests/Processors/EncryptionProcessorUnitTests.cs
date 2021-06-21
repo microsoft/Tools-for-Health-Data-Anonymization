@@ -183,9 +183,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 
             Processor.Process(dataset, item);
 
-            var key = new byte[] { 49, 50, 51, 52, 53, 54, 55, 56, 49, 50, 51, 52, 53, 54, 55, 56, 49, 50, 51, 52, 53, 54, 55, 56 };
-            var base64Key = Convert.ToBase64String(key);
-            var decodedKey = Convert.FromBase64String(base64Key);
             var encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = "123456781234567812345678" });
             Assert.Equal(Encoding.UTF8.GetBytes("test"), encryptFunction.DecryptContentWithAES(dataset.GetDicomItem<DicomOtherByte>(tag).Get<byte[]>()));
         }
