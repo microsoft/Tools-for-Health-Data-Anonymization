@@ -40,8 +40,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [Fact]
         public async Task GivenOneDicomFile_WhenAnonymizeWithInvalidOutput_IfValidateOutput_ExceptionWillBeThrownAsync()
         {
-            var commands = "-i DicomFiles/I341.dcm -o I341-invalid.dcm -c TestConfigs/invalidOutputConfig.json --validateOutput=true";
-            await Assert.ThrowsAsync<AnonymizerOperationException>(async () => await AnonymizerCliTool.Main(commands.Split()));
+            var commands = "-i DicomFiles/I341.dcm -o I341-invalid.dcm -c TestConfigs/invalidOutputConfig.json";
+            await Assert.ThrowsAsync<AnonymizerOperationException>(async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [MemberData(nameof(GetInvalidCommandLine))]
         public async Task GivenOneDicomFile_WhenAnonymizeWithInvalidCommandLine_ExceptionWillBeThrownAsync(string commands)
         {
-            await Assert.ThrowsAsync<ArgumentException>(async () => await AnonymizerCliTool.Main(commands.Split()));
+            await Assert.ThrowsAsync<ArgumentException>(async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
         }
 
         [Fact]
