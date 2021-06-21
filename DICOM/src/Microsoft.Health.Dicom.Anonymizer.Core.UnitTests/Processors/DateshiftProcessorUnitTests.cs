@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Dicom;
 using Dicom.IO.Buffer;
 using Microsoft.Health.Dicom.Anonymizer.Core;
@@ -14,11 +15,11 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace UnitTests
+namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 {
-    public class DateshiftProcessUnitTests
+    public class DateshiftProcessorUnitTests
     {
-        public DateshiftProcessUnitTests()
+        public DateshiftProcessorUnitTests()
         {
             var json = "{\"dateShiftKey\": \"test\"}";
             Processor = new DateShiftProcessor(JObject.Parse(json));
@@ -59,6 +60,31 @@ namespace UnitTests
 
         [Theory]
         [MemberData(nameof(GetUnsupportedVRItemForDateShift))]
+        public void GivenUnsupportedVRForDateShift_WhenCheckVRIsSupported_ResultWillBeFalse(DicomTag tag, string value)
+        {
+            var dataset = new DicomDataset
+            {
+                { tag, value },
+            };
+
+            Assert.False(Processor.IsSupported(dataset.GetDicomItem<DicomElement>(tag)));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetDAItemForDateshift))]
+        [MemberData(nameof(GetDTItemForDateshift))]
+        public void GivenSupportedVRForDateShift_WhenCheckVRIsSupported_ResultWillBeTrue(DicomTag tag, string value, string minExpected, string maxExpected)
+        {
+            var dataset = new DicomDataset
+            {
+                { tag, value },
+            };
+
+            Assert.True(Processor.IsSupported(dataset.GetDicomItem<DicomElement>(tag)));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetUnsupportedVRItemForDateShift))]
         public void GivenADataSetWithUnsupportedVRForDateShift_WhenDateShift_ExceptionWillBeThrown(DicomTag tag, string value)
         {
             var dataset = new DicomDataset
@@ -69,7 +95,7 @@ namespace UnitTests
                 { tag, value },
             };
 
-            Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), ExtractBasicInformation(dataset)));
+            Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), InitContext(dataset)));
         }
 
         [Theory]
@@ -84,7 +110,7 @@ namespace UnitTests
                 { tag, value },
             };
             var newProcessor = new DateShiftProcessor(JObject.Parse("{\"DateShiftKey\" : \"123\", \"DateShiftScope\" : \"SopInstance\"}"));
-            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), ExtractBasicInformation(dataset));
+            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), InitContext(dataset));
             Assert.InRange(Utility.ParseDicomDate(dataset.GetDicomItem<DicomElement>(tag).Get<string>()), Utility.ParseDicomDate(minExpectedValue), Utility.ParseDicomDate(maxExpectedValue));
         }
 
@@ -100,8 +126,47 @@ namespace UnitTests
                 { tag, value },
             };
             var newProcessor = new DateShiftProcessor(JObject.Parse("{\"DateShiftKey\" : \"123\", \"DateShiftScope\" : \"SeriesInstance\"}"));
-            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), ExtractBasicInformation(dataset));
+            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), InitContext(dataset));
             Assert.InRange(Utility.ParseDicomDateTime(dataset.GetDicomItem<DicomElement>(tag).Get<string>()).DateValue, Utility.ParseDicomDateTime(minExpectedValue).DateValue, Utility.ParseDicomDateTime(maxExpectedValue).DateValue);
+        }
+
+        [Fact]
+        public void GivenADataSetWithDicomElementOB_WhenCheckIsSupported_ResultWillBeFalse()
+        {
+            var tag = DicomTag.PixelData;
+            var item = new DicomOtherByte(tag, Encoding.UTF8.GetBytes("test"));
+
+            Assert.False(Processor.IsSupported(item));
+        }
+
+        [Fact]
+        public void GivenADataSetWithDicomFragmentSequence_WhenCheckIsSupported_ResultWillBeFalse()
+        {
+            var tag = DicomTag.PixelData;
+            var item = new DicomOtherByteFragment(tag);
+            item.Fragments.Add(new MemoryByteBuffer(Convert.FromBase64String("fragment")));
+            item.Fragments.Add(new MemoryByteBuffer(Convert.FromBase64String("fragment")));
+            Assert.False(Processor.IsSupported(item));
+        }
+
+        [Fact]
+        public void GivenADataSetWithSQItem_WhenCheckIsSupported_ResultWillBeFalse()
+        {
+            var sps1 = new DicomDataset { { DicomTag.ScheduledStationName, "1" } };
+            var sps2 = new DicomDataset { { DicomTag.ScheduledStationName, "2" } };
+            var item = new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2);
+
+            Assert.False(Processor.IsSupported(item));
+        }
+
+        [Fact]
+        public void GivenADataSetWithDicomElementOB_WhenDateShift_ExceptionWillBeThrown()
+        {
+            var tag = DicomTag.PixelData;
+            var item = new DicomOtherByte(tag, Encoding.UTF8.GetBytes("test"));
+            var dataset = new DicomDataset(item);
+
+            Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag), InitContext(dataset)));
         }
 
         [Fact]
@@ -114,7 +179,7 @@ namespace UnitTests
 
             var dataset = new DicomDataset(item);
 
-            Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, item, ExtractBasicInformation(dataset)));
+            Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, item, InitContext(dataset)));
         }
 
         [Fact]
@@ -130,10 +195,10 @@ namespace UnitTests
             sps2.Add(new DicomSequence(DicomTag.ScheduledProtocolCodeSequence, spcs3));
             dataset.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2));
 
-            Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence), ExtractBasicInformation(dataset)));
+            Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence), InitContext(dataset)));
         }
 
-        private ProcessContext ExtractBasicInformation(DicomDataset dataset)
+        private ProcessContext InitContext(DicomDataset dataset)
         {
             var context = new ProcessContext
             {

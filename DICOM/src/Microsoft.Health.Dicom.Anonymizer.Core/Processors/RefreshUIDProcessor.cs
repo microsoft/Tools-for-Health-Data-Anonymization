@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
@@ -26,16 +27,23 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            var oldUIDValue = ((DicomElement)item).Get<string>();
+            if (item.ValueRepresentation == DicomVR.UI)
+            {
+                var oldUIDValue = ((DicomElement)item).Get<string>();
 
-            DicomUID newUID = ReplacedUIDs.GetOrAdd(oldUIDValue, DicomUIDGenerator.GenerateDerivedFromUUID());
-            var newItem = new DicomUniqueIdentifier(item.Tag, newUID);
-            dicomDataset.AddOrUpdate(newItem);
+                DicomUID newUID = ReplacedUIDs.GetOrAdd(oldUIDValue, DicomUIDGenerator.GenerateDerivedFromUUID());
+                var newItem = new DicomUniqueIdentifier(item.Tag, newUID);
+                dicomDataset.AddOrUpdate(newItem);
 
-            _logger.LogDebug($"The UID value of DICOM item '{item}' is refreshed.");
+                _logger.LogDebug($"The UID value of DICOM item '{item}' is refreshed.");
+            }
+            else
+            {
+                throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"RefreshUID is not supported for {item.ValueRepresentation}.");
+            }
         }
 
-        public bool IsSupportedVR(DicomItem item)
+        public bool IsSupported(DicomItem item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
 

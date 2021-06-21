@@ -3,9 +3,12 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Dicom;
+using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Tool;
 using Xunit;
 
@@ -13,15 +16,50 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 {
     public class AnonymizerToolUnitTests
     {
+        public static IEnumerable<object[]> GetInvalidCommandLine()
+        {
+            yield return new object[] { "-i DicomFiles/I341.dcm" };
+            yield return new object[] { "-o DicomFiles/I341.dcm" };
+            yield return new object[] { "-I DicomFiles/I341.dcm" };
+            yield return new object[] { "-O DicomFiles/I341.dcm" };
+            yield return new object[] { "-i DicomFiles/I341.dcm -o DicomFiles/I341.dcm" };
+            yield return new object[] { "-I DicomFiles -O DicomFiles" };
+        }
+
         [Fact]
         public async Task GivenOneDicomFile_WhenAnonymize_ResultWillBeReturnedAsync()
         {
             var commands = "-i DicomFiles/I341.dcm -o I341.dcm";
             await AnonymizerCliTool.Main(commands.Split());
-            var dicomFile = DicomFile.Open("I341.dcm");
-            var expectedDicomFile = DicomFile.Open("DicomResults/I341.dcm");
+            var dicomFile = await DicomFile.OpenAsync("I341.dcm");
+            var expectedDicomFile = await DicomFile.OpenAsync("DicomResults/I341.dcm");
             Assert.True(CompareDicomFileDataSet(expectedDicomFile.Dataset, dicomFile.Dataset));
             File.Delete("I341.dcm");
+        }
+
+        [Fact]
+        public async Task GivenOneDicomFile_WhenAnonymizeWithInvalidOutput_IfValidateOutput_ExceptionWillBeThrownAsync()
+        {
+            var commands = "-i DicomFiles/I341.dcm -o I341-invalid.dcm -c TestConfigs/invalidOutputConfig.json --validateOutput=true";
+            await Assert.ThrowsAsync<AnonymizerOperationException>(async () => await AnonymizerCliTool.Main(commands.Split()));
+        }
+
+        [Fact]
+        public async Task GivenOneDicomFile_WhenAnonymizeWithNewConfig_ResultWillBeReturnedAsync()
+        {
+            var commands = "-i DicomFiles/I341.dcm -o I341-newConfig.dcm -c TestConfigs/newConfig.json";
+            await AnonymizerCliTool.Main(commands.Split());
+            var dicomFile = await DicomFile.OpenAsync("I341-newConfig.dcm");
+            var expectedDicomFile = await DicomFile.OpenAsync("DicomResults/I341-newConfig.dcm");
+            Assert.True(CompareDicomFileDataSet(expectedDicomFile.Dataset, dicomFile.Dataset));
+            File.Delete("I341-newConfig.dcm");
+        }
+
+        [Theory]
+        [MemberData(nameof(GetInvalidCommandLine))]
+        public async Task GivenOneDicomFile_WhenAnonymizeWithInvalidCommandLine_ExceptionWillBeThrownAsync(string commands)
+        {
+            await Assert.ThrowsAsync<ArgumentException>(async () => await AnonymizerCliTool.Main(commands.Split()));
         }
 
         [Fact]

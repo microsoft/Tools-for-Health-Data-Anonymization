@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Dicom;
-using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
 {
@@ -22,7 +22,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
             {
                 if (IsSamePath(options.InputFile, options.OutputFile))
                 {
-                    Console.Error.WriteLine("Input and output file path are the same! Please check file names.");
+                    throw new ArgumentException("Input and output file path are the same! Please check file names.");
                 }
 
                 await AnonymizeOneFileAsync(options.InputFile, options.OutputFile, engine, options.SkipFailedItem);
@@ -31,7 +31,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
             {
                 if (IsSamePath(options.InputFolder, options.OutputFolder))
                 {
-                    Console.Error.WriteLine("Input and output folders are the same! Please choose another folder.");
+                    throw new ArgumentException("Input and output folders are the same! Please choose another folder.");
                 }
 
                 foreach (string file in Directory.EnumerateFiles(options.InputFolder, "*.dcm", SearchOption.AllDirectories))
@@ -43,7 +43,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
             }
             else
             {
-                Console.Error.WriteLine("Invalid parameters. Please specify inputFile( or inputFolder) and outputFile( or outputFolder) at the same time.");
+                throw new ArgumentException("Invalid parameters. Please specify inputFile( or inputFolder) and outputFile( or outputFolder) at the same time.");
             }
         }
 

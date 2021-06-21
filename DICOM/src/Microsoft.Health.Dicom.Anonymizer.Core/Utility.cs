@@ -28,8 +28,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 { "D", AgeType.Day },
             };
 
-        public static readonly int AgeStringLength = 3;
-        public static readonly int MaxAgeValue = 999;
+        public const int AgeStringLength = 3;
+        public const int MaxAgeValue = 999;
 
         public static DateTimeOffset[] ParseDicomDate(DicomDate item)
         {
@@ -46,9 +46,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             {
                 return DateTimeOffset.ParseExact(date, "yyyyMMdd", CultureInfo.InvariantCulture);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new DicomDataException("Invalid date value. The valid format is YYYYMMDD.");
+                throw new DicomDataException("Invalid date value. The valid format is YYYYMMDD.", ex);
             }
         }
 
@@ -64,7 +64,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             EnsureArg.IsNotNull(dateTime, nameof(dateTime));
 
             // Reference link http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part05/sect_6.2.html
-            Regex dateTimeRegex = new Regex(@"^((?<year>\d{4})(?<month>\d{2})(?<day>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(\.(?<microsecond>\d{1,6}))?(?<timeZone>(?<sign>-|\+)(?<timeZoneHour>\d{2})(?<timeZoneMinute>\d{2}))?)(\s*)");
+            Regex dateTimeRegex = new Regex(@"^((?<year>\d{4})(?<month>\d{2})(?<day>\d{2})(?<hour>\d{2})(?<minute>\d{2})(?<second>\d{2})(\.(?<microsecond>\d{1,6}))?(?<timeZone>(?<sign>-|\+)(?<timeZoneHour>\d{2})(?<timeZoneMinute>\d{2}))?)(\s*)$");
             var matches = dateTimeRegex.Matches(dateTime);
             if (matches.Count != 1)
             {
@@ -122,20 +122,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
             foreach (var item in AgeTypeMapping)
             {
-                if (new Regex(@"\d{3}" + item.Key).IsMatch(age))
+                if (new Regex(@"^\d{3}" + item.Key + "$").IsMatch(age))
                 {
                     return new AgeValue(uint.Parse(age.Substring(0, AgeStringLength)), item.Value);
                 }
             }
 
-            if (uint.TryParse(age, out uint result))
-            {
-                return new AgeValue(result, AgeType.Year);
-            }
-            else
-            {
-                throw new DicomDataException("Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY.");
-            }
+            throw new DicomDataException("Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY.");
         }
 
         public static string AgeToString(AgeValue age)
@@ -153,7 +146,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                     }
                     else if (age.AgeInYears() <= MaxAgeValue)
                     {
-                        return age.AgeInYears().ToString().PadLeft(AgeStringLength, '0') + item.Key;
+                        return age.AgeInYears().ToString().PadLeft(AgeStringLength, '0') + "Y";
                     }
 
                     throw new DicomDataException("Invalid age value for DICOM. The valid strings are nnnD, nnnW, nnnM, nnnY.");

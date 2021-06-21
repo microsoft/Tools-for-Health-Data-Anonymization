@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Dicom;
 using Dicom.IO.Buffer;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
@@ -12,11 +13,11 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace UnitTests
+namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 {
-    public class SubstituteProcessUnitTests
+    public class SubstituteProcessorUnitTests
     {
-        public SubstituteProcessUnitTests()
+        public SubstituteProcessorUnitTests()
         {
             Processor = new SubstituteProcessor(JObject.Parse("{\"ReplaceWith\" : \"Anonymous\"}"));
         }
@@ -26,7 +27,7 @@ namespace UnitTests
         public static IEnumerable<object[]> GetValidSettingForSubstitute()
         {
             // string element
-            yield return new object[] { DicomTag.RetrieveAETitle, "TEST", JObject.Parse("{\"ReplaceWith\" : \"Anonymous\"}"), "Anonymous" }; // AE
+            yield return new object[] { DicomTag.RetrieveAETitle, "TEST", JObject.Parse("{\"ReplaceWith\" : \"\"}"), string.Empty }; // AE
             yield return new object[] { DicomTag.Query​Retrieve​Level, "0", JObject.Parse("{\"ReplaceWith\" : \"1\"}"), "1" }; // CS
             yield return new object[] { DicomTag.Patient​Telephone​Numbers, "TEST", JObject.Parse("{}"), "Anonymous" }; // SH
             yield return new object[] { DicomTag.SOP​Classes​In​Study, "12345", JObject.Parse("{\"ReplaceWith\" : \"10000\"}"), "10000" }; // UI
@@ -40,7 +41,7 @@ namespace UnitTests
             yield return new object[] { DicomTag.Strain​Description, "​Description", JObject.Parse("{}"), "Anonymous" }; // UC
 
             // AT element
-            // yield return new object[] { DicomTag.Dimension​Index​Pointer, "​00100010", new DicomSubstituteSetting { ReplaceWith = "11001100" }, "(1100,1100)" }; // AT
+            //yield return new object[] { DicomTag.Dimension​Index​Pointer, "​00100010", JObject.Parse("{\"ReplaceWith\" : \"Name=Name=Name\"}"), "(1100,1100)" }; // AT
 
             // value element
             yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345", JObject.Parse("{\"ReplaceWith\" : \"23456\"}"), "23456" }; // FD
@@ -77,7 +78,12 @@ namespace UnitTests
 
         public static IEnumerable<object[]> GetInvalidReplaceValueTypeForSubstitute()
         {
-            yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345", JObject.Parse("{}"), "Anonymous" }; // FD
+            yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345", JObject.Parse("{}"), null }; // FD
+            yield return new object[] { DicomTag.Examined​Body​Thickness, "12345", JObject.Parse("{\"ReplaceWith\" : \"string\"}"), null }; // FL
+            yield return new object[] { DicomTag.Doppler​Sample​Volume​X​Position, "12345", JObject.Parse("{\"ReplaceWith\" : \"test\"}"), null }; // SL
+            yield return new object[] { DicomTag.Pixel​Intensity​Relationship​Sign, "12345", JObject.Parse("{\"ReplaceWith\" : \"abcd\"}"), null }; // SS
+            yield return new object[] { DicomTag.Referenced​Content​Item​Identifier, "12345", JObject.Parse("{\"ReplaceWith\" : \"string\"}"), null }; // UL
+            yield return new object[] { DicomTag.Warning​Reason, "10", JObject.Parse("{\"ReplaceWith\" : \"invalid\"}"), null }; // US
         }
 
         [Theory]
@@ -111,7 +117,7 @@ namespace UnitTests
         [Theory]
         [MemberData(nameof(GetInvalidStringFormatForSubstitute))]
         [MemberData(nameof(GetInvalidStringVMForSubstitute))]
-        public void GivenADataSetWithInvalidStringAndVMForSubstitute_WhenSubstituteWithoutAutoValidation_ResultWillBeReturned(DicomTag tag, string value, JObject settings, string replaceWith)
+        public void GivenADataSetWithInvalidStringAndVMForSubstitute_WhenSubstituteWithoutAutoValidation_ValueWillBeSubstituted(DicomTag tag, string value, JObject settings, string replaceWith)
         {
             var dataset = new DicomDataset
             {
@@ -190,6 +196,58 @@ namespace UnitTests
             var newProcessor = new SubstituteProcessor(JObject.Parse("{\"ReplaceWith\" : \"20\"}"));
             newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.True(dataset.GetDicomItem<DicomElement>(tag).Get<float>() == 20);
+        }
+
+        [Fact]
+        public void GivenADataSetWithATForSubstitute_WhenSubstitute_ValueWillBeSubstituted()
+        {
+            var tag = DicomTag.DimensionIndexPointer;
+            var dataset = new DicomDataset
+            {
+                { tag, DicomTag.Parse("0008,0001") },
+            };
+            var newProcessor = new SubstituteProcessor(JObject.Parse("{\"ReplaceWith\" : \"0001,0001\"}"));
+            newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
+            Assert.True(dataset.GetDicomItem<DicomElement>(tag).Get<string>() == "(0001,0001)");
+        }
+
+        [Fact]
+        public void GivenADataSetWithDicomElementOB_WhenCheckIsSupported_ResultWillBeFalse()
+        {
+            var tag = DicomTag.PixelData;
+            var item = new DicomOtherByte(tag, Encoding.UTF8.GetBytes("test"));
+
+            Assert.False(Processor.IsSupported(item));
+        }
+
+        [Fact]
+        public void GivenADataSetWithDicomFragmentSequence_WhenCheckIsSupported_ResultWillBeFalse()
+        {
+            var tag = DicomTag.PixelData;
+            var item = new DicomOtherByteFragment(tag);
+            item.Fragments.Add(new MemoryByteBuffer(Convert.FromBase64String("fragment")));
+            item.Fragments.Add(new MemoryByteBuffer(Convert.FromBase64String("fragment")));
+            Assert.False(Processor.IsSupported(item));
+        }
+
+        [Fact]
+        public void GivenADataSetWithSQItem_WhenCheckIsSupported_ResultWillBeFalse()
+        {
+            var sps1 = new DicomDataset { { DicomTag.ScheduledStationName, "1" } };
+            var sps2 = new DicomDataset { { DicomTag.ScheduledStationName, "2" } };
+            var item = new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2);
+
+            Assert.False(Processor.IsSupported(item));
+        }
+
+        [Fact]
+        public void GivenADataSetWithDicomElementOB_WhenSubstitute_ExceptionWillBeThrown()
+        {
+            var tag = DicomTag.PixelData;
+            var item = new DicomOtherByte(tag, Encoding.UTF8.GetBytes("test"));
+            var dataset = new DicomDataset(item);
+
+            Assert.Throws<AnonymizerConfigurationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
         }
 
         [Fact]

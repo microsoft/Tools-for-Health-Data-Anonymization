@@ -27,10 +27,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
         [Option("validateInput", Required = false, Default = false, HelpText = "Validate input DICOM data items.")]
         public bool ValidateInput { get; set; }
 
-        [Option("validateOutput", Required = false, Default = true, HelpText = "Validate output DICOM data items.")]
+        [Option("validateOutput", Required = false, Default = false, HelpText = "Validate output DICOM data items.")]
         public bool ValidateOutput { get; set; }
 
-        [Option('s', "skipFailedItem", Required = false, Default = true, HelpText = "Skip failed DICOM file when anonymizing.")]
+        [Option('s', "skipFailedItem", Required = false, Default = false, HelpText = "Skip failed DICOM file when anonymizing.")]
         public bool SkipFailedItem { get; set; }
     }
 }

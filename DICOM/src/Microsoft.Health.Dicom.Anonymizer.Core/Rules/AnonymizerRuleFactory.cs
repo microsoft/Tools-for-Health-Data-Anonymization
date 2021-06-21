@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Dicom;
 using EnsureThat;
-using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Newtonsoft.Json.Linq;
@@ -47,13 +46,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             // Parse and validate method
             if (!ruleContent.ContainsKey(Constants.MethodKey))
             {
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, "Missing method in rule config.");
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, "Missing a required field 'method' in rule config.");
             }
 
             var method = ruleContent[Constants.MethodKey].ToString();
             if (!_supportedMethods.Contains(method))
             {
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationRule, $"Anonymization method {method} not supported.");
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationRule, $"Anonymization method '{method}' is not supported.");
             }
 
             // Parse and validate settings
@@ -81,11 +80,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                     }
                 }
 
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Invalid tag in rule config.");
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, $"Invalid tag '{tagContent}' in rule config.");
             }
             else
             {
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, "Missing tag in rule config.");
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, "Missing a required field 'tag' in rule config.");
             }
         }
 
@@ -142,15 +141,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
         private static AnonymizerRule TryCreateTagNameRule(string tagContent, string method, string description, IAnonymizerProcessorFactory processorFactory, JObject ruleSetting)
         {
-            try
+            var nameField = typeof(DicomTag).GetField(tagContent);
+            if (nameField != null)
             {
-                var output = (DicomTag)typeof(DicomTag).GetField(tagContent).GetValue(new DicomTag(0, 0));
-                return new AnonymizerTagRule(output, method, description, processorFactory, ruleSetting);
+                var tag = (DicomTag)nameField.GetValue(null);
+                return new AnonymizerTagRule(tag, method, description, processorFactory, ruleSetting);
             }
-            catch
+
+            var retiredNameField = typeof(DicomTag).GetField(tagContent + "RETIRED");
+            if (retiredNameField != null)
             {
-                return null;
+                var tag = (DicomTag)retiredNameField.GetValue(null);
+                return new AnonymizerTagRule(tag, method, description, processorFactory, ruleSetting);
             }
+
+            return null;
         }
     }
 }

@@ -25,5 +25,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model
         LT,
         UR,
         OB,
+        UN,
     }
 }

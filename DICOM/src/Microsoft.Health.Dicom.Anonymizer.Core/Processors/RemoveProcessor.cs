@@ -27,7 +27,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             _logger.LogDebug($"The DICOM item '{item}' is removed.");
         }
 
-        public bool IsSupportedVR(DicomItem item)
+        public bool IsSupported(DicomItem item)
         {
             return true;
         }

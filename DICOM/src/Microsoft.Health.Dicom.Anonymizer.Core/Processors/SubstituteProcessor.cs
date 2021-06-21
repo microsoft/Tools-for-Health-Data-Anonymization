@@ -54,6 +54,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 {
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, float.Parse(_replaceString));
                 }
+                else if (item.ValueRepresentation == DicomVR.AT)
+                {
+                    dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, DicomTag.Parse(_replaceString));
+                }
                 else
                 {
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, _replaceString);
@@ -67,7 +71,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
         }
 
-        public bool IsSupportedVR(DicomItem item)
+        public bool IsSupported(DicomItem item)
         {
             if (item is DicomOtherByte || item is DicomSequence || item is DicomFragmentSequence)
             {

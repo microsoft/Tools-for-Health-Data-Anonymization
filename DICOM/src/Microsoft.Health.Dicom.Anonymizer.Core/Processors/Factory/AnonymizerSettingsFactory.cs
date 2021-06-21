@@ -6,7 +6,6 @@
 using System;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings
@@ -23,7 +22,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings
             }
             catch (Exception ex)
             {
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidRuleSettings, "Fail to parse anonymizer setting.", ex);
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidRuleSettings, "Failed to parse rule setting.", ex);
             }
         }
     }

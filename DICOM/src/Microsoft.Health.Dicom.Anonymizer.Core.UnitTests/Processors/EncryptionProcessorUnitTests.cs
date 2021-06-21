@@ -16,11 +16,11 @@ using Microsoft.Health.Dicom.DeID.SharedLib;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace UnitTests
+namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 {
-    public class EncryptionProcessUnitTests
+    public class EncryptionProcessorUnitTests
     {
-        public EncryptionProcessUnitTests()
+        public EncryptionProcessorUnitTests()
         {
             var encryptObj = "{\"encryptKey\": \"123456781234567812345678\"}";
             Processor = new EncryptProcessor(JObject.Parse(encryptObj));
@@ -40,7 +40,7 @@ namespace UnitTests
             yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345" }; // FD
         }
 
-        public static IEnumerable<object[]> GetValidVRItemForEncryption()
+        public static IEnumerable<object[]> GetSupportedItemForEncryption()
         {
             yield return new object[] { DicomTag.Consulting​Physician​Name, "Test\\Test" }; // PN
             yield return new object[] { DicomTag.Long​Code​Value, "TEST" }; // UC
@@ -50,7 +50,7 @@ namespace UnitTests
             yield return new object[] { DicomTag.Pixel​Data​Provider​URL, "http://test" }; // LT
         }
 
-        public static IEnumerable<object[]> GetValidItemForEncryptionButOutputExceedLengthLimitation()
+        public static IEnumerable<object[]> GetSupportedItemForEncryptionButOutputExceedLengthLimitation()
         {
             yield return new object[] { DicomTag.RetrieveAETitle, "TEST" }; // AE
             yield return new object[] { DicomTag.PatientAge, "100Y" }; // AS
@@ -60,6 +60,31 @@ namespace UnitTests
             yield return new object[] { DicomTag.Patient​Telephone​Numbers, "TEST" }; // SH
             yield return new object[] { DicomTag.SOP​Classes​In​Study, "12345" }; // UI
             yield return new object[] { DicomTag.Consulting​Physician​Name, "jJ7zRxhIpEWWIH9qAIHDyg90+s0wl15xgVP+yt4Agb8=jJ7zRxhIpEWWIH9qAIHDyg90+s0wl15xgVP+yt4Agb8=" };
+        }
+
+        [Theory]
+        [MemberData(nameof(GetUnsupportedVRItemForEncryption))]
+        public void GivenUnsupportedVRForEncryption_WhenCheckVRIsSupported_ResultWillBeFalse(DicomTag tag, string value)
+        {
+            var dataset = new DicomDataset
+            {
+                { tag, value },
+            };
+
+            Assert.False(Processor.IsSupported(dataset.GetDicomItem<DicomElement>(tag)));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSupportedItemForEncryption))]
+        [MemberData(nameof(GetSupportedItemForEncryptionButOutputExceedLengthLimitation))]
+        public void GivenSupportedVRForEncryption_WhenCheckVRIsSupported_ResultWillBeTrue(DicomTag tag, string value)
+        {
+            var dataset = new DicomDataset
+            {
+                { tag, value },
+            };
+
+            Assert.True(Processor.IsSupported(dataset.GetDicomItem<DicomElement>(tag)));
         }
 
         [Theory]
@@ -75,7 +100,7 @@ namespace UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetValidItemForEncryptionButOutputExceedLengthLimitation))]
+        [MemberData(nameof(GetSupportedItemForEncryptionButOutputExceedLengthLimitation))]
         public void GivenADataSetWithValidVRForEncryption_IfOutputExceedLengthLimitation_WhenEncrypt_ExceptionWillBeThrown(DicomTag tag, string value)
         {
             var dataset = new DicomDataset
@@ -87,7 +112,7 @@ namespace UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetValidItemForEncryptionButOutputExceedLengthLimitation))]
+        [MemberData(nameof(GetSupportedItemForEncryptionButOutputExceedLengthLimitation))]
         public void GivenADataSetWithValidVRForEncryption_IfOutputExceedLengthLimitation_WhenEncryptWithoutAutoValidation_ResultWillBeReturned(DicomTag tag, string value)
         {
             var dataset = new DicomDataset
@@ -104,7 +129,7 @@ namespace UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetValidVRItemForEncryption))]
+        [MemberData(nameof(GetSupportedItemForEncryption))]
         public void GivenADataSetWithValidVRForEncryption_WhenEncryptWithAutoValidation_ResultWillBeReturned(DicomTag tag, string value)
         {
             var dataset = new DicomDataset
@@ -120,10 +145,33 @@ namespace UnitTests
             Assert.Equal(value, decryptedValue);
         }
 
-        private string Decryption(string encryptedValue, string key)
+        [Fact]
+        public void GivenADataSetWithDicomElementOB_WhenCheckIsSupported_ResultWillBeTrue()
         {
-            var encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = key });
-            return Encoding.UTF8.GetString(encryptFunction.DecryptContentWithAES(Convert.FromBase64String(encryptedValue)));
+            var tag = DicomTag.PixelData;
+            var item = new DicomOtherByte(tag, Encoding.UTF8.GetBytes("test"));
+
+            Assert.True(Processor.IsSupported(item));
+        }
+
+        [Fact]
+        public void GivenADataSetWithDicomFragmentSequence_WhenCheckIsSupported_ResultWillBeTrue()
+        {
+            var tag = DicomTag.PixelData;
+            var item = new DicomOtherByteFragment(tag);
+            item.Fragments.Add(new MemoryByteBuffer(Convert.FromBase64String("fragment")));
+            item.Fragments.Add(new MemoryByteBuffer(Convert.FromBase64String("fragment")));
+            Assert.True(Processor.IsSupported(item));
+        }
+
+        [Fact]
+        public void GivenADataSetWithSQItem_WhenCheckIsSupported_ResultWillBeFalse()
+        {
+            var sps1 = new DicomDataset { { DicomTag.ScheduledStationName, "1" } };
+            var sps2 = new DicomDataset { { DicomTag.ScheduledStationName, "2" } };
+            var item = new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2);
+
+            Assert.False(Processor.IsSupported(item));
         }
 
         [Fact]
@@ -134,6 +182,10 @@ namespace UnitTests
             var dataset = new DicomDataset(item);
 
             Processor.Process(dataset, item);
+
+            var key = new byte[] { 49, 50, 51, 52, 53, 54, 55, 56, 49, 50, 51, 52, 53, 54, 55, 56, 49, 50, 51, 52, 53, 54, 55, 56 };
+            var base64Key = Convert.ToBase64String(key);
+            var decodedKey = Convert.FromBase64String(base64Key);
             var encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = "123456781234567812345678" });
             Assert.Equal(Encoding.UTF8.GetBytes("test"), encryptFunction.DecryptContentWithAES(dataset.GetDicomItem<DicomOtherByte>(tag).Get<byte[]>()));
         }
@@ -172,6 +224,12 @@ namespace UnitTests
             dataset.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2));
 
             Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence)));
+        }
+
+        private string Decryption(string encryptedValue, string key)
+        {
+            var encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = key });
+            return Encoding.UTF8.GetString(encryptFunction.DecryptContentWithAES(Convert.FromBase64String(encryptedValue)));
         }
     }
 }

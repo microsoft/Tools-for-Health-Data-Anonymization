@@ -94,7 +94,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             _logger.LogDebug($"The value of DICOM item '{item}' is redacted.");
         }
 
-        public bool IsSupportedVR(DicomItem item)
+        public bool IsSupported(DicomItem item)
         {
             return true;
         }

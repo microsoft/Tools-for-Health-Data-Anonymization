@@ -4,11 +4,10 @@
 // -------------------------------------------------------------------------------------------------
 
 using Dicom;
-using Microsoft.Health.Dicom.Anonymizer.Core;
-using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Xunit;
 
-namespace UnitTests
+namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 {
     public class AnonymizerEngineTests
     {
@@ -46,16 +45,25 @@ namespace UnitTests
         public DicomDataset Dataset { get; set; }
 
         [Fact]
-        public void GivenDicomDataSet_SetValidationOutputTrue_WhenAnonymizeWithUnsupportedOperation_ExceptionWillBeThrown()
+        public void GivenDicomDataSet_SetValidateOutput_WhenAnonymizeWithInvalidOutput_ExceptionWillBeThrown()
         {
-            var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerEngineOptions() { });
+            var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerEngineOptions(validateOutput: true));
             Assert.Throws<DicomValidationException>(() => engine.AnonymizeDataset(Dataset));
         }
 
         [Fact]
-        public void GivenDicomDataSet_SetValidationOutputTrue_WhenAnonymize_ValidDicomDatasetWillBeReturn()
+        public void GivenInvalidDicomDataSet_SetValidateInput_ExceptionWillBeThrown()
         {
-            var engine = new AnonymizerEngine("./TestConfigurations/configuration-test-engine.json");
+            Dataset.AutoValidate = false;
+            Dataset.AddOrUpdate(DicomTag.PatientAge, "invalid");
+            var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerEngineOptions(validateInput: true));
+            Assert.Throws<DicomValidationException>(() => engine.AnonymizeDataset(Dataset));
+        }
+
+        [Fact]
+        public void GivenDicomDataSet_SetValidationOutput_WhenAnonymize_ValidDicomDatasetWillBeReturned()
+        {
+            var engine = new AnonymizerEngine("./TestConfigurations/configuration-test-engine.json", new AnonymizerEngineOptions(validateOutput: true));
             engine.AnonymizeDataset(Dataset);
             var dicomFile = DicomFile.Open("DicomResults/anonymized.dcm");
             foreach (var item in Dataset)
@@ -65,7 +73,7 @@ namespace UnitTests
         }
 
         [Fact]
-        public void GivenDicomDataSet_SetValidationOutputFalse_WhenAnonymizeWithUnsupportedOperation_InvalidDicomDatasetWillBeReturn()
+        public void GivenDicomDataSet_SetValidationOutputFalse_WhenAnonymizeWithInvalidOutput_InvalidDicomDatasetWillBeReturned()
         {
             var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerEngineOptions(false, false));
             engine.AnonymizeDataset(Dataset);

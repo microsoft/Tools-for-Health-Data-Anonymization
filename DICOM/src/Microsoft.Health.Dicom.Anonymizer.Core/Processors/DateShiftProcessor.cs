@@ -40,7 +40,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             _dateShiftFunction = new DateShiftFunction(dateShiftSetting);
             if (settingObject.TryGetValue("DateShiftScope", StringComparison.OrdinalIgnoreCase, out JToken scope))
             {
-                _dateShiftScope = (DateShiftScope)Enum.Parse(typeof(DateShiftScope), scope.ToString());
+                _dateShiftScope = (DateShiftScope)Enum.Parse(typeof(DateShiftScope), scope.ToString(), true);
             }
         }
 
@@ -88,7 +88,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             _logger.LogDebug($"The value of DICOM item '{item}' is shifted.");
         }
 
-        public bool IsSupportedVR(DicomItem item)
+        public bool IsSupported(DicomItem item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
 

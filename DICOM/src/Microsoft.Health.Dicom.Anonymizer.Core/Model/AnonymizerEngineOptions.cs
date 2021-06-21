@@ -5,9 +5,16 @@
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Model
 {
-    public enum EncryptFunctionType
+    public class AnonymizerEngineOptions
     {
-        // RSA could be supported in the future
-        AES,
+        public AnonymizerEngineOptions(bool validateInput = false, bool validateOutput = true)
+        {
+            ValidateInput = validateInput;
+            ValidateOutput = validateOutput;
+        }
+
+        public bool ValidateInput { get; }
+
+        public bool ValidateOutput { get; }
     }
 }

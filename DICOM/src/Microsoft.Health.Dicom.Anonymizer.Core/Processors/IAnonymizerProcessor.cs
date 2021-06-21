@@ -12,6 +12,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context);
 
-        bool IsSupportedVR(DicomItem item);
+        bool IsSupported(DicomItem item);
     }
 }

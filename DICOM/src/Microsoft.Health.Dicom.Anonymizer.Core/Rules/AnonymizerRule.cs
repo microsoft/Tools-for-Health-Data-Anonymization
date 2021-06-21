@@ -39,7 +39,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
             foreach (var item in locatedItems)
             {
-                if (_processor.IsSupportedVR(item))
+                if (_processor.IsSupported(item))
                 {
                     _processor.Process(dataset, item, context);
                     context.VisitedNodes.Add(item.ToString());

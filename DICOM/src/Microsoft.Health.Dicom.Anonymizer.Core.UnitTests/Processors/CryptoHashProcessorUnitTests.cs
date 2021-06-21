@@ -14,11 +14,11 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace UnitTests
+namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 {
-    public class CryptoHashProcessUnitTests
+    public class CryptoHashProcessorUnitTests
     {
-        public CryptoHashProcessUnitTests()
+        public CryptoHashProcessorUnitTests()
         {
             var json = "{\"cryptoHashKey\": \"123\"}";
             Processor = new CryptoHashProcessor(JObject.Parse(json));
@@ -36,7 +36,7 @@ namespace UnitTests
             yield return new object[] { DicomTag.Referenced​Waveform​Channels, "12345\\1234" }; // US
         }
 
-        public static IEnumerable<object[]> GetValidVRItemForCryptoHash()
+        public static IEnumerable<object[]> GetSupportedVRItemForCryptoHash()
         {
             yield return new object[] { DicomTag.Consulting​Physician​Name, "Test\\Test", @"d61ffce34b0192c52d7a67215be73f1e2d640d01383dd8115170b9bd20779a91\d61ffce34b0192c52d7a67215be73f1e2d640d01383dd8115170b9bd20779a91" }; // PN
             yield return new object[] { DicomTag.Long​Code​Value, "TEST", "2e7acefff0307262cef6f503fa7019257f3f9d47fc987fb2c5a31ae4f4d3c022" }; // UC
@@ -56,6 +56,31 @@ namespace UnitTests
             yield return new object[] { DicomTag.Stage​Number, "1234", "c1771ad95972ef1ab887140489863ede4faad7458441a3a8a4781454e368b52d" }; // IS
             yield return new object[] { DicomTag.Patient​Telephone​Numbers, "TEST", "2e7acefff0307262cef6f503fa7019257f3f9d47fc987fb2c5a31ae4f4d3c022" }; // SH
             yield return new object[] { DicomTag.SOP​Classes​In​Study, "12345", "81c7be73b3eaeca31695a744fbc6d3abb5a37ffc10498d0fcb4111c7944b28a0" }; // UI
+        }
+
+        [Theory]
+        [MemberData(nameof(GetUnsupportedVRItemForCryptoHash))]
+        public void GivenUnsupportedVRForCryptoHash_WhenCheckVRIsSupported_ResultWillBeFalse(DicomTag tag, string value)
+        {
+            var dataset = new DicomDataset
+            {
+                { tag, value },
+            };
+
+            Assert.False(Processor.IsSupported(dataset.GetDicomItem<DicomElement>(tag)));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSupportedVRItemForCryptoHash))]
+        [MemberData(nameof(GetSupportedVRItemForCryptoHashButOutputExceedLengthLimitation))]
+        public void GivenSupportedVRForCryptoHash_WhenCheckVRIsSupported_ResultWillBeTrue(DicomTag tag, string value, string expectedValue)
+        {
+            var dataset = new DicomDataset
+            {
+                { tag, value },
+            };
+
+            Assert.True(Processor.IsSupported(dataset.GetDicomItem<DicomElement>(tag)));
         }
 
         [Theory]
@@ -96,7 +121,7 @@ namespace UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetValidVRItemForCryptoHash))]
+        [MemberData(nameof(GetSupportedVRItemForCryptoHash))]
         public void GivenADataSetWithValidVRForCryptoHash_WhenCryptoHash_ItemWillBeHashed(DicomTag tag, string value, string result)
         {
             var dataset = new DicomDataset
@@ -106,6 +131,35 @@ namespace UnitTests
 
             Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.Equal(result, dataset.GetDicomItem<DicomElement>(tag).Get<string>());
+        }
+
+        [Fact]
+        public void GivenADataSetWithDicomElementOB_WhenCheckIsSupported_ResultWillBeTrue()
+        {
+            var tag = DicomTag.PixelData;
+            var item = new DicomOtherByte(tag, Encoding.UTF8.GetBytes("test"));
+
+            Assert.True(Processor.IsSupported(item));
+        }
+
+        [Fact]
+        public void GivenADataSetWithDicomFragmentSequence_WhenCheckIsSupported_ResultWillBeTrue()
+        {
+            var tag = DicomTag.PixelData;
+            var item = new DicomOtherByteFragment(tag);
+            item.Fragments.Add(new MemoryByteBuffer(Convert.FromBase64String("fragment")));
+            item.Fragments.Add(new MemoryByteBuffer(Convert.FromBase64String("fragment")));
+            Assert.True(Processor.IsSupported(item));
+        }
+
+        [Fact]
+        public void GivenADataSetWithSQItem_WhenCheckIsSupported_ResultWillBeFalse()
+        {
+            var sps1 = new DicomDataset { { DicomTag.ScheduledStationName, "1" } };
+            var sps2 = new DicomDataset { { DicomTag.ScheduledStationName, "2" } };
+            var item = new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2);
+
+            Assert.False(Processor.IsSupported(item));
         }
 
         [Fact]

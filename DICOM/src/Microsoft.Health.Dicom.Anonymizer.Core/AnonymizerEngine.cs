@@ -6,9 +6,7 @@
 using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
-using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core

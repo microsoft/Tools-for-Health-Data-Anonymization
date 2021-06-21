@@ -307,10 +307,6 @@
         {"tag":"DA", "method":"dateshift"},
         {"tag":"DT", "method":"dateshift"}
     ],
-
-    "profile": [
-        "MINIMAL_KEEP_LIST_PROFILE"
-    ],
     "defaultSettings": {
         "perturb": {
             "span": 1,

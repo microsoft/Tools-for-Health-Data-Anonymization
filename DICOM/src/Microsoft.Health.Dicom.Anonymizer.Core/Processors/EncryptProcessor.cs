@@ -61,15 +61,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 }
                 else if (item is DicomFragmentSequence)
                 {
-                    var enumerator = ((DicomFragmentSequence)item).GetEnumerator();
-
                     var element = item.ValueRepresentation == DicomVR.OW
                         ? (DicomFragmentSequence)new DicomOtherWordFragment(item.Tag)
                         : new DicomOtherByteFragment(item.Tag);
 
-                    while (enumerator.MoveNext())
+                    foreach (var fragment in (DicomFragmentSequence)item)
                     {
-                        element.Fragments.Add(new MemoryByteBuffer(_encryptFunction.EncryptContentWithAES(enumerator.Current.Data)));
+                        element.Fragments.Add(new MemoryByteBuffer(_encryptFunction.EncryptContentWithAES(fragment.Data)));
                     }
 
                     dicomDataset.AddOrUpdate(element);
@@ -93,7 +91,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             return Convert.ToBase64String(_encryptFunction.EncryptContentWithAES(DicomEncoding.Default.GetBytes(plainString)));
         }
 
-        public bool IsSupportedVR(DicomItem item)
+        public bool IsSupported(DicomItem item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
 

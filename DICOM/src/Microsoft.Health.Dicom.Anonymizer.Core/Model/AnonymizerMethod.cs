@@ -3,14 +3,18 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System;
-
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Model
 {
-    public class VRTypes
+    public enum AnonymizerMethod
     {
-        public Type ElementType { get; set; }
-
-        public Type ValueType { get; set; }
+        Redact,
+        DateShift,
+        CryptoHash,
+        Keep,
+        Perturb,
+        Encrypt,
+        Remove,
+        RefreshUID,
+        Substitute,
     }
 }

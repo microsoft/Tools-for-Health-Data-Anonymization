@@ -59,15 +59,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
             else if (item is DicomFragmentSequence)
             {
-                var enumerator = ((DicomFragmentSequence)item).GetEnumerator();
-
                 var element = item.ValueRepresentation == DicomVR.OW
                     ? (DicomFragmentSequence)new DicomOtherWordFragment(item.Tag)
                     : new DicomOtherByteFragment(item.Tag);
 
-                while (enumerator.MoveNext())
+                foreach (var fragment in (DicomFragmentSequence)item)
                 {
-                    element.Fragments.Add(new MemoryByteBuffer(_cryptoHashFunction.ComputeHmacSHA256Hash(enumerator.Current.Data)));
+                    element.Fragments.Add(new MemoryByteBuffer(_cryptoHashFunction.ComputeHmacSHA256Hash(fragment.Data)));
                 }
 
                 dicomDataset.AddOrUpdate(element);
@@ -80,7 +78,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             _logger.LogDebug($"The value of DICOM item '{item}' is cryptoHashed.");
         }
 
-        public bool IsSupportedVR(DicomItem item)
+        public bool IsSupported(DicomItem item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
 

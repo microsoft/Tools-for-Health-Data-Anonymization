@@ -6,30 +6,22 @@
 using System.IO;
 using System.Text;
 using EnsureThat;
-using Microsoft.Health.Dicom.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
+using Microsoft.Health.Dicom.Anonymizer.Core.Model;
 using Newtonsoft.Json;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
     public sealed class AnonymizerConfigurationManager
     {
-        private readonly AnonymizerConfiguration _configuration;
-
         public AnonymizerConfigurationManager(AnonymizerConfiguration configuration)
         {
             EnsureArg.IsNotNull(configuration, nameof(configuration));
 
-            _configuration = configuration;
+            Configuration = configuration;
         }
 
-        public AnonymizerConfiguration Configuration
-        {
-            get
-            {
-                return _configuration;
-            }
-        }
+        public AnonymizerConfiguration Configuration { get; }
 
         public static AnonymizerConfigurationManager CreateFromJson(string json)
         {

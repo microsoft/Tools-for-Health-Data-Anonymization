@@ -11,11 +11,11 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace UnitTests
+namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 {
-    public class RedactProcessUnitTests
+    public class RedactProcessorUnitTests
     {
-        public RedactProcessUnitTests()
+        public RedactProcessorUnitTests()
         {
             Processor = new RedactProcessor(JObject.Parse("{\"EnablePartialDatesForRedact\" : \"false\"}"));
         }
@@ -150,14 +150,7 @@ namespace UnitTests
             sps2.Add(new DicomSequence(DicomTag.ScheduledProtocolCodeSequence, spcs3));
             dataset.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2));
 
-            var itemList = dataset.ToArray();
-
-            var redactProcess = new RedactProcessor(JObject.Parse("{}"));
-            foreach (var item in itemList)
-            {
-                redactProcess.Process(dataset, item);
-            }
-
+            Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence));
             Assert.Empty(dataset.GetDicomItem<DicomSequence>(DicomTag.ScheduledProcedureStepSequence).ToArray());
         }
     }

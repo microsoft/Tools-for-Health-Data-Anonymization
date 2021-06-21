@@ -28,23 +28,42 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(PerturbSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<PerturbProcessor>();
 
-        private readonly Dictionary<DicomVR, VRTypes> _numericValueTypeMapping = new Dictionary<DicomVR, VRTypes>()
+        private static readonly Dictionary<DicomVR, Type> _numericElementTypeMapping = new Dictionary<DicomVR, Type>()
         {
-            { DicomVR.DS, new VRTypes() { ElementType = typeof(DicomDecimalString), ValueType = typeof(decimal[]) } },
-            { DicomVR.FL, new VRTypes() { ElementType = typeof(DicomFloatingPointSingle), ValueType = typeof(float[]) } },
-            { DicomVR.OF, new VRTypes() { ElementType = typeof(DicomOtherFloat), ValueType = typeof(float[]) } },
-            { DicomVR.FD, new VRTypes() { ElementType = typeof(DicomFloatingPointDouble), ValueType = typeof(double[]) } },
-            { DicomVR.OD, new VRTypes() { ElementType = typeof(DicomOtherDouble), ValueType = typeof(double[]) } },
-            { DicomVR.IS, new VRTypes() { ElementType = typeof(DicomIntegerString), ValueType = typeof(int[]) } },
-            { DicomVR.SL, new VRTypes() { ElementType = typeof(DicomSignedLong), ValueType = typeof(int[]) } },
-            { DicomVR.SS, new VRTypes() { ElementType = typeof(DicomSignedShort), ValueType = typeof(short[]) } },
-            { DicomVR.US, new VRTypes() { ElementType = typeof(DicomUnsignedShort), ValueType = typeof(ushort[]) } },
-            { DicomVR.OW, new VRTypes() { ElementType = typeof(DicomOtherWord), ValueType = typeof(ushort[]) } },
-            { DicomVR.UL, new VRTypes() { ElementType = typeof(DicomUnsignedLong), ValueType = typeof(uint[]) } },
-            { DicomVR.OL, new VRTypes() { ElementType = typeof(DicomOtherLong), ValueType = typeof(uint[]) } },
-            { DicomVR.UV, new VRTypes() { ElementType = typeof(DicomUnsignedVeryLong), ValueType = typeof(ulong[]) } },
-            { DicomVR.OV, new VRTypes() { ElementType = typeof(DicomOtherVeryLong), ValueType = typeof(ulong[]) } },
-            { DicomVR.SV, new VRTypes() { ElementType = typeof(DicomSignedVeryLong), ValueType = typeof(long[]) } },
+            { DicomVR.DS, typeof(DicomDecimalString) },
+            { DicomVR.FL, typeof(DicomFloatingPointSingle) },
+            { DicomVR.OF, typeof(DicomOtherFloat) },
+            { DicomVR.FD, typeof(DicomFloatingPointDouble) },
+            { DicomVR.OD, typeof(DicomOtherDouble) },
+            { DicomVR.IS, typeof(DicomIntegerString) },
+            { DicomVR.SL, typeof(DicomSignedLong) },
+            { DicomVR.SS, typeof(DicomSignedShort) },
+            { DicomVR.US, typeof(DicomUnsignedShort) },
+            { DicomVR.OW, typeof(DicomOtherWord) },
+            { DicomVR.UL, typeof(DicomUnsignedLong) },
+            { DicomVR.OL, typeof(DicomOtherLong) },
+            { DicomVR.UV, typeof(DicomUnsignedVeryLong) },
+            { DicomVR.OV, typeof(DicomOtherVeryLong) },
+            { DicomVR.SV, typeof(DicomSignedVeryLong) },
+        };
+
+        private static readonly Dictionary<DicomVR, Type> _numericValueTypeMapping = new Dictionary<DicomVR, Type>()
+        {
+            { DicomVR.DS, typeof(decimal[]) },
+            { DicomVR.FL, typeof(float[]) },
+            { DicomVR.OF, typeof(float[]) },
+            { DicomVR.FD, typeof(double[]) },
+            { DicomVR.OD, typeof(double[]) },
+            { DicomVR.IS, typeof(int[]) },
+            { DicomVR.SL, typeof(int[]) },
+            { DicomVR.SS, typeof(short[]) },
+            { DicomVR.US, typeof(ushort[]) },
+            { DicomVR.OW, typeof(ushort[]) },
+            { DicomVR.UL, typeof(uint[]) },
+            { DicomVR.OL, typeof(uint[]) },
+            { DicomVR.UV, typeof(ulong[]) },
+            { DicomVR.OV, typeof(ulong[]) },
+            { DicomVR.SV, typeof(long[]) },
         };
 
         public PerturbProcessor(JObject settingObject)
@@ -73,8 +92,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                     throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Perturb is not supported for {item.ValueRepresentation}.");
                 }
 
-                var elementType = _numericValueTypeMapping[item.ValueRepresentation].ElementType;
-                var valueType = _numericValueTypeMapping[item.ValueRepresentation].ValueType;
+                var elementType = _numericElementTypeMapping[item.ValueRepresentation];
+                var valueType = _numericValueTypeMapping[item.ValueRepresentation];
 
                 // Get numeric value using reflection.
                 var valueObj = elementType.GetMethod("Get").MakeGenericMethod(valueType).Invoke(item, new object[] { -1 });
@@ -134,7 +153,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
         }
 
-        public bool IsSupportedVR(DicomItem item)
+        public bool IsSupported(DicomItem item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
