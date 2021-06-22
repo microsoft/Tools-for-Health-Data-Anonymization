@@ -4,7 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using Dicom;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {

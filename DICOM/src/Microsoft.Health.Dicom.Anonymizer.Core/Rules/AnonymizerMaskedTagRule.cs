@@ -7,7 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Dicom;
 using EnsureThat;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
+using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules

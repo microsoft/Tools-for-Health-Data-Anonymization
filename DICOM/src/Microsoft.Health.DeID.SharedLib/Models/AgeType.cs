@@ -3,18 +3,13 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.Model
+namespace Microsoft.Health.Dicom.DeID.SharedLib.Models
 {
-    public enum AnonymizerMethod
+    public enum AgeType
     {
-        Redact,
-        DateShift,
-        CryptoHash,
-        Keep,
-        Perturb,
-        Encrypt,
-        Remove,
-        RefreshUID,
-        Substitute,
+        Year,
+        Month,
+        Week,
+        Day,
     }
 }

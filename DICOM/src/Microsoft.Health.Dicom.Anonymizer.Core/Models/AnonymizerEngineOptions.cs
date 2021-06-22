@@ -3,11 +3,11 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.Model
+namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
 {
     public class AnonymizerEngineOptions
     {
-        public AnonymizerEngineOptions(bool validateInput = false, bool validateOutput = true)
+        public AnonymizerEngineOptions(bool validateInput = false, bool validateOutput = false)
         {
             ValidateInput = validateInput;
             ValidateOutput = validateOutput;

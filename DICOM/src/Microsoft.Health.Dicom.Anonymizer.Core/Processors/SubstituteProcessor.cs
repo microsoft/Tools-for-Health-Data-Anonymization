@@ -8,7 +8,7 @@ using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors

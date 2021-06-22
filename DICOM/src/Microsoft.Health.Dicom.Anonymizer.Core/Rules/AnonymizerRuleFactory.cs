@@ -9,7 +9,8 @@ using System.Linq;
 using Dicom;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
+using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
@@ -34,12 +35,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             _processorFactory = processorFactory;
         }
 
-        public AnonymizerRule[] CreateAnonymizationDicomRules(JObject[] ruleContents)
+        public AnonymizerRule[] CreateDicomAnonymizationRules(JObject[] ruleContents)
         {
-            return ruleContents?.Select(entry => CreateAnonymizationDicomRule(entry)).ToArray();
+            return ruleContents?.Select(entry => CreateDicomAnonymizationRule(entry)).ToArray();
         }
 
-        public AnonymizerRule CreateAnonymizationDicomRule(JObject ruleContent)
+        public AnonymizerRule CreateDicomAnonymizationRule(JObject ruleContent)
         {
             EnsureArg.IsNotNull(ruleContent, nameof(ruleContent));
 

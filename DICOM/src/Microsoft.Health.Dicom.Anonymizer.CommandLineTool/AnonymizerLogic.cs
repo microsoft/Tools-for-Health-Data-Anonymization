@@ -7,9 +7,10 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Dicom;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
+namespace Microsoft.Health.Dicom.Anonymizer.CommandLineTool
 {
     internal static class AnonymizerLogic
     {
@@ -25,7 +26,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
                     throw new ArgumentException("Input and output file path are the same! Please check file names.");
                 }
 
-                await AnonymizeOneFileAsync(options.InputFile, options.OutputFile, engine, options.SkipFailedItem);
+                await AnonymizeOneFileAsync(options.InputFile, options.OutputFile, engine);
             }
             else if (options.InputFolder != null && options.OutputFolder != null)
             {
@@ -36,7 +37,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
 
                 foreach (string file in Directory.EnumerateFiles(options.InputFolder, "*.dcm", SearchOption.AllDirectories))
                 {
-                    await AnonymizeOneFileAsync(file, Path.Join(options.OutputFolder, Path.GetRelativePath(options.InputFolder, file)), engine, options.SkipFailedItem);
+                    await AnonymizeOneFileAsync(file, Path.Join(options.OutputFolder, Path.GetRelativePath(options.InputFolder, file)), engine);
                 }
 
                 Console.WriteLine("Anonymization finished!");
@@ -57,33 +58,19 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
             return string.Equals(inputFullPath, outputFullPath, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        internal static async Task AnonymizeOneFileAsync(string inputFile, string outputFile, AnonymizerEngine engine, bool skipFailedItem)
+        internal static async Task AnonymizeOneFileAsync(string inputFile, string outputFile, AnonymizerEngine engine)
         {
-            try
+            DicomFile dicomFile = await DicomFile.OpenAsync(inputFile).ConfigureAwait(false);
+            engine.AnonymizeDataset(dicomFile.Dataset);
+
+            if (!string.IsNullOrEmpty(Path.GetDirectoryName(outputFile)))
             {
-                DicomFile dicomFile = await DicomFile.OpenAsync(inputFile).ConfigureAwait(false);
-                engine.AnonymizeDataset(dicomFile.Dataset);
-
-                if (!string.IsNullOrEmpty(Path.GetDirectoryName(outputFile)))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
-                }
-
-                await dicomFile.SaveAsync(outputFile);
-
-                Console.WriteLine($"Finished processing '{inputFile}'!");
+                Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
             }
-            catch (Exception ex)
-            {
-                if (skipFailedItem)
-                {
-                    Console.WriteLine($"Failed to process the file {inputFile} and skipped. \r\n {ex.Message}");
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
+            await dicomFile.SaveAsync(outputFile);
+
+            Console.WriteLine($"Finished processing '{inputFile}'!");
         }
     }
 }

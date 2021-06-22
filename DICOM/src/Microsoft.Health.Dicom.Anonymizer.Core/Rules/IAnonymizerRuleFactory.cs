@@ -9,8 +9,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 {
     public interface IAnonymizerRuleFactory
     {
-        AnonymizerRule CreateAnonymizationDicomRule(JObject rule);
+        AnonymizerRule CreateDicomAnonymizationRule(JObject rule);
 
-        AnonymizerRule[] CreateAnonymizationDicomRules(JObject[] rule);
+        AnonymizerRule[] CreateDicomAnonymizationRules(JObject[] rule);
     }
 }

@@ -7,7 +7,7 @@ using System;
 using EnsureThat;
 using MathNet.Numerics.Distributions;
 using Microsoft.Health.Dicom.DeID.SharedLib.Exceptions;
-using Microsoft.Health.Dicom.DeID.SharedLib.Model;
+using Microsoft.Health.Dicom.DeID.SharedLib.Models;
 
 namespace Microsoft.Health.Dicom.DeID.SharedLib
 {

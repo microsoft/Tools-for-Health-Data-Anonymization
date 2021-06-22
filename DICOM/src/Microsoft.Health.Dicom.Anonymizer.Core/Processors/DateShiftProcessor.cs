@@ -10,9 +10,7 @@ using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.DeID.SharedLib;
 using Microsoft.Health.Dicom.DeID.SharedLib.Settings;
 using Newtonsoft.Json.Linq;
@@ -28,7 +26,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private readonly DateShiftFunction _dateShiftFunction;
         private readonly DateShiftScope _dateShiftScope = DateShiftScope.SopInstance;
-        private static readonly HashSet<DicomVR> _supportedVR = DicomDataModel.DateShiftSupportedVR;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<DateShiftProcessor>();
 
         public DateShiftProcessor(JObject settingObject)
@@ -59,22 +56,22 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             };
             if (item.ValueRepresentation == DicomVR.DA)
             {
-                var values = Utility.ParseDicomDate((DicomDate)item)
+                var values = DicomUtility.ParseDicomDate((DicomDate)item)
                     .Where(x => !DateTimeUtility.IndicateAgeOverThreshold(x)) // Age over 89 will be redacted.
                     .Select(_dateShiftFunction.ShiftDateTime);
 
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(Utility.GenerateDicomDateString).Where(x => x != null).ToArray());
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(DicomUtility.GenerateDicomDateString).Where(x => x != null).ToArray());
             }
             else if (item.ValueRepresentation == DicomVR.DT)
             {
-                var values = Utility.ParseDicomDateTime((DicomDateTime)item);
+                var values = DicomUtility.ParseDicomDateTime((DicomDateTime)item);
                 var results = new List<string>();
                 foreach (var dateObject in values)
                 {
                     if (!DateTimeUtility.IndicateAgeOverThreshold(dateObject.DateValue))
                     {
                         dateObject.DateValue = _dateShiftFunction.ShiftDateTime(dateObject.DateValue);
-                        results.Add(Utility.GenerateDicomDateTimeString(dateObject));
+                        results.Add(DicomUtility.GenerateDicomDateTimeString(dateObject));
                     }
                 }
 
@@ -92,7 +89,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            return _supportedVR.Contains(item.ValueRepresentation);
+            return DicomDataModel.DateShiftSupportedVR.Contains(item.ValueRepresentation);
         }
     }
 }

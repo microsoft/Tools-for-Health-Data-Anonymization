@@ -8,9 +8,9 @@ using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings
+namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
-    public class AnonymizerSettingsFactory : IAnonymizerSettingsFactory
+    public class AnonymizerSettingsFactory
     {
         public T CreateAnonymizerSetting<T>(JObject settings)
         {

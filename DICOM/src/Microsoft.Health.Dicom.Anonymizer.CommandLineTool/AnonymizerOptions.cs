@@ -5,7 +5,7 @@
 
 using CommandLine;
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
+namespace Microsoft.Health.Dicom.Anonymizer.CommandLineTool
 {
     public class AnonymizerOptions
     {
@@ -29,8 +29,5 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
 
         [Option("validateOutput", Required = false, Default = false, HelpText = "Validate output DICOM data items.")]
         public bool ValidateOutput { get; set; }
-
-        [Option('s', "skipFailedItem", Required = false, Default = false, HelpText = "Skip failed DICOM file when anonymizing.")]
-        public bool SkipFailedItem { get; set; }
     }
 }

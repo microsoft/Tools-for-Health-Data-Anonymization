@@ -3,13 +3,19 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
-using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using Dicom;
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core
+namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
 {
-    public interface IAnonymizerProcessorFactory
+    public class ProcessContext
     {
-        public IAnonymizerProcessor CreateProcessor(string anonymizeMethod, JObject ruleSetting = null);
+        public HashSet<string> VisitedNodes { get; set; } = new HashSet<string>();
+
+        public string StudyInstanceUID { get; set; }
+
+        public string SeriesInstanceUID { get; set; }
+
+        public string SopInstanceUID { get; set; }
     }
 }

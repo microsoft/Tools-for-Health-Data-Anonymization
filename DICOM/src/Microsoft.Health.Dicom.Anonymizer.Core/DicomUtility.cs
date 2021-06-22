@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Dicom;
 using EnsureThat;
-using Microsoft.Health.Dicom.DeID.SharedLib.Model;
+using Microsoft.Health.Dicom.DeID.SharedLib.Models;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
@@ -18,7 +18,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
     /// Utility functions are used to parse DICOM data including DA, DT, AS. The format for these VR is given in DICOM standard.
     /// http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part05/sect_6.2.html
     /// </summary>
-    public static class Utility
+    public static class DicomUtility
     {
         public static readonly Dictionary<string, AgeType> AgeTypeMapping = new Dictionary<string, AgeType>
             {
@@ -131,7 +131,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             throw new DicomDataException("Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY.");
         }
 
-        public static string AgeToString(AgeObject age)
+        public static string GenerateAgeString(AgeObject age)
         {
             EnsureArg.IsNotNull(age, nameof(age));
 
@@ -154,6 +154,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
 
             return null;
+        }
+
+        public static void DisableAutoValidation(DicomDataset dataset)
+        {
+            // If users diable output validation, the output results should not strictly follow DICOM standard. Therefore, we need to diable auto-validation here.
+#pragma warning disable CS0618 // Type or member is obsolete
+            dataset.AutoValidate = false;
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }

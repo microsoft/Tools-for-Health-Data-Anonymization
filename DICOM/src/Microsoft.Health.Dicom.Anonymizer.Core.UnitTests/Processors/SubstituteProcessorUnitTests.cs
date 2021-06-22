@@ -75,12 +75,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 
         public static IEnumerable<object[]> GetInvalidReplaceValueTypeForSubstitute()
         {
-            yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345", JObject.Parse("{}"), null }; // FD
-            yield return new object[] { DicomTag.Examined​Body​Thickness, "12345", JObject.Parse("{\"ReplaceWith\" : \"string\"}"), null }; // FL
-            yield return new object[] { DicomTag.Doppler​Sample​Volume​X​Position, "12345", JObject.Parse("{\"ReplaceWith\" : \"test\"}"), null }; // SL
-            yield return new object[] { DicomTag.Pixel​Intensity​Relationship​Sign, "12345", JObject.Parse("{\"ReplaceWith\" : \"abcd\"}"), null }; // SS
-            yield return new object[] { DicomTag.Referenced​Content​Item​Identifier, "12345", JObject.Parse("{\"ReplaceWith\" : \"string\"}"), null }; // UL
-            yield return new object[] { DicomTag.Warning​Reason, "10", JObject.Parse("{\"ReplaceWith\" : \"invalid\"}"), null }; // US
+            yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345", JObject.Parse("{}"), string.Empty }; // FD
+            yield return new object[] { DicomTag.Examined​Body​Thickness, "12345", JObject.Parse("{\"ReplaceWith\" : \"string\"}"), string.Empty }; // FL
+            yield return new object[] { DicomTag.Doppler​Sample​Volume​X​Position, "12345", JObject.Parse("{\"ReplaceWith\" : \"test\"}"), string.Empty }; // SL
+            yield return new object[] { DicomTag.Pixel​Intensity​Relationship​Sign, "12345", JObject.Parse("{\"ReplaceWith\" : \"abcd\"}"), string.Empty }; // SS
+            yield return new object[] { DicomTag.Referenced​Content​Item​Identifier, "12345", JObject.Parse("{\"ReplaceWith\" : \"string\"}"), string.Empty }; // UL
+            yield return new object[] { DicomTag.Warning​Reason, "10", JObject.Parse("{\"ReplaceWith\" : \"invalid\"}"), string.Empty }; // US
         }
 
         [Theory]
@@ -109,6 +109,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             };
             var newProcessor = new SubstituteProcessor(settings);
             Assert.Throws<AnonymizerConfigurationException>(() => newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
+            Assert.NotNull(replaceWith);
         }
 
         [Theory]
@@ -121,7 +122,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
                 { tag, value },
             };
 
-            dataset.AutoValidate = false;
+            DicomUtility.DisableAutoValidation(dataset);
             var newProcessor = new SubstituteProcessor(settings);
             newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.Equal(replaceWith, dataset.GetDicomItem<DicomElement>(tag).Get<string>());

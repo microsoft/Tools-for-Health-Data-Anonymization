@@ -10,7 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Health.DeID.SharedLib.Settings;
 using Microsoft.Health.Dicom.DeID.SharedLib;
-using Microsoft.Health.Dicom.DeID.SharedLib.Model;
+using Microsoft.Health.Dicom.DeID.SharedLib.Models;
 using Xunit;
 
 namespace De.ID.Function.Shared.UnitTests

@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Newtonsoft.Json;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core

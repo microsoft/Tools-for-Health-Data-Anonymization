@@ -81,6 +81,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             };
 
             Assert.True(Processor.IsSupported(dataset.GetDicomItem<DicomElement>(tag)));
+            Assert.NotNull(expectedValue);
         }
 
         [Theory]
@@ -105,6 +106,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             };
 
             Assert.Throws<DicomValidationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
+            Assert.NotNull(result);
         }
 
         [Theory]
@@ -115,7 +117,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             {
                 { tag, value },
             };
-            dataset.AutoValidate = false;
+            DicomUtility.DisableAutoValidation(dataset);
             Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             Assert.Equal(result, dataset.GetDicomItem<DicomElement>(tag).Get<string>());
         }

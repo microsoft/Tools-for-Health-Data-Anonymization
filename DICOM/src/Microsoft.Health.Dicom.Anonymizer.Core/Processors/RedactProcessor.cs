@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.DeID.SharedLib;
+using Microsoft.Health.Dicom.DeID.SharedLib.Models;
 using Microsoft.Health.Dicom.DeID.SharedLib.Settings;
 using Newtonsoft.Json.Linq;
 
@@ -45,34 +45,34 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 var values = ((DicomAgeString)item).Get<string[]>();
                 foreach (var value in values)
                 {
-                    var result = _redactFunction.RedactAge(Utility.ParseAge(value));
+                    var result = _redactFunction.RedactAge(DicomUtility.ParseAge(value));
                     if (result != null)
                     {
-                        redactedValues.Add(Utility.AgeToString(result));
+                        redactedValues.Add(DicomUtility.GenerateAgeString(result));
                     }
                 }
             }
             else if (item.ValueRepresentation == DicomVR.DA)
             {
-                var values = Utility.ParseDicomDate((DicomDate)item);
+                var values = DicomUtility.ParseDicomDate((DicomDate)item);
                 foreach (var value in values)
                 {
                     var result = _redactFunction.RedactDateTime(value);
                     if (result != null)
                     {
-                        redactedValues.Add(Utility.GenerateDicomDateString((DateTimeOffset)result));
+                        redactedValues.Add(DicomUtility.GenerateDicomDateString((DateTimeOffset)result));
                     }
                 }
             }
             else if (item.ValueRepresentation == DicomVR.DT)
             {
-                var values = Utility.ParseDicomDateTime((DicomDateTime)item);
+                DateTimeObject[] values = DicomUtility.ParseDicomDateTime((DicomDateTime)item);
                 foreach (var value in values)
                 {
-                    var result = _redactFunction.RedactDateTime(value);
+                    DateTimeObject result = _redactFunction.RedactDateTime(value);
                     if (result != null)
                     {
-                        redactedValues.Add(Utility.GenerateDicomDateTimeString(result));
+                        redactedValues.Add(DicomUtility.GenerateDicomDateTimeString(result));
                     }
                 }
             }

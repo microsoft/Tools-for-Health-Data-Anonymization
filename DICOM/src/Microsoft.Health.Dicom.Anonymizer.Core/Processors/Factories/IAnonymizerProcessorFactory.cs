@@ -3,13 +3,12 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.DeID.SharedLib.Model
+using Newtonsoft.Json.Linq;
+
+namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
-    public enum AgeType
+    public interface IAnonymizerProcessorFactory
     {
-        Year,
-        Month,
-        Week,
-        Day,
+        public IAnonymizerProcessor CreateProcessor(string anonymizeMethod, JObject ruleSetting = null);
     }
 }

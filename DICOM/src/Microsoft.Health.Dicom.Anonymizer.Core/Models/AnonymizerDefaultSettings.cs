@@ -3,13 +3,10 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.Model
+namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
 {
     [DataContract]
     public class AnonymizerDefaultSettings

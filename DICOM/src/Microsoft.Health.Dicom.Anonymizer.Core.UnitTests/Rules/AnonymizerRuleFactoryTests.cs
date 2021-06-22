@@ -8,7 +8,7 @@ using System.IO;
 using System.Reflection;
 using Dicom;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 using Newtonsoft.Json;
@@ -234,7 +234,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
         [MemberData(nameof(GetDicomTagRuleConfigsWithRedactMethod))]
         public void GivenADicomRuleWithRedact_WhenCreateAnonymizerRule_DicomRuleShouldBeCreateCorrectly(string config, DicomTag expectedTag, IAnonymizerProcessor expectedProcessor)
         {
-            var rule = _ruleFactory.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config));
+            var rule = _ruleFactory.CreateDicomAnonymizationRule(JsonConvert.DeserializeObject<JObject>(config));
             var processor = typeof(AnonymizerRule).GetField("_processor", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(rule);
             Assert.Equal(expectedTag, ((AnonymizerTagRule)rule).Tag);
             Assert.Equal(expectedProcessor.GetType(), processor.GetType());
@@ -254,7 +254,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
         [MemberData(nameof(GetDicomTagRuleConfigsWithPerturbMethod))]
         public void GivenADicomRuleWithPerturb_WhenCreateAnonymizerRule_DicomRuleShouldBeCreateCorrectly(string config, DicomTag expectedTag, IAnonymizerProcessor expectedProcessor)
         {
-            var rule = _ruleFactory.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config));
+            var rule = _ruleFactory.CreateDicomAnonymizationRule(JsonConvert.DeserializeObject<JObject>(config));
             var processor = typeof(AnonymizerRule).GetField("_processor", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(rule);
             Assert.Equal(expectedTag, ((AnonymizerTagRule)rule).Tag);
             Assert.Equal(expectedProcessor.GetType(), processor.GetType());
@@ -274,7 +274,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
         [MemberData(nameof(GetDicomTagRuleConfigsWithMethodsDoNotNeedSetting))]
         public void GivenADicomRuleWithMethodsDoNotNeedSetting_WhenCreateAnonymizerRule_DicomRuleShouldBeCreateCorrectly(string config, DicomTag expectedTag, IAnonymizerProcessor expectedProcessor)
         {
-            var rule = _ruleFactory.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config));
+            var rule = _ruleFactory.CreateDicomAnonymizationRule(JsonConvert.DeserializeObject<JObject>(config));
             var processor = typeof(AnonymizerRule).GetField("_processor", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(rule);
             Assert.Equal(expectedTag, ((AnonymizerTagRule)rule).Tag);
             Assert.Equal(expectedProcessor.GetType(), processor.GetType());
@@ -284,7 +284,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
         [MemberData(nameof(GetDicomVRRuleConfigsWithDateShiftMethod))]
         public void GivenADicomVRRuleWithDateShift_WhenCreateAnonymizerRule_DicomVRRuleShouldBeCreateCorrectly(string config, DicomVR expectedVR, IAnonymizerProcessor expectedProcessor)
         {
-            var rule = _ruleFactory.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config));
+            var rule = _ruleFactory.CreateDicomAnonymizationRule(JsonConvert.DeserializeObject<JObject>(config));
             var processor = typeof(AnonymizerRule).GetField("_processor", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(rule);
             Assert.Equal(expectedVR, ((AnonymizerVRRule)rule).VR);
             Assert.Equal(expectedProcessor.GetType(), processor.GetType());
@@ -302,7 +302,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
         [MemberData(nameof(GetDicomVRRuleConfigsWithEncryptMethod))]
         public void GivenADicomVRRuleWithEncryption_WhenCreateAnonymizerRule_DicomVRRuleShouldBeCreateCorrectly(string config, DicomVR expectedVR, IAnonymizerProcessor expectedProcessor)
         {
-            var rule = _ruleFactory.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config));
+            var rule = _ruleFactory.CreateDicomAnonymizationRule(JsonConvert.DeserializeObject<JObject>(config));
             var processor = typeof(AnonymizerRule).GetField("_processor", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(rule);
             Assert.Equal(expectedVR, ((AnonymizerVRRule)rule).VR);
             Assert.Equal(expectedProcessor.GetType(), processor.GetType());
@@ -320,7 +320,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
         [MemberData(nameof(GetDicomMaskedTagRuleConfigsWithCryptoHashMethod))]
         public void GivenADicomMaskedTagRuleWithCryptoHash_WhenCreateAnonymizerRule_DicomMaskedTagRuleShouldBeCreateCorrectly(string config, DicomMaskedTag expectedMaskedTag, IAnonymizerProcessor expectedProcessor)
         {
-            var rule = _ruleFactory.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config));
+            var rule = _ruleFactory.CreateDicomAnonymizationRule(JsonConvert.DeserializeObject<JObject>(config));
             var processor = typeof(AnonymizerRule).GetField("_processor", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(rule);
             Assert.Equal(expectedMaskedTag.ToString(), ((AnonymizerMaskedTagRule)rule).MaskedTag.ToString());
             Assert.Equal(expectedProcessor.GetType(), processor.GetType());
@@ -338,7 +338,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
         [MemberData(nameof(GetDicomMaskedTagRuleConfigsWithSubstituteMethod))]
         public void GivenADicomMaskedTagRuleWithSubstitution_WhenCreateAnonymizerRule_DicomMaskedTagRuleShouldBeCreateCorrectly(string config, DicomMaskedTag expectedMaskedTag, IAnonymizerProcessor expectedProcessor)
         {
-            var rule = _ruleFactory.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config));
+            var rule = _ruleFactory.CreateDicomAnonymizationRule(JsonConvert.DeserializeObject<JObject>(config));
             var processor = typeof(AnonymizerRule).GetField("_processor", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(rule);
             Assert.Equal(expectedMaskedTag.ToString(), ((AnonymizerMaskedTagRule)rule).MaskedTag.ToString());
             Assert.Equal(expectedProcessor.GetType(), processor.GetType());
@@ -353,7 +353,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
         [MemberData(nameof(GetInvalidConfigs))]
         public void GivenAnInvalidDicomRule_WhenCreateDicomRule_ExceptionWillBeThrown(string config)
         {
-            Assert.Throws<AnonymizerConfigurationException>(() => _ruleFactory.CreateAnonymizationDicomRule(JsonConvert.DeserializeObject<JObject>(config)));
+            Assert.Throws<AnonymizerConfigurationException>(() => _ruleFactory.CreateDicomAnonymizationRule(JsonConvert.DeserializeObject<JObject>(config)));
         }
 
         private bool CompareObjects(object o1, object o2)

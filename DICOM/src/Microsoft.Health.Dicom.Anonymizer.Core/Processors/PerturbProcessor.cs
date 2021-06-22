@@ -10,9 +10,7 @@ using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.DeID.SharedLib;
 using Newtonsoft.Json.Linq;
 
@@ -25,7 +23,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     public class PerturbProcessor : IAnonymizerProcessor
     {
         private PerturbFunction _perturbFunction;
-        private static readonly HashSet<DicomVR> _supportedVR = DicomDataModel.PerturbSupportedVR;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<PerturbProcessor>();
 
         private static readonly Dictionary<DicomVR, Type> _numericElementTypeMapping = new Dictionary<DicomVR, Type>()
@@ -82,8 +79,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             if (item.ValueRepresentation == DicomVR.AS)
             {
-                var values = ((DicomAgeString)item).Get<string[]>().Select(Utility.ParseAge).Select(x => _perturbFunction.Perturb(x));
-                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(Utility.AgeToString).Where(x => x != null).ToArray());
+                var values = ((DicomAgeString)item).Get<string[]>().Select(DicomUtility.ParseAge).Select(x => _perturbFunction.Perturb(x));
+                dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(DicomUtility.GenerateAgeString).Where(x => x != null).ToArray());
             }
             else
             {
@@ -157,7 +154,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            return _supportedVR.Contains(item.ValueRepresentation) && !(item is DicomFragmentSequence);
+            return DicomDataModel.PerturbSupportedVR.Contains(item.ValueRepresentation) && !(item is DicomFragmentSequence);
         }
     }
 }

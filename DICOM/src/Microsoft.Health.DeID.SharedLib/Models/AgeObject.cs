@@ -3,7 +3,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.Dicom.DeID.SharedLib.Model
+namespace Microsoft.Health.Dicom.DeID.SharedLib.Models
 {
     public class AgeObject
     {

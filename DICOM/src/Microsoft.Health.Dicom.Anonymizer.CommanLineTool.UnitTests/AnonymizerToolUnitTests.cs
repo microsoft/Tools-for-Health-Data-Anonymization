@@ -8,8 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Dicom;
+using Microsoft.Health.Dicom.Anonymizer.CommandLineTool;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
-using Microsoft.Health.Dicom.Anonymizer.Core.Tool;
 using Xunit;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests

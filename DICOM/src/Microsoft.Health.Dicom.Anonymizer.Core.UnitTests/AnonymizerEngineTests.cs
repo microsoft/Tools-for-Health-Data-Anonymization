@@ -4,7 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using Dicom;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Xunit;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
@@ -54,7 +54,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [Fact]
         public void GivenInvalidDicomDataSet_SetValidateInput_ExceptionWillBeThrown()
         {
-            Dataset.AutoValidate = false;
+            DicomUtility.DisableAutoValidation(Dataset);
             Dataset.AddOrUpdate(DicomTag.PatientAge, "invalid");
             var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerEngineOptions(validateInput: true));
             Assert.Throws<DicomValidationException>(() => engine.AnonymizeDataset(Dataset));

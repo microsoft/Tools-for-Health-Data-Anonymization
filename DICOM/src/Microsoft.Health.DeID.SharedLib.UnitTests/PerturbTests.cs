@@ -6,7 +6,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Health.Dicom.DeID.SharedLib;
-using Microsoft.Health.Dicom.DeID.SharedLib.Model;
+using Microsoft.Health.Dicom.DeID.SharedLib.Models;
 using Xunit;
 
 namespace De.ID.Function.Shared.UnitTests

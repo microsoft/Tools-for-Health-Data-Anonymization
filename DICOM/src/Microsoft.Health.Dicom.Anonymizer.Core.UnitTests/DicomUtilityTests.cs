@@ -6,12 +6,12 @@
 using System;
 using System.Collections.Generic;
 using Dicom;
-using Microsoft.Health.Dicom.DeID.SharedLib.Model;
+using Microsoft.Health.Dicom.DeID.SharedLib.Models;
 using Xunit;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 {
-    public class UtilityTests
+    public class DicomUtilityTests
     {
         private static readonly TimeSpan _timeSpan = TimeSpan.FromHours(TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours);
 
@@ -134,7 +134,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [MemberData(nameof(GetValidDicomDateStringForParsing))]
         public void GivenValidDicomDateStingForParsing_WhenParsing_TheCorrectDateTimeOffsetWillBeReturned(string dateString, DateTimeOffset expectedResult)
         {
-            Assert.Equal(expectedResult, Utility.ParseDicomDate(dateString));
+            Assert.Equal(expectedResult, DicomUtility.ParseDicomDate(dateString));
         }
 
         [Theory]
@@ -142,7 +142,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         public void GivenValidDicomDAItemForParsing_WhenParsing_TheCorrectDateTimeOffsetWillBeReturned(string dateString, DateTimeOffset expectedResult)
         {
             var item = new DicomDate(DicomTag.PatientBirthDate, dateString, dateString);
-            foreach (var output in Utility.ParseDicomDate(item))
+            foreach (var output in DicomUtility.ParseDicomDate(item))
             {
                 Assert.Equal(expectedResult, output);
             }
@@ -152,7 +152,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [MemberData(nameof(GetInvalidDicomDateStringForParsing))]
         public void GivenInvalidDicomDateStingForParsing_WhenParsing_ExceptionWillBeThrown(string dateString)
         {
-            Assert.Throws<DicomDataException>(() => Utility.ParseDicomDate(dateString));
+            Assert.Throws<DicomDataException>(() => DicomUtility.ParseDicomDate(dateString));
         }
 
         [Theory]
@@ -160,14 +160,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         public void GivenDicomDAItemWithInvalidDateStringForParsing_WhenParsing_ExceptionWillBeThrown(string dateString)
         {
             var item = new DicomDate(DicomTag.PatientBirthDate, dateString);
-            Assert.Throws<DicomDataException>(() => Utility.ParseDicomDate(item));
+            Assert.Throws<DicomDataException>(() => DicomUtility.ParseDicomDate(item));
         }
 
         [Theory]
         [MemberData(nameof(GetValidDicomDateTimeStringForParsing))]
         public void GivenValidDicomDateTimeStingForParsing_WhenParsing_TheCorrectDateTimeOffsetWillBeReturned(string dateTimeString, DateTimeOffset expectedResult, bool hasTimeZone)
         {
-            var output = Utility.ParseDicomDateTime(dateTimeString);
+            var output = DicomUtility.ParseDicomDateTime(dateTimeString);
             Assert.Equal(expectedResult, output.DateValue);
             Assert.Equal(hasTimeZone, output.HasTimeZone);
         }
@@ -177,7 +177,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         public void GivenValidDicomDTItemForParsing_WhenParsing_TheCorrectDateTimeOffsetWillBeReturned(string dateTimeString, DateTimeOffset expectedResult, bool hasTimeZone)
         {
             var item = new DicomDateTime(DicomTag.AssertionDateTime, dateTimeString, dateTimeString);
-            foreach (var output in Utility.ParseDicomDateTime(item))
+            foreach (var output in DicomUtility.ParseDicomDateTime(item))
             {
                 Assert.Equal(expectedResult, output.DateValue);
                 Assert.Equal(hasTimeZone, output.HasTimeZone);
@@ -188,7 +188,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [MemberData(nameof(GetInvalidDicomDateTimeStringForParsing))]
         public void GivenInvalidDicomDateTimeStingForParsing_WhenParsing_ExceptionWillBeThrown(string dateTimeString)
         {
-            Assert.Throws<DicomDataException>(() => Utility.ParseDicomDateTime(dateTimeString));
+            Assert.Throws<DicomDataException>(() => DicomUtility.ParseDicomDateTime(dateTimeString));
         }
 
         [Theory]
@@ -196,28 +196,28 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         public void GivenDicomDTItemWithInvalidDateTimeForParsing_WhenParsing_ExceptionWillBeThrown(string dateTimeString)
         {
             var item = new DicomDateTime(DicomTag.AssertionDateTime, dateTimeString);
-            Assert.Throws<DicomDataException>(() => Utility.ParseDicomDateTime(item));
+            Assert.Throws<DicomDataException>(() => DicomUtility.ParseDicomDateTime(item));
         }
 
         [Theory]
         [MemberData(nameof(GetDateTimeOffsetToGenerateDicomDateString))]
         public void GivenDateTimeOffset_WhenGenerateDateString_TheCorrectDateStringWillBeReturned(DateTimeOffset input, string expectedDateString)
         {
-            Assert.Equal(expectedDateString, Utility.GenerateDicomDateString(input));
+            Assert.Equal(expectedDateString, DicomUtility.GenerateDicomDateString(input));
         }
 
         [Theory]
         [MemberData(nameof(GetDateTimeOffsetToGenerateDicomDateTimeString))]
         public void GivenDateTimeOffset_WhenGenerateDateTimeString_TheCorrectDateStringWillBeReturned(DateTimeObject input, string expectedDateString)
         {
-            Assert.Equal(expectedDateString, Utility.GenerateDicomDateTimeString(input));
+            Assert.Equal(expectedDateString, DicomUtility.GenerateDicomDateTimeString(input));
         }
 
         [Theory]
         [MemberData(nameof(GetValidDicomAgeStringForParsing))]
         public void GivenValidDicomAgeStingForParsing_WhenParsing_TheCorrectAgeValueObjectWillBeReturned(string ageString, uint expectedAgeValue,  AgeType expectedAgeType)
         {
-            var output = Utility.ParseAge(ageString);
+            var output = DicomUtility.ParseAge(ageString);
             Assert.Equal(expectedAgeValue, output.Value);
             Assert.Equal(expectedAgeType, output.AgeType);
         }
@@ -226,21 +226,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [MemberData(nameof(GetInvalidDicomAgeStringForParsing))]
         public void GivenInvalidDicomAgeStingForParsing_WhenParsing_ExceptionWillBeThrown(string ageString)
         {
-            Assert.Throws<DicomDataException>(() => Utility.ParseAge(ageString));
+            Assert.Throws<DicomDataException>(() => DicomUtility.ParseAge(ageString));
         }
 
         [Theory]
         [MemberData(nameof(GetAgeValueObjectToGenerateDicomAgeString))]
         public void GivenAgeValueObject_WhenGenerateDicomAgeString_TheCorrectAgeStringWillBeReturned(AgeObject input, string expectedAgeString)
         {
-            Assert.Equal(expectedAgeString, Utility.AgeToString(input));
+            Assert.Equal(expectedAgeString, DicomUtility.GenerateAgeString(input));
         }
 
         [Theory]
         [MemberData(nameof(GetInvalidAgeValueObjectToGenerateDicomAgeString))]
         public void GivenInvalidAgeValueObject_WhenGenerateDicomAgeString_ExceptionWillBeThrown(AgeObject input)
         {
-            Assert.Throws<DicomDataException>(() => Utility.AgeToString(input));
+            Assert.Throws<DicomDataException>(() => DicomUtility.GenerateAgeString(input));
         }
     }
 }

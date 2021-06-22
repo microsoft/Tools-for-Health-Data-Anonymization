@@ -5,7 +5,7 @@
 
 using System;
 
-namespace Microsoft.Health.Dicom.DeID.SharedLib.Model
+namespace Microsoft.Health.Dicom.DeID.SharedLib.Models
 {
     public class DeIDDateTime
     {

@@ -3,12 +3,18 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Newtonsoft.Json.Linq;
-
-namespace Microsoft.Health.Dicom.Anonymizer.Core
+namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
 {
-    public interface IAnonymizerSettingsFactory
+    public enum AnonymizerMethod
     {
-        public T CreateAnonymizerSetting<T>(JObject settings);
+        Redact,
+        DateShift,
+        CryptoHash,
+        Keep,
+        Perturb,
+        Encrypt,
+        Remove,
+        RefreshUID,
+        Substitute,
     }
 }

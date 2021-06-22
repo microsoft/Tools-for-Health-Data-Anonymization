@@ -76,6 +76,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             };
 
             Assert.True(Processor.IsSupported(dataset.GetDicomItem<DicomElement>(tag)));
+            Assert.NotNull(settings);
+            Assert.True(minExpectedValue <= maxExpectedValue);
         }
 
         [Theory]

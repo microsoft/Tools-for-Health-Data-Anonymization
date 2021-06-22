@@ -7,7 +7,7 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using EnsureThat;
-using Microsoft.Health.Dicom.DeID.SharedLib.Model;
+using Microsoft.Health.Dicom.DeID.SharedLib.Models;
 using Microsoft.Health.Dicom.DeID.SharedLib.Settings;
 
 namespace Microsoft.Health.Dicom.DeID.SharedLib

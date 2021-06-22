@@ -4,7 +4,6 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Dicom;
 using Dicom.IO.Buffer;
@@ -12,9 +11,7 @@ using EnsureThat;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.DeID.SharedLib.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
-using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Settings;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.DeID.SharedLib;
 using Newtonsoft.Json.Linq;
 
@@ -26,7 +23,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     public class EncryptProcessor : IAnonymizerProcessor
     {
         private readonly EncryptFunction _encryptFunction;
-        private static readonly HashSet<DicomVR> _supportedVR = DicomDataModel.EncryptSupportedVR;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<EncryptProcessor>();
 
         public EncryptProcessor(JObject settingObject)
@@ -95,7 +91,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            return _supportedVR.Contains(item.ValueRepresentation) || item is DicomFragmentSequence;
+            return DicomDataModel.EncryptSupportedVR.Contains(item.ValueRepresentation) || item is DicomFragmentSequence;
         }
     }
 }

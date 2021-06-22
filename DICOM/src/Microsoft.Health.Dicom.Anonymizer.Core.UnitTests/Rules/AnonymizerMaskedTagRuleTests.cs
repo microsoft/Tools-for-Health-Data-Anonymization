@@ -5,7 +5,8 @@
 
 using Dicom;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
-using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
+using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 using Newtonsoft.Json.Linq;
 using Xunit;

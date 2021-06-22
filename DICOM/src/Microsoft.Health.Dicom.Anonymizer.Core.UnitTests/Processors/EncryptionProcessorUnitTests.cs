@@ -119,7 +119,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             {
                 { tag, value },
             };
-            dataset.AutoValidate = false;
+            DicomUtility.DisableAutoValidation(dataset);
             var newProcessor = new EncryptProcessor(JObject.Parse("{\"encryptKey\": \"0000000000000000\"}"));
             newProcessor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
             var test = dataset.GetDicomItem<DicomElement>(tag).Get<string>();

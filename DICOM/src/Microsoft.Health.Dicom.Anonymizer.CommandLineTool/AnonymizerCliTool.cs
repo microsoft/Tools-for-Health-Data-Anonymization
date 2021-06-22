@@ -7,7 +7,7 @@ using System;
 using System.Threading.Tasks;
 using CommandLine;
 
-namespace Microsoft.Health.Dicom.Anonymizer.Core.Tool
+namespace Microsoft.Health.Dicom.Anonymizer.CommandLineTool
 {
     public class AnonymizerCliTool
     {
