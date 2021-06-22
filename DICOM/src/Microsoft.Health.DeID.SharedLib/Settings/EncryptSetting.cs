@@ -1,0 +1,47 @@
+﻿// -------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
+// -------------------------------------------------------------------------------------------------
+
+using System;
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.Health.Dicom.DeID.SharedLib.Exceptions;
+
+namespace Microsoft.Health.DeID.SharedLib.Settings
+{
+    public class EncryptSetting
+    {
+        public string EncryptKey { get; set; } = Guid.NewGuid().ToString("N");
+
+        public void Validate()
+        {
+            using Aes aes = Aes.Create();
+            var encryptKeySize = Encoding.UTF8.GetByteCount(EncryptKey) * 8;
+            if (!IsValidKeySize(encryptKeySize, aes.LegalKeySizes))
+            {
+                throw new DeIDFunctionException(DeIDFunctionErrorCode.InvalidDeIdSettings, $"Invalid encrypt key size : {encryptKeySize} bits! Please provide key sizes of 128, 192 or 256 bits.");
+            }
+        }
+
+        private bool IsValidKeySize(int bitLength, KeySizes[] validSizes)
+        {
+            if (validSizes == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < validSizes.Length; i++)
+            {
+                if (bitLength >= validSizes[i].MinSize
+                    && bitLength <= validSizes[i].MaxSize
+                    && (bitLength - validSizes[i].MinSize) % validSizes[i].SkipSize == 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+}
