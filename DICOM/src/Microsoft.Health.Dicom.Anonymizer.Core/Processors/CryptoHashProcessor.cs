@@ -3,7 +3,6 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,7 +28,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     public class CryptoHashProcessor : IAnonymizerProcessor
     {
         private readonly CryptoHashFunction _cryptoHashFunction;
-        private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(CryptoHashSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+        private static readonly HashSet<DicomVR> _supportedVR = DicomDataModel.CryptoHashSupportedVR;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<CryptoHashProcessor>();
 
         public CryptoHashProcessor(JObject settingObject)
@@ -82,7 +81,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            return _supportedVR.Contains(item.ValueRepresentation.Code) || item is DicomFragmentSequence;
+            return _supportedVR.Contains(item.ValueRepresentation) || item is DicomFragmentSequence;
         }
 
         public string GetCryptoHashString(string input)

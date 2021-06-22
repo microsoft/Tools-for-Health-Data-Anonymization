@@ -28,7 +28,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     {
         private readonly DateShiftFunction _dateShiftFunction;
         private readonly DateShiftScope _dateShiftScope = DateShiftScope.SopInstance;
-        private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(DateShiftSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+        private static readonly HashSet<DicomVR> _supportedVR = DicomDataModel.DateShiftSupportedVR;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<DateShiftProcessor>();
 
         public DateShiftProcessor(JObject settingObject)
@@ -92,7 +92,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            return _supportedVR.Contains(item.ValueRepresentation.Code);
+            return _supportedVR.Contains(item.ValueRepresentation);
         }
     }
 }

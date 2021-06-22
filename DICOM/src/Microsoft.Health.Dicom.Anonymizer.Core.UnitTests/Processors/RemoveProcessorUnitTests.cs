@@ -33,7 +33,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { DicomTag.Secondary​Review​Time, "120101.000" }; // TM
             yield return new object[] { DicomTag.Patient​Weight, "53.000" }; // DS
             yield return new object[] { DicomTag.Stage​Number, "10" }; // IS
-            yield return new object[] { DicomTag.Patient​Age, "010Y"}; // AS
+            yield return new object[] { DicomTag.Patient​Age, "010Y" }; // AS
             yield return new object[] { DicomTag.Patient​Birth​Name, "Name" }; // PN
             yield return new object[] { DicomTag.Strain​Description, "​Description" }; // UC
             yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345" }; // FD

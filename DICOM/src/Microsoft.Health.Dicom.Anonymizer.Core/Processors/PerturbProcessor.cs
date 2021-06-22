@@ -25,7 +25,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     public class PerturbProcessor : IAnonymizerProcessor
     {
         private PerturbFunction _perturbFunction;
-        private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(PerturbSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+        private static readonly HashSet<DicomVR> _supportedVR = DicomDataModel.PerturbSupportedVR;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<PerturbProcessor>();
 
         private static readonly Dictionary<DicomVR, Type> _numericElementTypeMapping = new Dictionary<DicomVR, Type>()
@@ -157,7 +157,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            return _supportedVR.Contains(item.ValueRepresentation.Code) && !(item is DicomFragmentSequence);
+            return _supportedVR.Contains(item.ValueRepresentation) && !(item is DicomFragmentSequence);
         }
     }
 }

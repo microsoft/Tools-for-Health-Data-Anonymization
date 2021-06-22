@@ -5,9 +5,9 @@
 
 namespace Microsoft.Health.Dicom.DeID.SharedLib.Model
 {
-    public class AgeValue
+    public class AgeObject
     {
-        public AgeValue(uint age, AgeType ageType)
+        public AgeObject(uint age, AgeType ageType)
         {
             Value = age;
             AgeType = ageType;

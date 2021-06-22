@@ -72,6 +72,5 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
             var result = MaskedTagRule.LocateDicomTag(Dataset, context);
             Assert.True(result.Count == 2);
         }
-
     }
 }

@@ -116,7 +116,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 : date.DateValue.ToString("yyyyMMddhhmmss.ffffff", CultureInfo.InvariantCulture);
         }
 
-        public static AgeValue ParseAge(string age)
+        public static AgeObject ParseAge(string age)
         {
             EnsureArg.IsNotNull(age, nameof(age));
 
@@ -124,14 +124,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             {
                 if (new Regex(@"^\d{3}" + item.Key + "$").IsMatch(age))
                 {
-                    return new AgeValue(uint.Parse(age.Substring(0, AgeStringLength)), item.Value);
+                    return new AgeObject(uint.Parse(age.Substring(0, AgeStringLength)), item.Value);
                 }
             }
 
             throw new DicomDataException("Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY.");
         }
 
-        public static string AgeToString(AgeValue age)
+        public static string AgeToString(AgeObject age)
         {
             EnsureArg.IsNotNull(age, nameof(age));
 

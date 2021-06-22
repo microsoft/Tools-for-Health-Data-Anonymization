@@ -4,11 +4,13 @@
 // -------------------------------------------------------------------------------------------------
 
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Model;
+using Microsoft.Health.Dicom.Anonymizer.Core.Processors.Model;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
@@ -19,6 +21,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     public class RefreshUIDProcessor : IAnonymizerProcessor
     {
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<RefreshUIDProcessor>();
+        private static readonly HashSet<DicomVR> _supportedVR = DicomDataModel.RefreshUIDSupportedVR;
 
         public static ConcurrentDictionary<string, DicomUID> ReplacedUIDs { get; } = new ConcurrentDictionary<string, DicomUID>();
 
@@ -47,12 +50,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            if (item.ValueRepresentation != DicomVR.UI)
-            {
-                return false;
-            }
-
-            return true;
+            return _supportedVR.Contains(item.ValueRepresentation);
         }
     }
 }

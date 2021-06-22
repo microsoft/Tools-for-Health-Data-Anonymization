@@ -81,9 +81,9 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetAgeValueToPerturb()
         {
-            yield return new object[] { new AgeValue(10, AgeType.Day), new PerturbSetting() { Span = 1, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 5, 15 };
-            yield return new object[] { new AgeValue(50, AgeType.Month), new PerturbSetting() { Span = 20, RoundTo = 0, RangeType = PerturbRangeType.Fixed }, 40, 60 };
-            yield return new object[] { new AgeValue(25, AgeType.Year), new PerturbSetting() { Span = 2, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 0, 50 };
+            yield return new object[] { new AgeObject(10, AgeType.Day), new PerturbSetting() { Span = 1, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 5, 15 };
+            yield return new object[] { new AgeObject(50, AgeType.Month), new PerturbSetting() { Span = 20, RoundTo = 0, RangeType = PerturbRangeType.Fixed }, 40, 60 };
+            yield return new object[] { new AgeObject(25, AgeType.Year), new PerturbSetting() { Span = 2, RoundTo = 0, RangeType = PerturbRangeType.Proportional }, 0, 50 };
         }
 
         public static IEnumerable<object[]> GetShortIntegerToPerturb()
@@ -127,7 +127,7 @@ namespace De.ID.Function.Shared.UnitTests
 
         [Theory]
         [MemberData(nameof(GetAgeValueToPerturb))]
-        public void GivenAgeValue_WhenPerturb_PerturbedValueShouldBeReturned(AgeValue value, PerturbSetting perturbSetting, uint lowerBound, uint upperBound)
+        public void GivenAgeValue_WhenPerturb_PerturbedValueShouldBeReturned(AgeObject value, PerturbSetting perturbSetting, uint lowerBound, uint upperBound)
         {
             var function = new PerturbFunction(perturbSetting);
             var result = function.Perturb(value);

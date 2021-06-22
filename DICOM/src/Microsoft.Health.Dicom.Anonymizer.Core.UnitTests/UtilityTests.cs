@@ -113,21 +113,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 
         public static IEnumerable<object[]> GetAgeValueObjectToGenerateDicomAgeString()
         {
-            yield return new object[] { new AgeValue(0, AgeType.Year), "000Y"};
-            yield return new object[] { new AgeValue(100, AgeType.Year), "100Y" };
-            yield return new object[] { new AgeValue(10, AgeType.Month), "010M" };
-            yield return new object[] { new AgeValue(99, AgeType.Day), "099D" };
-            yield return new object[] { new AgeValue(99, AgeType.Week), "099W" };
-            yield return new object[] { new AgeValue(1000, AgeType.Day), "002Y" };
-            yield return new object[] { new AgeValue(2000, AgeType.Month), "166Y" };
+            yield return new object[] { new AgeObject(0, AgeType.Year), "000Y" };
+            yield return new object[] { new AgeObject(100, AgeType.Year), "100Y" };
+            yield return new object[] { new AgeObject(10, AgeType.Month), "010M" };
+            yield return new object[] { new AgeObject(99, AgeType.Day), "099D" };
+            yield return new object[] { new AgeObject(99, AgeType.Week), "099W" };
+            yield return new object[] { new AgeObject(1000, AgeType.Day), "002Y" };
+            yield return new object[] { new AgeObject(2000, AgeType.Month), "166Y" };
         }
 
         public static IEnumerable<object[]> GetInvalidAgeValueObjectToGenerateDicomAgeString()
         {
-            yield return new object[] { new AgeValue(1000, AgeType.Year) };
-            yield return new object[] { new AgeValue(12000, AgeType.Month) };
-            yield return new object[] { new AgeValue(52000, AgeType.Week) };
-            yield return new object[] { new AgeValue(365000, AgeType.Day) };
+            yield return new object[] { new AgeObject(1000, AgeType.Year) };
+            yield return new object[] { new AgeObject(12000, AgeType.Month) };
+            yield return new object[] { new AgeObject(52000, AgeType.Week) };
+            yield return new object[] { new AgeObject(365000, AgeType.Day) };
         }
 
         [Theory]
@@ -231,14 +231,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 
         [Theory]
         [MemberData(nameof(GetAgeValueObjectToGenerateDicomAgeString))]
-        public void GivenAgeValueObject_WhenGenerateDicomAgeString_TheCorrectAgeStringWillBeReturned(AgeValue input, string expectedAgeString)
+        public void GivenAgeValueObject_WhenGenerateDicomAgeString_TheCorrectAgeStringWillBeReturned(AgeObject input, string expectedAgeString)
         {
             Assert.Equal(expectedAgeString, Utility.AgeToString(input));
         }
 
         [Theory]
         [MemberData(nameof(GetInvalidAgeValueObjectToGenerateDicomAgeString))]
-        public void GivenInvalidAgeValueObject_WhenGenerateDicomAgeString_ExceptionWillBeThrown(AgeValue input)
+        public void GivenInvalidAgeValueObject_WhenGenerateDicomAgeString_ExceptionWillBeThrown(AgeObject input)
         {
             Assert.Throws<DicomDataException>(() => Utility.AgeToString(input));
         }

@@ -26,7 +26,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     public class EncryptProcessor : IAnonymizerProcessor
     {
         private readonly EncryptFunction _encryptFunction;
-        private static readonly HashSet<string> _supportedVR = Enum.GetNames(typeof(EncryptSupportedVR)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+        private static readonly HashSet<DicomVR> _supportedVR = DicomDataModel.EncryptSupportedVR;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<EncryptProcessor>();
 
         public EncryptProcessor(JObject settingObject)
@@ -95,7 +95,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            return _supportedVR.Contains(item.ValueRepresentation.Code) || item is DicomFragmentSequence;
+            return _supportedVR.Contains(item.ValueRepresentation) || item is DicomFragmentSequence;
         }
     }
 }

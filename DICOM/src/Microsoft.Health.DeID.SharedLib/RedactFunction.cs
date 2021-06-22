@@ -105,7 +105,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             return null;
         }
 
-        public AgeValue RedactAge(AgeValue age)
+        public AgeObject RedactAge(AgeObject age)
         {
             EnsureArg.IsNotNull(age, nameof(age));
 

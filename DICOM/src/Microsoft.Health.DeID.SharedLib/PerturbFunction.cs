@@ -21,10 +21,10 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             _perturbSetting.Validate();
         }
 
-        public AgeValue Perturb(AgeValue value)
+        public AgeObject Perturb(AgeObject value)
         {
             var result = Perturb(value.Value);
-            return new AgeValue(result, value.AgeType);
+            return new AgeObject(result, value.AgeType);
         }
 
         public decimal Perturb(decimal value)
