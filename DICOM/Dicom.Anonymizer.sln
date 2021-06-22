@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anon
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.CommandLineTool", "src\Microsoft.Health.Dicom.Anonymizer.CommandLineTool\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.csproj", "{AE4E4A8F-26B4-46A0-BA2B-4138C064C9F1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.CommandLineTool.UnitTests", "src\Microsoft.Health.Dicom.Anonymizer.CommanLineTool.UnitTests\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.UnitTests.csproj", "{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.Core.UnitTests", "src\Microsoft.Health.Dicom.Anonymizer.Core.UnitTests\Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.csproj", "{3E24E184-32D4-4AA3-9F07-351D6981071E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Dicom.Anonymizer.CommandLineTool.UnitTests", "src\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.UnitTests\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.UnitTests.csproj", "{EE2553FF-A577-4FEB-A806-9101EB5C5285}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,14 +37,14 @@ Global
 		{AE4E4A8F-26B4-46A0-BA2B-4138C064C9F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE4E4A8F-26B4-46A0-BA2B-4138C064C9F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE4E4A8F-26B4-46A0-BA2B-4138C064C9F1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1AE7D3E9-2124-4FD9-9BF5-EB439654AC6D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E24E184-32D4-4AA3-9F07-351D6981071E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E24E184-32D4-4AA3-9F07-351D6981071E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E24E184-32D4-4AA3-9F07-351D6981071E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E24E184-32D4-4AA3-9F07-351D6981071E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE2553FF-A577-4FEB-A806-9101EB5C5285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE2553FF-A577-4FEB-A806-9101EB5C5285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE2553FF-A577-4FEB-A806-9101EB5C5285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE2553FF-A577-4FEB-A806-9101EB5C5285}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
