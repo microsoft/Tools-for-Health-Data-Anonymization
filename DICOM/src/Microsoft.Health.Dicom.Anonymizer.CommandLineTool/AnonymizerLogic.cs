@@ -44,7 +44,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.CommandLineTool
             }
             else
             {
-                throw new ArgumentException("Invalid parameters. Please specify inputFile( or inputFolder) and outputFile( or outputFolder) at the same time.");
+                throw new ArgumentException("Invalid parameters. Please specify inputFile (or inputFolder) and outputFile (or outputFolder) at the same time.\r\nSamples:\r\n [-i inputFile -o outputFile]\r\nor\r\n [-I inputFolder -O outputFolder]");
             }
         }
 
