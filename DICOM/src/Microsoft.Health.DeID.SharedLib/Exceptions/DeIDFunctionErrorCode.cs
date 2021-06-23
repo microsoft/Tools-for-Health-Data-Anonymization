@@ -7,7 +7,13 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib.Exceptions
 {
     public enum DeIDFunctionErrorCode
     {
+        InvalidInputValue,
         InvalidDeIdSettings,
-        DeIdFailed,
+
+        DateShiftFailed,
+        EncryptFailed,
+        CryptoHashFailed,
+        PerturbFailed,
+        RedactFailed,
     }
 }

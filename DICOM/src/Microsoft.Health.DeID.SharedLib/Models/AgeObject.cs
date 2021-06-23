@@ -17,7 +17,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib.Models
 
         public AgeType AgeType { get; }
 
-        public decimal? AgeInYears()
+        public decimal AgeInYears()
         {
             return AgeType switch
             {
@@ -25,7 +25,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib.Models
                 AgeType.Month => Value / 12,
                 AgeType.Week => Value / 52,
                 AgeType.Day => Value / 365,
-                _ => null,
+                _ => Value,
             };
         }
     }

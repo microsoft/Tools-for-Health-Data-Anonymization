@@ -3,15 +3,16 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Microsoft.Health.DeID.SharedLib.Models;
-using Microsoft.Health.Dicom.DeID.SharedLib.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Microsoft.Health.DeID.SharedLib.Settings
+namespace Microsoft.Health.DeID.SharedLib.Models
 {
-    public class CryptoHashSetting
+    public enum CryptoHashType
     {
-        public string CryptoHashKey { get; set; }
-
-        public CryptoHashType CryptoHashType { get; set; } = CryptoHashType.HMACSHA256;
+        HMACSHA1,
+        HMACSHA256,
+        HMACSHA512,
     }
 }

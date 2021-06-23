@@ -166,7 +166,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenAString_WhenComputeHmac_CorrectHashShouldBeReturned(string input, string expectedHash)
         {
             var function = new CryptoHashFunction(new CryptoHashSetting() { CryptoHashKey = TestHashKey });
-            var hashData = function.ComputeHmacSHA256Hash(input);
+            var hashData = function.ComputeHmacHash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -176,7 +176,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenBytes_WhenComputeHmac_CorrectHashShouldBeReturned(byte[] input, string expectedHash)
         {
             var function = new CryptoHashFunction(new CryptoHashSetting() { CryptoHashKey = TestHashKey });
-            var hashData = function.ComputeHmacSHA256Hash(input);
+            var hashData = function.ComputeHmacHash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -186,7 +186,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenStream_WhenComputeHmac_CorrectHashShouldBeReturned(Stream input, string expectedHash)
         {
             var function = new CryptoHashFunction(new CryptoHashSetting() { CryptoHashKey = TestHashKey });
-            var hashData = function.ComputeHmacSHA256Hash(input);
+            var hashData = function.ComputeHmacHash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -196,7 +196,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenFixedLengthString_WhenComputeHmac_CorrectHashShouldBeReturned(FixedLengthString input, string expectedHash)
         {
             var function = new CryptoHashFunction(new CryptoHashSetting() { CryptoHashKey = TestHashKey });
-            var hashData = function.ComputeHmacSHA256Hash(input);
+            var hashData = function.ComputeHmacHash(input);
             Assert.Equal(expectedHash, hashData.ToString());
         }
     }

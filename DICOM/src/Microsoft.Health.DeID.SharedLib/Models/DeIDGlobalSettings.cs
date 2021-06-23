@@ -5,10 +5,10 @@
 
 namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
-    public class DeIDGlobalSettings
+    public static class DeIDGlobalSettings
     {
-        public static string OutPutDateFormat { get; set; } = "yyyy-MM-dd";
+        public static string DateFormat { get; set; } = "yyyy-MM-dd";
 
-        public static string OutputDateTimeFormat { get; set; } = "yyyy-MM-ddTHH:mm:ssK";
+        public static string DateTimeFormat { get; set; } = "yyyy-MM-ddTHH:mm:ss";
     }
 }

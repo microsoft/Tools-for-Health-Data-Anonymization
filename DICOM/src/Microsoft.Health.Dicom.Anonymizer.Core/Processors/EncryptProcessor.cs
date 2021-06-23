@@ -52,7 +52,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 else if (item is DicomOtherByte)
                 {
                     var valueBytes = ((DicomOtherByte)item).Get<byte[]>();
-                    var encryptesBytes = _encryptFunction.EncryptContentWithAES(valueBytes);
+                    var encryptesBytes = _encryptFunction.Encrypt(valueBytes);
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, encryptesBytes);
                 }
                 else if (item is DicomFragmentSequence)
@@ -63,7 +63,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
                     foreach (var fragment in (DicomFragmentSequence)item)
                     {
-                        element.Fragments.Add(new MemoryByteBuffer(_encryptFunction.EncryptContentWithAES(fragment.Data)));
+                        element.Fragments.Add(new MemoryByteBuffer(_encryptFunction.Encrypt(fragment.Data)));
                     }
 
                     dicomDataset.AddOrUpdate(element);
@@ -84,7 +84,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
         private string EncryptToBase64String(string plainString)
         {
-            return Convert.ToBase64String(_encryptFunction.EncryptContentWithAES(DicomEncoding.Default.GetBytes(plainString)));
+            return Convert.ToBase64String(_encryptFunction.Encrypt(DicomEncoding.Default.GetBytes(plainString)));
         }
 
         public bool IsSupported(DicomItem item)

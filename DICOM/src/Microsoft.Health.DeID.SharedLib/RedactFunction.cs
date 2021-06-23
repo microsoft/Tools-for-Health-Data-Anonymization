@@ -24,17 +24,37 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             _redactSetting = redactSetting ?? new RedactSetting();
         }
 
-        public string RedactDateTime(string dateTime, string dateTimeFormat = null, IFormatProvider provider = null)
+        public string RedactDate(string dateString, string inputDateFormat = null, string outputDateFormat = null, IFormatProvider provider = null)
         {
-            if (string.IsNullOrEmpty(dateTime))
+            if (string.IsNullOrEmpty(dateString))
             {
                 return null;
             }
 
             if (_redactSetting.EnablePartialDatesForRedact)
             {
-                DateTimeOffset date = DateTimeUtility.ParseDateTime(dateTime, dateTimeFormat, provider);
-                return DateTimeUtility.IndicateAgeOverThreshold(date) ? null : date.Year.ToString();
+                DateTimeOffset date = DateTimeUtility.ParseDateTimeString(dateString, inputDateFormat, provider, DeIDGlobalSettings.DateFormat);
+                return DateTimeUtility.IndicateAgeOverThreshold(date)
+                    ? null
+                    : new DateTimeOffset(date.Year, 1, 1, 0, 0, 0, new TimeSpan(0, 0, 0)).ToString(outputDateFormat ?? DeIDGlobalSettings.DateFormat);
+            }
+
+            return null;
+        }
+
+        public string RedactDateTime(string dateTimeString, string inputDateTimeFormat = null, string outputDateFormat = null, IFormatProvider provider = null)
+        {
+            if (string.IsNullOrEmpty(dateTimeString))
+            {
+                return null;
+            }
+
+            if (_redactSetting.EnablePartialDatesForRedact)
+            {
+                DateTimeOffset date = DateTimeUtility.ParseDateTimeString(dateTimeString, inputDateTimeFormat, provider);
+                return DateTimeUtility.IndicateAgeOverThreshold(date)
+                    ? null
+                    : new DateTimeOffset(date.Year, 1, 1, 0, 0, 0, new TimeSpan(0, 0, 0)).ToString(outputDateFormat ?? DeIDGlobalSettings.DateTimeFormat);
             }
 
             return null;
@@ -68,7 +88,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                     return null;
                 }
 
-                dateObject.DateValue = new DateTimeOffset(dateObject.DateValue.Year, 1, 1, 0, 0, 0, dateObject.HasTimeZone == null || !(bool)dateObject.HasTimeZone ? new TimeSpan(0, 0, 0) : dateObject.DateValue.Offset);
+                dateObject.DateValue = new DateTimeOffset(dateObject.DateValue.Year, 1, 1, 0, 0, 0, dateObject.HasTimeZone == true ? dateObject.DateValue.Offset : new TimeSpan(0, 0, 0));
                 return dateObject;
             }
 
@@ -77,17 +97,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public int? RedactAge(int age)
         {
-            if (_redactSetting.EnablePartialAgesForRedact)
-            {
-                if (age > AgeThreshold)
-                {
-                    return null;
-                }
-
-                return age;
-            }
-
-            return null;
+            return (int?)RedactAge((decimal)age);
         }
 
         public decimal? RedactAge(decimal age)
@@ -109,17 +119,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         {
             EnsureArg.IsNotNull(age, nameof(age));
 
-            if (_redactSetting.EnablePartialAgesForRedact)
-            {
-                if (age.AgeInYears() > AgeThreshold)
-                {
-                    return null;
-                }
-
-                return age;
-            }
-
-            return null;
+            return RedactAge(age.AgeInYears()) == null ? null : age;
         }
 
         public string RedactPostalCode(string postalCode)

@@ -5,53 +5,38 @@
 
 using System;
 using System.Globalization;
-using System.Linq;
+using Microsoft.Health.Dicom.DeID.SharedLib.Exceptions;
 
 namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
     public class DateTimeUtility
     {
-        public static DateTimeOffset ParseDateTime(string dateString, string format = null, IFormatProvider provider = null)
+        public static DateTimeOffset ParseDateTimeString(string inputString, string inputDateTimeFormat, IFormatProvider provider, string globalFormat = null)
         {
-            if (format == null && DateTimeOffset.TryParse(dateString, out DateTimeOffset date))
+            if (inputDateTimeFormat != null)
             {
-                return date;
-            }
-            else
-            {
-                format ??= Constants.YearFormat;
-                if (dateString.Length < format.Length)
+                if (DateTimeOffset.TryParseExact(inputString, inputDateTimeFormat, provider ?? CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset result))
                 {
-                    format = format.Remove(dateString.Length);
-                }
-
-                return DateTimeOffset.ParseExact(dateString, format, provider ?? CultureInfo.InvariantCulture);
-            }
-        }
-
-        public static string DateTimeToString(DateTimeOffset dateTimeOffset, string outputFormat = null)
-        {
-            outputFormat ??= DeIDGlobalSettings.OutputDateTimeFormat;
-            return dateTimeOffset.ToString(outputFormat);
-        }
-
-        public static string GetDateTimeFormat(string dateTimeString, string[] formats)
-        {
-            if (formats?.Any() != true)
-            {
-                formats = CultureInfo.CurrentCulture.DateTimeFormat.GetAllDateTimePatterns();
-            }
-
-            DateTimeFormatInfo formatInfo = DateTimeFormatInfo.CurrentInfo;
-            foreach (string pattern in formats)
-            {
-                if (DateTimeOffset.TryParseExact(dateTimeString, pattern, formatInfo, DateTimeStyles.None, out DateTimeOffset _))
-                {
-                    return pattern;
+                    return result;
                 }
             }
 
-            return null;
+            if (DateTimeOffset.TryParse(inputString, out DateTimeOffset defaultResult))
+            {
+                return defaultResult;
+            }
+
+            if (DateTimeOffset.TryParseExact(inputString, globalFormat, provider ?? CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset globalResult))
+            {
+                return globalResult;
+            }
+
+            if (DateTimeOffset.TryParseExact(inputString, "yyyy", provider ?? CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset yearResult))
+            {
+                return yearResult;
+            }
+
+            throw new DeIDFunctionException(DeIDFunctionErrorCode.InvalidInputValue, "Failed to parse input date value.");
         }
 
         public static bool IndicateAgeOverThreshold(DateTimeOffset date)

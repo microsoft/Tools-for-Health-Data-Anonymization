@@ -37,14 +37,6 @@ namespace De.ID.Function.Shared.UnitTests
             yield return new object[] { "1998-10-02T08:47:25+08:00", DateTimeOffset.Parse("1998-08-13T00:00:00+08:00"), DateTimeOffset.Parse("1998-11-21T00:00:00+08:00") };
         }
 
-        public static IEnumerable<object[]> GetDateTimeStringForDateShiftFormatTest()
-        {
-            yield return new object[] { "dummy", "2015-02-07T13:28:17-05:00", "2015-01-17T00:00:00-05:00" };
-            yield return new object[] { "dummy", "2015-02-07T13:28:17+05:00", "2015-01-17T00:00:00+05:00" };
-            yield return new object[] { "dummy", "2015-02-07T13:28:17Z", "2015-01-17T00:00:00+00:00" }; // mark
-            yield return new object[] { "dummy", "2015-02-07T13:28:17.12345-05:00", "2015-01-17T00:00:00-05:00" };
-        }
-
         public static IEnumerable<object[]> GetDateTimeForDateShift()
         {
             yield return new object[] { DateTimeOffset.Parse("2015-02-07"), DateTimeOffset.Parse("2014-12-19"), DateTimeOffset.Parse("2015-03-29") };
@@ -90,20 +82,11 @@ namespace De.ID.Function.Shared.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetDateTimeStringForDateShiftFormatTest))]
-        public void GivenADateTime_WhenDateShift_ThenDateTimeFormatShouldNotChange(string dateShiftKey, string dateTime, string expectedDateTimeString)
-        {
-            var dateShiftFunction = new DateShiftFunction(new DateShiftSetting() { DateShiftKey = dateShiftKey });
-            var processResult = dateShiftFunction.ShiftDateTime(dateTime);
-            Assert.Equal(expectedDateTimeString, processResult);
-        }
-
-        [Theory]
         [MemberData(nameof(GetDateTimeForDateShift))]
         public void GivenADateTime_WhenDateShift_ThenDateTimeShouldBeShifted(DateTimeOffset dateTime, DateTimeOffset minExpectedDateTime, DateTimeOffset maxExpectedDateTime)
         {
             var dateShiftFunction = new DateShiftFunction(new DateShiftSetting() { DateShiftKey = Guid.NewGuid().ToString("N") });
-            var processResult = dateShiftFunction.ShiftDateTime(dateTime);
+            var processResult = dateShiftFunction.ShiftDateTimeOffset(dateTime);
 
             Assert.True(minExpectedDateTime <= processResult);
             Assert.True(maxExpectedDateTime >= processResult);

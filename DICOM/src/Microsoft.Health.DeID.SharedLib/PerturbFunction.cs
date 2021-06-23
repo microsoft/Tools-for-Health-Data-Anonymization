@@ -44,7 +44,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             }
             else
             {
-                throw new DeIDFunctionException(DeIDFunctionErrorCode.DeIdFailed, "The value could not be perturbed.");
+                throw new DeIDFunctionException(DeIDFunctionErrorCode.PerturbFailed, "The value could not be perturbed.");
             }
         }
 

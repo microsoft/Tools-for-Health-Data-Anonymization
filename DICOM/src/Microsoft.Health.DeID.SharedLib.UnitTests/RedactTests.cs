@@ -14,18 +14,18 @@ namespace De.ID.Function.Shared.UnitTests
     {
         public static IEnumerable<object[]> GetDateDataForPartialRedact()
         {
-            yield return new object[] { "2015", "2015" };
-            yield return new object[] { "2015-02", "2015" };
-            yield return new object[] { "2015-02-07", "2015" };
+            yield return new object[] { "2015", "2015-01-01" };
+            yield return new object[] { "2015-02", "2015-01-01" };
+            yield return new object[] { "2015-02-07", "2015-01-01" };
             yield return new object[] { "1925-02-07", null };
         }
 
         public static IEnumerable<object[]> GetDateDataWithFormatForPartialRedact()
         {
-            yield return new object[] { "2015", "yyyyMMddhhmmss.ffffff", "2015" };
-            yield return new object[] { "201502", "yyyyMMddhhmmss.ffffff", "2015" };
-            yield return new object[] { "20150207", "yyyyMMddhhmmss.ffffff", "2015" };
-            yield return new object[] { "19250207121212.12", "yyyyMMddhhmmss.ffffff", null };
+            yield return new object[] { "2015", "yyyy",  "yyyy", "2015" };
+            yield return new object[] { "201502", "yyyyMM", "yyyy", "2015" };
+            yield return new object[] { "20150207", "yyyyMMdd", "yyyy", "2015" };
+            yield return new object[] { "19250207121212.12", "yyyyMMddhhmmss.ff", "yyyy", null };
         }
 
         public static IEnumerable<object[]> GetDateDataForRedact()
@@ -38,16 +38,16 @@ namespace De.ID.Function.Shared.UnitTests
 
         public static IEnumerable<object[]> GetDateTimeDataForRedact()
         {
-            yield return new object[] { "2015", "2015" };
-            yield return new object[] { "2015-02", "2015" };
-            yield return new object[] { "2015-02-07", "2015" };
-            yield return new object[] { "2015-02-07T13:28:17-05:00", "2015" };
+            yield return new object[] { "2015", "2015-01-01T00:00:00" };
+            yield return new object[] { "2015-02", "2015-01-01T00:00:00" };
+            yield return new object[] { "2015-02-07", "2015-01-01T00:00:00" };
+            yield return new object[] { "2015-02-07T13:28:17-05:00", "2015-01-01T00:00:00" };
             yield return new object[] { "1925-02-07T13:28:17-05:00", null };
         }
 
         public static IEnumerable<object[]> GetInstantDataForRedact()
         {
-            yield return new object[] { "2015-02-07T13:28:17-05:00", "2015" };
+            yield return new object[] { "2015-02-07T13:28:17-05:00", "2015-01-01T00:00:00" };
             yield return new object[] { "1925-02-07T13:28:17-05:00", null };
         }
 
@@ -101,10 +101,10 @@ namespace De.ID.Function.Shared.UnitTests
 
         [Theory]
         [MemberData(nameof(GetDateDataWithFormatForPartialRedact))]
-        public void GivenADateWithFormat_WhenPartialRedact_ThenDateShouldBeRedacted(string date, string format, string expectedDate)
+        public void GivenADateWithFormat_WhenPartialRedact_ThenDateShouldBeRedacted(string date, string inputFormat, string outputFormat, string expectedDate)
         {
             var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialDatesForRedact = true });
-            var processResult = redactFunction.RedactDateTime(date, format);
+            var processResult = redactFunction.RedactDateTime(date, inputFormat, outputFormat);
             Assert.Equal(expectedDate ?? null, processResult);
         }
 
@@ -113,7 +113,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenADate_WhenPartialRedact_ThenDateShouldBeRedacted(string date, string expectedDate)
         {
             var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialDatesForRedact = true });
-            var processResult = redactFunction.RedactDateTime(date);
+            var processResult = redactFunction.RedactDate(date);
             Assert.Equal(expectedDate ?? null, processResult);
         }
 

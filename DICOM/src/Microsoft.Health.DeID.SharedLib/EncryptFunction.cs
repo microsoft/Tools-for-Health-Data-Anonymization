@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using EnsureThat;
 using Microsoft.Health.DeID.SharedLib.Settings;
+using Microsoft.Health.Dicom.DeID.SharedLib.Exceptions;
 
 namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
@@ -26,7 +27,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             _aesKey = Encoding.UTF8.GetBytes(encryptionSetting.EncryptKey);
         }
 
-        public byte[] EncryptContentWithAES(string plainText, Encoding encoding = null)
+        public byte[] Encrypt(string plainText, Encoding encoding = null)
         {
             EnsureArg.IsNotNull(plainText, nameof(plainText));
 
@@ -36,17 +37,17 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             }
 
             encoding ??= Encoding.UTF8;
-            return EncryptContentWithAES(encoding.GetBytes(plainText));
+            return Encrypt(encoding.GetBytes(plainText));
         }
 
-        public byte[] EncryptContentWithAES(Stream plainStream)
+        public byte[] Encrypt(Stream plainStream)
         {
             EnsureArg.IsNotNull(plainStream, nameof(plainStream));
 
-            return EncryptContentWithAES(StreamToByte(plainStream));
+            return Encrypt(StreamToByte(plainStream));
         }
 
-        public byte[] EncryptContentWithAES(byte[] plainBytes)
+        public byte[] Encrypt(byte[] plainBytes)
         {
             EnsureArg.IsNotNull(plainBytes, nameof(plainBytes));
 
@@ -55,22 +56,29 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
              * Block size: 16 bytes
              * Acceptable key sizes： [128, 192, 256]
              */
-            using Aes aes = Aes.Create();
-            byte[] iv = aes.IV;
-            aes.Key = _aesKey;
-            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+            try
+            {
+                using Aes aes = Aes.Create();
+                byte[] iv = aes.IV;
+                aes.Key = _aesKey;
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
-            var encryptedBytes = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
+                var encryptedBytes = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
 
-            // Concat IV to encrpted bytes
-            byte[] result = new byte[AesIvSize + encryptedBytes.Length];
-            Buffer.BlockCopy(iv, 0, result, 0, AesIvSize);
-            Buffer.BlockCopy(encryptedBytes, 0, result, AesIvSize, encryptedBytes.Length);
+                // Concat IV to encrpted bytes
+                byte[] result = new byte[AesIvSize + encryptedBytes.Length];
+                Buffer.BlockCopy(iv, 0, result, 0, AesIvSize);
+                Buffer.BlockCopy(encryptedBytes, 0, result, AesIvSize, encryptedBytes.Length);
 
-            return result;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new DeIDFunctionException(DeIDFunctionErrorCode.EncryptFailed, "Encrypt data failed.", ex);
+            }
         }
 
-        public byte[] DecryptContentWithAES(string cipherText)
+        public byte[] Decrypt(string cipherText, Encoding encoding = null)
         {
             EnsureArg.IsNotNull(cipherText, nameof(cipherText));
 
@@ -79,18 +87,19 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
                 return new byte[] { };
             }
 
-            var byteData = Encoding.UTF8.GetBytes(cipherText);
-            return DecryptContentWithAES(byteData);
+            encoding ??= Encoding.UTF8;
+            var byteData = encoding.GetBytes(cipherText);
+            return Decrypt(byteData);
         }
 
-        public byte[] DecryptContentWithAES(Stream cipherStream)
+        public byte[] Decrypt(Stream cipherStream)
         {
             EnsureArg.IsNotNull(cipherStream, nameof(cipherStream));
 
-            return DecryptContentWithAES(StreamToByte(cipherStream));
+            return Decrypt(StreamToByte(cipherStream));
         }
 
-        public byte[] DecryptContentWithAES(byte[] cipherBytes)
+        public byte[] Decrypt(byte[] cipherBytes)
         {
             EnsureArg.IsNotNull(cipherBytes, nameof(cipherBytes));
 
@@ -103,21 +112,28 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
             if (cipherBytes.Length < AesIvSize)
             {
-                throw new FormatException($"The input base64Text for decryption should not be less than {AesIvSize} bytes length!");
+                throw new FormatException($"The input text for decryption should not be less than {AesIvSize} bytes length!");
             }
 
-            var iv = new byte[16];
-            Buffer.BlockCopy(cipherBytes, 0, iv, 0, AesIvSize);
-            var encryptedBytes = new byte[cipherBytes.Length - AesIvSize];
-            Buffer.BlockCopy(cipherBytes, AesIvSize, encryptedBytes, 0, encryptedBytes.Length);
+            try
+            {
+                var iv = new byte[16];
+                Buffer.BlockCopy(cipherBytes, 0, iv, 0, AesIvSize);
+                var encryptedBytes = new byte[cipherBytes.Length - AesIvSize];
+                Buffer.BlockCopy(cipherBytes, AesIvSize, encryptedBytes, 0, encryptedBytes.Length);
 
-            // Get decryptor
-            using Aes aes = Aes.Create();
-            aes.Key = _aesKey;
-            aes.IV = iv;
-            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                // Get decryptor
+                using Aes aes = Aes.Create();
+                aes.Key = _aesKey;
+                aes.IV = iv;
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
-            return decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+                return decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+            }
+            catch (Exception ex)
+            {
+                throw new DeIDFunctionException(DeIDFunctionErrorCode.EncryptFailed, "Decrypt data failed.", ex);
+            }
         }
 
         private byte[] StreamToByte(Stream inputStream)

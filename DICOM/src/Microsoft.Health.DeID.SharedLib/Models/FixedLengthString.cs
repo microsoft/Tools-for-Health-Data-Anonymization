@@ -9,10 +9,6 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
     public class FixedLengthString
     {
-        private string value;
-        private readonly int length;
-        private string sourceValue;
-
         public FixedLengthString(int length)
             : this(length, string.Empty)
         {
@@ -22,47 +18,53 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         {
             EnsureArg.IsNotNull(sourceValue, nameof(sourceValue));
 
-            length = sourceValue.Length;
-            this.sourceValue = sourceValue;
-            value = sourceValue;
+            Length = sourceValue.Length;
+            this.SourceValue = sourceValue;
+            Value = sourceValue;
         }
 
         public FixedLengthString(int length, string sourceValue)
         {
-            this.length = length;
-            this.sourceValue = sourceValue;
+            this.Length = length;
+            this.SourceValue = sourceValue;
             if (sourceValue.Length > length)
             {
-                value = sourceValue.Substring(0, length);
+                Value = sourceValue.Substring(0, length);
             }
             else
             {
-                value = sourceValue + new string('0', length - sourceValue.Length);
+                Value = sourceValue + new string('0', length - sourceValue.Length);
             }
         }
 
+        public string Value { get; private set; }
+
+        public int Length { get; private set; }
+
+        public string SourceValue { get; private set; }
+
         public override string ToString()
         {
-            return value;
+            return Value;
         }
 
         public void SetString(string newstring)
         {
-            if (newstring.Length > length)
+            if (newstring.Length > Length)
             {
-                value = newstring.Substring(0, length);
+                Value = newstring.Substring(0, Length);
             }
             else
             {
-                value = newstring + new string('0', length - newstring.Length);
+                Value = newstring + new string('0', Length - newstring.Length);
             }
 
-            sourceValue = newstring;
+            SourceValue = newstring;
         }
 
         public int GetLength()
         {
-            return length;
+            return Length;
         }
     }
 }

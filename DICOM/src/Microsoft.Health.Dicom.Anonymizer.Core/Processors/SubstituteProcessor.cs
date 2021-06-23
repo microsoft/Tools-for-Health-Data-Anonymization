@@ -67,7 +67,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
             catch (Exception ex)
             {
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Invalid replace value.", ex);
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Substitute process failed. Invalid replace value.", ex);
             }
         }
 

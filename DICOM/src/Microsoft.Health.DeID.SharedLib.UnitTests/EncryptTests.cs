@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Health.DeID.SharedLib.Settings;
 using Microsoft.Health.Dicom.DeID.SharedLib;
+using Microsoft.Health.Dicom.DeID.SharedLib.Exceptions;
 using Xunit;
 
 namespace De.ID.Function.Shared.UnitTests
@@ -112,8 +113,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetTextDataToEncrypt))]
         public void GivenAnOriginalText_WhenEncrypt_ResultShouldBeValidAndDecryptable(string originalText)
         {
-            var cipherText = encryptFunction.EncryptContentWithAES(originalText);
-            var plainText = encryptFunction.DecryptContentWithAES(cipherText);
+            var cipherText = encryptFunction.Encrypt(originalText);
+            var plainText = encryptFunction.Decrypt(cipherText);
             Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
         }
 
@@ -121,8 +122,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetBytesDataToEncrypt))]
         public void GivenAnOriginalBytes_WhenEncrypt_ResultShouldBeValidAndDecryptable(byte[] originalBytes)
         {
-            var cipherText = encryptFunction.EncryptContentWithAES(originalBytes);
-            var plainText = encryptFunction.DecryptContentWithAES(cipherText);
+            var cipherText = encryptFunction.Encrypt(originalBytes);
+            var plainText = encryptFunction.Decrypt(cipherText);
             Assert.Equal(originalBytes, plainText);
         }
 
@@ -130,8 +131,8 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetStreamDataToEncrypt))]
         public void GivenAnOriginalStream_WhenEncrypt_ResultShouldBeValidAndDecryptable(Stream originalStream)
         {
-            var cipherText = encryptFunction.EncryptContentWithAES(originalStream);
-            var plainText = encryptFunction.DecryptContentWithAES(cipherText);
+            var cipherText = encryptFunction.Encrypt(originalStream);
+            var plainText = encryptFunction.Decrypt(cipherText);
             Assert.Equal(StreamToByte(originalStream), plainText);
         }
 
@@ -139,7 +140,7 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetBytesDataToDecryptUsingAES))]
         public void GivenAnEncryptedBytes_WhenDecrypt_OriginalTextShouldBeReturned(byte[] cipherText, string originalText)
         {
-            var plainText = encryptFunction.DecryptContentWithAES(cipherText);
+            var plainText = encryptFunction.Decrypt(cipherText);
             Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
         }
 
@@ -147,7 +148,7 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetStreamDataToDecryptUsingAES))]
         public void GivenAnEncryptedStream_WhenDecrypt_OriginalTextShouldBeReturned(Stream cipherText, string originalText)
         {
-            var plainText = encryptFunction.DecryptContentWithAES(cipherText);
+            var plainText = encryptFunction.Decrypt(cipherText);
             Assert.Equal(originalText, plainText == null ? null : plainText.Length == 0 ? string.Empty : Encoding.UTF8.GetString(plainText));
         }
 
@@ -155,14 +156,14 @@ namespace De.ID.Function.Shared.UnitTests
         [MemberData(nameof(GetInvalidFormatTextDataToDecrypt))]
         public void GivenAInvalidForamtText_WhenDecrypt_ExceptionShouldBeThrown(string cipherText)
         {
-            Assert.Throws<FormatException>(() => encryptFunction.DecryptContentWithAES(cipherText));
+            Assert.Throws<FormatException>(() => encryptFunction.Decrypt(cipherText));
         }
 
         [Theory]
         [MemberData(nameof(GetInvalidCryptoGraphicTextDataToDecrypt))]
         public void GivenAInvalidCryptoGraphicText_WhenDecrypt_ExceptionShouldBeThrown(string cipherText)
         {
-            Assert.Throws<CryptographicException>(() => encryptFunction.DecryptContentWithAES(cipherText));
+            Assert.Throws<DeIDFunctionException>(() => encryptFunction.Decrypt(cipherText));
         }
 
         private static byte[] StreamToByte(Stream inputStream)

@@ -184,7 +184,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             Processor.Process(dataset, item);
 
             var encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = "123456781234567812345678" });
-            Assert.Equal(Encoding.UTF8.GetBytes("test"), encryptFunction.DecryptContentWithAES(dataset.GetDicomItem<DicomOtherByte>(tag).Get<byte[]>()));
+            Assert.Equal(Encoding.UTF8.GetBytes("test"), encryptFunction.Decrypt(dataset.GetDicomItem<DicomOtherByte>(tag).Get<byte[]>()));
         }
 
         [Fact]
@@ -203,7 +203,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             var encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = "123456781234567812345678" });
             while (enumerator.MoveNext())
             {
-                Assert.Equal(Encoding.UTF8.GetBytes("fragment"), encryptFunction.DecryptContentWithAES(enumerator.Current.Data));
+                Assert.Equal(Encoding.UTF8.GetBytes("fragment"), encryptFunction.Decrypt(enumerator.Current.Data));
             }
         }
 
@@ -226,7 +226,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
         private string Decryption(string encryptedValue, string key)
         {
             var encryptFunction = new EncryptFunction(new EncryptSetting() { EncryptKey = key });
-            return Encoding.UTF8.GetString(encryptFunction.DecryptContentWithAES(Convert.FromBase64String(encryptedValue)));
+            return Encoding.UTF8.GetString(encryptFunction.Decrypt(Convert.FromBase64String(encryptedValue)));
         }
     }
 }

@@ -27,41 +27,37 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public uint DateShiftRange { get; set; }
 
-        public string ShiftDate(string inputString, string inputDateTimeFormat = null, string outputDateTimeFormat = null, IFormatProvider provider = null)
+        public string ShiftDate(string inputString, string inputDateFormat = null, string outputDateFormat = null, IFormatProvider provider = null)
         {
             EnsureArg.IsNotNull(inputString, nameof(inputString));
 
-            var date = DateTimeUtility.ParseDateTime(inputString, inputDateTimeFormat, provider);
-            var outputFormat = outputDateTimeFormat ?? DeIDGlobalSettings.OutputDateTimeFormat ?? inputDateTimeFormat ?? DateTimeUtility.GetDateTimeFormat(inputString, null);
-            if (string.IsNullOrEmpty(outputFormat))
-            {
-                throw new DeIDFunctionException(DeIDFunctionErrorCode.InvalidDeIdSettings, "Output date format not specified.");
-            }
+            DateTimeOffset date = DateTimeUtility.ParseDateTimeString(inputString, inputDateFormat, provider, DeIDGlobalSettings.DateFormat);
 
-            return date.AddDays(GetDateShiftValue()).ToString(outputFormat);
+            return ShiftDateTimeOffset(date).ToString(outputDateFormat ?? DeIDGlobalSettings.DateFormat);
         }
 
         public string ShiftDateTime(string inputString, string inputDateTimeFormat = null, string outputDateTimeFormat = null, IFormatProvider provider = null)
         {
             EnsureArg.IsNotNull(inputString, nameof(inputString));
 
-            var date = DateTimeUtility.ParseDateTime(inputString, inputDateTimeFormat, provider);
-            var outputFormat = outputDateTimeFormat ?? DeIDGlobalSettings.OutputDateTimeFormat ?? inputDateTimeFormat ?? DateTimeUtility.GetDateTimeFormat(inputString, null);
-            if (string.IsNullOrEmpty(outputFormat))
-            {
-                throw new DeIDFunctionException(DeIDFunctionErrorCode.InvalidDeIdSettings, "Output date format not specified.");
-            }
+            DateTimeOffset date = DateTimeUtility.ParseDateTimeString(inputString, inputDateTimeFormat, provider, DeIDGlobalSettings.DateTimeFormat);
 
-            DateTimeOffset newDateTime = new DateTimeOffset(date.Year, date.Month, date.Day, 0, 0, 0, date.Offset);
-            return newDateTime.AddDays(GetDateShiftValue()).ToString(outputFormat);
+            return ShiftDateTimeOffset(date).ToString(outputDateTimeFormat ?? DeIDGlobalSettings.DateTimeFormat);
         }
 
-        public DateTimeOffset ShiftDateTime(DateTimeOffset dateTime)
+        public DateTimeOffset ShiftDateTimeOffset(DateTimeOffset dateTime)
         {
             EnsureArg.IsNotNull<DateTimeOffset>(dateTime, nameof(dateTime));
 
-            DateTimeOffset newDateTime = new DateTimeOffset(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, dateTime.Offset);
-            return newDateTime.AddDays(GetDateShiftValue());
+            try
+            {
+                DateTimeOffset newDateTime = new DateTimeOffset(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, dateTime.Offset);
+                return newDateTime.AddDays(GetDateShiftValue());
+            }
+            catch (Exception ex)
+            {
+                throw new DeIDFunctionException(DeIDFunctionErrorCode.DateShiftFailed, "Failed to shift date.", ex);
+            }
         }
 
         private int GetDateShiftValue()
