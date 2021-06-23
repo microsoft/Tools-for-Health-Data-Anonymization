@@ -9,18 +9,18 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib.Exceptions
 {
     public class DeIDFunctionException : Exception
     {
-        public DeIDFunctionException(DeIDFunctionErrorCode templateManagementErrorCode, string message)
+        public DeIDFunctionException(DeIDFunctionErrorCode deIdentificationErrorCode, string message)
             : base(message)
         {
-            TemplateManagementErrorCode = templateManagementErrorCode;
+            DeIdentificationErrorCode = deIdentificationErrorCode;
         }
 
-        public DeIDFunctionException(DeIDFunctionErrorCode templateManagementErrorCode, string message, Exception innerException)
+        public DeIDFunctionException(DeIDFunctionErrorCode deIdentificationErrorCode, string message, Exception innerException)
             : base(message, innerException)
         {
-            TemplateManagementErrorCode = templateManagementErrorCode;
+            DeIdentificationErrorCode = deIdentificationErrorCode;
         }
 
-        public DeIDFunctionErrorCode TemplateManagementErrorCode { get; }
+        public DeIDFunctionErrorCode DeIdentificationErrorCode { get; }
     }
 }
