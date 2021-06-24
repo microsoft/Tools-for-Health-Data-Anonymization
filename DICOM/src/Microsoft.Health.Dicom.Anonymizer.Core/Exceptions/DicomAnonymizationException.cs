@@ -9,16 +9,16 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Exceptions
 {
     public class DicomAnonymizationException : Exception
     {
-        public DicomAnonymizationException(DicomAnonymizationErrorCode dicomAnonymizerErrorCode, string message)
+        public DicomAnonymizationException(DicomAnonymizationErrorCode errorCode, string message)
             : base(message)
         {
-            DicomAnonymizerErrorCode = dicomAnonymizerErrorCode;
+            DicomAnonymizerErrorCode = errorCode;
         }
 
-        public DicomAnonymizationException(DicomAnonymizationErrorCode dicomAnonymizerErrorCode, string message, Exception innerException)
+        public DicomAnonymizationException(DicomAnonymizationErrorCode errorCode, string message, Exception innerException)
             : base(message, innerException)
         {
-            DicomAnonymizerErrorCode = dicomAnonymizerErrorCode;
+            DicomAnonymizerErrorCode = errorCode;
         }
 
         public DicomAnonymizationErrorCode DicomAnonymizerErrorCode { get; }

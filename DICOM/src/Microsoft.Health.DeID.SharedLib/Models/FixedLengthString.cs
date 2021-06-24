@@ -26,15 +26,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
         public FixedLengthString(int length, string sourceValue)
         {
             this.Length = length;
-            this.SourceValue = sourceValue;
-            if (sourceValue.Length > length)
-            {
-                Value = sourceValue.Substring(0, length);
-            }
-            else
-            {
-                Value = sourceValue + new string('0', length - sourceValue.Length);
-            }
+            SetString(sourceValue);
         }
 
         public string Value { get; private set; }

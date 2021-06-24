@@ -6,6 +6,7 @@
 using System;
 using System.Text;
 using EnsureThat;
+using Microsoft.Health.DeID.SharedLib.Models;
 using Microsoft.Health.Dicom.DeID.SharedLib.Exceptions;
 using Microsoft.Health.Dicom.DeID.SharedLib.Settings;
 
@@ -27,25 +28,17 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 
         public uint DateShiftRange { get; set; }
 
-        public string ShiftDate(string inputString, string inputDateFormat = null, string outputDateFormat = null, IFormatProvider provider = null)
+        public string Shift(string inputString, AnonymizerValueTypes valueType)
         {
-            EnsureArg.IsNotNull(inputString, nameof(inputString));
-
-            DateTimeOffset date = DateTimeUtility.ParseDateTimeString(inputString, inputDateFormat, provider, DeIDGlobalSettings.DateFormat);
-
-            return ShiftDateTimeOffset(date).ToString(outputDateFormat ?? DeIDGlobalSettings.DateFormat);
+            return valueType switch
+            {
+                AnonymizerValueTypes.Date => ShiftDate(inputString),
+                AnonymizerValueTypes.DateTime => ShiftDateTime(inputString),
+                _ => throw new DeIDFunctionException(DeIDFunctionErrorCode.DateShiftFailed, "Unsupported value type. DateShift only appllable on date or dateTime."),
+            };
         }
 
-        public string ShiftDateTime(string inputString, string inputDateTimeFormat = null, string outputDateTimeFormat = null, IFormatProvider provider = null)
-        {
-            EnsureArg.IsNotNull(inputString, nameof(inputString));
-
-            DateTimeOffset date = DateTimeUtility.ParseDateTimeString(inputString, inputDateTimeFormat, provider, DeIDGlobalSettings.DateTimeFormat);
-
-            return ShiftDateTimeOffset(date).ToString(outputDateTimeFormat ?? DeIDGlobalSettings.DateTimeFormat);
-        }
-
-        public DateTimeOffset ShiftDateTimeOffset(DateTimeOffset dateTime)
+        public DateTimeOffset Shift(DateTimeOffset dateTime)
         {
             EnsureArg.IsNotNull<DateTimeOffset>(dateTime, nameof(dateTime));
 
@@ -58,6 +51,24 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
             {
                 throw new DeIDFunctionException(DeIDFunctionErrorCode.DateShiftFailed, "Failed to shift date.", ex);
             }
+        }
+
+        private string ShiftDate(string inputString)
+        {
+            EnsureArg.IsNotNull(inputString, nameof(inputString));
+
+            DateTimeOffset date = DateTimeUtility.ParseDateTimeString(inputString, DeIDGlobalSettings.DateFormat);
+
+            return Shift(date).ToString(DeIDGlobalSettings.DateFormat);
+        }
+
+        private string ShiftDateTime(string inputString)
+        {
+            EnsureArg.IsNotNull(inputString, nameof(inputString));
+
+            DateTimeOffset date = DateTimeUtility.ParseDateTimeString(inputString, DeIDGlobalSettings.DateTimeFormat);
+
+            return Shift(date).ToString(DeIDGlobalSettings.DateTimeFormat);
         }
 
         private int GetDateShiftValue()

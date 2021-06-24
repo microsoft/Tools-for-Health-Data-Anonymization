@@ -45,7 +45,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 var values = ((DicomAgeString)item).Get<string[]>();
                 foreach (var value in values)
                 {
-                    var result = _redactFunction.RedactAge(DicomUtility.ParseAge(value));
+                    var result = _redactFunction.Redact(DicomUtility.ParseAge(value));
                     if (result != null)
                     {
                         redactedValues.Add(DicomUtility.GenerateAgeString(result));
@@ -57,7 +57,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 var values = DicomUtility.ParseDicomDate((DicomDate)item);
                 foreach (var value in values)
                 {
-                    var result = _redactFunction.RedactDateTime(value);
+                    var result = _redactFunction.Radact(value);
                     if (result != null)
                     {
                         redactedValues.Add(DicomUtility.GenerateDicomDateString((DateTimeOffset)result));
@@ -69,7 +69,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 DateTimeObject[] values = DicomUtility.ParseDicomDateTime((DicomDateTime)item);
                 foreach (var value in values)
                 {
-                    DateTimeObject result = _redactFunction.RedactDateTime(value);
+                    DateTimeObject result = _redactFunction.Redact(value);
                     if (result != null)
                     {
                         redactedValues.Add(DicomUtility.GenerateDicomDateTimeString(result));

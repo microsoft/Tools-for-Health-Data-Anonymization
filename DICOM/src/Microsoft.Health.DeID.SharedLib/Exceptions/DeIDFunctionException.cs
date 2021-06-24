@@ -9,16 +9,16 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib.Exceptions
 {
     public class DeIDFunctionException : Exception
     {
-        public DeIDFunctionException(DeIDFunctionErrorCode deIdentificationErrorCode, string message)
+        public DeIDFunctionException(DeIDFunctionErrorCode errorCode, string message)
             : base(message)
         {
-            DeIdentificationErrorCode = deIdentificationErrorCode;
+            DeIdentificationErrorCode = errorCode;
         }
 
-        public DeIDFunctionException(DeIDFunctionErrorCode deIdentificationErrorCode, string message, Exception innerException)
+        public DeIDFunctionException(DeIDFunctionErrorCode errorCode, string message, Exception innerException)
             : base(message, innerException)
         {
-            DeIdentificationErrorCode = deIdentificationErrorCode;
+            DeIdentificationErrorCode = errorCode;
         }
 
         public DeIDFunctionErrorCode DeIdentificationErrorCode { get; }

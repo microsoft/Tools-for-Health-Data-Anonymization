@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Health.DeID.SharedLib.Models;
 using Microsoft.Health.Dicom.DeID.SharedLib;
 using Microsoft.Health.Dicom.DeID.SharedLib.Settings;
 using Xunit;
@@ -50,7 +51,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenADate_WhenDateShift_ThenDateShouldBeShifted(string date, DateTime minExpectedDate, DateTime maxExpectedDate)
         {
             var dateShiftFunction = new DateShiftFunction(new DateShiftSetting() { DateShiftKey = string.Empty });
-            var processResult = dateShiftFunction.ShiftDate(date);
+            var processResult = dateShiftFunction.Shift(date, AnonymizerValueTypes.Date);
 
             Assert.True(minExpectedDate <= DateTime.Parse(processResult));
             Assert.True(maxExpectedDate >= DateTime.Parse(processResult));
@@ -61,10 +62,10 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenADate_WhenDateShiftWithSamePrefix_ThenSameAmountShouldBeShifted(string date1, string date2)
         {
             var dateShiftFunction = new DateShiftFunction(new DateShiftSetting() { DateShiftKey = "123", DateShiftKeyPrefix = "filename" });
-            var processResult1 = dateShiftFunction.ShiftDate(date1);
+            var processResult1 = dateShiftFunction.Shift(date1, AnonymizerValueTypes.Date);
             var offset1 = DateTime.Parse(processResult1).Subtract(DateTime.Parse(date1.ToString()));
 
-            var processResult2 = dateShiftFunction.ShiftDate(date2);
+            var processResult2 = dateShiftFunction.Shift(date2, AnonymizerValueTypes.Date);
             var offset2 = DateTime.Parse(processResult2).Subtract(DateTime.Parse(date2.ToString()));
 
             Assert.Equal(offset1.Days, offset2.Days);
@@ -75,7 +76,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenADateTimeString_WhenDateShift_ThenDateTimeShouldBeShifted(string dateTime, DateTimeOffset minExpectedDateTime, DateTimeOffset maxExpectedDateTime)
         {
             var dateShiftFunction = new DateShiftFunction(new DateShiftSetting() { DateShiftKey = Guid.NewGuid().ToString("N") });
-            var processResult = dateShiftFunction.ShiftDateTime(dateTime);
+            var processResult = dateShiftFunction.Shift(dateTime, AnonymizerValueTypes.DateTime);
 
             Assert.True(minExpectedDateTime <= DateTimeOffset.Parse(processResult));
             Assert.True(maxExpectedDateTime >= DateTimeOffset.Parse(processResult));
@@ -86,7 +87,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenADateTime_WhenDateShift_ThenDateTimeShouldBeShifted(DateTimeOffset dateTime, DateTimeOffset minExpectedDateTime, DateTimeOffset maxExpectedDateTime)
         {
             var dateShiftFunction = new DateShiftFunction(new DateShiftSetting() { DateShiftKey = Guid.NewGuid().ToString("N") });
-            var processResult = dateShiftFunction.ShiftDateTimeOffset(dateTime);
+            var processResult = dateShiftFunction.Shift(dateTime);
 
             Assert.True(minExpectedDateTime <= processResult);
             Assert.True(maxExpectedDateTime >= processResult);

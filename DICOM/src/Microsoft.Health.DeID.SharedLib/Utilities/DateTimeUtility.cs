@@ -11,27 +11,19 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib
 {
     public class DateTimeUtility
     {
-        public static DateTimeOffset ParseDateTimeString(string inputString, string inputDateTimeFormat, IFormatProvider provider, string globalFormat = null)
+        public static DateTimeOffset ParseDateTimeString(string inputString, string globalFormat = null)
         {
-            if (inputDateTimeFormat != null)
-            {
-                if (DateTimeOffset.TryParseExact(inputString, inputDateTimeFormat, provider ?? CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset result))
-                {
-                    return result;
-                }
-            }
-
             if (DateTimeOffset.TryParse(inputString, out DateTimeOffset defaultResult))
             {
                 return defaultResult;
             }
 
-            if (DateTimeOffset.TryParseExact(inputString, globalFormat, provider ?? CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset globalResult))
+            if (DateTimeOffset.TryParseExact(inputString, globalFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset globalResult))
             {
                 return globalResult;
             }
 
-            if (DateTimeOffset.TryParseExact(inputString, "yyyy", provider ?? CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset yearResult))
+            if (DateTimeOffset.TryParseExact(inputString, "yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset yearResult))
             {
                 return yearResult;
             }

@@ -49,7 +49,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             else if (item is DicomOtherByte)
             {
                 var valueBytes = ((DicomOtherByte)item).Get<byte[]>();
-                var hashedBytes = _cryptoHashFunction.ComputeHmacHash(valueBytes);
+                var hashedBytes = _cryptoHashFunction.Hash(valueBytes);
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, hashedBytes);
             }
             else if (item is DicomFragmentSequence)
@@ -60,7 +60,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
                 foreach (var fragment in (DicomFragmentSequence)item)
                 {
-                    element.Fragments.Add(new MemoryByteBuffer(_cryptoHashFunction.ComputeHmacHash(fragment.Data)));
+                    element.Fragments.Add(new MemoryByteBuffer(_cryptoHashFunction.Hash(fragment.Data)));
                 }
 
                 dicomDataset.AddOrUpdate(element);
@@ -84,7 +84,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(input, nameof(input));
 
-            var resultBytes = _cryptoHashFunction.ComputeHmacHash(Encoding.UTF8.GetBytes(input));
+            var resultBytes = _cryptoHashFunction.Hash(Encoding.UTF8.GetBytes(input));
             return string.Concat(resultBytes.Select(b => b.ToString("x2")));
         }
     }

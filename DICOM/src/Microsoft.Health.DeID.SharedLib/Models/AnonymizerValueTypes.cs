@@ -9,10 +9,11 @@ using System.Text;
 
 namespace Microsoft.Health.DeID.SharedLib.Models
 {
-    public enum CryptoHashType
+    public enum AnonymizerValueTypes
     {
-        HMACSHA1,
-        HMACSHA256,
-        HMACSHA512,
+        Age,
+        Date,
+        DateTime,
+        PostalCode,
     }
 }

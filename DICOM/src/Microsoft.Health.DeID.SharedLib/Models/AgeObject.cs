@@ -17,7 +17,7 @@ namespace Microsoft.Health.Dicom.DeID.SharedLib.Models
 
         public AgeType AgeType { get; }
 
-        public decimal AgeInYears()
+        public uint AgeInYears()
         {
             return AgeType switch
             {

@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Health.DeID.SharedLib.Models;
 using Microsoft.Health.Dicom.DeID.SharedLib;
 using Microsoft.Health.Dicom.DeID.SharedLib.Settings;
 using Xunit;
@@ -18,14 +19,6 @@ namespace De.ID.Function.Shared.UnitTests
             yield return new object[] { "2015-02", "2015-01-01" };
             yield return new object[] { "2015-02-07", "2015-01-01" };
             yield return new object[] { "1925-02-07", null };
-        }
-
-        public static IEnumerable<object[]> GetDateDataWithFormatForPartialRedact()
-        {
-            yield return new object[] { "2015", "yyyy",  "yyyy", "2015" };
-            yield return new object[] { "201502", "yyyyMM", "yyyy", "2015" };
-            yield return new object[] { "20150207", "yyyyMMdd", "yyyy", "2015" };
-            yield return new object[] { "19250207121212.12", "yyyyMMddhhmmss.ff", "yyyy", null };
         }
 
         public static IEnumerable<object[]> GetDateDataForRedact()
@@ -86,7 +79,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenAPostalCode_WhenRedact_ThenDigitsShouldBeRedacted(string postalCode)
         {
             var redactFunction = new RedactFunction(new RedactSetting());
-            var processResult = redactFunction.RedactPostalCode(postalCode);
+            var processResult = redactFunction.Redact(postalCode, AnonymizerValueTypes.PostalCode);
             Assert.Null(processResult);
         }
 
@@ -95,17 +88,8 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenAPostalCode_WhenPartialRedact_ThenPartialDigitsShouldBeRedacted(string postalCode, string expectedPostalCode)
         {
             var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialZipCodesForRedact = true, RestrictedZipCodeTabulationAreas = new List<string>() { "203", "556" } });
-            var processResult = redactFunction.RedactPostalCode(postalCode);
+            var processResult = redactFunction.Redact(postalCode, AnonymizerValueTypes.PostalCode);
             Assert.Equal(expectedPostalCode.ToString(), processResult);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetDateDataWithFormatForPartialRedact))]
-        public void GivenADateWithFormat_WhenPartialRedact_ThenDateShouldBeRedacted(string date, string inputFormat, string outputFormat, string expectedDate)
-        {
-            var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialDatesForRedact = true });
-            var processResult = redactFunction.RedactDateTime(date, inputFormat, outputFormat);
-            Assert.Equal(expectedDate ?? null, processResult);
         }
 
         [Theory]
@@ -113,7 +97,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenADate_WhenPartialRedact_ThenDateShouldBeRedacted(string date, string expectedDate)
         {
             var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialDatesForRedact = true });
-            var processResult = redactFunction.RedactDate(date);
+            var processResult = redactFunction.Redact(date, AnonymizerValueTypes.Date);
             Assert.Equal(expectedDate ?? null, processResult);
         }
 
@@ -122,7 +106,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenADate_WhenRedact_ThenDateShouldBeRedacted(string date)
         {
             var redactFunction = new RedactFunction(new RedactSetting());
-            var processResult = redactFunction.RedactDateTime(date);
+            var processResult = redactFunction.Redact(date, AnonymizerValueTypes.Date);
             Assert.Null(processResult);
         }
 
@@ -131,7 +115,7 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenADateTime_WhenRedact_ThenDateTimeShouldBeRedacted(string dateTime, string expectedDateTime)
         {
             var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialDatesForRedact = true });
-            var processResult = redactFunction.RedactDateTime(dateTime);
+            var processResult = redactFunction.Redact(dateTime, AnonymizerValueTypes.DateTime);
             Assert.Equal(expectedDateTime ?? null, processResult);
         }
 
@@ -140,16 +124,16 @@ namespace De.ID.Function.Shared.UnitTests
         public void GivenAnInstant_WhenRedact_ThenInstantShouldBeRedacted(string instant, string expectedInstantString)
         {
             var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialDatesForRedact = true });
-            var processResult = redactFunction.RedactDateTime(instant);
+            var processResult = redactFunction.Redact(instant, AnonymizerValueTypes.DateTime);
             Assert.Equal(expectedInstantString ?? null, processResult);
         }
 
         [Theory]
         [MemberData(nameof(GetAgeDataForPartialRedact))]
-        public void GivenAnAge_WhenPartialRedact_ThenAgeOver89ShouldBeRedacted(int age)
+        public void GivenAnAge_WhenPartialRedact_ThenAgeOver89ShouldBeRedacted(uint age)
         {
             var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialAgesForRedact = true });
-            var processResult = redactFunction.RedactAge(age);
+            var processResult = redactFunction.Redact(age, AnonymizerValueTypes.Age);
             if (age > 89)
             {
                 Assert.Null(processResult);
@@ -162,10 +146,10 @@ namespace De.ID.Function.Shared.UnitTests
 
         [Theory]
         [MemberData(nameof(GetAgeDataForRedact))]
-        public void GivenAnAge_WhenRedact_ThenAgeShouldBeRedacted(int age)
+        public void GivenAnAge_WhenRedact_ThenAgeShouldBeRedacted(uint age)
         {
             var redactFunction = new RedactFunction(new RedactSetting());
-            var processResult = redactFunction.RedactAge(age);
+            var processResult = redactFunction.Redact(age, AnonymizerValueTypes.Age);
             Assert.Null(processResult);
         }
     }
