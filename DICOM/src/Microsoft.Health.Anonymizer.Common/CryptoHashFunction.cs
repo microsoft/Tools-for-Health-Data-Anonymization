@@ -22,14 +22,14 @@ namespace Microsoft.Health.Anonymizer.Common
         {
             EnsureArg.IsNotNull(cryptoHashSetting, nameof(cryptoHashSetting));
 
-            byte[] byteKey = cryptoHashSetting.CryptoHashKey == null ? null : Encoding.UTF8.GetBytes(cryptoHashSetting.CryptoHashKey);
+            byte[] byteKey = cryptoHashSetting.GetCryptoHashByteKey();
             _hmac = cryptoHashSetting.CryptoHashType switch
             {
-                HashAlgorithmType.Md5 => byteKey == null ? new HMACMD5() : new HMACMD5(byteKey),
-                HashAlgorithmType.Sha1 => byteKey == null ? new HMACSHA1() : new HMACSHA1(byteKey),
-                HashAlgorithmType.Sha256 => byteKey == null ? new HMACSHA256() : new HMACSHA256(byteKey),
-                HashAlgorithmType.Sha512 => byteKey == null ? new HMACSHA512() : new HMACSHA512(byteKey),
-                HashAlgorithmType.Sha384 => byteKey == null ? new HMACSHA384() : new HMACSHA384(byteKey),
+                HashAlgorithmType.Md5 => new HMACMD5(byteKey),
+                HashAlgorithmType.Sha1 => new HMACSHA1(byteKey),
+                HashAlgorithmType.Sha256 => new HMACSHA256(byteKey),
+                HashAlgorithmType.Sha512 => new HMACSHA512(byteKey),
+                HashAlgorithmType.Sha384 => new HMACSHA384(byteKey),
                 _ => throw new AnonymizerException(AnonymizerErrorCode.CryptoHashFailed, "Hash function not supported."),
             };
         }

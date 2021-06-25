@@ -3,7 +3,6 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Health.Anonymizer.Common.Exceptions;
@@ -27,7 +26,7 @@ namespace Microsoft.Health.Anonymizer.Common.Settings
 
         public byte[] GetEncryptByteKey()
         {
-            return EncryptKey == null ? Aes.Create().IV : Encoding.UTF8.GetBytes(EncryptKey);
+            return EncryptKey == null ? Aes.Create().Key : Encoding.UTF8.GetBytes(EncryptKey);
         }
     }
 }
