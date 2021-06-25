@@ -9,10 +9,10 @@ using System.Linq;
 using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Anonymizer.Common;
+using Microsoft.Health.Anonymizer.Common.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
-using Microsoft.Health.Dicom.DeID.SharedLib;
-using Microsoft.Health.Dicom.DeID.SharedLib.Settings;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
@@ -47,13 +47,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(item, nameof(item));
             EnsureArg.IsNotNull(context, nameof(context));
 
-            _dateShiftFunction.DateShiftKeyPrefix = _dateShiftScope switch
+            _dateShiftFunction.SetDateShiftPrefix(_dateShiftScope switch
             {
                 DateShiftScope.StudyInstance => context.StudyInstanceUID ?? string.Empty,
                 DateShiftScope.SeriesInstance => context.SeriesInstanceUID ?? string.Empty,
                 DateShiftScope.SopInstance => context.SopInstanceUID ?? string.Empty,
                 _ => string.Empty,
-            };
+            });
             if (item.ValueRepresentation == DicomVR.DA)
             {
                 var values = DicomUtility.ParseDicomDate((DicomDate)item)

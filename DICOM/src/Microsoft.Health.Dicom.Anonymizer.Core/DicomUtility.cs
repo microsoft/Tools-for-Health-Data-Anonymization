@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Dicom;
 using EnsureThat;
-using Microsoft.Health.Dicom.DeID.SharedLib.Models;
+using Microsoft.Health.Anonymizer.Common.Models;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
@@ -20,7 +20,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
     /// </summary>
     public static class DicomUtility
     {
-        public static readonly Dictionary<string, AgeType> AgeTypeMapping = new Dictionary<string, AgeType>
+        private static readonly Dictionary<string, AgeType> AgeTypeMapping = new Dictionary<string, AgeType>
             {
                 { "Y", AgeType.Year },
                 { "M", AgeType.Month },
@@ -28,8 +28,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 { "D", AgeType.Day },
             };
 
-        public const int AgeStringLength = 3;
-        public const int MaxAgeValue = 999;
+        private const int AgeStringLength = 3;
+        private const int MaxAgeValue = 999;
 
         public static DateTimeOffset[] ParseDicomDate(DicomDate item)
         {
@@ -68,7 +68,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             var matches = dateTimeRegex.Matches(dateTime);
             if (matches.Count != 1)
             {
-                throw new DicomDataException("Invalid datetime value. The valid format is YYYYMMDDHHMMSS.FFFFFF&ZZXX.");
+                throw new DicomDataException($"Invalid datetime value [{dateTime}]. The valid format is YYYYMMDDHHMMSS.FFFFFF&ZZXX.");
             }
 
             var groups = matches[0].Groups;
@@ -111,7 +111,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             EnsureArg.IsNotNull(date, nameof(date));
 
-            return date.HasTimeZone == true
+            return (bool)date.HasTimeZone
                 ? date.DateValue.ToString("yyyyMMddHHmmss.ffffffzzz", CultureInfo.InvariantCulture).Replace(":", string.Empty)
                 : date.DateValue.ToString("yyyyMMddhhmmss.ffffff", CultureInfo.InvariantCulture);
         }
@@ -128,7 +128,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 }
             }
 
-            throw new DicomDataException("Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY.");
+            throw new DicomDataException($"Invalid age string [{age}]. The valid strings are nnnD, nnnW, nnnM, nnnY.");
         }
 
         public static string GenerateAgeString(AgeObject age)
@@ -149,7 +149,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                         return age.AgeInYears().ToString().PadLeft(AgeStringLength, '0') + "Y";
                     }
 
-                    throw new DicomDataException("Invalid age value for DICOM. The valid strings are nnnD, nnnW, nnnM, nnnY.");
+                    throw new DicomDataException($"Invalid age value[{age.Value}] for DICOM. The valid strings are nnnD, nnnW, nnnM, nnnY.");
                 }
             }
 

@@ -9,10 +9,10 @@ using Dicom;
 using Dicom.IO.Buffer;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
-using Microsoft.Health.DeID.SharedLib.Settings;
+using Microsoft.Health.Anonymizer.Common;
+using Microsoft.Health.Anonymizer.Common.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
-using Microsoft.Health.Dicom.DeID.SharedLib;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors

@@ -6,7 +6,7 @@
 using System;
 using System.Collections.Generic;
 using Dicom;
-using Microsoft.Health.Dicom.DeID.SharedLib.Models;
+using Microsoft.Health.Anonymizer.Common.Models;
 using Xunit;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests

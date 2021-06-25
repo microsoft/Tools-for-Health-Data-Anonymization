@@ -19,9 +19,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
 {
     public class AnonymizerRuleFactoryTests
     {
-        private AnonymizerConfiguration _configuration;
+        private readonly AnonymizerConfiguration _configuration;
 
-        private AnonymizerRuleFactory _ruleFactory;
+        private readonly AnonymizerRuleFactory _ruleFactory;
 
         public AnonymizerRuleFactoryTests()
         {
@@ -290,11 +290,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
             Assert.Equal(expectedProcessor.GetType(), processor.GetType());
 
             var expectedFunction = expectedProcessor.GetType().GetField("_dateShiftFunction", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(expectedProcessor);
+            var expectedSetting = expectedFunction.GetType().GetField("_dateShiftSetting", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(expectedFunction);
             var outputFunction = processor.GetType().GetField("_dateShiftFunction", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(processor);
+            var outputSetting = outputFunction.GetType().GetField("_dateShiftSetting", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(outputFunction);
 
-            foreach (var prop in outputFunction.GetType().GetProperties())
+            foreach (var prop in outputSetting.GetType().GetProperties())
             {
-                Assert.Equal(expectedFunction.GetType().GetProperty(prop.Name).GetValue(expectedFunction), outputFunction.GetType().GetProperty(prop.Name).GetValue(outputFunction));
+                Assert.Equal(expectedSetting.GetType().GetProperty(prop.Name).GetValue(expectedSetting), outputSetting.GetType().GetProperty(prop.Name).GetValue(outputSetting));
             }
         }
 
@@ -354,44 +356,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
         public void GivenAnInvalidDicomRule_WhenCreateDicomRule_ExceptionWillBeThrown(string config)
         {
             Assert.Throws<AnonymizerConfigurationException>(() => _ruleFactory.CreateDicomAnonymizationRule(JsonConvert.DeserializeObject<JObject>(config)));
-        }
-
-        private bool CompareObjects(object o1, object o2)
-        {
-            if (o1 == null && o2 == null)
-            {
-                return true;
-            }
-
-            if (o1 == null || o2 == null)
-            {
-                return false;
-            }
-
-            if (o1.GetType() != o2.GetType())
-            {
-                return false;
-            }
-
-            if (o1.GetType().IsPrimitive && o1 == o2)
-            {
-                return true;
-            }
-
-            var fileds = o1.GetType().GetFields(BindingFlags.NonPublic |
-                                                        BindingFlags.Public |
-                                                        BindingFlags.Instance);
-            foreach (var field in fileds)
-            {
-                if (!CompareObjects(
-                    field.GetValue(o1),
-                    field.GetValue(o2)))
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }

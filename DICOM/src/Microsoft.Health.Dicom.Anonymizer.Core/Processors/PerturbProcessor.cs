@@ -9,9 +9,9 @@ using System.Linq;
 using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Anonymizer.Common;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
-using Microsoft.Health.Dicom.DeID.SharedLib;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
@@ -22,7 +22,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     /// </summary>
     public class PerturbProcessor : IAnonymizerProcessor
     {
-        private PerturbFunction _perturbFunction;
+        private readonly PerturbFunction _perturbFunction;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<PerturbProcessor>();
 
         private static readonly Dictionary<DicomVR, Type> _numericElementTypeMapping = new Dictionary<DicomVR, Type>()

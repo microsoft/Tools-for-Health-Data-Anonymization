@@ -8,10 +8,10 @@ using System.Collections.Generic;
 using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Anonymizer.Common;
+using Microsoft.Health.Anonymizer.Common.Models;
+using Microsoft.Health.Anonymizer.Common.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
-using Microsoft.Health.Dicom.DeID.SharedLib;
-using Microsoft.Health.Dicom.DeID.SharedLib.Models;
-using Microsoft.Health.Dicom.DeID.SharedLib.Settings;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
@@ -22,7 +22,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     /// </summary>
     public class RedactProcessor : IAnonymizerProcessor
     {
-        private RedactFunction _redactFunction;
+        private readonly RedactFunction _redactFunction;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<RedactProcessor>();
 
         public RedactProcessor(JObject settingObject)

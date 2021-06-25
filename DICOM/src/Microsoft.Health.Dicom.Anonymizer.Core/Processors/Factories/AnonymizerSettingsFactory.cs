@@ -22,7 +22,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
             catch (Exception ex)
             {
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidRuleSettings, "Failed to parse rule setting.", ex);
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidRuleSettings, $"Failed to parse rule setting: [{settings}]", ex);
             }
         }
     }
