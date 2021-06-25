@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Health.Anonymizer.Common\Microsoft.Health.Anonymizer.Common.csproj" />
-    <ProjectReference Include="..\Microsoft.Health.DeID.SharedLib\Microsoft.Health.Anonymizer.Common.csproj" />
   </ItemGroup>
 
 </Project>

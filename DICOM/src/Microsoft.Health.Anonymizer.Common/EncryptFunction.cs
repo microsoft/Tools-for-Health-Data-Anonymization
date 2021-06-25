@@ -24,7 +24,7 @@ namespace Microsoft.Health.Anonymizer.Common
             EnsureArg.IsNotNull(encryptionSetting, nameof(encryptionSetting));
 
             encryptionSetting.Validate();
-            _aesKey = Encoding.UTF8.GetBytes(encryptionSetting.EncryptKey);
+            _aesKey = encryptionSetting.GetEncryptByteKey();
         }
 
         public byte[] Encrypt(string plainText, Encoding encoding = null)

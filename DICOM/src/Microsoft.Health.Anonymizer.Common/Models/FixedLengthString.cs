@@ -31,6 +31,8 @@ namespace Microsoft.Health.Anonymizer.Common
             SetString(sourceValue);
         }
 
+        public char PaddingChar { get; set; } = '0';
+
         public string Value { get; private set; }
 
         public int Length { get; private set; }
@@ -52,7 +54,7 @@ namespace Microsoft.Health.Anonymizer.Common
             }
             else
             {
-                Value = value.PadRight(Length, '0');
+                Value = value.PadRight(Length, PaddingChar);
             }
 
             SourceValue = value;
