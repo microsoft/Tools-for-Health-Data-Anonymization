@@ -1,0 +1,40 @@
+﻿{
+    "rules": [
+        {
+            "tag": "(0008,0050)",
+            "method": "invalid"
+        }
+    ],
+    "defaultSettings": {
+        "perturb": {
+            "span": 1,
+            "roundTo": 2,
+            "rangeType": "Proportional"
+        },
+        "dateShift": {
+            "dateShiftKey": "123",
+            "dateShiftScope": "SeriesInstance",
+            "dateShiftRange": 50
+        },   
+        "cryptoHash": {
+            "cryptoHashKey": "123"
+        },
+        "redact": {
+            "enablePartialAgesForRedact": false,
+            "enablePartialDatesForRedact": false
+        },
+        "encrypt": {
+            "encryptKey": "123456781234567812345678"
+        },
+        "substitute": {
+            "replaceWith": "ANONYMOUS"
+        }
+    },
+    "customSettings": {
+        "perturbCustomerSetting": {
+            "span": 1,
+            "roundTo": 2,
+            "rangeType": "Proportional"
+        }
+    }
+}
