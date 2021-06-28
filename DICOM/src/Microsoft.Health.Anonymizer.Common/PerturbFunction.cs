@@ -4,7 +4,6 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using EnsureThat;
 using MathNet.Numerics.Distributions;
 using Microsoft.Health.Anonymizer.Common.Exceptions;

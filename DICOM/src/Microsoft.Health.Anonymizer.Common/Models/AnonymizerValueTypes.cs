@@ -13,10 +13,10 @@ namespace Microsoft.Health.Anonymizer.Common.Models
     /// </summary>
     public enum AnonymizerValueTypes
     {
-        General,
         Age,
         Date,
         DateTime,
         PostalCode,
+        Others,
     }
 }

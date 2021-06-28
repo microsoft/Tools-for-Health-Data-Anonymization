@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Health.Anonymizer.Common.Models;
 using Microsoft.Health.Anonymizer.Common.Settings;
 using Xunit;
 

@@ -137,9 +137,16 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 return null;
             }
 
-            return (AnonymizerRule)Activator.CreateInstance(
-                typeof(TResult),
-                new object[] { outputTag, method, description, processorFactory, ruleSetting });
+            try
+            {
+                return (AnonymizerRule)Activator.CreateInstance(
+                    typeof(TResult),
+                    new object[] { outputTag, method, description, processorFactory, ruleSetting });
+            }
+            catch (Exception ex)
+            {
+                throw ex.InnerException;
+            }
         }
 
         private static AnonymizerRule TryCreateTagNameRule(string tagContent, string method, string description, IAnonymizerProcessorFactory processorFactory, JObject ruleSetting)

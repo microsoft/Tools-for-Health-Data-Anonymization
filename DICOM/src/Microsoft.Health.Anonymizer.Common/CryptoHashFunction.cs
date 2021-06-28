@@ -4,13 +4,11 @@
 // -------------------------------------------------------------------------------------------------
 
 using System.IO;
-using System.Linq;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
 using EnsureThat;
 using Microsoft.Health.Anonymizer.Common.Exceptions;
-using Microsoft.Health.Anonymizer.Common.Models;
 using Microsoft.Health.Anonymizer.Common.Settings;
 
 namespace Microsoft.Health.Anonymizer.Common
