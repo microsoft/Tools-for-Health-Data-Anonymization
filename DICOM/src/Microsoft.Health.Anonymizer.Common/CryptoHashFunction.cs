@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using EnsureThat;
 using Microsoft.Health.Anonymizer.Common.Exceptions;
+using Microsoft.Health.Anonymizer.Common.Models;
 using Microsoft.Health.Anonymizer.Common.Settings;
 
 namespace Microsoft.Health.Anonymizer.Common
@@ -22,7 +23,7 @@ namespace Microsoft.Health.Anonymizer.Common
         {
             EnsureArg.IsNotNull(cryptoHashSetting, nameof(cryptoHashSetting));
 
-            byte[] byteKey = cryptoHashSetting.GetCryptoHashByteKey();
+            byte[] byteKey = cryptoHashSetting.CryptoHashByteKey;
             _hmac = cryptoHashSetting.CryptoHashType switch
             {
                 HashAlgorithmType.Md5 => new HMACMD5(byteKey),

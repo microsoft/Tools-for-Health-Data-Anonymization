@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Health.Anonymizer.Common.Models;
+using Microsoft.Health.Anonymizer.Common.Settings;
 using Xunit;
 
 namespace Microsoft.Health.Anonymizer.Common.UnitTests
@@ -190,7 +191,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetIntegerToPerturb))]
+        [MemberData(nameof(GetShortIntegerToPerturb))]
         public void GivenShortInteger_WhenPerturb_PerturbedValueShouldBeReturned(short value, PerturbSetting perturbSetting, short lowerBound, short upperBound)
         {
             var function = new PerturbFunction(perturbSetting);
@@ -201,7 +202,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetUnsignedIntegerToPerturb))]
+        [MemberData(nameof(GetUnsignedShortIntegerToPerturb))]
         public void GivenAnUnsignedShortInteger_WhenPerturb_PerturbedValueShouldBeReturned(ushort value, PerturbSetting perturbSetting, ushort lowerBound, ushort upperBound)
         {
             var function = new PerturbFunction(perturbSetting);
@@ -212,7 +213,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetIntegerToPerturb))]
+        [MemberData(nameof(GetLongToPerturb))]
         public void GivenALongInteger_WhenPerturb_PerturbedValueShouldBeReturned(long value, PerturbSetting perturbSetting, long lowerBound, long upperBound)
         {
             var function = new PerturbFunction(perturbSetting);
@@ -223,20 +224,19 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetUnsignedIntegerToPerturb))]
+        [MemberData(nameof(GetUnsignedLongToPerturb))]
         public void GivenAnUnsignedLongInteger_WhenPerturb_PerturbedValueShouldBeReturned(ulong value, PerturbSetting perturbSetting, ulong lowerBound, ulong upperBound)
         {
             var function = new PerturbFunction(perturbSetting);
             var result = function.Perturb(value);
             Assert.InRange(result, lowerBound, upperBound);
-            Assert.True(GetDecimalPlaces(result) <= perturbSetting.RoundTo);
             Assert.IsType<ulong>(result);
         }
 
         private int GetDecimalPlaces(decimal n)
         {
             n = Math.Abs(n);
-            n -= (int)n;
+            n -= (long)n;
             var decimalPlaces = 0;
             while (n > 0)
             {

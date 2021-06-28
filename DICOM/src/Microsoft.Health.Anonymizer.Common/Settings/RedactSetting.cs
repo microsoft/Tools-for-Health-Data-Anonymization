@@ -15,6 +15,6 @@ namespace Microsoft.Health.Anonymizer.Common.Settings
 
         public bool EnablePartialAgesForRedact { get; set; } = false;
 
-        public List<string> RestrictedZipCodeTabulationAreas { get; set; }
+        public List<string> RestrictedZipCodeTabulationAreas { get; set; } = new List<string>();
     }
 }

@@ -17,14 +17,14 @@ namespace Microsoft.Health.Anonymizer.Common
     {
         // AES Initialization Vector length is 16 bytes
         private const int AesIvSize = 16;
-        private readonly byte[] _aesKey;
+        private readonly EncryptSetting _encryptSetting;
 
-        public EncryptFunction(EncryptSetting encryptionSetting)
+        public EncryptFunction(EncryptSetting encryptSetting)
         {
-            EnsureArg.IsNotNull(encryptionSetting, nameof(encryptionSetting));
+            EnsureArg.IsNotNull(encryptSetting, nameof(encryptSetting));
 
-            encryptionSetting.Validate();
-            _aesKey = encryptionSetting.GetEncryptByteKey();
+            encryptSetting.Validate();
+            _encryptSetting = encryptSetting;
         }
 
         public byte[] Encrypt(string plainText, Encoding encoding = null)
@@ -60,19 +60,21 @@ namespace Microsoft.Health.Anonymizer.Common
             {
                 using Aes aes = Aes.Create();
                 byte[] iv = aes.IV;
-                aes.Key = _aesKey;
+                aes.Key = _encryptSetting.EncryptByteKey;
                 ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
                 byte[] encryptedBytes;
 
                 using (MemoryStream msEncrypt = new MemoryStream())
                 {
-                    using CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-                    csEncrypt.Write(plainBytes);
-                    csEncrypt.FlushFinalBlock();
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    {
+                        csEncrypt.Write(plainBytes);
+                    }
+
                     encryptedBytes = msEncrypt.ToArray();
                 }
 
-                // Concat IV to encrpted bytes
+                // Concat IV to encrypted bytes
                 byte[] result = new byte[AesIvSize + encryptedBytes.Length];
                 Buffer.BlockCopy(iv, 0, result, 0, AesIvSize);
                 Buffer.BlockCopy(encryptedBytes, 0, result, AesIvSize, encryptedBytes.Length);
@@ -131,17 +133,14 @@ namespace Microsoft.Health.Anonymizer.Common
 
                 // Get decryptor
                 using Aes aes = Aes.Create();
-                aes.Key = _aesKey;
+                aes.Key = _encryptSetting.EncryptByteKey;
                 aes.IV = iv;
                 ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
                 using MemoryStream msDecrypt = new MemoryStream(encryptedBytes);
                 using CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
 
-                // Read the decrypted bytes from the decrypting stream
-                using var memstream = new MemoryStream();
-                csDecrypt.CopyTo(memstream);
-                return memstream.ToArray();
+                return StreamToByte(csDecrypt);
             }
             catch (Exception ex)
             {
@@ -153,7 +152,6 @@ namespace Microsoft.Health.Anonymizer.Common
         {
             EnsureArg.IsNotNull(inputStream, nameof(inputStream));
 
-            inputStream.Position = 0;
             using var memStream = new MemoryStream();
             inputStream.CopyTo(memStream);
             return memStream.ToArray();

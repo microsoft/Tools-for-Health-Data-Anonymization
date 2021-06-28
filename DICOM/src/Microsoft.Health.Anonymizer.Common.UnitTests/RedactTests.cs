@@ -88,7 +88,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         {
             var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialZipCodesForRedact = true, RestrictedZipCodeTabulationAreas = new List<string>() { "203", "556" } });
             var processResult = redactFunction.Redact(postalCode, AnonymizerValueTypes.PostalCode);
-            Assert.Equal(expectedPostalCode.ToString(), processResult);
+            Assert.Equal(expectedPostalCode, processResult);
         }
 
         [Theory]
@@ -115,7 +115,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         {
             var redactFunction = new RedactFunction(new RedactSetting() { EnablePartialDatesForRedact = true });
             var processResult = redactFunction.Redact(dateTime, AnonymizerValueTypes.DateTime);
-            Assert.Equal(expectedDateTime ?? null, processResult);
+            Assert.Equal(expectedDateTime, processResult);
         }
 
         [Theory]

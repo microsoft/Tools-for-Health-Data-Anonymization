@@ -57,7 +57,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 var values = DicomUtility.ParseDicomDate((DicomDate)item);
                 foreach (var value in values)
                 {
-                    var result = _redactFunction.Radact(value);
+                    var result = _redactFunction.Redact(value);
                     if (result != null)
                     {
                         redactedValues.Add(DicomUtility.GenerateDicomDateString((DateTimeOffset)result));

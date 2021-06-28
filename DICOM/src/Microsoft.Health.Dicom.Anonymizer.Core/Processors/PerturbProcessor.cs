@@ -10,6 +10,7 @@ using Dicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Anonymizer.Common;
+using Microsoft.Health.Anonymizer.Common.Settings;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Newtonsoft.Json.Linq;

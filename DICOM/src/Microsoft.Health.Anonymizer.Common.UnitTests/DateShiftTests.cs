@@ -62,10 +62,10 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         {
             var dateShiftFunction = new DateShiftFunction(new DateShiftSetting() { DateShiftKey = "123", DateShiftKeyPrefix = "filename" });
             var processResult1 = dateShiftFunction.Shift(date1, AnonymizerValueTypes.Date);
-            var offset1 = DateTime.Parse(processResult1).Subtract(DateTime.Parse(date1.ToString()));
+            var offset1 = DateTime.Parse(processResult1).Subtract(DateTime.Parse(date1));
 
             var processResult2 = dateShiftFunction.Shift(date2, AnonymizerValueTypes.Date);
-            var offset2 = DateTime.Parse(processResult2).Subtract(DateTime.Parse(date2.ToString()));
+            var offset2 = DateTime.Parse(processResult2).Subtract(DateTime.Parse(date2));
 
             Assert.Equal(offset1.Days, offset2.Days);
         }

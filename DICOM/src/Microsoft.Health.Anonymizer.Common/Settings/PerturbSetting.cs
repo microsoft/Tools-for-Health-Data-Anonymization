@@ -4,9 +4,10 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using MathNet.Numerics.Distributions;
 using Microsoft.Health.Anonymizer.Common.Exceptions;
 
-namespace Microsoft.Health.Anonymizer.Common
+namespace Microsoft.Health.Anonymizer.Common.Settings
 {
     public class PerturbSetting
     {
@@ -18,15 +19,22 @@ namespace Microsoft.Health.Anonymizer.Common
 
         public int RoundTo { get; set; } = 2;
 
-        public Func<double, double> NoiseFunction { get; set; }
+        public Func<double, double, double> NoiseFunction { get; set; } = ContinuousUniform.Sample;
 
         public void Validate()
         {
-            if (Span < 0 || RoundTo > MaxRoundToValue || RoundTo < 0)
+            if (Span < 0)
             {
                 throw new AnonymizerException(
                     AnonymizerErrorCode.InvalidAnonymizerSettings,
-                    "Perturb setting is invalid. \r\n1. Span must be greater than 0. \r\n2. RoundTo value must between 0 and 28.");
+                    "Perturb setting is invalid: Span value must be greater than 0.");
+            }
+
+            if (RoundTo > MaxRoundToValue || RoundTo < 0)
+            {
+                throw new AnonymizerException(
+                    AnonymizerErrorCode.InvalidAnonymizerSettings,
+                    "Perturb setting is invalid: RoundTo value must be in range [0, 28].");
             }
         }
     }

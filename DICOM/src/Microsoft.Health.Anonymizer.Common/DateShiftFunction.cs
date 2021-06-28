@@ -9,6 +9,7 @@ using EnsureThat;
 using Microsoft.Health.Anonymizer.Common.Exceptions;
 using Microsoft.Health.Anonymizer.Common.Models;
 using Microsoft.Health.Anonymizer.Common.Settings;
+using Microsoft.Health.Anonymizer.Common.Utilities;
 
 namespace Microsoft.Health.Anonymizer.Common
 {
@@ -32,7 +33,7 @@ namespace Microsoft.Health.Anonymizer.Common
             {
                 AnonymizerValueTypes.Date => ShiftDateTime(inputString, DateTimeGlobalSettings.DateFormat),
                 AnonymizerValueTypes.DateTime => ShiftDateTime(inputString, DateTimeGlobalSettings.DateTimeFormat),
-                _ => throw new AnonymizerException(AnonymizerErrorCode.DateShiftFailed, "Unsupported value type. DateShift only applicable on Date or DateTime."),
+                _ => throw new AnonymizerException(AnonymizerErrorCode.DateShiftFailed, "Unsupported value type. DateShift is only applicable to Date or DateTime values."),
             };
         }
 

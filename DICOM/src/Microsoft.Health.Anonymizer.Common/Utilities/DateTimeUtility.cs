@@ -6,8 +6,9 @@
 using System;
 using System.Globalization;
 using Microsoft.Health.Anonymizer.Common.Exceptions;
+using Microsoft.Health.Anonymizer.Common.Models;
 
-namespace Microsoft.Health.Anonymizer.Common
+namespace Microsoft.Health.Anonymizer.Common.Utilities
 {
     public class DateTimeUtility
     {
@@ -23,7 +24,7 @@ namespace Microsoft.Health.Anonymizer.Common
                 return globalResult;
             }
 
-            if (DateTimeOffset.TryParseExact(inputString, Constants.YearFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset yearResult))
+            if (DateTimeOffset.TryParseExact(inputString, DateTimeGlobalSettings.YearFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset yearResult))
             {
                 return yearResult;
             }
@@ -31,15 +32,9 @@ namespace Microsoft.Health.Anonymizer.Common
             throw new AnonymizerException(AnonymizerErrorCode.InvalidInputValue, $"Failed to parse input date value: [{inputString}].");
         }
 
-        public static bool IndicateAgeOverThreshold(DateTimeOffset date)
+        public static bool IsAgeOverThreshold(DateTimeOffset birthDate)
         {
-            int year = date.Year;
-            int month = date.Month;
-            int day = date.Day;
-            int age = DateTimeOffset.Now.Year - year -
-                (DateTimeOffset.Now.Month < month || (DateTimeOffset.Now.Month == month && DateTimeOffset.Now.Day < day) ? 1 : 0);
-
-            return age > Constants.AgeThreshold;
+            return birthDate.AddYears(DateTimeGlobalSettings.AgeThreshold) < DateTimeOffset.Now;
         }
     }
 }

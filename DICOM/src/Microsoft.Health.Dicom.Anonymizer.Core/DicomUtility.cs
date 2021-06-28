@@ -111,7 +111,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             EnsureArg.IsNotNull(date, nameof(date));
 
-            return (bool)date.HasTimeZone
+            return date.HasTimeZone == true
                 ? date.DateValue.ToString("yyyyMMddHHmmss.ffffffzzz", CultureInfo.InvariantCulture).Replace(":", string.Empty)
                 : date.DateValue.ToString("yyyyMMddhhmmss.ffffff", CultureInfo.InvariantCulture);
         }

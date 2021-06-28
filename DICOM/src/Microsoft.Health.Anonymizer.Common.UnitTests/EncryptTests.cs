@@ -74,26 +74,6 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
             yield return new object[] { new MemoryStream(Convert.FromBase64String("zrFYnZ2cIwcfmjCVybP1ZC+LaD7gwGXBHR2bZjuutzA=")), "测试" };
         }
 
-        public static IEnumerable<object[]> GetBytesDataToDecryptUsingRSA()
-        {
-            yield return new object[] { Convert.FromBase64String("gFFwULcgN3ZknzEXQKoFZa6ccflcOEzt675LS3e0Wv/A3PobHq8E04CUNK6KVrqJDnrF4Mas1/qLI2JNL3FCzDPcHMEUp4TscZS5s6zYMFSOB7dQfasUV45H74FnT58/b1qGvNYMAAyzMgXXF2+tnGfNoCZMK5JryAMEvL0qaxY="), string.Empty };
-            yield return new object[] { Convert.FromBase64String("ijJ2ZaK8yoPfoeg6CFuxNJ3kmuahIXlFRjLNsQWD4GKbCImW1eLViBBArZ5un8xErpD9DoRyjdVRIKNeQGq//wJrPCR/lEOk6k2V3Xxx+sB7OH+HSHufSEhL2UMXqghUQNiwEQ59NysQK6fpq9a5n7fzgAd2fOfmTwQGngtxj0Q="), "abc" };
-            yield return new object[] { Convert.FromBase64String("eSiv9qcZj4ma50T52JGVxX40U3fJOHjPnjQAMyX6MGHEn0gSAQi8SCpT4eVDg7DcPmGasOaAxiEFSOkS+Z/kSQlQKeDatQrKDxA9LcOTzA6H4dYmep6pUIvLhmyouZ0CBcg+J4syxFI35DbhnYFXhd5mQy8tWJybUaPhK90t3+s="), "This is for test" };
-            yield return new object[] { Convert.FromBase64String("NmaSNhl6uE3976EhND1l5hHS2ukNpiQzjVqN9exokh/OXF6AIbQjo5exiEFQJLHDiETX6apdRfGoGXWXMHVaom92CJ1hP9oksd4n6MkQyFxg2aArKP/AsT4C6TA5BCfW4Srw04dQfS+e7JA0VEvh5MnggdMlEmL6fx7gHVCberM="), "!@)(*&%^!@#$%@" };
-            yield return new object[] { Convert.FromBase64String("eZk0YqKeQx5z40WUjpjKDOCFGzQ4oJYw80CpIE8GL1RdGiOXomPgv3pxnFdgv+uhzC79CocFABagoqa2v0F5/9UzGxx54v2fYM/SC5dmTzU2XbbPVPs3lVr9KYuskDbmR+HlhWvKl0fMQgXcnYO39wKgHnbamcRuiPYrvowI8zM="), "ͶΆΈΞξτϡϿῧῄᾴѶѾ" };
-            yield return new object[] { Convert.FromBase64String("dcxR73jyAw3Q6133hGE04EYA5wuz6BoyH6nqFK2OOWXmh9DDjqGmS4ivAdUrp99q+qpCoyOWktXiN3GVVcBRUtxK6PTHZAb6ufWQLbYFFEx9TlFzUTEYY5LZ6GyFqNrgSMTCydHB/ouf3F5/74z+/dz2KMZ4pcEuJGIhEvN/5qc="), "测试" };
-        }
-
-        public static IEnumerable<object[]> GetStreamDataToDecryptUsingRSA()
-        {
-            yield return new object[] { new MemoryStream(Convert.FromBase64String("gFFwULcgN3ZknzEXQKoFZa6ccflcOEzt675LS3e0Wv/A3PobHq8E04CUNK6KVrqJDnrF4Mas1/qLI2JNL3FCzDPcHMEUp4TscZS5s6zYMFSOB7dQfasUV45H74FnT58/b1qGvNYMAAyzMgXXF2+tnGfNoCZMK5JryAMEvL0qaxY=")), string.Empty };
-            yield return new object[] { new MemoryStream(Convert.FromBase64String("ijJ2ZaK8yoPfoeg6CFuxNJ3kmuahIXlFRjLNsQWD4GKbCImW1eLViBBArZ5un8xErpD9DoRyjdVRIKNeQGq//wJrPCR/lEOk6k2V3Xxx+sB7OH+HSHufSEhL2UMXqghUQNiwEQ59NysQK6fpq9a5n7fzgAd2fOfmTwQGngtxj0Q=")), "abc" };
-            yield return new object[] { new MemoryStream(Convert.FromBase64String("eSiv9qcZj4ma50T52JGVxX40U3fJOHjPnjQAMyX6MGHEn0gSAQi8SCpT4eVDg7DcPmGasOaAxiEFSOkS+Z/kSQlQKeDatQrKDxA9LcOTzA6H4dYmep6pUIvLhmyouZ0CBcg+J4syxFI35DbhnYFXhd5mQy8tWJybUaPhK90t3+s=")), "This is for test" };
-            yield return new object[] { new MemoryStream(Convert.FromBase64String("NmaSNhl6uE3976EhND1l5hHS2ukNpiQzjVqN9exokh/OXF6AIbQjo5exiEFQJLHDiETX6apdRfGoGXWXMHVaom92CJ1hP9oksd4n6MkQyFxg2aArKP/AsT4C6TA5BCfW4Srw04dQfS+e7JA0VEvh5MnggdMlEmL6fx7gHVCberM=")), "!@)(*&%^!@#$%@" };
-            yield return new object[] { new MemoryStream(Convert.FromBase64String("eZk0YqKeQx5z40WUjpjKDOCFGzQ4oJYw80CpIE8GL1RdGiOXomPgv3pxnFdgv+uhzC79CocFABagoqa2v0F5/9UzGxx54v2fYM/SC5dmTzU2XbbPVPs3lVr9KYuskDbmR+HlhWvKl0fMQgXcnYO39wKgHnbamcRuiPYrvowI8zM=")), "ͶΆΈΞξτϡϿῧῄᾴѶѾ" };
-            yield return new object[] { new MemoryStream(Convert.FromBase64String("dcxR73jyAw3Q6133hGE04EYA5wuz6BoyH6nqFK2OOWXmh9DDjqGmS4ivAdUrp99q+qpCoyOWktXiN3GVVcBRUtxK6PTHZAb6ufWQLbYFFEx9TlFzUTEYY5LZ6GyFqNrgSMTCydHB/ouf3F5/74z+/dz2KMZ4pcEuJGIhEvN/5qc=")), "测试" };
-        }
-
         public static IEnumerable<object[]> GetInvalidFormatTextDataToDecrypt()
         {
             // Cipher text shorter than IV size
@@ -172,9 +152,9 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
             }
 
             inputStream.Position = 0;
-            using var streamReader = new MemoryStream();
-            inputStream.CopyTo(streamReader);
-            return streamReader.ToArray();
+            using var memoryStream = new MemoryStream();
+            inputStream.CopyTo(memoryStream);
+            return memoryStream.ToArray();
         }
     }
 }

@@ -4,10 +4,12 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using EnsureThat;
 using MathNet.Numerics.Distributions;
 using Microsoft.Health.Anonymizer.Common.Exceptions;
 using Microsoft.Health.Anonymizer.Common.Models;
+using Microsoft.Health.Anonymizer.Common.Settings;
 
 namespace Microsoft.Health.Anonymizer.Common
 {
@@ -32,8 +34,7 @@ namespace Microsoft.Health.Anonymizer.Common
 
         public decimal Perturb(decimal value)
         {
-            var noise = (decimal)GenerateNoise((double)value);
-            return Math.Round(value + noise, _perturbSetting.RoundTo);
+            return (decimal)AddNoise((double)value);
         }
 
         public string Perturb(string value)
@@ -52,49 +53,45 @@ namespace Microsoft.Health.Anonymizer.Common
 
         public double Perturb(double value)
         {
-            return Math.Round(value + GenerateNoise(value), _perturbSetting.RoundTo);
+            return AddNoise(value);
         }
 
         public float Perturb(float value)
         {
-            return (float)Math.Round(value + GenerateNoise(value), _perturbSetting.RoundTo);
+            return (float)AddNoise(value);
         }
 
         public int Perturb(int value)
         {
-            return (int)Math.Round(value + GenerateNoise(value), 0);
+            return (int)AddNoise(value);
         }
 
         public short Perturb(short value)
         {
-            return (short)Math.Round(value + GenerateNoise(value), 0);
+            return (short)AddNoise(value);
         }
 
         public long Perturb(long value)
         {
-            return (long)Math.Round(value + GenerateNoise(value), 0);
+            return (long)AddNoise(value);
         }
 
         public uint Perturb(uint value)
         {
-            var noise = GenerateNoise(value);
-            return (uint)Math.Round(Math.Max(value + noise, 0), 0);
+            return (uint)Math.Max(AddNoise(value), 0);
         }
 
         public ushort Perturb(ushort value)
         {
-            var noise = GenerateNoise(value);
-
-            return (ushort)Math.Round(Math.Max(value + noise, 0), 0);
+            return (ushort)Math.Max(AddNoise(value), 0);
         }
 
         public ulong Perturb(ulong value)
         {
-            var noise = GenerateNoise(value);
-            return (ulong)Math.Round(Math.Max(value + noise, 0), 0);
+            return (ulong)Math.Max(AddNoise(value), 0);
         }
 
-        private double GenerateNoise(double value)
+        private double AddNoise(double value)
         {
             var span = _perturbSetting.Span;
             if (_perturbSetting.RangeType == PerturbRangeType.Proportional)
@@ -102,7 +99,8 @@ namespace Microsoft.Health.Anonymizer.Common
                 span = Math.Abs(value * _perturbSetting.Span);
             }
 
-            return _perturbSetting.NoiseFunction == null ? ContinuousUniform.Sample(-1 * span / 2, span / 2) : _perturbSetting.NoiseFunction(span);
+            double noise = _perturbSetting.NoiseFunction == null ? ContinuousUniform.Sample(-1 * span / 2, span / 2) : _perturbSetting.NoiseFunction(-1 * span / 2, span / 2);
+            return Math.Round(value + noise, _perturbSetting.RoundTo);
         }
     }
 }

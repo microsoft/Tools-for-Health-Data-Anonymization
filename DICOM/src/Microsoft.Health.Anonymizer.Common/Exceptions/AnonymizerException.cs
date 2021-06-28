@@ -12,15 +12,15 @@ namespace Microsoft.Health.Anonymizer.Common.Exceptions
         public AnonymizerException(AnonymizerErrorCode errorCode, string message)
             : base(message)
         {
-            DeIdentificationErrorCode = errorCode;
+            AnonymizerErrorCode = errorCode;
         }
 
         public AnonymizerException(AnonymizerErrorCode errorCode, string message, Exception innerException)
             : base(message, innerException)
         {
-            DeIdentificationErrorCode = errorCode;
+            AnonymizerErrorCode = errorCode;
         }
 
-        public AnonymizerErrorCode DeIdentificationErrorCode { get; }
+        public AnonymizerErrorCode AnonymizerErrorCode { get; }
     }
 }

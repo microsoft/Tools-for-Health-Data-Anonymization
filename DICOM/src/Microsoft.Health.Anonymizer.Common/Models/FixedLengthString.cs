@@ -5,7 +5,7 @@
 
 using EnsureThat;
 
-namespace Microsoft.Health.Anonymizer.Common
+namespace Microsoft.Health.Anonymizer.Common.Models
 {
     public class FixedLengthString
     {
@@ -48,15 +48,7 @@ namespace Microsoft.Health.Anonymizer.Common
         {
             EnsureArg.IsNotNull(value, nameof(value));
 
-            if (value.Length >= Length)
-            {
-                Value = value.Substring(0, Length);
-            }
-            else
-            {
-                Value = value.PadRight(Length, PaddingChar);
-            }
-
+            Value = value.Length >= Length ? value.Substring(0, Length) : value.PadRight(Length, PaddingChar);
             SourceValue = value;
         }
     }

@@ -11,6 +11,7 @@ using EnsureThat;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Anonymizer.Common;
 using Microsoft.Health.Anonymizer.Common.Settings;
+using Microsoft.Health.Anonymizer.Common.Utilities;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Newtonsoft.Json.Linq;
@@ -57,7 +58,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             if (item.ValueRepresentation == DicomVR.DA)
             {
                 var values = DicomUtility.ParseDicomDate((DicomDate)item)
-                    .Where(x => !DateTimeUtility.IndicateAgeOverThreshold(x)) // Age over 89 will be redacted.
+                    .Where(x => !DateTimeUtility.IsAgeOverThreshold(x)) // Age over 89 will be redacted.
                     .Select(_dateShiftFunction.Shift);
 
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(DicomUtility.GenerateDicomDateString).Where(x => x != null).ToArray());
@@ -68,7 +69,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 var results = new List<string>();
                 foreach (var dateObject in values)
                 {
-                    if (!DateTimeUtility.IndicateAgeOverThreshold(dateObject.DateValue))
+                    if (!DateTimeUtility.IsAgeOverThreshold(dateObject.DateValue))
                     {
                         dateObject.DateValue = _dateShiftFunction.Shift(dateObject.DateValue);
                         results.Add(DicomUtility.GenerateDicomDateTimeString(dateObject));

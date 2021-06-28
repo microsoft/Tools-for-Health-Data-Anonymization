@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Health.Anonymizer.Common.Models;
 using Microsoft.Health.Anonymizer.Common.Settings;
 using Xunit;
 
@@ -160,8 +161,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         [MemberData(nameof(GetHmacHashStringData))]
         public void GivenAString_WhenComputeHmac_CorrectHashShouldBeReturned(string input, string expectedHash)
         {
-            var function = new CryptoHashFunction(new CryptoHashSetting() { CryptoHashKey = TestHashKey });
-            var hashData = function.Hash(input);
+            var hashData = _function.Hash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -170,8 +170,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
 
         public void GivenBytes_WhenComputeHmac_CorrectHashShouldBeReturned(byte[] input, string expectedHash)
         {
-            var function = new CryptoHashFunction(new CryptoHashSetting() { CryptoHashKey = TestHashKey });
-            var hashData = function.Hash(input);
+            var hashData = _function.Hash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -180,8 +179,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
 
         public void GivenStream_WhenComputeHmac_CorrectHashShouldBeReturned(Stream input, string expectedHash)
         {
-            var function = new CryptoHashFunction(new CryptoHashSetting() { CryptoHashKey = TestHashKey });
-            var hashData = function.Hash(input);
+            var hashData = _function.Hash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
         }
 
@@ -190,8 +188,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
 
         public void GivenFixedLengthString_WhenComputeHmac_CorrectHashShouldBeReturned(FixedLengthString input, string expectedHash)
         {
-            var function = new CryptoHashFunction(new CryptoHashSetting() { CryptoHashKey = TestHashKey });
-            var hashData = function.Hash(input);
+            var hashData = _function.Hash(input);
             Assert.Equal(expectedHash, hashData.ToString());
         }
     }
