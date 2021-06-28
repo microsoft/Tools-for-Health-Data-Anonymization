@@ -127,17 +127,19 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             IAnonymizerProcessorFactory processorFactory,
             JObject ruleSetting)
         {
+            object outputTag;
             try
             {
-                var output = (TItem)typeof(TItem).GetMethod("Parse", new Type[] { typeof(string) }).Invoke(null, new object[] { tagContent });
-                return (AnonymizerRule)Activator.CreateInstance(
-                    typeof(TResult),
-                    new object[] { output, method, description, processorFactory, ruleSetting });
+                outputTag = (TItem)typeof(TItem).GetMethod("Parse", new Type[] { typeof(string) }).Invoke(null, new object[] { tagContent });
             }
             catch
             {
                 return null;
             }
+
+            return (AnonymizerRule)Activator.CreateInstance(
+                typeof(TResult),
+                new object[] { outputTag, method, description, processorFactory, ruleSetting });
         }
 
         private static AnonymizerRule TryCreateTagNameRule(string tagContent, string method, string description, IAnonymizerProcessorFactory processorFactory, JObject ruleSetting)

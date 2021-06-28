@@ -17,14 +17,14 @@ namespace Microsoft.Health.Anonymizer.Common
     {
         // AES Initialization Vector length is 16 bytes
         private const int AesIvSize = 16;
-        private readonly EncryptSetting _encryptSetting;
+        private readonly byte[] _aesKey;
 
         public EncryptFunction(EncryptSetting encryptSetting)
         {
             EnsureArg.IsNotNull(encryptSetting, nameof(encryptSetting));
 
             encryptSetting.Validate();
-            _encryptSetting = encryptSetting;
+            _aesKey = encryptSetting.GetEncryptByteKey();
         }
 
         public byte[] Encrypt(string plainText, Encoding encoding = null)
@@ -60,7 +60,7 @@ namespace Microsoft.Health.Anonymizer.Common
             {
                 using Aes aes = Aes.Create();
                 byte[] iv = aes.IV;
-                aes.Key = _encryptSetting.EncryptByteKey;
+                aes.Key = _aesKey;
                 ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
                 byte[] encryptedBytes;
 
@@ -133,7 +133,7 @@ namespace Microsoft.Health.Anonymizer.Common
 
                 // Get decryptor
                 using Aes aes = Aes.Create();
-                aes.Key = _encryptSetting.EncryptByteKey;
+                aes.Key = _aesKey;
                 aes.IV = iv;
                 ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 

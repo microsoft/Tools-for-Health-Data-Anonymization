@@ -3,6 +3,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
@@ -13,15 +14,9 @@ namespace Microsoft.Health.Anonymizer.Common.Settings
     {
         public string CryptoHashKey { private get; set; }
 
-        public byte[] CryptoHashByteKey
-        {
-            get { return GetCryptoHashByteKey(); }
-            set { }
-        }
-
         public HashAlgorithmType CryptoHashType { get; set; } = HashAlgorithmType.Sha256;
 
-        private byte[] GetCryptoHashByteKey()
+        public byte[] GetCryptoHashByteKey()
         {
             return CryptoHashKey == null ? Aes.Create().Key : Encoding.UTF8.GetBytes(CryptoHashKey);
         }

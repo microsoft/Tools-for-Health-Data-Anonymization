@@ -6,7 +6,7 @@
 using System;
 using System.Globalization;
 using Microsoft.Health.Anonymizer.Common.Exceptions;
-using Microsoft.Health.Anonymizer.Common.Models;
+using Microsoft.Health.Anonymizer.Common.Settings;
 
 namespace Microsoft.Health.Anonymizer.Common.Utilities
 {

@@ -58,19 +58,6 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
             };
         }
 
-        public static IEnumerable<object[]> GetHmacHashFixedLengthStringData()
-        {
-            yield return new object[] { new FixedLengthString(string.Empty), string.Empty };
-            yield return new object[] { new FixedLengthString("abc"), "8f1" };
-            yield return new object[] { new FixedLengthString("&*^%$@()=-,/"), "33f6f7d6b360" };
-            yield return new object[] { new FixedLengthString("ÆŊŋßſ♫∅"), "1a94823" };
-            yield return new object[]
-            {
-                new FixedLengthString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()=-"),
-                "352b5a4af5adb81fa616c2a5b5c492d0b0b544c188a9aa003767a2b5efbd14780000000000",
-            };
-        }
-
         public static IEnumerable<object[]> GetHmac512HashStringData()
         {
             yield return new object[] { string.Empty, "79a898c707f0d60e2dc22f96854c1999540f4cdfce6463f74016aa18a3d1003628d47c4e745536afabbdb90d086fad14dadf8b4927cdf55d48b4078a1e9e4525" };
@@ -81,20 +68,6 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
             {
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()=-",
                 "11e46254067ed6e334b1b9ea95872a62526743f6a777131cd66e2373ad43c220fc8674b087f1e6038de0f648ed9e987109f2be38cf5c60b7820f7ae7b7fedcde",
-            };
-        }
-
-        public static IEnumerable<object[]> GetHmac512HashFixedLengthStringData()
-        {
-            yield return new object[] { new FixedLengthString(string.Empty), string.Empty };
-
-            yield return new object[] { new FixedLengthString("abc"), "585" };
-            yield return new object[] { new FixedLengthString("&*^%$@()=-,/"), "825483251c4a" };
-            yield return new object[] { new FixedLengthString("ÆŊŋßſ♫∅"), "5a8c7f1" };
-            yield return new object[]
-            {
-                new FixedLengthString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()=-"),
-                "11e46254067ed6e334b1b9ea95872a62526743f6a777131cd66e2373ad43c220fc8674b087",
             };
         }
 
@@ -149,15 +122,6 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         }
 
         [Theory]
-        [MemberData(nameof(GetHmac512HashFixedLengthStringData))]
-
-        public void GivenFixedLengthString_WhenComputeHmac512_CorrectHashShouldBeReturned(FixedLengthString input, string expectedHash)
-        {
-            var hashData = CryptoHashFunction.Hash(input, new HMACSHA512(Encoding.UTF8.GetBytes(TestHashKey)));
-            Assert.Equal(expectedHash, hashData.ToString());
-        }
-
-        [Theory]
         [MemberData(nameof(GetHmacHashStringData))]
         public void GivenAString_WhenComputeHmac_CorrectHashShouldBeReturned(string input, string expectedHash)
         {
@@ -181,15 +145,6 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         {
             var hashData = _function.Hash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
-        }
-
-        [Theory]
-        [MemberData(nameof(GetHmacHashFixedLengthStringData))]
-
-        public void GivenFixedLengthString_WhenComputeHmac_CorrectHashShouldBeReturned(FixedLengthString input, string expectedHash)
-        {
-            var hashData = _function.Hash(input);
-            Assert.Equal(expectedHash, hashData.ToString());
         }
     }
 }

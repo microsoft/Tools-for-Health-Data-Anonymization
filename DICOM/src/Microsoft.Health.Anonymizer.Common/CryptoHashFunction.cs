@@ -23,7 +23,7 @@ namespace Microsoft.Health.Anonymizer.Common
         {
             EnsureArg.IsNotNull(cryptoHashSetting, nameof(cryptoHashSetting));
 
-            byte[] byteKey = cryptoHashSetting.CryptoHashByteKey;
+            byte[] byteKey = cryptoHashSetting.GetCryptoHashByteKey();
             _hmac = cryptoHashSetting.CryptoHashType switch
             {
                 HashAlgorithmType.Md5 => new HMACMD5(byteKey),
@@ -56,13 +56,6 @@ namespace Microsoft.Health.Anonymizer.Common
             return Hash(input, _hmac, encoding);
         }
 
-        public FixedLengthString Hash(FixedLengthString input, Encoding encoding = null)
-        {
-            EnsureArg.IsNotNull(input, nameof(input));
-
-            return Hash(input, _hmac, encoding);
-        }
-
         public static byte[] Hash(byte[] input, HMAC hashAlgorithm)
         {
             EnsureArg.IsNotNull(input, nameof(input));
@@ -86,17 +79,6 @@ namespace Microsoft.Health.Anonymizer.Common
             EnsureArg.IsNotNull(hashAlgorithm, nameof(hashAlgorithm));
 
             return hashAlgorithm.ComputeHash(input);
-        }
-
-        public static FixedLengthString Hash(FixedLengthString input, HMAC hashAlgorithm, Encoding encoding = null)
-        {
-            EnsureArg.IsNotNull(input, nameof(input));
-            EnsureArg.IsNotNull(hashAlgorithm, nameof(hashAlgorithm));
-
-            var hashData = Hash(input.ToString(), hashAlgorithm, encoding);
-
-            input.SetString(string.Concat(hashData.Select(b => b.ToString("x2"))));
-            return input;
         }
     }
 }

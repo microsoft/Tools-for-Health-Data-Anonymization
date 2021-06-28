@@ -13,12 +13,6 @@ namespace Microsoft.Health.Anonymizer.Common.Settings
     {
         public string EncryptKey { private get; set; }
 
-        public byte[] EncryptByteKey
-        {
-            get { return GetEncryptByteKey(); }
-            set { }
-        }
-
         public void Validate()
         {
             var encryptKeySize = GetEncryptByteKey().Length * 8;
@@ -30,7 +24,7 @@ namespace Microsoft.Health.Anonymizer.Common.Settings
             }
         }
 
-        private byte[] GetEncryptByteKey()
+        public byte[] GetEncryptByteKey()
         {
             return EncryptKey == null ? Aes.Create().Key : Encoding.UTF8.GetBytes(EncryptKey);
         }
