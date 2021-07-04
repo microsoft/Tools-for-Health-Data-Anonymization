@@ -12,7 +12,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors.Settings
             yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=@2010-01-01 and $this>=@2010-01-01\": \"10\"}" } } , "{\r\n  \"$this<=@2010-01-01 and $this>=@2010-01-01\": \"10\"\r\n}", "Redact" };
             yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=10 and $this>=0\": \"10\"}" }, { "otherValues", "Keep" } }, "{\r\n  \"$this<=10 and $this>=0\": \"10\"\r\n}", "Keep" };
             yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this<=10 and $this>=0\": \"10\"}" }, { "otherValues", "Redact" } }, "{\r\n  \"$this<=10 and $this>=0\": \"10\"\r\n}", "Redact" };
-            yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"\": \"\"}" }, { "otherValues", "Redact" } }, "{\r\n  \"\": \"\"\r\n}", "Redact" };
             yield return new object[] { new Dictionary<string, object>() { { "path", "Patient.birthDate" }, { "method", "generalize" }, { "cases", "{\"$this = @2015-01-01T00:00\": \"@2015-01-01T00:00:00Z\"}" } }, "{\r\n  \"$this = @2015-01-01T00:00\": \"@2015-01-01T00:00:00Z\"\r\n}", "Redact" };
         }
 
@@ -43,6 +42,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors.Settings
         [Theory]
         [MemberData(nameof(GetInvalidGeneralizeFhirRuleConfigs))]
         public void GivenAInvalidGeneralizeSetting_WhenValidate_ExceptionShouldBeThrown(Dictionary<string, object> config)
+        {
+            Assert.Throws<AnonymizerConfigurationErrorsException>(() => GeneralizeSetting.ValidateRuleSettings(config));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetInvalidGeneralizeFhirRuleConfigs))]
+        public void GivenAInvalidGeneralizeSetting_WhenCreate_ExceptionShouldBeThrown(Dictionary<string, object> config)
         {
             Assert.Throws<AnonymizerConfigurationErrorsException>(() => GeneralizeSetting.ValidateRuleSettings(config));
         }
