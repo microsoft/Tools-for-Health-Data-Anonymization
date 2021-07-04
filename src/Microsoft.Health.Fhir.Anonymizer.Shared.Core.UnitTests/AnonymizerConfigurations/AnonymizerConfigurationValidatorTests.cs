@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Newtonsoft.Json;
 using Xunit;
 

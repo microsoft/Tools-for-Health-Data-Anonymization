@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Hl7.FhirPath;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Newtonsoft.Json;
 using Xunit;

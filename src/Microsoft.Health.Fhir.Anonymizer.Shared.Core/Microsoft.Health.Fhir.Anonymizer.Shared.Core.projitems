@@ -11,7 +11,9 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizationFhirPathRule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfiguration.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationErrorsException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizationProcessFailedException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerRuleNotApplicableException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerConfigurationErrorsException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationValidator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerRule.cs" />

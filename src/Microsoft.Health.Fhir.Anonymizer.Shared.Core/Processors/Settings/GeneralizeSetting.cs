@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EnsureThat;
 using Hl7.FhirPath;
-using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -23,6 +23,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
             try
             {
                 cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());
+                
+                FhirPathCompiler compiler = new FhirPathCompiler();
+                foreach (var eachCase in cases)
+                {
+                    compiler.Compile(eachCase.Key.ToString());
+                    compiler.Compile(eachCase.Value.ToString());
+                }
             }
             catch (Exception ex)
             {

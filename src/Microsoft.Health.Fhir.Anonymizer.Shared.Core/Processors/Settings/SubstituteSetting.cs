@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using EnsureThat;
-using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
 {

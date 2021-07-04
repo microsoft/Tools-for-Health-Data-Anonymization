@@ -5,8 +5,6 @@ using EnsureThat;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using MathNet.Numerics.Distributions;
-using Microsoft.Health.Fhir.Anonymizer.Core;
-using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 
@@ -46,7 +44,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             {
                 valueNode = node.Children(Constants.ValueNodeName).Cast<ElementNode>().FirstOrDefault();
             }
-            
+
             // Perturb will not happen if value node is empty or visited.
             if (valueNode?.Value == null || context.VisitedNodes.Contains(valueNode))
             {
