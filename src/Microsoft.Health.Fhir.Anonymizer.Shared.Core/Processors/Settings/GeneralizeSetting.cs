@@ -25,6 +25,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
                 cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());
                 
                 FhirPathCompiler compiler = new FhirPathCompiler();
+
+                // Validate cases for compiling.
                 foreach (var eachCase in cases)
                 {
                     compiler.Compile(eachCase.Key.ToString());

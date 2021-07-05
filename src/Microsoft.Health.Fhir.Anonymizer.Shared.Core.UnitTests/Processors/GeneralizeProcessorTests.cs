@@ -472,7 +472,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             };
             var settings = new Dictionary<string, object> { { "cases", cases } };
 
-            Assert.Throws<AnonymizationProcessFailedException>(() => processor.Process(node, context, settings));
+            Assert.Throws<AnonymizerProcessFailedException>(() => processor.Process(node, context, settings));
         }
 
 

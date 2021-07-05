@@ -40,7 +40,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 if (replacementNodeType == null)
                 {
                     // Shall never throws here
-                    throw new AnonymizationProcessFailedException($"Node type is invalid at path {node.GetFhirPath()}.");
+                    throw new AnonymizerProcessFailedException($"Node type is invalid at path {node.GetFhirPath()}.");
                 }
                 // Convert null object to empty object
                 var replaceWith = substituteSetting.ReplaceWith ?? "{}";

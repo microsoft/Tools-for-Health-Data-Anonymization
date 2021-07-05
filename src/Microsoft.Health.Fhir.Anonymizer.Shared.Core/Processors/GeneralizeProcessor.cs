@@ -23,7 +23,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             {
                 throw new AnonymizerRuleNotApplicableException(
                     $"Generalization is not applicable on the node with type {node.InstanceType}. " +
-                    $"Only FHIR primitive nodes (ref: https://www.hl7.org/fhir/datatypes.html#code) are applicable.");
+                    $"Only FHIR primitive nodes (ref: https://www.hl7.org/fhir/datatypes.html#primitive) are applicable.");
             }
 
             if (node.Value == null)
@@ -45,7 +45,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 }
                 catch (Exception ex)
                 {
-                    throw new AnonymizationProcessFailedException($"Generalize failed when processing {eachCase}.", ex);
+                    throw new AnonymizerProcessFailedException($"Generalize failed when processing {eachCase}.", ex);
                 }
             }
 
