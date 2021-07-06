@@ -70,6 +70,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utility\ReferenceUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\AttributeValidatorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Visitors\AnonymizationVisitorTests.cs" />
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-raise-processing-error.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-without-processing-error.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)TestConfigurationsVersion\configuration-empty-version.json">

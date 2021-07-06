@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fhir.Anonymizer.Shared.Core.AnonymizerConfigurations;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -9,6 +10,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
     {
         [DataMember(Name = "fhirVersion")]
         public string FhirVersion { get; set; }
+
+        [DataMember(Name = "processingErrors")]
+        public ProcessingErrorsOption processingErrors { get; set; } = ProcessingErrorsOption.raise;
 
         [DataMember(Name = "fhirPathRules")]
         public Dictionary<string, object>[] FhirPathRules { get; set; }

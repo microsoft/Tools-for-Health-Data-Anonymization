@@ -113,8 +113,15 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
                     try
                     {
                         TResult anonymizedResult = await AnonymizerFunctionAsync(content);
-                        result.Add(anonymizedResult);
-                        batchAnonymizeProgressDetail.ProcessCompleted++;
+                        if(anonymizedResult == null)
+                        {
+                            batchAnonymizeProgressDetail.ProcessSkipped++;
+                        }
+                        else
+                        {
+                            result.Add(anonymizedResult);
+                            batchAnonymizeProgressDetail.ProcessCompleted++;
+                        }
                     }
                     catch (Exception)
                     {

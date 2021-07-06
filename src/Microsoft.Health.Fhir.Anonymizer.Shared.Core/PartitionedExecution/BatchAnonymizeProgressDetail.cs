@@ -6,6 +6,8 @@
 
         public int ProcessCompleted { get; set; }
 
+        public int ProcessSkipped { get; set; }
+
         public int ProcessFailed { get; set; }
 
         public int ConsumeCompleted { get; set; }

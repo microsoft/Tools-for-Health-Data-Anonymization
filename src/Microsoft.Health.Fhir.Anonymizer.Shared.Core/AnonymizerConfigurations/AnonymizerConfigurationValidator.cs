@@ -24,7 +24,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
             {
                 throw new AnonymizerConfigurationErrorsException($"Configuration of fhirVersion {config.FhirVersion} is not supported. Expected fhirVersion: {Constants.SupportedVersion}");
             }
-            
+
             if (config.FhirPathRules == null)
             {
                 throw new AnonymizerConfigurationErrorsException("The configuration is invalid, please specify any fhirPathRules");

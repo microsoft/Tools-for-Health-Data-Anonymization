@@ -62,14 +62,16 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
             stopWatch.Start();
 
             int completedCount = 0;
+            int skippedCount = 0;
             int failedCount = 0;
             Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
             progress.ProgressChanged += (obj, args) =>
             {
                 Interlocked.Add(ref completedCount, args.ProcessCompleted);
+                Interlocked.Add(ref skippedCount, args.ProcessSkipped);
                 Interlocked.Add(ref failedCount, args.ProcessFailed);
 
-                Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {failedCount} Process failed.");
+                Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {skippedCount} Process skipped. {failedCount} Process failed.");
             };
 
             await executor.ExecuteAsync(cancellationToken: CancellationToken.None, false, progress).ConfigureAwait(false);
@@ -86,7 +88,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
 
             if (_options.SkipExistedFile && File.Exists(resourceOutputFileName))
             {
-                Console.WriteLine($"Skip processing on file {fileName}.");
+                Console.WriteLine($"Skip processing on file {fileName} since it already exist in destination.");
                 return string.Empty;
             }
 
@@ -101,7 +103,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
                     ValidateOutput = _options.ValidateOutput
                 };
                 var resourceResult = engine.AnonymizeJson(resourceJson, settings);
-
+                if(resourceResult == null)
+                {
+                    return null;
+                }
                 await File.WriteAllTextAsync(resourceOutputFileName, resourceResult).ConfigureAwait(false);
             }
             catch (Exception innerException)
