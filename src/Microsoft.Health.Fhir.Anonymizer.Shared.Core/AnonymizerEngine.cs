@@ -89,7 +89,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             EnsureArg.IsNotNull(resource, nameof(resource));
 
             ValidateInput(settings, resource);
-            var anonymizedElement = AnonymizeElement(resource.ToTypedElement());
+            var anonymizedElement = AnonymizeElement(resource.ToTypedElement())?.ToPoco<Resource>();
 
             if(anonymizedElement == null)
             {
@@ -98,7 +98,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
 
             ValidateOutput(settings, anonymizedElement);
            
-            return anonymizedElement.ToPoco<Resource>();
+            return anonymizedElement;
         }
 
         public string AnonymizeJson(string json, AnonymizerSettings settings = null)
@@ -123,11 +123,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             }
         }
 
-        private void ValidateOutput(AnonymizerSettings settings, ITypedElement anonymizedNode)
+        private void ValidateOutput(AnonymizerSettings settings, Resource anonymizedNode)
         {
             if (settings != null && settings.ValidateOutput)
             {
-                _validator.ValidateOutput(anonymizedNode.ToPoco<Resource>());
+                _validator.ValidateOutput(anonymizedNode);
             }
         }
 
