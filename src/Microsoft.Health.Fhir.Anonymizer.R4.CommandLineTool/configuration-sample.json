@@ -1,6 +1,6 @@
 {
   "fhirVersion": "R4",
-  "skipIfFailed": true,
+  "processingErrors": "raise",
   "fhirPathRules": [
     {"path": "nodesByType('Extension')", "method": "redact"},
 
