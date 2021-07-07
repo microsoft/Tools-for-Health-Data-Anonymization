@@ -22,8 +22,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             if (!ModelInfo.IsPrimitive(node.InstanceType))
             {
                 throw new AnonymizerRuleNotApplicableException(
-                    $"Generalization is not applicable on the node with type {node.InstanceType}. " +
-                    $"Only FHIR primitive nodes (ref: https://www.hl7.org/fhir/datatypes.html#primitive) are applicable.");
+                    $"Generalization is not applicable on the node with type {node.InstanceType}. Only FHIR primitive nodes (ref: https://www.hl7.org/fhir/datatypes.html#primitive) are applicable.");
             }
 
             if (node.Value == null)

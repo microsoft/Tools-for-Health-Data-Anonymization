@@ -137,14 +137,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new FhirString("2015-01-01"), "{\"$this > @2015-01-01\":\"@2015-01-01\"}" };
         }
 
-        public static IEnumerable<object[]> GetInvalidCasesFormatExpressions()
-        {
-            yield return new object[] { new Integer(5), "{\"$this>='0' and\":\"20\"}" };
-            yield return new object[] { new FhirDateTime("2015-01-01T00:00:00Z"), "{\"$this > @201511\":\"@2015-01-01\"}" };
-            yield return new object[] { new Date("2015-01-01"), "{\"$this > <1\":\"@2015-01-01\"}" };
-            yield return new object[] { new FhirString("2015-01-01"), "{\"\":\"@2015-01-01\"}" };
-        }
-
         public static IEnumerable<object[]> GetIntegerDecimalComparingCases()
         {
             yield return new object[] { new Integer(5), "{\"$this>=0 and $this<20\":\"$this / 2\"}", (decimal)2.5 }; 
@@ -237,8 +229,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             };
             yield return new object[]
             {
-                new ContactPoint { Use = ContactPoint.ContactPointUse.Home, System = ContactPoint.ContactPointSystem.Email, Value = "test@example.com", Period = new Period { Start = "2018-01-01", End = "2019-12-30" } } ,
-                
+                new ContactPoint { Use = ContactPoint.ContactPointUse.Home, System = ContactPoint.ContactPointSystem.Email, Value = "test@example.com", Period = new Period { Start = "2018-01-01", End = "2019-12-30" } } ,            
             };
         }
         
@@ -473,23 +464,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             var settings = new Dictionary<string, object> { { "cases", cases } };
 
             Assert.Throws<AnonymizerProcessFailedException>(() => processor.Process(node, context, settings));
-        }
-
-
-        [Theory]
-        [MemberData(nameof(GetInvalidCasesFormatExpressions))]
-        public void GivenInvalidCasesFormatExpressions_WhenGeneralized_ExceptionShouldBeThrown(Base data, string cases)
-        {
-            var node = ElementNode.FromElement(data.ToTypedElement());
-
-            GeneralizeProcessor processor = new GeneralizeProcessor();
-            var context = new ProcessContext
-            {
-                VisitedNodes = new HashSet<ElementNode>()
-            };
-            var settings = new Dictionary<string, object> { { "cases", cases } };
-
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => processor.Process(node, context, settings));
         }
 
         [Theory]
