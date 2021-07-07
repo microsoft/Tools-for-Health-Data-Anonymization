@@ -89,16 +89,16 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             EnsureArg.IsNotNull(resource, nameof(resource));
 
             ValidateInput(settings, resource);
-            var anonymizedElement = AnonymizeElement(resource.ToTypedElement())?.ToPoco<Resource>();
+            var anonymizedResource = AnonymizeElement(resource.ToTypedElement())?.ToPoco<Resource>();
 
-            if(anonymizedElement == null)
+            if(anonymizedResource == null)
             {
                 return null;
             }
 
-            ValidateOutput(settings, anonymizedElement);
+            ValidateOutput(settings, anonymizedResource);
            
-            return anonymizedElement;
+            return anonymizedResource;
         }
 
         public string AnonymizeJson(string json, AnonymizerSettings settings = null)
