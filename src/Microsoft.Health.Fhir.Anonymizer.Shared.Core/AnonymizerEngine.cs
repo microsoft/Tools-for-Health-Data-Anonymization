@@ -73,9 +73,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
                 ElementNode resourceNode = ElementNode.FromElement(element);
                 return resourceNode.Anonymize(_rules, _processors);
             }
-            catch(Exception ex)
+            catch (AnonymizerConfigurationErrorsException)
             {
-                if(!(ex is AnonymizerConfigurationErrorsException) && _configurationManager.Configuration.processingErrors == ProcessingErrorsOption.skip)
+                throw;
+            }
+            catch
+            {
+                if(_configurationManager.Configuration.processingErrors == ProcessingErrorsOption.Skip)
                 {
                     return null;
                 }

@@ -51,7 +51,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
 
             var parameters = configurationManager.GetParameterConfiguration();
             Assert.True(!string.IsNullOrEmpty(parameters.DateShiftKey));
-            Assert.Equal(ProcessingErrorsOption.raise, configurationManager.Configuration.processingErrors);
+            Assert.Equal(ProcessingErrorsOption.Raise, configurationManager.Configuration.processingErrors);
         }
 
         [Theory]
@@ -72,7 +72,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
         {
             var configFilePath = "./TestConfigurations/configuration-without-processing-error.json";
             var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
-            Assert.Equal(ProcessingErrorsOption.raise, configurationManager.Configuration.processingErrors);
+            Assert.Equal(ProcessingErrorsOption.Raise, configurationManager.Configuration.processingErrors);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
         public string FhirVersion { get; set; }
 
         [DataMember(Name = "processingErrors")]
-        public ProcessingErrorsOption processingErrors { get; set; } = ProcessingErrorsOption.raise;
+        public ProcessingErrorsOption processingErrors { get; set; } = ProcessingErrorsOption.Raise;
 
         [DataMember(Name = "fhirPathRules")]
         public Dictionary<string, object>[] FhirPathRules { get; set; }

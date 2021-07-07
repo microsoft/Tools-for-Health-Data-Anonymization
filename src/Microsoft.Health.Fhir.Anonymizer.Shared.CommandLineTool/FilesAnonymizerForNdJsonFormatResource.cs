@@ -51,7 +51,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
 
                 if (_options.SkipExistedFile && File.Exists(bulkResourceOutputFileName))
                 {
-                    Console.WriteLine($"Skip processing on file {bulkResourceOutputFileName}.");
+                    Console.WriteLine($"Skip processing on file {bulkResourceOutputFileName} since it already exists in destination.");
                     continue;
                 }
                 else
