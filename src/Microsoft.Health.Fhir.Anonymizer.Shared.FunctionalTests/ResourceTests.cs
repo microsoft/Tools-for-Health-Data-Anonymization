@@ -105,6 +105,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
             Assert.Throws<AnonymizerProcessFailedException>(() => engine.AnonymizeJson(testContent));
         }
 
+        [Fact]
+        public void GivenAPatientResource_WhenAnonymizingWithProcessingError_IfParameterNotGiven_ExceptionWillBeThrown()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-without-processing-error.json"));
+            string testContent = File.ReadAllText(ResourceTestsFile("patient-basic.json"));
+            Assert.Throws<AnonymizerProcessFailedException>(() => engine.AnonymizeJson(testContent));
+        }
         private string ResourceTestsFile(string fileName)
         {
             return Path.Combine("TestResources", fileName);
