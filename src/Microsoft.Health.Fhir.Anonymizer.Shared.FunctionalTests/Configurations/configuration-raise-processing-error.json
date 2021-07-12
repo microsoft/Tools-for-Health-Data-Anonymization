@@ -3,8 +3,11 @@
   "processingErrors": "raise",
   "fhirPathRules": [
     {
-      "path": "Patient.nodesByType('HumanName')",
-      "method": "redact"
+        "path": "nodesByType('HumanName').family",
+        "method": "generalize",
+        "cases": {
+            "$this>=0 and $this<20": "20"
+        }
     },
     {
       "path": "TestResource",

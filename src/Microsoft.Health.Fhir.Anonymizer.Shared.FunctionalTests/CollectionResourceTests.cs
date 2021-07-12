@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Hl7.FhirPath;
 using Microsoft.Health.Fhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Xunit;
 
@@ -21,12 +22,43 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         }
 
         [Fact]
+        public void GivenAResourceWithContained_WhenAnonymizingWithProcessingError_IfSkip_NullResultWillBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-skip-processing-error.json"));
+            string testContent = File.ReadAllText(CollectionResourceTestsFile("contained-basic.json"));
+            Assert.Null(engine.AnonymizeJson(testContent));
+        }
+
+        [Fact]
+        public void GivenAResourceWithContained_WhenAnonymizingWithProcessingError_IfRaise_ExceptionWillBeThrown()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-raise-processing-error.json"));
+            string testContent = File.ReadAllText(CollectionResourceTestsFile("contained-basic.json"));
+            Assert.Throws<AnonymizerProcessFailedException>(() => engine.AnonymizeJson(testContent));
+        }
+
+        [Fact]
         public void GivenABundleResource_WhenAnonymizing_ThenAnonymizedJsonShouldBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "common-config.json"));
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, CollectionResourceTestsFile("bundle-basic.json"), CollectionResourceTestsFile("bundle-basic-target.json"));
         }
 
+        [Fact]
+        public void GivenABundleResource_WhenAnonymizingWithProcessingError_IfSkip_NullResultWillBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-skip-processing-error.json"));
+            string testContent = File.ReadAllText(CollectionResourceTestsFile("bundle-basic.json"));
+            Assert.Null(engine.AnonymizeJson(testContent));
+        }
+
+        [Fact]
+        public void GivenABundleResource_WhenAnonymizingWithProcessingError_IfRaise_ExceptionWillBeThrown()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-raise-processing-error.json"));
+            string testContent = File.ReadAllText(CollectionResourceTestsFile("bundle-basic.json"));
+            Assert.Throws<AnonymizerProcessFailedException>(() => engine.AnonymizeJson(testContent));
+        }
         [Fact]
         public void GivenABundleResourceWithContainedInside_WhenAnonymizing_ThenContainedResourceShouldBeAnonymized()
         {

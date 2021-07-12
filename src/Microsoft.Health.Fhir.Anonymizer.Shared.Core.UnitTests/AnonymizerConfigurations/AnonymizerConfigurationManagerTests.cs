@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Fhir.Anonymizer.Shared.Core.AnonymizerConfigurations;
 using Hl7.FhirPath;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
@@ -50,6 +51,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
 
             var parameters = configurationManager.GetParameterConfiguration();
             Assert.True(!string.IsNullOrEmpty(parameters.DateShiftKey));
+            Assert.Equal(ProcessingErrorsOption.Raise, configurationManager.Configuration.processingErrors);
         }
 
         [Theory]
@@ -63,6 +65,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
             configurationManager.SetDateShiftKeyPrefix(dateShiftKeyPrefix);
 
             Assert.Equal(dateShiftKeyPrefix, configurationManager.GetParameterConfiguration().DateShiftKeyPrefix);
+        }
+
+        [Fact]
+        public void GivenAConfigWithoutProcessingErrorsField_WhenCreateAnonymizerConfigurationManager_TheFieldShouldBeDefaultAsRaise()
+        {
+            var configFilePath = "./TestConfigurations/configuration-without-processing-error.json";
+            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
+            Assert.Equal(ProcessingErrorsOption.Raise, configurationManager.Configuration.processingErrors);
         }
     }
 }

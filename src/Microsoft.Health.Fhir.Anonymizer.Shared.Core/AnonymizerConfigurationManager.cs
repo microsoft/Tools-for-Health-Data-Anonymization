@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -13,6 +14,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         private readonly AnonymizerConfiguration _configuration;
 
         public AnonymizationFhirPathRule[] FhirPathRules { get; private set; } = null;
+        public AnonymizerConfiguration Configuration { get { return _configuration; } }
 
         public AnonymizerConfigurationManager(AnonymizerConfiguration configuration)
         {
@@ -38,7 +40,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             }
             catch (JsonException innerException)
             {
-                throw new JsonException($"Failed to parse configuration file", innerException);
+                throw new AnonymizerConfigurationErrorsException($"Failed to parse configuration file", innerException);
             }
         }
 
@@ -52,7 +54,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             }
             catch (IOException innerException)
             {
-                throw new IOException($"Failed to read configuration file {configFilePath}", innerException);
+                throw new AnonymizerConfigurationErrorsException($"Failed to read configuration file {configFilePath}", innerException);
             }
         }
 
