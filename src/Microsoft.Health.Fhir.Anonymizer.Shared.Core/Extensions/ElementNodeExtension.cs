@@ -103,14 +103,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 
         private static ITypedElement ToElement(ITypedElement node)
         {
-            if (node is ScopedNode)
-            {
-                return ((ScopedNode)node).Current;
-            }
-            else
-            {
-                return node;
-            }
+            return node is ScopedNode scopedNode 
+                ? scopedNode.Current 
+                : node;
         }
     }
 }
