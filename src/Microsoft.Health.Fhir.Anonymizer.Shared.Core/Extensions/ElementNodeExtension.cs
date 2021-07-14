@@ -98,7 +98,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 
         public static IEnumerable<ElementNode> CastElementNodes(this IEnumerable<ITypedElement> input)
         {
-            return input.Select(ToElement).CastElementNodes();
+            return input.Select(ToElement).Cast<ElementNode>();
         }
 
         private static ITypedElement ToElement(ITypedElement node)
