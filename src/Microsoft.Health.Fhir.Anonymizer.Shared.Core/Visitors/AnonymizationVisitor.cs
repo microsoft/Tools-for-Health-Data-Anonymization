@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
@@ -99,7 +100,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
                 }
                 else
                 {
-                    matchNodes = node.Select(rule.Expression).Cast<ElementNode>();
+                    matchNodes = node.Select(rule.Expression).CastElementNodes();
                 }
                 
                 foreach (var matchNode in matchNodes)
@@ -148,7 +149,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
             result = processor.Process(node, context, settings);
             _visitedNodes.Add(node);
 
-            foreach (var child in node.Children().Cast<ElementNode>())
+            foreach (var child in node.Children().CastElementNodes())
             {
                 if (child.IsFhirResource())
                 {

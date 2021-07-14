@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Specification;
@@ -32,7 +33,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
                 return true;
             }
 
-            var children = node.Children().Cast<ElementNode>().ToList();
+            var children = node.Children().CastElementNodes().ToList();
             foreach (var child in children)
             {
                 // Remove child if it is null => return true
