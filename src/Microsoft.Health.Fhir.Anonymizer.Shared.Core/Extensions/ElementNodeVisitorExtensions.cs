@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Linq;
+﻿using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Microsoft.Health.Fhir.Anonymizer.Core.Visitors;
 
@@ -13,7 +12,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 
             if (shouldVisitChild)
             {
-                foreach (var child in node.Children().Cast<ElementNode>())
+                foreach (var child in node.Children().CastElementNodes())
                 {
                     child.Accept(visitor);
                 }

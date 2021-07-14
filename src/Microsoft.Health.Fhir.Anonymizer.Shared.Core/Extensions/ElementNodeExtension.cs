@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Hl7.Fhir.ElementModel;
@@ -92,7 +93,24 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 
         public static ElementNode GetMeta(this ElementNode node)
         {
-            return node?.Children("meta").Cast<ElementNode>().FirstOrDefault();
+            return node?.Children("meta").CastElementNodes().FirstOrDefault();
+        }
+
+        public static IEnumerable<ElementNode> CastElementNodes(this IEnumerable<ITypedElement> input)
+        {
+            return input.Select(ToElement).CastElementNodes();
+        }
+
+        private static ITypedElement ToElement(ITypedElement node)
+        {
+            if (node is ScopedNode)
+            {
+                return ((ScopedNode)node).Current;
+            }
+            else
+            {
+                return node;
+            }
         }
     }
 }

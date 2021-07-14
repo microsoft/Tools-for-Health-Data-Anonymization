@@ -20,11 +20,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
             node.RemoveNullChildren();
             Assert.Equal(2, node.Children().Count());
 
-            node.Children("child1").Cast<ElementNode>().First().Value = null;
+            node.Children("child1").CastElementNodes().First().Value = null;
             node.RemoveNullChildren();
             Assert.Single(node.Children());
 
-            node.Children("child2").Cast<ElementNode>().First().Value = null;
+            node.Children("child2").CastElementNodes().First().Value = null;
             node.RemoveNullChildren();
             Assert.Empty(node.Children());
         }

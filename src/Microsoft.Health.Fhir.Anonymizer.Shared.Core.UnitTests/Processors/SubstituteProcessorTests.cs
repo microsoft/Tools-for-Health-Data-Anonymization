@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
@@ -143,7 +144,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             var node = ElementNode.FromElement(data.ToTypedElement());
             var context = new ProcessContext
             {
-                VisitedNodes = node.Select(processedNodePath).Cast<ElementNode>().ToHashSet()
+                VisitedNodes = node.Select(processedNodePath).CastElementNodes().ToHashSet()
             }; 
             Assert.NotEmpty(context.VisitedNodes);
             var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
