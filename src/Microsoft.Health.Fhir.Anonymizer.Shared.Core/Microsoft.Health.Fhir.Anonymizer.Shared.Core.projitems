@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\DateShiftScope.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\ParameterConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurationManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerLogging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />

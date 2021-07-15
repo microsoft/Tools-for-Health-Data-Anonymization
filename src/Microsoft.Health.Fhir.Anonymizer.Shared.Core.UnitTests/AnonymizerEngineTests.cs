@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using Fhir.Anonymizer.Shared.Core;
+using Hl7.Fhir.Serialization;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Xunit;
 
@@ -30,6 +32,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
 
             var result = engine.AnonymizeJson(TestPatientSample);
             Assert.Equal(OneLineOutputTarget, result);
+        }
+
+        [Fact]
+        public void GivenAnonymizerEngine_WhenUpdateFhirLibrary_ThenEngineSupportLibraryVersionShouldBeUpdated()
+        {
+            Assert.Equal(typeof(FhirJsonParser).Assembly.GetName().Version.ToString(3), AnonymizerConstants.FhirLibraryVersion);
         }
 
         private const string TestPatientSample =
