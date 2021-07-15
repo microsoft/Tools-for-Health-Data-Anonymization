@@ -22,11 +22,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         }
 
         [Fact]
-        public void GivenAResourceWithContained_WhenAnonymizingWithProcessingError_IfSkip_NullResultWillBeReturned()
+        public void GivenAResourceWithContained_WhenAnonymizingWithProcessingError_IfSkip_EmptyResultWillBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-skip-processing-error.json"));
             string testContent = File.ReadAllText(CollectionResourceTestsFile("contained-basic.json"));
-            Assert.Null(engine.AnonymizeJson(testContent));
+            Assert.Equal("{\"resourceType\":\"Condition\"}", engine.AnonymizeJson(testContent));
         }
 
         [Fact]
@@ -45,11 +45,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         }
 
         [Fact]
-        public void GivenABundleResource_WhenAnonymizingWithProcessingError_IfSkip_NullResultWillBeReturned()
+        public void GivenABundleResource_WhenAnonymizingWithProcessingError_IfSkip_EmptyResultWillBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-skip-processing-error.json"));
             string testContent = File.ReadAllText(CollectionResourceTestsFile("bundle-basic.json"));
-            Assert.Null(engine.AnonymizeJson(testContent));
+            Assert.Equal("{\"resourceType\":\"Bundle\"}", engine.AnonymizeJson(testContent));
         }
 
         [Fact]

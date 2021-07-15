@@ -6,6 +6,7 @@ using Fhir.Anonymizer.Shared.Core.AnonymizerConfigurations;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
+using Hl7.Fhir.Specification;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
@@ -24,6 +25,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         private readonly AnonymizerConfigurationManager _configurationManager;
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
         private readonly AnonymizationFhirPathRule[] _rules;
+        private readonly IStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
 
         public static void InitializeFhirPathExtensionSymbols()
         {
@@ -81,7 +83,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             {
                 if(_configurationManager.Configuration.processingErrors == ProcessingErrorsOption.Skip)
                 {
-                    return null;
+                    // Return empty resource.
+                    return ElementNode.Root(_provider, element.InstanceType);
                 }
 
                 throw;
@@ -93,13 +96,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             EnsureArg.IsNotNull(resource, nameof(resource));
 
             ValidateInput(settings, resource);
-            var anonymizedResource = AnonymizeElement(resource.ToTypedElement())?.ToPoco<Resource>();
-
-            if(anonymizedResource == null)
-            {
-                return null;
-            }
-
+            var anonymizedResource = AnonymizeElement(resource.ToTypedElement()).ToPoco<Resource>();
             ValidateOutput(settings, anonymizedResource);
            
             return anonymizedResource;
@@ -116,7 +113,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             {
                 Pretty = settings != null && settings.IsPrettyOutput
             };
-            return anonymizedResource?.ToJson(serializationSettings);
+            return anonymizedResource.ToJson(serializationSettings);
         }
 
         private void ValidateInput(AnonymizerSettings settings, Resource resource)
