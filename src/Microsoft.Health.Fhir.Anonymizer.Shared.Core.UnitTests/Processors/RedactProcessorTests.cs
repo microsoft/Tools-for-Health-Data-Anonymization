@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
@@ -66,20 +67,20 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
         {
             RedactProcessor processor = new RedactProcessor(true, enablePartialAgesForRedact: true, true, new List<string>());
             var age = new Age() { Value = 91 };
-            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
+            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").CastElementNodes().FirstOrDefault();
             var processResult = processor.Process(node);
             Assert.Null(node.Value);
             Assert.True(processResult.IsRedacted);
 
             processor = new RedactProcessor(true, enablePartialAgesForRedact: false, true, new List<string>());
-            node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
+            node = ElementNode.FromElement(age.ToTypedElement()).Children("value").CastElementNodes().FirstOrDefault();
             processResult = processor.Process(node);
             Assert.Null(node.Value);
             Assert.True(processResult.IsRedacted);
 
             processor = new RedactProcessor(true, enablePartialAgesForRedact: true, true, new List<string>());
             age = new Age() { Value = 89 };
-            node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
+            node = ElementNode.FromElement(age.ToTypedElement()).Children("value").CastElementNodes().FirstOrDefault();
             processResult = processor.Process(node);
             Assert.Equal("89", node.Value.ToString());
             Assert.True(processResult.IsRedacted);

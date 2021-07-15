@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
@@ -273,7 +274,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
         [MemberData(nameof(GetAgeDataForPartialRedact))]
         public void GivenAnAge_WhenPartialRedact_ThenAgeOver89ShouldBeRedacted(Age age)
         {
-            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
+            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").CastElementNodes().FirstOrDefault();
             var processResult = DateTimeUtility.RedactAgeDecimalNode(node, true);
 
             Assert.Equal(int.Parse(age.Value.ToString()) > 89 ? null : age.Value.ToString(), node.Value?.ToString() ?? null);
@@ -284,7 +285,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
         [MemberData(nameof(GetAgeDataForRedact))]
         public void GivenAnAge_WhenRedact_ThenAgeShouldBeRedacted(Age age)
         {
-            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
+            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").CastElementNodes().FirstOrDefault();
             var processResult = DateTimeUtility.RedactAgeDecimalNode(node, false);
 
             Assert.Null(node.Value);

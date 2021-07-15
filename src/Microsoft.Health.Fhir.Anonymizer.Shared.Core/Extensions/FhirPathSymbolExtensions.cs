@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.FhirPath.Expressions;
 
@@ -30,12 +31,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 
         public static IEnumerable<ITypedElement> NodesByType(IEnumerable<ITypedElement> nodes, string typeName)
         {
-            return nodes.Cast<ElementNode>().SelfAndDescendantsWithoutSubResource().Where(n => typeName.Equals(n.InstanceType));
+            return nodes.CastElementNodes().SelfAndDescendantsWithoutSubResource().Where(n => typeName.Equals(n.InstanceType));
         }
 
         public static IEnumerable<ITypedElement> NodesByName(IEnumerable<ITypedElement> nodes, string name)
         {
-            return nodes.Cast<ElementNode>().SelfAndDescendantsWithoutSubResource().Where(n => name.Equals(n.Name));
+            return nodes.CastElementNodes().SelfAndDescendantsWithoutSubResource().Where(n => name.Equals(n.Name));
         }
     }
 }

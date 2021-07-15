@@ -360,6 +360,17 @@ To perturb age fields of Condition resource by adding random noise having range 
 }
 ```
 
+To perturb a valueQuantity field in Observation resource by adding random noise having range ```[-0.1*originalValue, 0.1*originalValue]```
+```json
+{
+  "path": "(nodesByType('Observation').value as Quantity).value",
+  "method": "perturb",
+  "span": 0.2,
+  "rangeType": "proportional",
+  "roundTo": 0
+}
+```
+
 To generate hash of Resource Id
 ```json
 {"path": "Resource.id", "method": "cryptoHash"}
