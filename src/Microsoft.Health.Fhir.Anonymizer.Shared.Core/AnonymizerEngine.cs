@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using EnsureThat;
 using Fhir.Anonymizer.Shared.Core.AnonymizerConfigurations;
+using Fhir.Anonymizer.Shared.Core.Models;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
@@ -84,7 +85,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
                 if(_configurationManager.Configuration.processingErrors == ProcessingErrorsOption.Skip)
                 {
                     // Return empty resource.
-                    return ElementNode.Root(_provider, element.InstanceType);
+                    return new EmptyElement(element.InstanceType);
                 }
 
                 throw;
@@ -96,10 +97,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             EnsureArg.IsNotNull(resource, nameof(resource));
 
             ValidateInput(settings, resource);
-            var anonymizedResource = AnonymizeElement(resource.ToTypedElement()).ToPoco<Resource>();
-            ValidateOutput(settings, anonymizedResource);
+            var anonymizedResource = ElementNode.FromElement(AnonymizeElement(resource.ToTypedElement()));
+            var testes = anonymizedResource.ToJson();
+            var test = anonymizedResource.ToPoco<Resource>();
+            ValidateOutput(settings, test);
            
-            return anonymizedResource;
+            return test;
         }
 
         public string AnonymizeJson(string json, AnonymizerSettings settings = null)
