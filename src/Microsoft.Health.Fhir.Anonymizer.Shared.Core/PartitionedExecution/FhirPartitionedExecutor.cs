@@ -119,9 +119,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
                     }
                     else
                     {
-                        result.Add(anonymizedResult);
                         batchAnonymizeProgressDetail.ProcessCompleted++;
                     }
+                    result.Add(anonymizedResult);
                 }
 
                 progress?.Report(batchAnonymizeProgressDetail);

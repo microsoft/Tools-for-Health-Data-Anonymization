@@ -101,19 +101,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
                     ValidateOutput = _options.ValidateOutput
                 };
                 var resourceResult = engine.AnonymizeJson(resourceJson, settings);
-                if(resourceResult == null)
-                {
-                    return null;
-                }
                 await File.WriteAllTextAsync(resourceOutputFileName, resourceResult).ConfigureAwait(false);
+                return resourceResult;
             }
             catch (Exception innerException)
             {
                 Console.Error.WriteLine($"[{fileName}] Error:\nResource: {resourceJson}\nErrorMessage: {innerException.ToString()}");
                 throw;
             }
-
-            return string.Empty;
         }
 
         private string GetResourceOutputFileName(string fileName, string inputFolder, string outputFolder)
