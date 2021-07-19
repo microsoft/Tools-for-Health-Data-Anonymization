@@ -20,6 +20,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
             resourceNode.AddSecurityTag(result);
+            Assert.Single(resourceNode.Children("meta"));
+
             resource = resourceNode.ToPoco<Patient>();
 
             Assert.Single(resource.Meta.Security);
@@ -44,6 +46,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
             resourceNode.AddSecurityTag(result);
+            Assert.Single(resourceNode.Children("meta"));
+
             resource = resourceNode.ToPoco<Patient>();
 
             Assert.Equal(2, resource.Meta.Security.Count);
