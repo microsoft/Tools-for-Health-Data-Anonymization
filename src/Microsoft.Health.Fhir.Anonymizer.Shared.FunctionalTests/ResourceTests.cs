@@ -93,8 +93,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         public void GivenAPatientResource_WhenAnonymizingWithProcessingError_IfSkip_EmptyResultWillBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-skip-processing-error.json"));
-            string testContent = File.ReadAllText(ResourceTestsFile("patient-basic.json"));
-            Assert.Equal("{\"resourceType\":\"Patient\"}", engine.AnonymizeJson(testContent));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-basic.json"), ResourceTestsFile("patient-empty.json"));
         }
 
         [Fact]

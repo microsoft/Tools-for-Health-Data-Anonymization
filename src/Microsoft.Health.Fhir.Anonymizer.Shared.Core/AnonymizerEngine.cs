@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using EnsureThat;
 using Fhir.Anonymizer.Shared.Core.AnonymizerConfigurations;
@@ -97,12 +96,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             EnsureArg.IsNotNull(resource, nameof(resource));
 
             ValidateInput(settings, resource);
-            var anonymizedResource = ElementNode.FromElement(AnonymizeElement(resource.ToTypedElement()));
-            var testes = anonymizedResource.ToJson();
-            var test = anonymizedResource.ToPoco<Resource>();
-            ValidateOutput(settings, test);
+            var anonymizedResource = ElementNode.FromElement(AnonymizeElement(resource.ToTypedElement())).ToPoco<Resource>();
+            ValidateOutput(settings, anonymizedResource);
            
-            return test;
+            return anonymizedResource;
         }
 
         public string AnonymizeJson(string json, AnonymizerSettings settings = null)
@@ -110,13 +107,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));
 
             var resource = _parser.Parse<Resource>(json);
-            Resource anonymizedResource = AnonymizeResource(resource, settings);
+            ITypedElement anonymizedElement= AnonymizeElement(resource.ToTypedElement(), settings);
 
             FhirJsonSerializationSettings serializationSettings = new FhirJsonSerializationSettings
             {
                 Pretty = settings != null && settings.IsPrettyOutput
             };
-            return anonymizedResource.ToJson(serializationSettings);
+            return anonymizedElement.ToJson(serializationSettings);
         }
 
         private void ValidateInput(AnonymizerSettings settings, Resource resource)

@@ -65,7 +65,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
 
                 int completedCount = 0;
                 int skippedCount = 0;
-                int failedCount = 0;
                 int consumeCompletedCount = 0;
                 using (FileStream inputStream = new FileStream(bulkResourceFileName, FileMode.Open))
                 using (FileStream outputStream = new FileStream(tempBulkResourceOutputFileName, FileMode.Create))
@@ -103,10 +102,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
                     {
                         Interlocked.Add(ref completedCount, args.ProcessCompleted);
                         Interlocked.Add(ref skippedCount, args.ProcessSkipped);
-                        Interlocked.Add(ref failedCount, args.ProcessFailed);
                         Interlocked.Add(ref consumeCompletedCount, args.ConsumeCompleted);
 
-                        Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {skippedCount} Process skipped. {failedCount} Process failed. {consumeCompletedCount} Consume completed.");
+                        Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {skippedCount} Process skipped. {consumeCompletedCount} Consume completed.");
                     };
 
                     await executor.ExecuteAsync(CancellationToken.None, true, progress).ConfigureAwait(false);

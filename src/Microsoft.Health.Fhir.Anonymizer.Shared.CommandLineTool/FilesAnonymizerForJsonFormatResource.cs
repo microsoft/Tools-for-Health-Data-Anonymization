@@ -63,15 +63,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
 
             int completedCount = 0;
             int skippedCount = 0;
-            int failedCount = 0;
             Progress<BatchAnonymizeProgressDetail> progress = new Progress<BatchAnonymizeProgressDetail>();
             progress.ProgressChanged += (obj, args) =>
             {
                 Interlocked.Add(ref completedCount, args.ProcessCompleted);
                 Interlocked.Add(ref skippedCount, args.ProcessSkipped);
-                Interlocked.Add(ref failedCount, args.ProcessFailed);
 
-                Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {skippedCount} Process skipped. {failedCount} Process failed.");
+                Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {skippedCount} Process skipped.");
             };
 
             await executor.ExecuteAsync(cancellationToken: CancellationToken.None, false, progress).ConfigureAwait(false);

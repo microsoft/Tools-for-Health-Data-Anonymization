@@ -11,6 +11,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Models
             Display = "redacted"
         };
 
+        public static readonly Coding SKIPPED = new Coding()
+        {
+            System = "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+            Code = "REDACTED",
+            Display = "All elements have been redacted."
+        };
+
         public static readonly Coding ABSTRED = new Coding()
         {
             System = "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",

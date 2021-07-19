@@ -28,8 +28,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         public void GivenAResourceWithContained_WhenAnonymizingWithProcessingError_IfSkip_EmptyResultWillBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-skip-processing-error.json"));
-            string testContent = File.ReadAllText(CollectionResourceTestsFile("contained-basic.json"));
-            Assert.Equal("{\"resourceType\":\"Condition\"}", engine.AnonymizeJson(testContent));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, CollectionResourceTestsFile("contained-basic.json"), CollectionResourceTestsFile("condition-empty.json"));
         }
 
         [Fact]
@@ -51,8 +50,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         public void GivenABundleResource_WhenAnonymizingWithProcessingError_IfSkip_EmptyResultWillBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-skip-processing-error.json"));
-            string testContent = File.ReadAllText(CollectionResourceTestsFile("bundle-basic.json"));
-            var test =  engine.AnonymizeJson(testContent);
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, CollectionResourceTestsFile("bundle-basic.json"), CollectionResourceTestsFile("bundle-empty.json"));
         }
 
         [Fact]

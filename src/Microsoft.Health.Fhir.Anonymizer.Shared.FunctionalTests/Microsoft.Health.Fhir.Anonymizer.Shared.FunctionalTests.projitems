@@ -42,6 +42,15 @@
     <None Include="$(MSBuildThisFileDirectory)Configurations\substitute-complex.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="$(MSBuildThisFileDirectory)TestResources\condition-empty.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestResources\bundle-empty.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TestResources\patient-empty.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="$(MSBuildThisFileDirectory)TestResources\bundle-substitute.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

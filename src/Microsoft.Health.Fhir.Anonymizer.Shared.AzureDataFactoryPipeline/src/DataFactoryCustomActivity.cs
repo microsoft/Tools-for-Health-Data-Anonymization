@@ -192,7 +192,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.DataFactoryTool
         private async Task AnonymizeSingleBlobInNdJsonFormatAsync(BlobClient inputBlobClient, BlockBlobClient outputBlobClient, string blobName, string inputFolderPrefix)
         {
             var processedCount = 0;
-            var processedErrorCount = 0;
+            int skippedCount = 0;
             var consumedCount = 0;
 
             using FhirBlobDataStream inputStream = new FhirBlobDataStream(inputBlobClient);
@@ -220,10 +220,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.DataFactoryTool
             progress.ProgressChanged += (obj, args) =>
             {
                 Interlocked.Add(ref processedCount, args.ProcessCompleted);
-                Interlocked.Add(ref processedErrorCount, args.ProcessFailed);
+                Interlocked.Add(ref skippedCount, args.ProcessSkipped);
                 Interlocked.Add(ref consumedCount, args.ConsumeCompleted);
 
-                Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {processedCount} Completed. {processedErrorCount} Failed. {consumedCount} consume completed.");
+                Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {processedCount} Completed. {skippedCount} Skipped. {consumedCount} consume completed.");
             };
 
             await executor.ExecuteAsync(CancellationToken.None, false, progress).ConfigureAwait(false);
