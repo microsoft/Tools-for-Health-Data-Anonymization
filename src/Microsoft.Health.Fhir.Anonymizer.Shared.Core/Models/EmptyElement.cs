@@ -15,7 +15,7 @@ namespace Fhir.Anonymizer.Shared.Core.Models
         {
             InstanceType = type;
         }
-        private static Meta _meta = new Meta() { Security = new List<Coding>() { SecurityLabels.SKIPPED } };
+        private static Meta _meta = new Meta() { Security = new List<Coding>() { SecurityLabels.REDACT } };
 
         private static IStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
 

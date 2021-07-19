@@ -1,7 +1,7 @@
-﻿using Fhir.Anonymizer.Shared.Core.AnonymizerConfigurations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Fhir.Anonymizer.Shared.Core.AnonymizerConfigurations;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
 {

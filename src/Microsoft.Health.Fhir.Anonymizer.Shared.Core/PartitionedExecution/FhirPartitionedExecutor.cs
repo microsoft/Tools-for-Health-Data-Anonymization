@@ -139,7 +139,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             {
                 return EmptyElement.IsEmptyElement(result as ITypedElement);
             }
-            else if( result is EmptyElement)
+            else if (result is EmptyElement)
             {
                 return true;
             }
