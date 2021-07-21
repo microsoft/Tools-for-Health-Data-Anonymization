@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fhir.Anonymizer.Shared.Core.AnonymizerConfigurations
+﻿namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public enum ProcessingErrorsOption
     {
         Raise, // Invalid processing will raise an exception.
-        Skip,  // Invalid processing will return null.
+        Skip,  // Invalid processing will return empty element.
         // Ignore Invalid processing will return input.
     }
 }

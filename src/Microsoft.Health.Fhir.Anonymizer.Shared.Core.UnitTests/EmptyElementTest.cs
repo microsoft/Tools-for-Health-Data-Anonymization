@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Fhir.Anonymizer.Shared.Core.Models;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Xunit;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
@@ -27,6 +27,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
 
         public static IEnumerable<object[]> NonEmptyElementContent()
         {
+            yield return new object[] { null };
             yield return new object[] { "0" };
             yield return new object[] { "empty" };
             yield return new object[] { "{\"resourceType\":\"Patient\"}" };
@@ -39,6 +40,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
             var json = File.ReadAllText(Path.Join("TestResources", file));
             var element = _parser.Parse<Resource>(json).ToTypedElement();
             Assert.True(EmptyElement.IsEmptyElement(element));
+            Assert.True(EmptyElement.IsEmptyElement((object)element));
         }
 
         [Theory]
@@ -47,6 +49,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
         {
             var json = File.ReadAllText(Path.Join("TestResources", file));
             Assert.True(EmptyElement.IsEmptyElement(json));
+            Assert.True(EmptyElement.IsEmptyElement((object)json));
         }
 
         [Theory]
@@ -55,6 +58,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
         {
             var json = File.ReadAllText(Path.Join("TestResources", file));
             Assert.False(EmptyElement.IsEmptyElement(json));
+            Assert.False(EmptyElement.IsEmptyElement((object)json));
         }
 
         [Theory]
@@ -64,6 +68,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
             var json = File.ReadAllText(Path.Join("TestResources", file));
             var element = _parser.Parse<Resource>(json).ToTypedElement();
             Assert.False(EmptyElement.IsEmptyElement(json));
+            Assert.False(EmptyElement.IsEmptyElement((object)json));
         }
 
         [Theory]
@@ -71,6 +76,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
         public void GivenNonEmptyElemetContent_WhenCheckIFEmptyElement_ResultShouldBeFalse(string content)
         {
             Assert.False(EmptyElement.IsEmptyElement(content));
+            Assert.False(EmptyElement.IsEmptyElement((object)content));
         }
     }
 }

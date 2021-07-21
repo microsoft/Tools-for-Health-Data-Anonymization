@@ -14,7 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\ProcessingErrorsOption.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerProcessingException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerRuleNotApplicableException.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerConfigurationErrorsException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerConfigurationException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationValidator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerRule.cs" />

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using EnsureThat;
-using Fhir.Anonymizer.Shared.Core.AnonymizerConfigurations;
-using Fhir.Anonymizer.Shared.Core.Models;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
@@ -12,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Microsoft.Health.Fhir.Anonymizer.Core.Validation;
 
@@ -75,10 +74,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
                 ElementNode resourceNode = ElementNode.FromElement(element);
                 return resourceNode.Anonymize(_rules, _processors);
             }
-            catch (AnonymizerConfigurationException)
-            {
-                throw;
-            }
             catch (AnonymizerProcessingException)
             {
                 if(_configurationManager.Configuration.processingErrors == ProcessingErrorsOption.Skip)
@@ -96,7 +91,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             EnsureArg.IsNotNull(resource, nameof(resource));
 
             ValidateInput(settings, resource);
-            var anonymizedResource = ElementNode.FromElement(AnonymizeElement(resource.ToTypedElement())).ToPoco<Resource>();
+            var anonymizedResource = AnonymizeElement(resource.ToTypedElement()).ToPoco<Resource>();
             ValidateOutput(settings, anonymizedResource);
            
             return anonymizedResource;

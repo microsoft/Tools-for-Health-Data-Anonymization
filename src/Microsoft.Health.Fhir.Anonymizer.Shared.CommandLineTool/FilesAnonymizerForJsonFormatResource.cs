@@ -72,7 +72,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
                 Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {skippedCount} Process skipped.");
             };
 
-            await executor.ExecuteAsync(cancellationToken: CancellationToken.None, false, progress).ConfigureAwait(false);
+            await executor.ExecuteAsync(cancellationToken: CancellationToken.None, progress).ConfigureAwait(false);
         }
 
         public async Task<string> FileAnonymize(string fileName)

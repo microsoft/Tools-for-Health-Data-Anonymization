@@ -1,7 +1,4 @@
 ﻿using System.IO;
-using Fhir.Anonymizer.Shared.Core.Models;
-using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Serialization;
 using Hl7.FhirPath;
 using Microsoft.Health.Fhir.Anonymizer.Core;
 using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;

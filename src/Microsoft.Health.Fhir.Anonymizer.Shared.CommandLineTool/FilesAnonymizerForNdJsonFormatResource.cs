@@ -107,7 +107,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
                         Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {skippedCount} Process skipped. {consumeCompletedCount} Consume completed.");
                     };
 
-                    await executor.ExecuteAsync(CancellationToken.None, true, progress).ConfigureAwait(false);
+                    await executor.ExecuteAsync(CancellationToken.None, progress).ConfigureAwait(false);
                 }
 
                 // Rename file name after success process

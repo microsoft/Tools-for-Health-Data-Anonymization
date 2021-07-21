@@ -14,7 +14,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
         public JObject Cases { get; set; }
         public GeneralizationOtherValuesOperation OtherValues { get; set; }
 
-        public static FhirPathCompiler compiler = new FhirPathCompiler();
+        private static FhirPathCompiler _compiler = new FhirPathCompiler();
 
         public static GeneralizeSetting CreateFromRuleSettings(Dictionary<string, object> ruleSettings)
         {
@@ -84,8 +84,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
             {
                 try
                 {
-                    compiler.Compile(eachCase.Key.ToString());
-                    compiler.Compile(eachCase.Value.ToString());
+                    _compiler.Compile(eachCase.Key.ToString());
+                    _compiler.Compile(eachCase.Value.ToString());
                 }
                 catch (Exception ex)
                 {

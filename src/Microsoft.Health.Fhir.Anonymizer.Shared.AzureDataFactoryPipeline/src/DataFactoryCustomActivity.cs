@@ -226,7 +226,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.DataFactoryTool
                 Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {processedCount} Completed. {skippedCount} Skipped. {consumedCount} consume completed.");
             };
 
-            await executor.ExecuteAsync(CancellationToken.None, false, progress).ConfigureAwait(false);
+            await executor.ExecuteAsync(CancellationToken.None, progress).ConfigureAwait(false);
         }
 
         private string GetBlobPrefixFromFolderPath(string folderPath)

@@ -7,14 +7,29 @@ using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fhir.Anonymizer.Shared.Core.Models
+namespace Microsoft.Health.Fhir.Anonymizer.Core.Models
 {
+    /// <summary>
+    /// Empty element format example:
+    /// {
+    ///     "resourceType": "Patient",
+    ///     "meta": {
+    ///            "security": [
+    ///                  {
+    ///            "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+    ///            "code": "REDACTED",
+    ///            "display": "redacted"
+    ///        }
+    ///    ]
+    ///}
+    /// </summary>
     public class EmptyElement: ITypedElement
     {
-        public EmptyElement(string type)
+        public EmptyElement(string instanceType)
         {
-            InstanceType = type;
+            InstanceType = instanceType;
         }
+
         private static Meta _meta = new Meta() { Security = new List<Coding>() { SecurityLabels.REDACT } };
 
         private static IStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
@@ -22,6 +37,7 @@ namespace Fhir.Anonymizer.Shared.Core.Models
         private static FhirJsonParser _parser = new FhirJsonParser();
 
         protected List<ITypedElement> ChildList = new List<ITypedElement>() { _meta.ToTypedElement("meta") };
+        
         public string Name => "empty";
 
         public string InstanceType { get; set; }
@@ -37,11 +53,12 @@ namespace Fhir.Anonymizer.Shared.Core.Models
 
         public static bool IsEmptyElement(ITypedElement element)
         {
-            if(element.Children().Count() ==1 && element.Children("meta").Count() == 1)
+            if(element is EmptyElement)
             {
                 return true;
             }
-            return false;
+
+            return element.Children().Count() == 1 && element.Children("meta").Count() == 1;
         }
 
         public static bool IsEmptyElement(string elementJson)
@@ -55,6 +72,20 @@ namespace Fhir.Anonymizer.Shared.Core.Models
             {
                 return false;
             }
+        }
+
+        public static bool IsEmptyElement(object element)
+        {
+            if (element is string)
+            {
+                return IsEmptyElement(element as string);
+            }
+            else if (element is ITypedElement)
+            {
+                return IsEmptyElement(element as ITypedElement);
+            }
+
+            return false;
         }
     }
 }
