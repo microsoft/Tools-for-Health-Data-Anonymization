@@ -2,7 +2,7 @@
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Exceptions
 {
-    public class AnonymizerRuleNotApplicableException : AnonymizerConfigurationErrorsException
+    public class AnonymizerRuleNotApplicableException : AnonymizerConfigurationException
     {
         public AnonymizerRuleNotApplicableException(string message) : base(message)
         {

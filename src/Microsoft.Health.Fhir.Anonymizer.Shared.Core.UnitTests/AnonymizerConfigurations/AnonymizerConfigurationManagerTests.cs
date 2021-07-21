@@ -32,7 +32,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
         [MemberData(nameof(GetInvalidConfigs))]
         public void GivenAnInvalidConfig_WhenCreateAnonymizerConfigurationManager_ExceptionShouldBeThrown(string configFilePath)
         {
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath));
+            Assert.Throws<AnonymizerConfigurationException>(() => AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath));
         }
 
         [Theory]

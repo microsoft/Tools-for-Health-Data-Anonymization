@@ -34,7 +34,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors.Settings
         [MemberData(nameof(GetInvalidSubstituteFhirRuleConfigs))]
         public void GivenAInvalidSubstituteSetting_WhenValidate_ExceptionShouldBeThrown(Dictionary<string, object> config)
         {
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => SubstituteSetting.ValidateRuleSettings(config));
+            Assert.Throws<AnonymizerConfigurationException>(() => SubstituteSetting.ValidateRuleSettings(config));
         }
     }
 }

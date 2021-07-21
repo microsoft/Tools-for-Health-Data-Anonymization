@@ -43,14 +43,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors.Settings
         [MemberData(nameof(GetInvalidGeneralizeFhirRuleConfigs))]
         public void GivenAInvalidGeneralizeSetting_WhenValidate_ExceptionShouldBeThrown(Dictionary<string, object> config)
         {
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => GeneralizeSetting.ValidateRuleSettings(config));
+            Assert.Throws<AnonymizerConfigurationException>(() => GeneralizeSetting.ValidateRuleSettings(config));
         }
 
         [Theory]
         [MemberData(nameof(GetInvalidGeneralizeFhirRuleConfigs))]
         public void GivenAInvalidGeneralizeSetting_WhenCreate_ExceptionShouldBeThrown(Dictionary<string, object> config)
         {
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => GeneralizeSetting.ValidateRuleSettings(config));
+            Assert.Throws<AnonymizerConfigurationException>(() => GeneralizeSetting.ValidateRuleSettings(config));
         }
     }
 }

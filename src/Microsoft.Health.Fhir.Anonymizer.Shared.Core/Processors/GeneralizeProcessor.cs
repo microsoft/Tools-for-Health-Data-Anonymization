@@ -44,7 +44,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 }
                 catch (Exception ex)
                 {
-                    throw new AnonymizerProcessFailedException($"Generalize failed when processing {eachCase}.", ex);
+                    throw new AnonymizerProcessingException($"Generalize failed when processing {eachCase}.", ex);
                 }
             }
 

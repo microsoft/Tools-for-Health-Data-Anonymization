@@ -36,7 +36,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-raise-processing-error.json"));
             string testContent = File.ReadAllText(CollectionResourceTestsFile("contained-basic.json"));
-            Assert.Throws<AnonymizerProcessFailedException>(() => engine.AnonymizeJson(testContent));
+            Assert.Throws<AnonymizerProcessingException>(() => engine.AnonymizeJson(testContent));
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-raise-processing-error.json"));
             string testContent = File.ReadAllText(CollectionResourceTestsFile("bundle-basic.json"));
-            Assert.Throws<AnonymizerProcessFailedException>(() => engine.AnonymizeJson(testContent));
+            Assert.Throws<AnonymizerProcessingException>(() => engine.AnonymizeJson(testContent));
         }
         [Fact]
         public void GivenABundleResourceWithContainedInside_WhenAnonymizing_ThenContainedResourceShouldBeAnonymized()

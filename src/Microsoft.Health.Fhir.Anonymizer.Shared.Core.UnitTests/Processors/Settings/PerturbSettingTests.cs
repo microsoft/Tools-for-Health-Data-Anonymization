@@ -41,7 +41,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors.Settings
         [MemberData(nameof(GetInvalidPerturbFhirRuleConfigs))]
         public void GivenAInvalidPerturbSetting_WhenValidate_ExceptionShouldBeThrown(Dictionary<string, object> config)
         {
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => PerturbSetting.ValidateRuleSettings(config));
+            Assert.Throws<AnonymizerConfigurationException>(() => PerturbSetting.ValidateRuleSettings(config));
         }
     }
 }

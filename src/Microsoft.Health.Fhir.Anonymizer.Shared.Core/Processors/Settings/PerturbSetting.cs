@@ -48,12 +48,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
         {
             if (ruleSettings == null)
             {
-                throw new AnonymizerConfigurationErrorsException($"Perturb rule should not be null.");
+                throw new AnonymizerConfigurationException($"Perturb rule should not be null.");
             }
 
             if (!ruleSettings.ContainsKey(Constants.PathKey))
             {
-                throw new AnonymizerConfigurationErrorsException("Missing path in FHIR path rule config.");
+                throw new AnonymizerConfigurationException("Missing path in FHIR path rule config.");
             }
 
             if (ruleSettings.ContainsKey(RuleKeys.RoundTo))
@@ -68,7 +68,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
                 }
                 catch
                 {
-                    throw new AnonymizerConfigurationErrorsException($"RoundTo value is invalid at {ruleSettings[Constants.PathKey]}.");
+                    throw new AnonymizerConfigurationException($"RoundTo value is invalid at {ruleSettings[Constants.PathKey]}.");
                 }
             }
 
@@ -84,19 +84,19 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
                 }
                 catch
                 {
-                    throw new AnonymizerConfigurationErrorsException($"Span value is invalid at {ruleSettings[Constants.PathKey]}.");
+                    throw new AnonymizerConfigurationException($"Span value is invalid at {ruleSettings[Constants.PathKey]}.");
                 }
             }
             else
             {
-                throw new AnonymizerConfigurationErrorsException($"Span value is required in perturb rule at {ruleSettings[Constants.PathKey]}.");
+                throw new AnonymizerConfigurationException($"Span value is required in perturb rule at {ruleSettings[Constants.PathKey]}.");
             }
 
             var supportedRangeTypes = Enum.GetNames(typeof(PerturbRangeType)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
             if (ruleSettings.ContainsKey(RuleKeys.RangeType)
                 && !supportedRangeTypes.Contains(ruleSettings[RuleKeys.RangeType]?.ToString()))
             {
-                throw new AnonymizerConfigurationErrorsException($"RangeType value is invalid at {ruleSettings[Constants.PathKey]}.");
+                throw new AnonymizerConfigurationException($"RangeType value is invalid at {ruleSettings[Constants.PathKey]}.");
             }
         }
     }

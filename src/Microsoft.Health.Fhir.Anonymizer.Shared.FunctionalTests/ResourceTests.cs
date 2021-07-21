@@ -101,7 +101,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-raise-processing-error.json"));
             string testContent = File.ReadAllText(ResourceTestsFile("patient-basic.json"));
-            Assert.Throws<AnonymizerProcessFailedException>(() => engine.AnonymizeJson(testContent));
+            Assert.Throws<AnonymizerProcessingException>(() => engine.AnonymizeJson(testContent));
         }
 
         [Fact]
@@ -109,7 +109,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-without-processing-error.json"));
             string testContent = File.ReadAllText(ResourceTestsFile("patient-basic.json"));
-            Assert.Throws<AnonymizerProcessFailedException>(() => engine.AnonymizeJson(testContent));
+            Assert.Throws<AnonymizerProcessingException>(() => engine.AnonymizeJson(testContent));
         }
         private string ResourceTestsFile(string fileName)
         {

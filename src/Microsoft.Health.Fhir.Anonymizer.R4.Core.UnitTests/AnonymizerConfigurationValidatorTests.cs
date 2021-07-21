@@ -38,7 +38,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
         {
             var content = File.ReadAllText(configFilePath);
             var _config = JsonConvert.DeserializeObject<AnonymizerConfiguration>(content);
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => _validator.Validate(_config));
+            Assert.Throws<AnonymizerConfigurationException>(() => _validator.Validate(_config));
         }
 
         [Theory]

@@ -40,7 +40,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             }
             catch (JsonException innerException)
             {
-                throw new AnonymizerConfigurationErrorsException($"Failed to parse configuration file", innerException);
+                throw new AnonymizerConfigurationException($"Failed to parse configuration file", innerException);
             }
         }
 
@@ -54,7 +54,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             }
             catch (IOException innerException)
             {
-                throw new AnonymizerConfigurationErrorsException($"Failed to read configuration file {configFilePath}", innerException);
+                throw new AnonymizerConfigurationException($"Failed to read configuration file {configFilePath}", innerException);
             }
         }
 
