@@ -14,22 +14,22 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
         [Fact]
         public void GivenAnElementNode_WhenRemoveNullChildren_NullChildrenShouldBeRemoved()
         {
-            var node = GetSampleNode();
-            Assert.Equal(2, node.Children().Count());
+            var (root, child1, child2) = GetSampleNodes();
+            Assert.Equal(2, root.Children().Count());
 
-            node.RemoveNullChildren();
-            Assert.Equal(2, node.Children().Count());
+            root.RemoveNullChildren();
+            Assert.Equal(2, root.Children().Count());
 
-            node.Children("child1").CastElementNodes().First().Value = null;
-            node.RemoveNullChildren();
-            Assert.Single(node.Children());
+            child1.Value = null;
+            root.RemoveNullChildren();
+            Assert.Single(root.Children());
 
-            node.Children("child2").CastElementNodes().First().Value = null;
-            node.RemoveNullChildren();
-            Assert.Empty(node.Children());
+            child2.Value = null;
+            root.RemoveNullChildren();
+            Assert.Empty(root.Children());
         }
 
-        private ElementNode GetSampleNode()
+        private (ElementNode, ElementNode, ElementNode) GetSampleNodes()
         {
             var root = ElementNode.FromElement(new FhirString("root").ToTypedElement());
             var child1 = ElementNode.FromElement(new FhirString("child1").ToTypedElement());
@@ -40,7 +40,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
             root.Add(_provider, child1);
             root.Add(_provider, child2);
 
-            return root;
+            return (root, child1, child2);
         }
     }
 }

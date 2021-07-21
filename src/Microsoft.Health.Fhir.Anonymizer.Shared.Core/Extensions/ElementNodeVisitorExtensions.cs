@@ -1,4 +1,4 @@
-﻿using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+﻿using System.Linq;
 using Hl7.Fhir.ElementModel;
 using Microsoft.Health.Fhir.Anonymizer.Core.Visitors;
 
@@ -12,7 +12,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 
             if (shouldVisitChild)
             {
-                foreach (var child in node.Children().CastElementNodes())
+                // If an ElementNode is created by ElementNode.FromElement(), its children are of type ElementNode
+                // Cast them to ElementNode directly
+                // https://github.com/FirelyTeam/firely-net-common/blob/master/src/Hl7.Fhir.ElementModel/ElementNode.cs
+                foreach (var child in node.Children().Cast<ElementNode>())
                 {
                     child.Accept(visitor);
                 }

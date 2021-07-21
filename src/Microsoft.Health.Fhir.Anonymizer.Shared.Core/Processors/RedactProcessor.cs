@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Hl7.Fhir.ElementModel;
-using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
@@ -25,9 +24,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             RestrictedZipCodeTabulationAreas = restrictedZipCodeTabulationAreas;
         }
 
-        public static RedactProcessor Create(AnonymizerConfigurationManager configuratonManager)
+        public static RedactProcessor Create(AnonymizerConfigurationManager configurationManager)
         {
-            var parameters = configuratonManager.GetParameterConfiguration();
+            var parameters = configurationManager.GetParameterConfiguration();
             return new RedactProcessor(parameters.EnablePartialDatesForRedact, parameters.EnablePartialAgesForRedact,
                 parameters.EnablePartialZipCodesForRedact, parameters.RestrictedZipCodeTabulationAreas);
         }
@@ -43,25 +42,26 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             {
                 return DateTimeUtility.RedactDateNode(node, EnablePartialDatesForRedact);
             }
-            else if (node.IsDateTimeNode() || node.IsInstantNode())
+
+            if (node.IsDateTimeNode() || node.IsInstantNode())
             {
                 return DateTimeUtility.RedactDateTimeAndInstantNode(node, EnablePartialDatesForRedact);
             }
-            else if (node.IsAgeDecimalNode())
+
+            if (node.IsAgeDecimalNode())
             {
                 return DateTimeUtility.RedactAgeDecimalNode(node, EnablePartialAgesForRedact);
             }
-            else if (node.IsPostalCodeNode())
+
+            if (node.IsPostalCodeNode())
             {
                 return PostalCodeUtility.RedactPostalCode(node, EnablePartialZipCodesForRedact, RestrictedZipCodeTabulationAreas);
             }
-            else
-            {
-                node.Value = null;
-                ProcessResult result = new ProcessResult();
-                result.AddProcessRecord(AnonymizationOperations.Redact, node);
-                return result;
-            }
+
+            node.Value = null;
+            ProcessResult result = new ProcessResult();
+            result.AddProcessRecord(AnonymizationOperations.Redact, node);
+            return result;
         }
     }
 }

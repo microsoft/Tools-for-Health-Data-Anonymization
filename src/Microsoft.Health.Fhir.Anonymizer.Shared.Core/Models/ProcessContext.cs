@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Hl7.Fhir.ElementModel;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Models
 {
     public class ProcessContext
     {
-        public HashSet<ElementNode> VisitedNodes { get; set; }
+        // The location of visited nodes, e.g., Patient.name[0].use[0]
+        public HashSet<string> VisitedNodes { get; set; }
     }
 }

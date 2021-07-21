@@ -150,7 +150,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             PerturbProcessor processor = new PerturbProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<ElementNode>()
+                VisitedNodes = new HashSet<string>()
             };
             var settings = new Dictionary<string, object> { {"span", span}, {"roundTo", roundTo} };
 
@@ -169,7 +169,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             PerturbProcessor processor = new PerturbProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<ElementNode>()
+                VisitedNodes = new HashSet<string>()
             };
             var settings = new Dictionary<string, object> { { "span", span }, { "roundTo", roundTo }, { "rangeType", "proportional" } };
 
@@ -188,7 +188,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             PerturbProcessor processor = new PerturbProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<ElementNode>()
+                VisitedNodes = new HashSet<string>()
             };
             var settings = new Dictionary<string, object> { { "span", span }, { "roundTo", roundTo } };
 
@@ -207,7 +207,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             PerturbProcessor processor = new PerturbProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<ElementNode>()
+                VisitedNodes = new HashSet<string>()
             };
             var settings = new Dictionary<string, object> { { "span", span }, { "roundTo", roundTo }, { "rangeType", "proportional" } };
 
@@ -226,7 +226,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             PerturbProcessor processor = new PerturbProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<ElementNode>()
+                VisitedNodes = new HashSet<string>()
             };
             var settings = new Dictionary<string, object> { { "span", span }, { "roundTo", roundTo } };
 
@@ -245,7 +245,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             PerturbProcessor processor = new PerturbProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<ElementNode>()
+                VisitedNodes = new HashSet<string>()
             };
             var settings = new Dictionary<string, object> { { "span", span }, { "roundTo", roundTo }, { "rangeType", "proportional" } };
 

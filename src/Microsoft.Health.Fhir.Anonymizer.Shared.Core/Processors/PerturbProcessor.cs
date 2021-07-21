@@ -47,7 +47,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             }
             
             // Perturb will not happen if value node is empty or visited.
-            if (valueNode?.Value == null || context.VisitedNodes.Contains(valueNode))
+            if (valueNode?.Value == null || context.VisitedNodes.Contains(valueNode.Location))
             {
                 return result;
             }
@@ -55,12 +55,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             var perturbSetting = PerturbSetting.CreateFromRuleSettings(settings);
 
             AddNoise(valueNode, perturbSetting);
-            context.VisitedNodes.UnionWith(node.Descendants().CastElementNodes());
+            context.VisitedNodes.UnionWith(node.Descendants().Select(x => x.Location));
             result.AddProcessRecord(AnonymizationOperations.Perturb, node);
             return result;
         }
 
-        private void AddNoise(ElementNode node, PerturbSetting perturbSetting) 
+        private static void AddNoise(ElementNode node, PerturbSetting perturbSetting) 
         {
             if (s_integerValueTypeNames.Contains(node.InstanceType, StringComparer.InvariantCultureIgnoreCase))
             {
@@ -85,7 +85,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 perturbedValue = 0;
             }
             node.Value = perturbedValue;
-            return;
         }
     }
 }
