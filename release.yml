@@ -86,5 +86,5 @@ steps:
         tagSource: manual
         tag: v$(major).$(minor).$(patch)    
         assets: |
-          $(System.DefaultWorkingDirectory)/FhirConverterBuild/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.zip
-          $(System.DefaultWorkingDirectory)/FhirConverterBuild/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.zip
+          $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.zip
+          $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.zip
