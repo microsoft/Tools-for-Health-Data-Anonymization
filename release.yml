@@ -66,28 +66,28 @@ stages:
         artifactName: 'nuget'
         publishLocation: 'container'
 
-  - stage: Release
-    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'personal/sowu/refine-pipeline'))
-    jobs:
-    - job: publish
-      pool:
-          vmImage: 'windows-latest'
-      steps:
-      - checkout: none #skip checking out the default repository resource
-      - task: DownloadBuildArtifacts@0
-        displayName: 'Download Artifacts'
-        inputs:
-          artifactName: FhirAnonymizerBuild
-          downloadPath: $(System.DefaultWorkingDirectory)
+- stage: Release
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'personal/sowu/refine-pipeline'))
+  jobs:
+  - job: publish
+    pool:
+        vmImage: 'windows-latest'
+    steps:
+    - checkout: none #skip checking out the default repository resource
+    - task: DownloadBuildArtifacts@0
+      displayName: 'Download Artifacts'
+      inputs:
+        artifactName: FhirAnonymizerBuild
+        downloadPath: $(System.DefaultWorkingDirectory)
 
-      - task: GithubRelease@0 
-        displayName: 'Create GitHub Release'      
-        inputs:
-          gitHubConnection: githubpipeline
-          repositoryName: microsoft/FHIR-Tools-for-Anonymization
-          isDraft: true
-          tagSource: manual
-          tag: v$(major).$(minor).$(patch)    
-          assets: |
-            $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.zip
-            $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.zip
+    - task: GithubRelease@0 
+      displayName: 'Create GitHub Release'      
+      inputs:
+        gitHubConnection: githubpipeline
+        repositoryName: microsoft/FHIR-Tools-for-Anonymization
+        isDraft: true
+        tagSource: manual
+        tag: v$(major).$(minor).$(patch)    
+        assets: |
+          $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.zip
+          $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.zip
