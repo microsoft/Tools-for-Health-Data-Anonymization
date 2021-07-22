@@ -1,6 +1,3 @@
-pool:
-  vmImage: 'windows-latest'
-
 variables:
   solution: '**/*.sln'
   testProjects: "**/*Tests/*.csproj"
@@ -12,79 +9,85 @@ variables:
   buildnum: $[counter(format('{0}.{1}.{2}',variables['major'],variables['minor'], variables['patch']), 1)]
   version: $(major).$(minor).$(patch).$(buildnum)
 
-steps:
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet build'
-  inputs:
-    command: build
-    projects: '$(solution)'
-    arguments: '--configuration $(buildConfiguration)'
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test'
-  inputs:
-    command: test
-    projects: '$(testProjects)'
-    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
-    
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet publish'
-  inputs:
-    command: 'publish'
-    projects: '$(publishProject)'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-    publishWebProjects: false
-    zipAfterPublish: True
-      
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet pack nugets'
-  inputs:
-    command: pack
-    configuration: '$(buildConfiguration)'
-    packDirectory: '$(build.artifactStagingDirectory)/nupkgs'
-    versioningScheme: 'byEnvVar'
-    versionEnvVar: 'nuget_version'
-    nobuild: true
-    zipAfterPublish: true
-  env:
-    nuget_version: $(version)
-
-# Publish artifacts
-- task: PublishBuildArtifacts@1
-  displayName: 'publish binary artifacts'
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-    artifactName: 'FhirAnonymizerBuild'
-    
-- task: PublishBuildArtifacts@1
-  displayName: 'publish nuget artifacts'
-  inputs:
-    pathtoPublish: '$(build.artifactStagingDirectory)/nupkgs'
-    artifactName: 'nuget'
-    publishLocation: 'container'
-
-- stage: Release
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'personal/sowu/refine-pipeline'))
+stages:
+- stage: Build
+  pool:
+      vmImage: 'windows-latest'
   jobs:
-  - job: publish
-    pool:
-        vmImage: 'windows-latest'
+  - job: Build
     steps:
-    - checkout: none #skip checking out the default repository resource
-    - task: DownloadBuildArtifacts@0
-      displayName: 'Download Artifacts'
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
       inputs:
-        artifactName: FhirAnonymizerBuild
-        downloadPath: $(System.DefaultWorkingDirectory)
+        command: build
+        projects: '$(solution)'
+        arguments: '--configuration $(buildConfiguration)'
 
-    - task: GithubRelease@0 
-      displayName: 'Create GitHub Release'      
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet test'
       inputs:
-        gitHubConnection: githubpipeline
-        repositoryName: microsoft/FHIR-Tools-for-Anonymization
-        isDraft: true
-        tagSource: manual
-        tag: v$(major).$(minor).$(patch)    
-        assets: |
-          $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.zip
-          $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.zip
+        command: test
+        projects: '$(testProjects)'
+        arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+        
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet publish'
+      inputs:
+        command: 'publish'
+        projects: '$(publishProject)'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        publishWebProjects: false
+        zipAfterPublish: True
+          
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet pack nugets'
+      inputs:
+        command: pack
+        configuration: '$(buildConfiguration)'
+        packDirectory: '$(build.artifactStagingDirectory)/nupkgs'
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: 'nuget_version'
+        nobuild: true
+        zipAfterPublish: true
+      env:
+        nuget_version: $(version)
+
+    # Publish artifacts
+    - task: PublishBuildArtifacts@1
+      displayName: 'publish binary artifacts'
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+        artifactName: 'FhirAnonymizerBuild'
+        
+    - task: PublishBuildArtifacts@1
+      displayName: 'publish nuget artifacts'
+      inputs:
+        pathtoPublish: '$(build.artifactStagingDirectory)/nupkgs'
+        artifactName: 'nuget'
+        publishLocation: 'container'
+
+  - stage: Release
+    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'personal/sowu/refine-pipeline'))
+    jobs:
+    - job: publish
+      pool:
+          vmImage: 'windows-latest'
+      steps:
+      - checkout: none #skip checking out the default repository resource
+      - task: DownloadBuildArtifacts@0
+        displayName: 'Download Artifacts'
+        inputs:
+          artifactName: FhirAnonymizerBuild
+          downloadPath: $(System.DefaultWorkingDirectory)
+
+      - task: GithubRelease@0 
+        displayName: 'Create GitHub Release'      
+        inputs:
+          gitHubConnection: githubpipeline
+          repositoryName: microsoft/FHIR-Tools-for-Anonymization
+          isDraft: true
+          tagSource: manual
+          tag: v$(major).$(minor).$(patch)    
+          assets: |
+            $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.zip
+            $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.zip
