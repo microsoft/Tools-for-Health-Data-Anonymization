@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
@@ -21,12 +22,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
             }
             else if (!string.Equals(Constants.SupportedVersion, config.FhirVersion, StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new AnonymizerConfigurationErrorsException($"Configuration of fhirVersion {config.FhirVersion} is not supported. Expected fhirVersion: {Constants.SupportedVersion}");
+                throw new AnonymizerConfigurationException($"Configuration of fhirVersion {config.FhirVersion} is not supported. Expected fhirVersion: {Constants.SupportedVersion}");
             }
-            
+
             if (config.FhirPathRules == null)
             {
-                throw new AnonymizerConfigurationErrorsException("The configuration is invalid, please specify any fhirPathRules");
+                throw new AnonymizerConfigurationException("The configuration is invalid, please specify any fhirPathRules");
             }
 
             FhirPathCompiler compiler = new FhirPathCompiler();
@@ -35,7 +36,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
             {
                 if (!rule.ContainsKey(Constants.PathKey) || !rule.ContainsKey(Constants.MethodKey))
                 {
-                    throw new AnonymizerConfigurationErrorsException("Missing path or method in Fhir path rule config.");
+                    throw new AnonymizerConfigurationException("Missing path or method in Fhir path rule config.");
                 }
 
                 // Grammar check on FHIR path
@@ -45,14 +46,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
                 }
                 catch (Exception ex)
                 {
-                    throw new AnonymizerConfigurationErrorsException($"Invalid FHIR path {rule[Constants.PathKey]}", ex);
+                    throw new AnonymizerConfigurationException($"Invalid FHIR path {rule[Constants.PathKey]}", ex);
                 }
 
                 // Method validate
                 string method = rule[Constants.MethodKey].ToString();
                 if (!supportedMethods.Contains(method))
                 {
-                    throw new AnonymizerConfigurationErrorsException($"Anonymization method {method} not supported.");
+                    throw new AnonymizerConfigurationException($"Anonymization method {method} not supported.");
                 }
 
                 // Should provide replacement value for substitute rule
@@ -78,7 +79,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
                 var encryptKeySize = Encoding.UTF8.GetByteCount(config.ParameterConfiguration.EncryptKey) * 8;
                 if (!IsValidKeySize(encryptKeySize, aes.LegalKeySizes))
                 {
-                    throw new AnonymizerConfigurationErrorsException($"Invalid encrypt key size : {encryptKeySize} bits! Please provide key sizes of 128, 192 or 256 bits.");
+                    throw new AnonymizerConfigurationException($"Invalid encrypt key size : {encryptKeySize} bits! Please provide key sizes of 128, 192 or 256 bits.");
                 }
             }
         }

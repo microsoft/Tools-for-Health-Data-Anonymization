@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using EnsureThat;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
@@ -9,7 +8,7 @@ using Hl7.Fhir.Rest;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Specification;
 using Hl7.FhirPath.Sprache;
-using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 
@@ -41,7 +40,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 if (replacementNodeType == null)
                 {
                     // Shall never throws here
-                    throw new Exception($"Node type is invalid at path {node.GetFhirPath()}.");
+                    throw new AnonymizerProcessingException($"Node type is invalid at path {node.GetFhirPath()}.");
                 }
                 // Convert null object to empty object
                 var replaceWith = substituteSetting.ReplaceWith ?? "{}";

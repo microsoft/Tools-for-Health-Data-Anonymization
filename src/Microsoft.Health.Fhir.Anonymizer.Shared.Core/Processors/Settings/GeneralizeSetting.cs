@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EnsureThat;
 using Hl7.FhirPath;
-using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -14,20 +14,15 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
         public JObject Cases { get; set; }
         public GeneralizationOtherValuesOperation OtherValues { get; set; }
 
+        private static FhirPathCompiler _compiler = new FhirPathCompiler();
+
         public static GeneralizeSetting CreateFromRuleSettings(Dictionary<string, object> ruleSettings)
         {
             EnsureArg.IsNotNull(ruleSettings);
 
-            JObject cases;
             GeneralizationOtherValuesOperation otherValues;
-            try
-            {
-                cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());
-            }
-            catch (Exception ex)
-            {
-                throw new AnonymizerConfigurationErrorsException($"Invalid cases {RuleKeys.Cases}", ex);
-            }    
+
+            JObject cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());
 
             if (!Enum.TryParse(ruleSettings.GetValueOrDefault(RuleKeys.OtherValues)?.ToString(), true, out otherValues))
             {
@@ -43,49 +38,59 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
 
         public static void ValidateRuleSettings(Dictionary<string, object> ruleSettings)
         {
-            FhirPathCompiler compiler = new FhirPathCompiler();
             if (ruleSettings == null)
             {
-                throw new AnonymizerConfigurationErrorsException("Generalize rule should not be null.");
+                throw new AnonymizerConfigurationException("Generalize rule should not be null.");
             }
 
             if (!ruleSettings.ContainsKey(Constants.PathKey))
             {
-                throw new AnonymizerConfigurationErrorsException("Missing path in FHIR path rule config.");
+                throw new AnonymizerConfigurationException("Missing path in FHIR path rule config.");
             }
 
             if (!ruleSettings.ContainsKey(Constants.MethodKey))
             {
-                throw new AnonymizerConfigurationErrorsException("Missing method in FHIR path rule config.");
+                throw new AnonymizerConfigurationException("Missing method in FHIR path rule config.");
             }
 
             if (!ruleSettings.ContainsKey(RuleKeys.Cases))
             {
-                throw new AnonymizerConfigurationErrorsException("Missing cases in FHIR path rule config.");
+                throw new AnonymizerConfigurationException("Missing cases in FHIR path rule config.");
             }
 
-            try
-            {
-                JObject Cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());
-                foreach (var eachCase in Cases)
-                {
-                    compiler.Compile(eachCase.Key.ToString());
-                    compiler.Compile(eachCase.Value.ToString());
-                }
-            }
-            catch (JsonReaderException ex)
-            {
-                throw new AnonymizerConfigurationErrorsException($"Invalid Json format {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new AnonymizerConfigurationErrorsException($"Invalid cases expression {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
-            }
-           
+            ValidateCases(ruleSettings);
+
             var supportedOtherValuesOperations = Enum.GetNames(typeof(GeneralizationOtherValuesOperation)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
             if (ruleSettings.ContainsKey(RuleKeys.OtherValues) && !supportedOtherValuesOperations.Contains(ruleSettings[RuleKeys.OtherValues].ToString()))
             {
-                throw new AnonymizerConfigurationErrorsException($"OtherValues setting is invalid at {ruleSettings[RuleKeys.OtherValues]}.");
+                throw new AnonymizerConfigurationException($"OtherValues setting is invalid at {ruleSettings[RuleKeys.OtherValues]}.");
+            }
+        }
+
+        private static void ValidateCases(Dictionary<string, object> ruleSettings)
+        {
+            JObject cases;
+            try
+            {
+                cases = JObject.Parse(ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString());
+
+            }
+            catch (JsonReaderException ex)
+            {
+                throw new AnonymizerConfigurationException($"Invalid Json format {ruleSettings.GetValueOrDefault(RuleKeys.Cases)?.ToString()}", ex);
+            }
+
+            foreach (var eachCase in cases)
+            {
+                try
+                {
+                    _compiler.Compile(eachCase.Key.ToString());
+                    _compiler.Compile(eachCase.Value.ToString());
+                }
+                catch (Exception ex)
+                {
+                    throw new AnonymizerConfigurationException($"Invalid cases expression {eachCase}", ex);
+                }
             }
         }
     }

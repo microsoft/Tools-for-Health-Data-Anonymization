@@ -45,7 +45,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             {
                 valueNode = node.Children(Constants.ValueNodeName).CastElementNodes().FirstOrDefault();
             }
-            
+
             // Perturb will not happen if value node is empty or visited.
             if (valueNode?.Value == null || context.VisitedNodes.Contains(valueNode))
             {

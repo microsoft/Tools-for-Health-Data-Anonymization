@@ -2,6 +2,7 @@
 using System.IO;
 using Hl7.FhirPath;
 using Microsoft.Health.Fhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Xunit;
 
@@ -88,6 +89,28 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
             FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-substitute-multiple-2.json"), ResourceTestsFile("patient-substitute-multiple-2-target.json"));
         }
 
+        [Fact]
+        public void GivenAPatientResource_WhenAnonymizingWithProcessingError_IfSkip_EmptyResultWillBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-skip-processing-error.json"));
+            FunctionalTestUtility.VerifySingleJsonResourceFromFile(engine, ResourceTestsFile("patient-basic.json"), ResourceTestsFile("patient-empty.json"));
+        }
+
+        [Fact]
+        public void GivenAPatientResource_WhenAnonymizingWithProcessingError_IfRaise_ExceptionWillBeThrown()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-raise-processing-error.json"));
+            string testContent = File.ReadAllText(ResourceTestsFile("patient-basic.json"));
+            Assert.Throws<AnonymizerProcessingException>(() => engine.AnonymizeJson(testContent));
+        }
+
+        [Fact]
+        public void GivenAPatientResource_WhenAnonymizingWithProcessingError_IfParameterNotGiven_ExceptionWillBeThrown()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-without-processing-error.json"));
+            string testContent = File.ReadAllText(ResourceTestsFile("patient-basic.json"));
+            Assert.Throws<AnonymizerProcessingException>(() => engine.AnonymizeJson(testContent));
+        }
         private string ResourceTestsFile(string fileName)
         {
             return Path.Combine("TestResources", fileName);

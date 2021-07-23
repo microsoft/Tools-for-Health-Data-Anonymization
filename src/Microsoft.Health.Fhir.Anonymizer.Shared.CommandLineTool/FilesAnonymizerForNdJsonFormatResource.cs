@@ -51,7 +51,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
 
                 if (_options.SkipExistedFile && File.Exists(bulkResourceOutputFileName))
                 {
-                    Console.WriteLine($"Skip processing on file {bulkResourceOutputFileName}.");
+                    Console.WriteLine($"Skip processing on file {bulkResourceOutputFileName} since it already exists in destination.");
                     continue;
                 }
                 else
@@ -64,7 +64,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
                 }
 
                 int completedCount = 0;
-                int failedCount = 0;
+                int skippedCount = 0;
                 int consumeCompletedCount = 0;
                 using (FileStream inputStream = new FileStream(bulkResourceFileName, FileMode.Open))
                 using (FileStream outputStream = new FileStream(tempBulkResourceOutputFileName, FileMode.Create))
@@ -101,13 +101,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
                     progress.ProgressChanged += (obj, args) =>
                     {
                         Interlocked.Add(ref completedCount, args.ProcessCompleted);
-                        Interlocked.Add(ref failedCount, args.ProcessFailed);
+                        Interlocked.Add(ref skippedCount, args.ProcessSkipped);
                         Interlocked.Add(ref consumeCompletedCount, args.ConsumeCompleted);
 
-                        Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {failedCount} Process failed. {consumeCompletedCount} Consume completed.");
+                        Console.WriteLine($"[{stopWatch.Elapsed.ToString()}][tid:{args.CurrentThreadId}]: {completedCount} Process completed. {skippedCount} Process skipped. {consumeCompletedCount} Consume completed.");
                     };
 
-                    await executor.ExecuteAsync(CancellationToken.None, true, progress).ConfigureAwait(false);
+                    await executor.ExecuteAsync(CancellationToken.None, progress).ConfigureAwait(false);
                 }
 
                 // Rename file name after success process

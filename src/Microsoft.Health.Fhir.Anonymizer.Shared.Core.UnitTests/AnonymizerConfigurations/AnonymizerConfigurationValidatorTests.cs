@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -34,7 +35,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
         {
             var content = File.ReadAllText(configFilePath);
             var _config = JsonConvert.DeserializeObject<AnonymizerConfiguration>(content);
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => _validator.Validate(_config));
+            Assert.Throws<AnonymizerConfigurationException>(() => _validator.Validate(_config));
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using EnsureThat;
-using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
 {
@@ -23,17 +23,17 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings
         {
             if (ruleSettings == null)
             {
-                throw new AnonymizerConfigurationErrorsException("Substitute rule should not be null.");
+                throw new AnonymizerConfigurationException("Substitute rule should not be null.");
             }
 
             if (!ruleSettings.ContainsKey(Constants.PathKey))
             {
-                throw new AnonymizerConfigurationErrorsException("Missing path in FHIR path rule config.");
+                throw new AnonymizerConfigurationException("Missing path in FHIR path rule config.");
             }
 
             if (!ruleSettings.ContainsKey(RuleKeys.ReplaceWith))
             {
-                throw new AnonymizerConfigurationErrorsException($"Missing replaceWith value in substitution rule at {ruleSettings[Constants.PathKey]}.");
+                throw new AnonymizerConfigurationException($"Missing replaceWith value in substitution rule at {ruleSettings[Constants.PathKey]}.");
             }
 
             return;

@@ -120,7 +120,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
                 testConsumer,
                 invalidOperationFunc);
 
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await executor.ExecuteAsync(CancellationToken.None, true));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await executor.ExecuteAsync(CancellationToken.None));
         }
 
         [Fact]
