@@ -67,7 +67,7 @@ stages:
         publishLocation: 'container'
 
 - stage: Release
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'personal/sowu/refine-pipeline'))
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/personal/sowu/refine-pipeline'))
   jobs:
   - job: publish
     pool:
