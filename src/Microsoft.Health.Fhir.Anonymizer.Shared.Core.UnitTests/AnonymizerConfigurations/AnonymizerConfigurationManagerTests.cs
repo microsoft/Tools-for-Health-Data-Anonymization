@@ -2,6 +2,7 @@
 using System.Linq;
 using Hl7.FhirPath;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Xunit;
 
@@ -30,7 +31,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
         [MemberData(nameof(GetInvalidConfigs))]
         public void GivenAnInvalidConfig_WhenCreateAnonymizerConfigurationManager_ExceptionShouldBeThrown(string configFilePath)
         {
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath));
+            Assert.Throws<AnonymizerConfigurationException>(() => AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath));
         }
 
         [Theory]
@@ -49,6 +50,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
 
             var parameters = configurationManager.GetParameterConfiguration();
             Assert.True(!string.IsNullOrEmpty(parameters.DateShiftKey));
+            Assert.Equal(ProcessingErrorsOption.Raise, configurationManager.Configuration.processingErrors);
         }
 
         [Theory]
@@ -62,6 +64,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
             configurationManager.SetDateShiftKeyPrefix(dateShiftKeyPrefix);
 
             Assert.Equal(dateShiftKeyPrefix, configurationManager.GetParameterConfiguration().DateShiftKeyPrefix);
+        }
+
+        [Fact]
+        public void GivenAConfigWithoutProcessingErrorsField_WhenCreateAnonymizerConfigurationManager_TheFieldShouldBeDefaultAsRaise()
+        {
+            var configFilePath = "./TestConfigurations/configuration-without-processing-error.json";
+            var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
+            Assert.Equal(ProcessingErrorsOption.Raise, configurationManager.Configuration.processingErrors);
         }
     }
 }

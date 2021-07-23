@@ -1,6 +1,5 @@
 ﻿{
   "fhirVersion": "",
-  "processingErrors": "raise",
   "fhirPathRules": [
     {
       "path": "Patient.nodesByType('HumanName')",

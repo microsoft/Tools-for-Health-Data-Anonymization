@@ -1,5 +1,6 @@
 ﻿{
   "fhirVersion": "Stu3",
+  "processingErrors": "raise",
   "fhirPathRules": [
     {"path": "nodesByType('Extension')", "method": "redact"},
     

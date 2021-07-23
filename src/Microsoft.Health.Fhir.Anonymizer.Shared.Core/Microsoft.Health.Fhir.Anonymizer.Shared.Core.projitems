@@ -11,7 +11,10 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizationFhirPathRule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfiguration.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationErrorsException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\ProcessingErrorsOption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerProcessingException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerRuleNotApplicableException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerConfigurationException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationValidator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerRule.cs" />
@@ -29,6 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeOperationExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeVisitorExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\FhirPathSymbolExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\EmptyElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ProcessResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ProcessContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SecurityLabels.cs" />

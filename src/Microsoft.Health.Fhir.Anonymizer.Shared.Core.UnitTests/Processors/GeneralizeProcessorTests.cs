@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
-using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Xunit;
@@ -129,7 +129,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { new FhirDateTime("1990-01-01"), "1990-01" };
         }
 
-        public static IEnumerable<object[]> GetInvalidCasesExpressions()
+        public static IEnumerable<object[]> GetRuntimeInvalidCasesExpressions()
         {
             yield return new object[] { new Integer(5), "{\"$this>='0' and $this<'20'\":\"20\"}" }; 
             yield return new object[] { new FhirDateTime("2015-01-01T00:00:00Z"), "{\"$this > @2015-1-1\":\"@2015-01-01\"}" };
@@ -217,6 +217,22 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             return new Dictionary<string, object> { { "cases", cases }, { "otherValues", otherValues } };
         }
 
+        public static IEnumerable<object[]> GetComplexNodes()
+        {
+            yield return new object[]
+            {
+                new Address { State = "DC" }
+            };
+            yield return new object[]
+            {
+                new HumanName { Use = HumanName.NameUse.Official, Family = "Green", Given = new List<string> { "Chris", "Jason" }  },
+            };
+            yield return new object[]
+            {
+                new ContactPoint { Use = ContactPoint.ContactPointUse.Home, System = ContactPoint.ContactPointSystem.Email, Value = "test@example.com", Period = new Period { Start = "2018-01-01", End = "2019-12-30" } } ,            
+            };
+        }
+        
         [Theory]
         [MemberData(nameof(GetEmptyNodesToGeneralize))]
         public void GivenAnEmptyNode_WhenGeneralized_EmptyNodeShouldBeReturned(Base data, object target, string otherValues = "redact")
@@ -435,8 +451,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
         }
 
         [Theory]
-        [MemberData(nameof(GetInvalidCasesExpressions))]
-        public void GivenInvalidCasesExpressions_WhenGeneralized_ExceptionShouldBeThrown(Base data, string cases)
+        [MemberData(nameof(GetRuntimeInvalidCasesExpressions))]
+        public void GivenRuntimeInvalidCasesExpressions_WhenGeneralized_ExceptionShouldBeThrown(Base data, string cases)
         {
             var node = ElementNode.FromElement(data.ToTypedElement());
 
@@ -447,7 +463,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             };
             var settings = new Dictionary<string, object> { { "cases", cases } };
 
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => processor.Process(node, context, settings));
+            Assert.Throws<AnonymizerProcessingException>(() => processor.Process(node, context, settings));
         }
 
         [Theory]
@@ -466,6 +482,20 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             var processResult = processor.Process(node, context, settings);
             Assert.True(processResult.IsGeneralized);
             Assert.Equal(target, Convert.ToInt32(node.Value));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetComplexNodes))]
+        public void GivenAComplexDatatypeNode_WhenGeneralize_ExceptionWillBeThrown(Base data)
+        {
+            GeneralizeProcessor processor = new GeneralizeProcessor();
+            var node = ElementNode.FromElement(data.ToTypedElement());
+            var settings = new Dictionary<string, object> { { "cases", "" } };
+            var context = new ProcessContext
+            {
+                VisitedNodes = new HashSet<ElementNode>()
+            };
+            Assert.Throws<AnonymizerRuleNotApplicableException>(() => processor.Process(node, context, settings));
         }
     }
 }
