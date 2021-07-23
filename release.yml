@@ -1,3 +1,9 @@
+
+trigger:
+- refs/heads/master
+- refs/heads/dev
+pr: ['dev']
+
 variables:
   solution: '**/*.sln'
   testProjects: "**/*Tests/*.csproj"
@@ -67,7 +73,7 @@ stages:
         publishLocation: 'container'
 
 - stage: Release
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/release'))
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
   jobs:
   - job: publish
     pool:
