@@ -83,7 +83,7 @@ stages:
     - task: GithubRelease@0 
       displayName: 'Create GitHub Release'      
       inputs:
-        gitHubConnection: githubpipeline
+        gitHubConnection: githubproject
         repositoryName: microsoft/FHIR-Tools-for-Anonymization
         isDraft: true
         tagSource: manual
