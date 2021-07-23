@@ -493,7 +493,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             var settings = new Dictionary<string, object> { { "cases", "" } };
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<ElementNode>()
+                VisitedNodes = new HashSet<string>()
             };
             Assert.Throws<AnonymizerRuleNotApplicableException>(() => processor.Process(node, context, settings));
         }
