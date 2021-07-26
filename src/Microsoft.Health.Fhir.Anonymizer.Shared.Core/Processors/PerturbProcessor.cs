@@ -47,7 +47,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             }
 
             // Perturb will not happen if value node is empty or visited.
-            if (valueNode?.Value == null || context.VisitedNodes.Contains(valueNode.Location))
+            if (valueNode?.Value == null || context.VisitedNodes.Contains(valueNode))
             {
                 return result;
             }
@@ -55,7 +55,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             var perturbSetting = PerturbSetting.CreateFromRuleSettings(settings);
 
             AddNoise(valueNode, perturbSetting);
-            context.VisitedNodes.UnionWith(node.Descendants().Select(x => x.Location));
+            context.VisitedNodes.UnionWith(node.Descendants());
             result.AddProcessRecord(AnonymizationOperations.Perturb, node);
             return result;
         }

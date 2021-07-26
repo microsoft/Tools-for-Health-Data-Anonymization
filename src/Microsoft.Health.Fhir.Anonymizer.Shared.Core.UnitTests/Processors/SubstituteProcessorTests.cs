@@ -5,6 +5,7 @@ using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Hl7.FhirPath;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Newtonsoft.Json;
@@ -105,7 +106,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             SubstituteProcessor processor = new SubstituteProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
 
@@ -124,7 +125,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             var node = ElementNode.FromElement(data.ToTypedElement());
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
 
@@ -143,7 +144,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             var node = ElementNode.FromElement(data.ToTypedElement());
             var context = new ProcessContext
             {
-                VisitedNodes = node.Select(processedNodePath).Select(x => x.Location).ToHashSet()
+                VisitedNodes = new HashSet<ITypedElement>(node.Select(processedNodePath).CastElementNodes())
             }; 
             Assert.NotEmpty(context.VisitedNodes);
             var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
@@ -170,7 +171,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             var node = ElementNode.FromElement(data.ToTypedElement());
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
 

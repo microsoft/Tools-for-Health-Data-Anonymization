@@ -59,7 +59,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             // If an ElementNode is created by ElementNode.FromElement(), its children are of type ElementNode
             // Cast them to ElementNode directly
             // https://github.com/FirelyTeam/firely-net-common/blob/master/src/Hl7.Fhir.ElementModel/ElementNode.cs
-            var referenceNode = CreateNodeFromElement(reference).Children("reference").Cast<ElementNode>().FirstOrDefault();
+            var referenceNode = CreateNodeFromElement(reference).Children("reference").FirstOrDefault() as ElementNode;
             processor.Process(referenceNode);
             Assert.Equal(expectedValue, referenceNode.Value);
         }

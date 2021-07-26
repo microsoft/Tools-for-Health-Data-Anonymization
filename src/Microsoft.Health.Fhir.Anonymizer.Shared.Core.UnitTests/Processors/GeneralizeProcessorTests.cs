@@ -242,7 +242,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateRangeMapppingSettingsForInteger(otherValues);
 
@@ -260,7 +260,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateRangeMapppingSettingsForInteger(otherValues);
 
@@ -278,7 +278,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateApproximateSettingsForInteger(otherValues);
 
@@ -297,7 +297,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = new Dictionary<string, object> { { "cases", cases } };
 
@@ -315,7 +315,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateValueSetSettingsForString(otherValues);
 
@@ -333,7 +333,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateMaskSettingsForString(otherValues);
 
@@ -351,7 +351,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateRangeMappingSettingsForDate(otherValues);
 
@@ -369,7 +369,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateRangeMappingSettingsForDateTime(otherValues);
 
@@ -387,7 +387,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateRangeMappingSettingsForTime(otherValues);
 
@@ -405,7 +405,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateRangeMappingSettingsForInstant(otherValues);
 
@@ -423,7 +423,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateOmitDaySettingsForDate(otherValues);
 
@@ -441,7 +441,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateOmitDaySettingsForDateTime(otherValues);
 
@@ -459,7 +459,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = new Dictionary<string, object> { { "cases", cases } };
 
@@ -475,7 +475,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             GeneralizeProcessor processor = new GeneralizeProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = CreateConflictSettings(otherValues);
 
@@ -493,7 +493,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             var settings = new Dictionary<string, object> { { "cases", "" } };
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<string>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             Assert.Throws<AnonymizerRuleNotApplicableException>(() => processor.Process(node, context, settings));
         }

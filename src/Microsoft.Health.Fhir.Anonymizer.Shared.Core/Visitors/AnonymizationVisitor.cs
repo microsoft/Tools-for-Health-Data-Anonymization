@@ -16,7 +16,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
     {
         private readonly AnonymizationFhirPathRule[] _rules;
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
-        private HashSet<string> _visitedNodes = new HashSet<string>();
+        private HashSet<ITypedElement> _visitedNodes = new HashSet<ITypedElement>();
         private Stack<Tuple<ElementNode, ProcessResult>> _contextStack = new Stack<Tuple<ElementNode, ProcessResult>>();
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizationVisitor>();
 
@@ -140,13 +140,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
         public ProcessResult ProcessNodeRecursive(ElementNode node, IAnonymizerProcessor processor, ProcessContext context, Dictionary<string, object> settings)
         {
             ProcessResult result = new ProcessResult();
-            if (_visitedNodes.Contains(node.Location))
+            if (_visitedNodes.Contains(node))
             {
                 return result;
             }
             
             result = processor.Process(node, context, settings);
-            _visitedNodes.Add(node.Location);
+            _visitedNodes.Add(node);
 
             foreach (var child in node.Children().CastElementNodes())
             {

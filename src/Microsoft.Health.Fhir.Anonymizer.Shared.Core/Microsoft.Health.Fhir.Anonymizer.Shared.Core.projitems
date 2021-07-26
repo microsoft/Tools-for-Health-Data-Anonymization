@@ -26,8 +26,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerLogging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeExtension.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypedElementExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypedElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypedElementNavExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeOperationExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeVisitorExtensions.cs" />

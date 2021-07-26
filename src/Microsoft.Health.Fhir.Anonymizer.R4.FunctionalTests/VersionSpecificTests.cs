@@ -84,7 +84,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
             AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
             
-            Assert.Throws<FormatException>(() => engine.AnonymizeJson(testContent));
+            Assert.Throws<StructuralTypeException>(() => engine.AnonymizeJson(testContent));
         }
 
         [Theory]

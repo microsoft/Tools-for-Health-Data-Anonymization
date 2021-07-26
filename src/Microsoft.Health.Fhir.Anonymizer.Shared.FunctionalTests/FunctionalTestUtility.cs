@@ -3,6 +3,7 @@ using System.IO;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
 using Microsoft.Health.Fhir.Anonymizer.Core;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
@@ -14,9 +15,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
             Console.WriteLine($"VerifySingleJsonResourceFromFile. TestFile: {testFile}, TargetFile: {targetFile}");
             string testContent = File.ReadAllText(testFile);
             string targetContent = File.ReadAllText(targetFile);
-            string resultAfterAnonymize = engine.AnonymizeJson(testContent);
-            Assert.Equal(Standardize(targetContent), Standardize(resultAfterAnonymize));
-        } 
+            string resultContent = engine.AnonymizeJson(testContent);
+
+            var targetObject = JObject.Parse(Standardize(targetContent));
+            var resultObject = JObject.Parse(Standardize(resultContent));
+            Assert.True(JToken.DeepEquals(targetObject, resultObject));
+        }
 
         private static string Standardize(string jsonContent)
         {
