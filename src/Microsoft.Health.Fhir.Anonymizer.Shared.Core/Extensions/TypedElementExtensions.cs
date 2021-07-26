@@ -78,7 +78,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 
         public static ElementNode GetMeta(this ITypedElement node)
         {
-            return node?.Children("meta").CastElementNodes().FirstOrDefault();
+            return node?.Children("meta").FirstOrDefault() as ElementNode;
         }
 
     }

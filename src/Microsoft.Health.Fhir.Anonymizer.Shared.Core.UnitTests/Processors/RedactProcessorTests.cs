@@ -71,20 +71,20 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             // If an ElementNode is created by ElementNode.FromElement(), its children are of type ElementNode
             // Cast them to ElementNode directly
             // https://github.com/FirelyTeam/firely-net-common/blob/master/src/Hl7.Fhir.ElementModel/ElementNode.cs
-            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
+            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").FirstOrDefault() as ElementNode;
             var processResult = processor.Process(node);
             Assert.Null(node.Value);
             Assert.True(processResult.IsRedacted);
 
             processor = new RedactProcessor(true, enablePartialAgesForRedact: false, true, new List<string>());
-            node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
+            node = ElementNode.FromElement(age.ToTypedElement()).Children("value").FirstOrDefault() as ElementNode;
             processResult = processor.Process(node);
             Assert.Null(node.Value);
             Assert.True(processResult.IsRedacted);
 
             processor = new RedactProcessor(true, enablePartialAgesForRedact: true, true, new List<string>());
             age = new Age() { Value = 89 };
-            node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
+            node = ElementNode.FromElement(age.ToTypedElement()).Children("value").FirstOrDefault() as ElementNode;
             processResult = processor.Process(node);
             Assert.Equal("89", node.Value.ToString());
             Assert.True(processResult.IsRedacted);

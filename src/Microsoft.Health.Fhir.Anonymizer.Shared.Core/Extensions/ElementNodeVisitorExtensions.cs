@@ -15,9 +15,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
                 // If an ElementNode is created by ElementNode.FromElement(), its children are of type ElementNode
                 // Cast them to ElementNode directly
                 // https://github.com/FirelyTeam/firely-net-common/blob/master/src/Hl7.Fhir.ElementModel/ElementNode.cs
-                foreach (var child in node.Children().Cast<ElementNode>())
+                foreach (var child in node.Children())
                 {
-                    child.Accept(visitor);
+                    (child as ElementNode).Accept(visitor);
                 }
             }
 

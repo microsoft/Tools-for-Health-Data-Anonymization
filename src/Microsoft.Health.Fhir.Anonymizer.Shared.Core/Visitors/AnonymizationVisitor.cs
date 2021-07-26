@@ -148,14 +148,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
             result = processor.Process(node, context, settings);
             _visitedNodes.Add(node);
 
-            foreach (var child in node.Children().CastElementNodes())
+            foreach (var child in node.Children())
             {
                 if (child.IsFhirResource())
                 {
                     continue;
                 }
 
-                result.Update(ProcessNodeRecursive(child, processor, context, settings));
+                result.Update(ProcessNodeRecursive(child as ElementNode, processor, context, settings));
             }
 
             return result;

@@ -277,7 +277,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
             // If an ElementNode is created by ElementNode.FromElement(), its children are of type ElementNode
             // Cast them to ElementNode directly
             // https://github.com/FirelyTeam/firely-net-common/blob/master/src/Hl7.Fhir.ElementModel/ElementNode.cs
-            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
+            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").FirstOrDefault() as ElementNode;
             var processResult = DateTimeUtility.RedactAgeDecimalNode(node, true);
 
             Assert.Equal(int.Parse(age.Value.ToString()) > 89 ? null : age.Value.ToString(), node.Value?.ToString() ?? null);
@@ -288,7 +288,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
         [MemberData(nameof(GetAgeDataForRedact))]
         public void GivenAnAge_WhenRedact_ThenAgeShouldBeRedacted(Age age)
         {
-            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").Cast<ElementNode>().FirstOrDefault();
+            var node = ElementNode.FromElement(age.ToTypedElement()).Children("value").FirstOrDefault() as ElementNode;
             var processResult = DateTimeUtility.RedactAgeDecimalNode(node, false);
 
             Assert.Null(node.Value);

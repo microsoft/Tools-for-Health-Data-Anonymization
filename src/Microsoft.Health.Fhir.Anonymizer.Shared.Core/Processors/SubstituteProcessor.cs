@@ -67,7 +67,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             var replaceChildrenNames = replacementNode.Children().Select(element => element.Name).ToHashSet();
             foreach (var name in replaceChildrenNames)
             {
-                var children = node.Children(name).CastElementNodes().ToList();
+                var children = node.Children(name).ToList();
                 var targetChildren = replacementNode.Children(name).ToList();
 
                 int i = 0;
@@ -83,17 +83,17 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                     if (i < targetChildren.Count)
                     {
                         // We still have target nodes, do replacement
-                        SubstituteNode(child, targetChildren[i++], visitedNodes, keepNodes);
+                        SubstituteNode(child as ElementNode, targetChildren[i++], visitedNodes, keepNodes);
                     }
                     else if (keepNodes.Contains(child))
                     {
                         // Substitute with an empty node when no target node available but we need to keep this node
-                        SubstituteNode(child, GetDummyNode(), visitedNodes, keepNodes);
+                        SubstituteNode(child as ElementNode, GetDummyNode(), visitedNodes, keepNodes);
                     }
                     else
                     {
                         // Remove source node when no target node available and we don't need to keep the source node
-                        node.Remove(child);
+                        node.Remove(child as ElementNode);
                     }
                 }
 
@@ -107,7 +107,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             // children nodes not presented in replacement value, we need either remove or keep a dummy copy
             var nonReplacementChildren = node.Children()
                 .Where(element => !replaceChildrenNames.Contains(element.Name))
-                .CastElementNodes().ToList();
+                .ToList();
             foreach (var child in nonReplacementChildren)
             {
                 if (visitedNodes.Contains(child))
@@ -117,11 +117,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
                 if (keepNodes.Contains(child))
                 {
-                    SubstituteNode(child, GetDummyNode(), visitedNodes, keepNodes);
+                    SubstituteNode(child as ElementNode, GetDummyNode(), visitedNodes, keepNodes);
                 }
                 else
                 {
-                    node.Remove(child);
+                    node.Remove(child as ElementNode);
                 }
             }
 
