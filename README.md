@@ -2,28 +2,12 @@
 
 [![Build Status](https://microsofthealthoss.visualstudio.com/FhirAnonymizer/_apis/build/status/CI%20Build?branchName=master)](https://microsofthealthoss.visualstudio.com/FhirAnonymizer/_build/latest?definitionId=23&branchName=master)
 
-## TOC
-[Overview](#overview)  
-[Quickstarts](#quickstarts)  
-[Tutorials](#tutorials)  
-&nbsp;&nbsp; [Anonymize FHIR data using Azure Data Factory](#anonymize-fhir-data-using-azure-data-factory)  
-[Samples](#samples)  
-&nbsp;&nbsp; [Sample configuration file for HIPAA Safe Harbor method](#sample-configuration-file-for-hipaa-safe-harbor-method)  
-[Concepts](#concepts)  
-&nbsp;&nbsp; [How the engine works](#how-the-engine-works)  
-[Reference](#reference)  
-&nbsp;&nbsp; [The command line tool](#the-command-line-tool)  
-&nbsp;&nbsp; [Configuration file format](#configuration-file-format)  
-&nbsp;&nbsp; [Sample rules](#sample-rules-using-fhirpath)  
-&nbsp;&nbsp; [Date-shift algorithm](#date-shift-algorithm)  
-&nbsp;&nbsp; [Crypto-hash method](#Crypto-hash-method)  
-&nbsp;&nbsp; [Encrypt method](#Encrypt-method)  
-&nbsp;&nbsp; [Substitute method](#Substitute-method)  
-&nbsp;&nbsp; [Perturb method](#Perturb-method)  
-&nbsp;&nbsp; [Generalize method](#Generalize-method)  
-[Resources](#resources)  
-&nbsp;&nbsp; [FAQ](#faq)  
-[Contributing](#contributing)
+---
+**Privacy Notice and Consent**
+
+This project provides you the sripts and command line tools for your own use. It **does NOT** and **cannot** access, use, collect, or manage any of your data, including any personal or health-related data. We also do not provide any data for usage in this project, you must bring and use your own data. **You are 100% responsible for using our tools to work with your data.**
+
+---
 
 # Overview
 
