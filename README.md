@@ -9,7 +9,7 @@ This project provides you the scripts and command line tools for your own use. I
 
 ---
 
-**Tools for Health Data Anonymization** is an open-source project that helps anonymize healthcare data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The project first released the anonymization of [FHIR](https://www.hl7.org/fhir/) data to open source on Friday, March 6th, 2020. Currently, it supports both FHIR data anonymization and DICOM data anonymization.
+**Tools for Health Data Anonymization** is an open-source project that helps anonymize healthcare data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The project first released the anonymization of [FHIR](https://www.hl7.org/fhir/) data to open source on Friday, March 6th, 2020. Currently, it supports both **FHIR data anonymization** and **DICOM data anonymization**.
 
 The anonymization core engine uses a configuration file specifying different parameters as well as anonymization methods for different data-elements and datatypes. The repo contains a sample configuration file, which is based on the [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/anonymization/index.html#safeharborguidance) method. You can modify or create your own configuration file as needed.
 
