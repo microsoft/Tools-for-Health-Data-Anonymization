@@ -117,8 +117,9 @@ You can also export FHIR resources from a FHIR server using [Bulk Export](https:
 
 1. Enter the project folder $SOURCE\src\Microsoft.Health.Fhir.Anonymizer.\<version>.AzureDataFactoryPipeline. Locate _AzureDataFactorySettings.json_ in the project and replace the values as described below.
 
-> **[!NOTE]**
+> **[NOTE]**
 > dataFactoryName can contain only lowercase characters or numbers, and must be 3-19 characters in length.
+
 ```json
 {
   "dataFactoryName": "<Custom Data Factory Name>",
@@ -377,7 +378,7 @@ To generalize valueQuantity fields of Observation resource using expression to d
   "otherValues":"redact"
 }
 ```
-> [!Note]
+> **[NOTE]**
 > Take care of the expression for field has choices of types. e.g. Observation.value[x]. The expression for the path should be Observation.value.
 
 To generalize string data type using expression to define the value set mapping
@@ -441,7 +442,7 @@ You can specify dateShift as a anonymization method in the configuration file. W
 3. Feed the above string to hash function to get an integer between [-50, 50]. 
 4. Use the above integer as the offset to shift the input date/dateTime/instant value.
 
-> [!Note]
+> **[NOTE]**
 > * If the input date/dateTime/instant value does not contain an exact day, for example dates with only a year ("yyyy") or only a year and month ("yyyy-MM"), the date cannot be shifted and redaction will be applied.
 > * If the input date/dateTime/instant value is indicative of age over 89, it will be redacted (including year) according to HIPAA Safe Harbor Method.
 > * If the input dateTime/instant value contains time, time will be redacted. Time zone will keep unchanged.
@@ -471,7 +472,8 @@ There are a few parameters that can help you customize the noise amount for diff
 - [optional] **rangeType** Define whether the *span* value is *fixed* or *proportional*. The default value is *fixed*. 
 - [optional] **roundTo** A value from 0 to 28 that specifies the number of decimal places to round to. The default value is *0* for integer types and *2* for decimal types. 
 
-Note that the target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity, SimpleQuantity, Money, etc.). 
+> **[NOTE]**
+> The target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity, SimpleQuantity, Money, etc.). 
 
 ### Generalize
 As one of the anonymization methods, generalization means mapping values to the higher level of generalization. It is the process of abstracting distinguishing value into a more general, less distinguishing value. Generalization attempts to preserve data utility while also reducing the identifiability of the data. 
@@ -565,7 +567,8 @@ The command-line tool can be used to anonymize one DICOM file or a folder contai
 | --validateInput | validateInput | Optional | false | Validate input DICOM file against value multiplicity, value types and format in DICOM specification. |
 | --validateOutput | validateOutput | Optional | false | Validate output DICOM file against value multiplicity, value types and format in DICOM specification. |
 
-> Note: To anonymize one DICOM file, inputFile and outputFile are required. To anonymize a DICOM folder, inputFolder and outputFolder are required.
+> **[NOTE]**
+> To anonymize one DICOM file, inputFile and outputFile are required. To anonymize a DICOM folder, inputFolder and outputFolder are required.
 
 Example usage to anonymize DICOM files in a folder:
 ```
@@ -753,7 +756,8 @@ Users can set encrypt key in encrypt setting.
 |----|------|--|--|--|
 |encryptKey| Key for encryption|128, 192 or 256 bit string|False|A randomly generated 256-bit string|
 
->Note: Similar with cryptoHash function, you should use the method on those fields that accept a Base64 encoded value and avoid encrypting data fields with length limits because the Base64 encoded value will be longer than the original value.
+> **[NOTE]**
+> Similar with cryptoHash function, you should use the method on those fields that accept a Base64 encoded value and avoid encrypting data fields with length limits because the Base64 encoded value will be longer than the original value.
 
 Here is a sample rule using encrypt method on PN tags with customized setting:
 ```
