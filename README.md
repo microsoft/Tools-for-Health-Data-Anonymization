@@ -1,49 +1,47 @@
-# FHIR Tools for Anonymization
+# Tools for Health Data Anonymization
 
 [![Build Status](https://microsofthealthoss.visualstudio.com/FhirAnonymizer/_apis/build/status/CI%20Build?branchName=master)](https://microsofthealthoss.visualstudio.com/FhirAnonymizer/_build/latest?definitionId=23&branchName=master)
 
 ---
 **Privacy Notice and Consent**
 
-This project provides you the sripts and command line tools for your own use. It **does NOT** and **cannot** access, use, collect, or manage any of your data, including any personal or health-related data. We also do not provide any data for usage in this project, you must bring and use your own data. **You are 100% responsible for using our tools to work with your data.**
+This project provides you the scripts and command line tools for your own use. It **does NOT** and **cannot** access, use, collect, or manage any of your data, including any personal or health-related data. You must bring your own data, and be 100% responsible for using our tools to work with your own data.
 
 ---
 
-# Overview
+**Tools for Health Data Anonymization** is an open-source project that helps anonymize healthcare data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The project first released the anonymization of [FHIR](https://www.hl7.org/fhir/) data to open source on Friday, March 6th, 2020. Currently, it supports both FHIR data anonymization and DICOM data anonymization.
 
-FHIR Tools for Anonymization is an open-source project that helps anonymize healthcare [FHIR](https://www.hl7.org/fhir/) data, on-premises or in the cloud, for secondary usage such as research, public health, and more. The project released to open source on Friday, March 6th, 2020.
-
-The anonymization capability is available to the users in the following forms:
-1. A [command-line tool](#the-command-line-tool) that can be used on-premises or in the cloud to anonymize data. 
-2. An ADF pipeline. It comes with a [script](#anonymize-fhir-data-using-azure-data-factory) to create a pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
-3. [De-identified $export](#how-to-perform-de-identified-export-operation-on-the-fhir-server) operation in the [FHIR server for Azure](https://github.com/microsoft/fhir-server).
-
-The core engine uses a [configuration file](#configuration-file-format) specifying the de-identification settings. This repo contains a sample [safe harbor configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method) to help de-identify data elements as per [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method for de-identification. Customers can update the configuration file or create their own configuration file as per their needs by following the [documentation](#configuration-file-format).  
+The anonymization core engine uses a configuration file specifying different parameters as well as anonymization methods for different data-elements and datatypes. The repo contains a sample configuration file, which is based on the [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/anonymization/index.html#safeharborguidance) method. You can modify or create your own configuration file as needed.
 
 This open source project is fully backed by the Microsoft Healthcare team, but we know that this project will only get better with your feedback and contributions. We are leading the development of this code base, and test builds and deployments daily.
 
 FHIR® is the registered trademark of HL7 and is used with the permission of HL7. Use of the FHIR trademark does not constitute endorsement of this product by HL7.
 
-## Features
+# FHIR Data Anonymization
 
-* Support anonymization of FHIR R4 and STU 3 data in json as well as ndjson format
-* Configuration of the data elements that need to be de-identified 
-* Configuration of the [de-identification methods](#fhir-path-rules) for each data element
-* Ability to create a de-identification pipeline in Azure Data Factory
-* Ability to run the tool on premise to de-identify a dataset locally
+FHIR data anonymization is available in the following ways:
 
-# Quickstarts
+1. A command line tool. Can be used on-premises or in the cloud to anonymize data.
+2. An Azure Data Factory (ADF) pipeline. Comes with a [script](#anonymize-fhir-data-using-azure-data-factory) to create a pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
+3. [De-identified $export](#how-to-perform-de-identified-export-operation-on-the-fhir-server) operation in the [FHIR server for Azure](https://github.com/microsoft/fhir-server).
 
-## Building the solution
+### Features
+* Support anonymization of FHIR R4 and STU3 data in JSON as well as NDJSON format
+* Configuration of the data elements that need to be anonymized 
+* Configuration of the [anonymization methods](#fhir-path-rules) for each data element
+* Ability to create a anonymization pipeline in Azure Data Factory
+* Ability to run the tool on premise to anonymize a dataset locally
+
+### Building the solution
 Use the .Net Core 3.1 SDK to build FHIR Tools for Anonymization. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet-core/3.1).
 
-## Get sample FHIR files
+### Get sample FHIR files
 This repo contains a few [sample](samples/) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
 
 You can also export FHIR resource from your FHIR server using [Bulk Export](https://docs.microsoft.com/en-us/azure/healthcare-apis/configure-export-data).
 
-## Anonymize FHIR data using the command line tool
-Once you have built the command line tool, you will find two executable files for R4 and STU 3 respectively: 
+## Anonymize FHIR data: using the command line tool
+Once you have built the command line tool, you will find two executable files for R4 and STU3 respectively: 
 
 1. Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.exe in the $SOURCE\src\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder. 
 
@@ -53,15 +51,29 @@ Once you have built the command line tool, you will find two executable files fo
 ```
 > .\Microsoft.Health.Fhir.Anonymizer.<version>.CommandLineTool.exe -i myInputFolder -o myOutputFolder
 ```
-See the [reference](#the-command-line-tool) section for usage details of the command line tool.
 
-# Tutorials
+The command-line tool can be used to anonymize a folder containing FHIR resource files. Here are the parameters that the tool accepts:
 
-## Anonymize FHIR data using Azure Data Factory
+| Option | Name | Optionality | Default | Description |
+| ----- | ----- | ----- |----- |----- |
+| -i | inputFolder | Required | | Folder to locate input resource files. |
+| -o | outputFolder | Required | |  Folder to save anonymized resource files. |
+| -c | configFile | Optional |configuration-sample.json | Anonymizer configuration file path. It reads the default file from the current directory. |
+| -b | bulkData | Optional| false | Resource file is in bulk data format (.ndjson). |
+| -r | recursive | Optional | false | Process resource files in input folder recursively. |
+| -v | verbose | Optional | false | Provide additional details during processing. |
+| -s | skip | Optional | false | Skip files that are already present in the destination folder. |
+| --validateInput | validateInput | Optional | false | Validate input resources against structure, cardinality and most value domains in FHIR specification. Detailed report can be found in verbose log. |
+| --validateOutput | validateOutput | Optional | false | Validate anonymized resources against structure, cardinality and most value domains in FHIR specification. Detailed report can be found in verbose log. |
 
-In this tutorial, you use the Azure PowerShell to create a Data Factory and a pipeline to anonymize FHIR data. The pipeline reads from an Azure blob container, anonymizes it as per the configuration file, and writes the output to another blob container. If you're new to Azure Data Factory, see [Introduction to Azure Data Factory](https://docs.microsoft.com/en-us/azure/data-factory/introduction).
+Example usage to anonymize FHIR resource files in a folder: 
+```
+> .\Microsoft.Health.Fhir.Anonymizer.<version>.CommandLineTool.exe -i myInputFolder -o myOutputFolder
+```
 
-Tutorial steps:
+## Anonymize FHIR data: using Azure Data Factory
+
+You can use the Azure PowerShell to create a Data Factory and a pipeline to anonymize FHIR data. The pipeline reads from an Azure blob container, anonymizes it as per the configuration file, and writes the output to another blob container. If you're new to Azure Data Factory, see [Introduction to Azure Data Factory](https://docs.microsoft.com/en-us/azure/data-factory/introduction).
 
 * Use a PowerShell script to create a data factory pipeline.
 * Trigger on-demand pipeline run.
@@ -193,9 +205,7 @@ The PowerShell script implicitly creates a resource group by appending 'resource
 
 If you want to cleanup resources, delete that resource group in addition to any other resources you may have explicitly created as part of this tutorial.
 
-# Samples
-
-## Sample configuration file for HIPAA Safe Harbor method
+## Sample configuration file
 FHIR Tools for Anonymization comes with a sample configuration file to help meet the requirements of HIPAA Safe Harbor Method (2)(i). HIPAA Safe Harbor Method (2)(ii) talks about "actual knowledge", which is out of scope for this project.
 
 Out of the 18 identifier types mentioned in HIPAA Safe Harbor method (2)(i), this configuration file deals with the first 17 identifier types (A-Q). The 18th type, (R), is unspecific and hence not considered in this configuration file. 
@@ -203,41 +213,11 @@ Out of the 18 identifier types mentioned in HIPAA Safe Harbor method (2)(i), thi
 This configuration file is provided in a best-effort manner. We **strongly** recommend that you review the HIPAA guidelines as well as the implementation of this project before using it for you anonymization requirements. 
 
 
-The safe harbor configuration files can be accessed via [R4](src/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool/configuration-sample.json) and [STU 3](src/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool/configuration-sample.json) links.
+The safe harbor configuration files can be accessed via [R4](src/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool/configuration-sample.json) and [STU3](src/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool/configuration-sample.json) links.
 
-# Concepts
+### Configuration file format
 
-## How the engine works
-The anonymization engine uses a configuration file specifying different parameters as well as de-identification methods for different data-elements and datatypes. 
-
-The repo contains a [sample configuration file](#sample-configuration-file-for-hipaa-safe-harbor-method), which is based on the [HIPAA Safe Harbor](https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html#safeharborguidance) method. You can modify the configuration file as needed based on the information provided below.
-
-# Reference
-
-## The command line tool
-
-The command-line tool can be used to anonymize a folder containing FHIR resource files. Here are the parameters that the tool accepts:
-
-| Option | Name | Optionality | Default | Description |
-| ----- | ----- | ----- |----- |----- |
-| -i | inputFolder | Required | | Folder to locate input resource files. |
-| -o | outputFolder | Required | |  Folder to save anonymized resource files. |
-| -c | configFile | Optional |configuration-sample.json | Anonymizer configuration file path. It reads the default file from the current directory. |
-| -b | bulkData | Optional| false | Resource file is in bulk data format (.ndjson). |
-| -r | recursive | Optional | false | Process resource files in input folder recursively. |
-| -v | verbose | Optional | false | Provide additional details during processing. |
-| -s | skip | Optional | false | Skip files that are already present in the destination folder. |
-| --validateInput | validateInput | Optional | false | Validate input resources against structure, cardinality and most value domains in FHIR specification. Detailed report can be found in verbose log. |
-| --validateOutput | validateOutput | Optional | false | Validate anonymized resources against structure, cardinality and most value domains in FHIR specification. Detailed report can be found in verbose log. |
-
-Example usage to anonymize FHIR resource files in a folder: 
-```
-> .\Microsoft.Health.Fhir.Anonymizer.<version>.CommandLineTool.exe -i myInputFolder -o myOutputFolder
-```
-
-## Configuration file format
-
-The configuration is specified in JSON format. It has three high-level sections. One of these sections, namely _fhirVersion_ specify the configuration file's version for anonymizer. The second section named _fhirPathRules_ is meant to specify de-identification methods for data elements. The third section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. 
+The configuration is specified in JSON format. It has three high-level sections. One of these sections, namely _fhirVersion_ specify the configuration file's version for anonymizer. The second section named _fhirPathRules_ is meant to specify anonymization methods for data elements. The third section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. 
 
 Here is a sample configuration for R4:
 
@@ -260,17 +240,17 @@ Here is a sample configuration for R4:
   }
 }
 ```
-### FhirVersion Specification
+### Fhir Version Specification
 | fhirVersion | Desciption |
 | ----- | ----- |
-|Stu3|Specify STU 3 version for the configuration file|
+|Stu3|Specify STU3 version for the configuration file|
 |R4|Specify R4 version for the configuration file|
 |Empty or Null| The configuration file targets the same FHIR version as the executable.
 |Other values| Other values will raise an exception.
 
 
 ### FHIR Path Rules
-FHIR path rules can be used to specify the de-identification methods for individual elements as well as elements of specific data types. Ex:
+FHIR path rules can be used to specify the anonymization methods for individual elements as well as elements of specific data types. Ex:
 
 ```json
 {"path": "Organization.identifier", "method": "keep"}
@@ -293,7 +273,7 @@ Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByName('_name_'): return descendants of node name '_name_'. Nodes in bundle resource and contained list will be excluded. 
 
 ### Parameters
-Parameters affect the de-identification methods specified in the FHIR path rules. 
+Parameters affect the anonymization methods specified in the FHIR path rules. 
 
 |Method| Parameter | Affected fields | Valid values | Default value | Description
 | ----- | ----- | ----- | ----- | ----- | ----- |
@@ -306,7 +286,7 @@ Parameters affect the de-identification methods specified in the FHIR path rules
 | redact | enablePartialZipCodesForRedact  | Zip Code fields | boolean | false | If the value is set to **true**, Zip Code will be redacted as per the HIPAA Safe Harbor rule. |
 | redact | restrictedZipCodeTabulationAreas  | Zip Code fields | a JSON array | empty array | This configuration is used only if enablePartialZipCodesForRedact is set to **true**. This field contains the list of zip codes for which the first 3 digits will be converted to 0. As per the HIPAA Safe Harbor, this list will have the Zip Codes  having population less than 20,000 people. |
 
-## Sample rules using FHIRPath
+## Sample rules using FHIR Path
 
 To retain country as well as state values of Address data type
 ```json
@@ -368,7 +348,7 @@ To substitute city values of Address data type with "example city"
 ```json
 {"path": "nodesByType('Address').city", "method": "substitute", "replaceWith": "example city"}
 ```
-To substitute Address data types with a fixed json fragement
+To substitute Address data types with a fixed JSON fragment
 ```json
 {
   "path": "nodesByType('Address')", 
@@ -397,7 +377,8 @@ To generalize valueQuantity fields of Observation resource using expression to d
   "otherValues":"redact"
 }
 ```
-> [!Note] : Take care of the expression for field has choices of types. e.g. Observation.value[x]. The expression for the path should be Observation.value.
+> [!Note]
+> Take care of the expression for field has choices of types. e.g. Observation.value[x]. The expression for the path should be Observation.value.
 
 To generalize string data type using expression to define the value set mapping
 
@@ -438,19 +419,20 @@ To generalize dateTime, time, date and instant type using expression
   "otherValues":"redact"
 }
 ```
+## Anonymization algorithms
 
-## Date-shift algorithm
-You can specify dateShift as a de-identification method in the configuration file. With this method, the input date/dateTime/instant value will be shifted within a 100-day differential. The following algorithm is used to shift the target dates:
+### Date-shift
+You can specify dateShift as a anonymization method in the configuration file. With this method, the input date/dateTime/instant value will be shifted within a 100-day differential. The following algorithm is used to shift the target dates:
 
-### Input
+#### Input
 - [Required] A date/dateTime/instant value
 - [Optional] _dateShiftKey_. If not specified, a randomly generated string will be used as default key.
 - [Optional] _dateShiftScope_. If not specified, _resource_ will be set as default scope.
 
-### Output
+#### Output
 * A shifted date/datetime/instant value
 
-### Steps
+#### Steps
 1. Get _dateShiftKeyPrefix_ according to _dateShiftScope_.
 - For scope _resource_, _dateShiftKeyPrefix_ refers to the resource id.
 - For scope _file_, _dateShiftKeyPrefix_ refers to the file name.
@@ -459,30 +441,29 @@ You can specify dateShift as a de-identification method in the configuration fil
 3. Feed the above string to hash function to get an integer between [-50, 50]. 
 4. Use the above integer as the offset to shift the input date/dateTime/instant value.
 
-### Note
+> [!Note]
+> * If the input date/dateTime/instant value does not contain an exact day, for example dates with only a year ("yyyy") or only a year and month ("yyyy-MM"), the date cannot be shifted and redaction will be applied.
+> * If the input date/dateTime/instant value is indicative of age over 89, it will be redacted (including year) according to HIPAA Safe Harbor Method.
+> * If the input dateTime/instant value contains time, time will be redacted. Time zone will keep unchanged.
 
-1. If the input date/dateTime/instant value does not contain an exact day, for example dates with only a year ("yyyy") or only a year and month ("yyyy-MM"), the date cannot be shifted and redaction will be applied.
-2. If the input date/dateTime/instant value is indicative of age over 89, it will be redacted (including year) according to HIPAA Safe Harbor Method.
-3. If the input dateTime/instant value contains time, time will be redacted. Time zone will keep unchanged.
-
-## Crypto-hash method
+### Crypto-hash
 You can specify the crypto-hash method in the configuration file. We use HMAC-SHA256 algorithm, which outputs a Hex encoded representation of the hashed output (for example, ```a3c024f01cccb3b63457d848b0d2f89c1f744a3d```). If you want the anonymized output to be conformant to the FHIR specification, use Crypto-hash on only those fields that can take a Hex encoded string of 64 bytes length.
 
 A typical scenario is to replace resource ids across FHIR resources via crypto hashing. With a specific hash key, same resource ids that reside in resources and references will be hashed to a same value. There is a special case when crypto hashing a [literal reference](https://www.hl7.org/fhir/references.html#literal) element. The tool captures and transforms only the id part from a reference, for example, reference ```Patient/123``` will be hashed to ```Patient/a3c024f01cccb3b63457d848b0d2f89c1f744a3d```. In this way, you can easily resolve references across anonymized FHIR resources.
 
-## Encrypt method
+### Encrypt
 We use AES-CBC algorithm to transform FHIR data with an encryption key, and then replace the original value with a Base64 encoded representation of the encrypted value.
 1. The encryption key needs to be exactly 128, 192 or 256 bits long.
 2. The algorithm will generate a random and unique initialization vector (IV) for each encryption, therefore the encrypted results are different for the same input values.
 3. If you want the anonymized output to be conformant to the FHIR specification, do use encrypt method on those fields that accept a Base64 encoded value. Besides, avoid encrypting data fields with length limits because the Base64 encoded value will be longer than the original value.
 
-## Substitute method
+### Substitute
 You can specify a fixed, valid value to replace a target FHIR field. For example, for postal code, you can provide "12233". For birth date, you can provide '1990-01-01', etc.
 
-For complex data types, you can provide a fixed json fragment following the [sample rules](#Sample-rules-using-FHIRPath).
+For complex data types, you can provide a fixed JSON fragment following the [sample rules](#Sample-rules-using-FHIRPath).
 You should provide valid value for the target data type to avoid unexpected errors.
 
-## Perturb method
+### Perturb
 With perturbation rule, you can replace specific values with equally specific, but different values. You can choose to add random noise from a fixed range or a proportional range. In the [age example](#Sample-rules-using-FHIRPath) above, for a fixed range ```[-3, 3]```, every age is within +/- 3 years of the original value. For a proportional range ```[-0.1*originalAge, 0.1*originalAge]```, every age is within +/- 10% years of the original value. 
 
 There are a few parameters that can help you customize the noise amount for different FHIR types.
@@ -492,7 +473,7 @@ There are a few parameters that can help you customize the noise amount for diff
 
 Note that the target field should be of either a numeric type (integer, decimal, unsignedInt, positiveInt) or a quantity type (Quantity, SimpleQuantity, Money, etc.). 
 
-## Generalize method
+### Generalize
 As one of the anonymization methods, generalization means mapping values to the higher level of generalization. It is the process of abstracting distinguishing value into a more general, less distinguishing value. Generalization attempts to preserve data utility while also reducing the identifiability of the data. 
 Generalization uses FHIRPath predicate expression to define a set of cases that specify the condition and target value like [sample rules](#Sample-rules-using-FHIRPath). Follows are some examples of cases.
 
@@ -511,9 +492,10 @@ For each generalization rule, there are several additional settings to specify i
 - [optional] **otherValues** Define the operation for values that do not match any of the cases. The value could be "redact" or "keep". The default value is "redact".
 
 Since the output of FHIR expression is flexible, users should provide expressions with valid output value to avoid unexcepted errors.
+
 ## Current limitations
-1. We support FHIR data in R4 and STU 3, JSON format. Support for XML is planned.
-2. De-identification of fields within Extensions is not supported. 
+* We support FHIR data in R4 and STU3, JSON format. Support for XML is planned.
+* Anonymization of fields within Extensions is not supported.
 
 ## FAQ
 
@@ -543,18 +525,283 @@ You can build a pipeline to use [FHIR converter](https://github.com/microsoft/FH
 ### Can we use custom de-identification methods?
 Currently you can use the prebuilt de-identification methods and control their behavior by passing parameters. We are planning to support custom de-identification methods in future.
 
-# Contributing
+# DICOM Data Anonymization
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+The Digital Imaging and Communication in Medicine (DICOM) standard has been commonly used for storing, viewing, and transmitting information in medical imaging. A DICOM file not only contains a viewable image but also a header with a large variety of data elements. These meta-data elements include identifiable information about the patient, the study, and the institution. Sharing such sensitive data demands proper protection to ensure data safety and maintain patient privacy.
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+DICOM Anomymization Tool is an open-source project that helps anonymize metadata in DICOM files. A command-line tool is provided in this project.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+### Features
+- Support anonymization methods for DICOM metadata including redact, keep, encrypt, cryptoHash, dateShift, perturb, substitute, remove and refreshUID.
+- Configuration of the data elements that need to be anonymized.
+- Configuration of the anonymization methods for each data element.
+- Ability to run the tool on premise to anonymize a dataset locally.
 
-FHIR® is the registered trademark of HL7 and is used with the permission of HL7.
+### Build the solution
+Use the .Net Core 3.1 SDK to build DICOM Anonymization Tool. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet/3.1).
+
+### Prepare DICOM Data
+You can prepare your own DICOM files as input, or use sample DICOM files in folder $SOURCE\DICOM\samples of the project.
+
+## Anonymize DICOM data: using the command line tool
+
+Once you have built the command line tool, you will find executable file Microsoft.Health.Dicom.Anonymizer.CommandLineTool.exe in the $SOURCE\DICOM\src\Microsoft.Health.Dicom.Anonymizer.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder.
+
+You can use this executable file to anonymize DICOM file.
+
+```
+> .\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.exe -i myInputFile -o myOutputFile
+```
+
+### Use Command Line Tool
+The command-line tool can be used to anonymize one DICOM file or a folder containing DICOM files. Here are the parameters that the tool accepts:
+
+
+| Option | Name | Optionality | Default | Description |
+| ----- | ----- | ----- |----- |----- |
+| -i | inputFile | Required (for file conversion) | | Input DICOM file. |
+| -o | outputFile | Required (for file conversion) | |  Output DICOM file. |
+| -c | configFile | Optional |configuration.json | Anonymizer configuration file path. It reads the default file from the current directory. |
+| -I | inputFolder | Required (for folder conversion) |  | Input folder. |
+| -O | outputFolder | Required (for folder conversion) |  | Output folder. |
+| --validateInput | validateInput | Optional | false | Validate input DICOM file against value multiplicity, value types and format in DICOM specification. |
+| --validateOutput | validateOutput | Optional | false | Validate output DICOM file against value multiplicity, value types and format in DICOM specification. |
+
+> Note: To anonymize one DICOM file, inputFile and outputFile are required. To anonymize a DICOM folder, inputFolder and outputFolder are required.
+
+Example usage to anonymize DICOM files in a folder:
+```
+>.\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.exe convert -I myInputFolder -O myOutputFolder -c myConfigFile
+```
+
+## Sample configuration file
+The configuration is specified in JSON format and has three required high-level sections. The first section named _rules_, it specifies anonymization methods for DICOM tag. The second and third sections are _defaultSettings_ and _customizedSettings_ which specify default settings and customized settings for anonymization methods respectively.
+
+|Fields|Description|
+|----|----|
+|rules|De-ID rules for tags.|
+|defaultSettings|Default settings for anonymization functions. Default settings will be used if not specify settings in rules.|
+|customSettings|Custom settings for anonymization functions.|
+
+
+DICOM Anonymization tool comes with a sample configuration file to help meet the requirements of HIPAA Safe Harbor Method. DICOM standard also describes attributes within a DICOM dataset that may potentially result in leakage of individually identifiable information according to HIPAA Safe Harbor. Our tool will build in a sample [configuration file]() that covers [application level confidentiality profile attributes](http://dicom.nema.org/medical/dicom/2018e/output/chtml/part15/chapter_E.html) defined in DICOM standard.
+
+## Customize configuration file
+
+### How to set rules
+
+Users can list anonymization rules for individual DICOM tag ( by tag value or tag name) as well as a set of tags (by masked value or DICOM VR). Ex：
+```
+{
+    "rules": [
+            {"tag": "(0010,1010)","method": "perturb"}, 
+            {"tag": "(0040,xxxx)",  "method": "redact"},
+            {"tag": "PatientID",  "method": "cryptohash"},
+            {"tag": "PN", "method": "encrypt"}
+    ]
+}
+```
+Parameters in each rules:
+
+|Fields|Description| Valid Value|Required|default value|
+|--|-----|-----|--|--|
+|tag|Used to define DICOM elements |1. Tag Value, e.g. (0010, 0010) or 0010,0010 or 00100010. <br>2. Tag Name. e.g. PatientName. <br> 3. Masked DICOM Tag. e.g. (0010, xxxx) or (xx10, xx10). <br> 4. DICOM VR. e.g. PN, DA.|True|null| 
+|method|De-ID method.| keep, redact, perturb, dateshift, encrypt, cryptohash, substitute, refreshUID, remove.| True|null|
+|setting| Setting for de-id method. Users can add custom settings in the field of "customSettings" and specify setting's name here. |valid setting's name |False|Default setting in the field of "defaultSettings"|
+|params|parameters override setting for de-id methods.|valid parameters|False|null|
+
+Each DICOM tag can only be anonymized once, if two rules have conflicts on one tag, only the former rule will be applied.
+
+### How to set settings
+_defaultSettings_ and _customSettings_ are used to config anonymization method. (Detailed parameters are defined in [anonymization Methods Section]()). _defaultSettings_ are used when user does not specify settings in rule. As for _customSettings_, users need to add the setting with unique name. This setting can be used in "rules" by name.
+
+Here is an example, the first rule will use perturb setting in _defaultSettings_ and the second one will use perturbCustomerSetting in field _cutomSettings_.
+
+```
+{
+    "rules": [
+        {"tag": "(0010,0020)","method": "perturb"},
+        {"tag": "(0010,1010)","method": "perturb", "setting":"perturbCustomerSetting"}
+    ],
+    "defaultSettings":[
+        {"perturb":{ "span": "1", "roundTo": 2, "rangeType": "Proportional", "NoiseFunction" : "Uniform"}}
+    ],
+    "cutomizedSettings":[
+        {"perturbCustomerSetting":{ "span": "1", "roundTo": 2, "rangeType": "Proportional", "NoiseFunction" : "Uniform"}}
+    ]
+}
+```
+
+## Anonymization algorithms
+
+### Overview
+
+
+|De-id Method|Description|Setting Configuration|
+|-----|-----|-----|
+|keep|Retains the value as is.|No|
+|redact|Clean the value.|Yes|
+|remove|Remove the element. |No|
+|perturb|Perturb the value with random noise addition.|Yes|
+|dateShift|Shift the value using the Date-shift algorithm.|Yes|
+|cryptoHash|Transform the value using Crypto-hash method.|Yes|
+|encrypt|Transform the value using Encrypt method.|Yes|
+|substitute|Substitute the value to a predefined value.|Yes|
+|refreshUID|replace with a non-zero length UID|No|
+
+Setting configuration indicates the algorithm needs _defaultSettings_ and _customSettings_ or not.
+
+### Redact 
+
+The value will be erased by default. But for age (AS), date (DA) and date time (DT), users can enable partial redact in setting as follow:
+
+|Parameters|Description|Valid Value|Affected VR|Required|default value|
+|----|------|--|--|--|--|
+|enablePartialAgesForRedact|If the value is set to true, only age values over 89 will be redacted.|boolean| AS |False|False|
+|enablePartialDatesForRedact|If the value is set to true, date, dateTime will keep year. e.g. 20210130 -> 20210101|boolean|DA, DT|False|False|
+
+Here is a sample rule using redact method. It uses _defaultSettings_ which enables partial redact both for age, date and dateTime:
+```
+{
+    "rules": [
+        {"tag": "(0010,0020)","method": "redact"},
+    ],
+    "defaultSettings":[
+        {"redact":{"enablePartialAgesForRedact": true","enablePartialDatesForRedact": true}}
+    ],
+    "cutomizedSettings":[
+    ]
+}
+
+```
+
+### Perturb
+
+With perturb rule, you can replace specific values by adding noise. Perturb function can be used for numeric values (ushort, short, uint, int, ulong, long, decimal, double, float). Setting for perturb includes following parameters:
+
+|Parameters|Description|Valid Value|Required|default value|
+|----|----|----|----|---|
+|Span| A non-negative value representing the random noise range. For fixed range type, the noise will be sampled from a uniform distribution over [-span/2, span/2]. For proportional range type, the noise will be sampled from a uniform distribution over [-span/2 * value, span/2 * value]|Positive Integer|True|1|
+|RangeType|Define whether the span value is fixed or proportional. If type is fixed, the range will be [-span/2, span/2], and for proportional range, it will be [-span/2 * value, span/2 * value]. |fixed , proportional|False|proportional|
+|RoundTo| specifies the number of decimal places to round to.|A value from 0 to 28|False|2|
+
+Here is a sample rule using perturb method and using _perturbCustomerSetting_ as setting with a fixed range [-5, 5] with decimal place round to 0:
+```
+{
+    "rules": [
+        {"tag": "(0020,1010)", "method": "perturb", "settings":"perturbCustomerSetting"}
+    ],
+    "defaultSettings":[
+        {"perturb":{ "span": "1", "roundTo": 2, "rangeType": "Proportional"}},
+    ],
+    "customSettings":[
+        {"perturbCustomerSetting":{ "span": "10", "roundTo": 0, "rangeType": "Fixed"}},
+    ]
+}
+```
+
+### DateShift
+
+With this method, the input date/dateTime/ value will be shifted within a specific range. Dateshift function can only be used for date (DA) and date time (DT) types. In configuration, customers can define dateShiftRange, DateShiftKey and dateShiftScope. 
+
+|Parameters|Description|Valid Value|Required|default value|
+|----|----|--|--|--|
+|dateShiftRange| A non-negative value representing the dateshift range. Date value will be shifted within [-dateShiftRange, dateShiftRange] days.|positive integer|False|50|
+|dateShiftKey|Key used to generate shift days.|string|False|A randomly generated string will be used as default key|
+|dateShiftScope|Scopes that share the same date shift key prefix and will be shift with the same days. |SeriesInstance, StudyInstance, SOPInstance. |False|SeriesInstance|
+
+Here is a sample rule using dateShift method on DICOM tags with VR in DA. The dateShift setting is given in _defaultSettings_ field:
+```
+{
+    "rules": [
+        {"tag": "DA",  "method": "dateshift"}
+    ],
+    "defaultSettings":[
+        {"dateShift":{"dateShiftKey": "123", "dateShiftScope": "SeriesInstance", "dateShiftRange": "50"}}
+    ],
+    "customSettings":[
+    ]
+}
+```
+
+### CryptoHash
+This function use HMAC-SHA256 algorithm and outputs a Hex encoded representation (for example, a3c024f01cccb3b63457d848b0d2f89c1f744a3d). The length of output string is 64 bytes. You should pay attention to the length limitation of output DICOM file.
+In cryptoHash setting, you can set cryptoHash key in setting.
+
+|Parameters|Description|Valid Values|Required|default value|
+|----|------|--|--|--|
+|cryptoHashKey| Key for cryptoHash|string|False|A randomly generated string|
+
+Here is a sample rule using cryptoHash on DICOM tag named PatientID with default cryptoHash setting:
+
+```
+{
+    "rules": [
+        {"tag": "PatientID",  "method": "cryptohash"}
+    ],
+    "defaultSettings":[
+        {"cryptoHash":{"cryptoHashKey": "123" }}
+    ],
+    "customSettings":[
+    ]
+}
+```
+
+### Encryption
+We use AES-CBC algorithm to transform the value with an encryption key, and then replace the original value with a Base64 encoded representation of the encrypted value. The algorithm generates a random and unique initialization vector (IV) for each encryption, therefore the encrypted results are different for the same input values.
+
+Users can set encrypt key in encrypt setting.
+|Parameters|Description|Valid Values|Required|default value|
+|----|------|--|--|--|
+|encryptKey| Key for encryption|128, 192 or 256 bit string|False|A randomly generated 256-bit string|
+
+>Note: Similar with cryptoHash function, you should use the method on those fields that accept a Base64 encoded value and avoid encrypting data fields with length limits because the Base64 encoded value will be longer than the original value.
+
+Here is a sample rule using encrypt method on PN tags with customized setting:
+```
+{
+    "rules": [
+        {"tag": "PN", "method": "encrypt", "setting":"customEncryptSetting"}
+    ],
+    "defaultSettings":[
+        "encrypt": {"encryptKey": "123456781234567812345678"},
+    ],
+    "customSettings":[
+        "customEncryptSetting": {"encryptKey": "0000000000000000"},
+    ]
+}
+```
+
+### Substitute
+Using substitue, you can specify a fixed and valid value to replace a target field. You can specify the parameter "replaceWith" in setting, which is the new value for substitute.
+
+|Parameters|Description|Valid Values|Required|default value|
+|----|------|--|--|--|
+|replaceWith| New value for substitute|string|True|"ANONYMOUS"|
+
+Here is a sample rule using substitute method on dateTime tags and replace the value to "20000101":
+```
+{
+    "rules": [
+        {"tag": "DT", "method": "substitute", "setting":"customDateTimeSubstituteSetting"}
+    ],
+    "defaultSettings":[
+        "substitute": {"replaceWith": "ANONYMOUS"}
+    ],
+    "customSettings":[
+        {"customDateTimeSubstituteSetting":{"replaceWith": "20000101"}},
+    ]
+}
+```
+
+## Output validation
+Anonymizer tool may transform a value to an invalid output. If you enable  validateOutput, it will validate against value multiplicity, value types and format in DICOM specification. 
+
+For example, if using encryption method on PatientID, which is a 64 chars maximum string, the encrypted output may exceed 64 chars. If disable validateOutput, the output DICOM file may be invalid for the continuing process. If you enable validateOutput, the anonymize process will be failed.
+
+Output validation only check value for each DICOM tag, but not check the constrains for DICOM file. For example, if some tags changed or removed (e.g. SOPInstanceUID is required in DICOM file and the value for SpecificCharaterSet will effect other tags's value.), the output DICOM file may be damaged. 
+
+## Current limitations
+* We only support metadata anonymization in DICOM. Not applicable on pixel data. 
+* For DICOM tag which is a Sequence of Items (SQ), we only support redact and remove methods on the entire sequence.
+* The constranis amoung tags are not considered in output validation for now. Customers should take care of the effect when changing tags' values.
