@@ -4,10 +4,13 @@ using EnsureThat;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Serialization;
+using Hl7.Fhir.Specification;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Microsoft.Health.Fhir.Anonymizer.Core.Validation;
 
@@ -18,9 +21,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         private readonly FhirJsonParser _parser = new FhirJsonParser();
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly ResourceValidator _validator = new ResourceValidator();
-        private readonly AnonymizerConfigurationManager _configurationManger;
+        private readonly AnonymizerConfigurationManager _configurationManager;
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
         private readonly AnonymizationFhirPathRule[] _rules;
+        private readonly IStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
 
         public static void InitializeFhirPathExtensionSymbols()
         {
@@ -34,12 +38,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
 
         public AnonymizerEngine(AnonymizerConfigurationManager configurationManager)
         {
-            _configurationManger = configurationManager;
+            _configurationManager = configurationManager;
             _processors = new Dictionary<string, IAnonymizerProcessor>();
 
-            InitializeProcessors(_configurationManger);
+            InitializeProcessors(_configurationManager);
 
-            _rules = _configurationManger.FhirPathRules;
+            _rules = _configurationManager.FhirPathRules;
 
             _logger.LogDebug("AnonymizerEngine initialized successfully");
         }
@@ -65,9 +69,21 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         public ITypedElement AnonymizeElement(ITypedElement element, AnonymizerSettings settings = null)
         {
             EnsureArg.IsNotNull(element, nameof(element));
+            try
+            {
+                ElementNode resourceNode = ElementNode.FromElement(element);
+                return resourceNode.Anonymize(_rules, _processors);
+            }
+            catch (AnonymizerProcessingException)
+            {
+                if(_configurationManager.Configuration.processingErrors == ProcessingErrorsOption.Skip)
+                {
+                    // Return empty resource.
+                    return new EmptyElement(element.InstanceType);
+                }
 
-            ElementNode resourceNode = ElementNode.FromElement(element);
-            return resourceNode.Anonymize(_rules, _processors);
+                throw;
+            }
         }
 
         public Resource AnonymizeResource(Resource resource, AnonymizerSettings settings = null)
@@ -86,13 +102,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));
 
             var resource = _parser.Parse<Resource>(json);
-            Resource anonymizedResource = AnonymizeResource(resource, settings);
+            ITypedElement anonymizedElement= AnonymizeElement(resource.ToTypedElement(), settings);
 
             FhirJsonSerializationSettings serializationSettings = new FhirJsonSerializationSettings
             {
                 Pretty = settings != null && settings.IsPrettyOutput
             };
-            return anonymizedResource.ToJson(serializationSettings);
+            return anonymizedElement.ToJson(serializationSettings);
         }
 
         private void ValidateInput(AnonymizerSettings settings, Resource resource)

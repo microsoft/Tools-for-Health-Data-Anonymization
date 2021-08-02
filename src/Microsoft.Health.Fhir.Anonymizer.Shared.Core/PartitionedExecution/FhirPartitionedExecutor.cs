@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.PartitionedExecution;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core
@@ -49,7 +50,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             AnonymizerFunctionAsync = anonymizerFunctionAsync;
         }
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken, bool breakOnAnonymizationException = false, IProgress<BatchAnonymizeProgressDetail> progress = null)
+        public async Task ExecuteAsync(CancellationToken cancellationToken, IProgress<BatchAnonymizeProgressDetail> progress = null)
         {
             List<Task<IEnumerable<TResult>>> executionTasks = new List<Task<IEnumerable<TResult>>>();
             List<TSource> batchData = new List<TSource>();
@@ -68,7 +69,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
                     continue;
                 }
 
-                executionTasks.Add(AnonymizeAsync(batchData, breakOnAnonymizationException, progress, cancellationToken));
+                executionTasks.Add(AnonymizeAsync(batchData, progress, cancellationToken));
                 batchData = new List<TSource>();
                 if (executionTasks.Count < PartitionCount)
                 {
@@ -80,7 +81,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
 
             if (batchData.Count > 0)
             {
-                executionTasks.Add(AnonymizeAsync(batchData, breakOnAnonymizationException, progress, cancellationToken));
+                executionTasks.Add(AnonymizeAsync(batchData, progress, cancellationToken));
             }
 
             while (executionTasks.Count > 0)
@@ -94,7 +95,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             }
         }
 
-        private async Task<IEnumerable<TResult>> AnonymizeAsync(List<TSource> batchData, bool breakOnAnonymizationException, IProgress<BatchAnonymizeProgressDetail> progress, CancellationToken cancellationToken)
+        private async Task<IEnumerable<TResult>> AnonymizeAsync(List<TSource> batchData, IProgress<BatchAnonymizeProgressDetail> progress, CancellationToken cancellationToken)
         {
             return await Task.Run(async () =>
             {
@@ -110,21 +111,16 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
                         throw new OperationCanceledException();
                     }
 
-                    try
+                    TResult anonymizedResult = await AnonymizerFunctionAsync(content);
+                    if (EmptyElement.IsEmptyElement(anonymizedResult))
                     {
-                        TResult anonymizedResult = await AnonymizerFunctionAsync(content);
-                        result.Add(anonymizedResult);
+                        batchAnonymizeProgressDetail.ProcessSkipped++;
+                    }
+                    else
+                    {
                         batchAnonymizeProgressDetail.ProcessCompleted++;
                     }
-                    catch (Exception)
-                    {
-                        if (breakOnAnonymizationException)
-                        {
-                            throw;
-                        }
-
-                        batchAnonymizeProgressDetail.ProcessFailed++;
-                    }                    
+                    result.Add(anonymizedResult);
                 }
 
                 progress?.Report(batchAnonymizeProgressDetail);

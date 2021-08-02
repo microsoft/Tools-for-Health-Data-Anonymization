@@ -14,6 +14,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
     public static class ElementNodeOperationExtensions
     {
         private static readonly PocoStructureDefinitionSummaryProvider s_provider = new PocoStructureDefinitionSummaryProvider();
+        private const string _metaNodeName = "meta";
 
         public static ElementNode Anonymize(this ElementNode node, AnonymizationFhirPathRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
         {
@@ -32,7 +33,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
                 return true;
             }
 
-            var children = node.Children().Cast<ElementNode>().ToList();
+            var children = node.Children().CastElementNodes().ToList();
             foreach (var child in children)
             {
                 // Remove child if it is null => return true
@@ -114,7 +115,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
             ElementNode newMetaNode = ElementNode.FromElement(meta.ToTypedElement());
             if (metaNode == null)
             {
-                node.Add(s_provider, newMetaNode);
+                node.Add(s_provider, newMetaNode, _metaNodeName);
             }
             else
             {

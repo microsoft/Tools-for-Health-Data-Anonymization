@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 using Xunit;
 
@@ -40,7 +41,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors.Settings
         [MemberData(nameof(GetInvalidPerturbFhirRuleConfigs))]
         public void GivenAInvalidPerturbSetting_WhenValidate_ExceptionShouldBeThrown(Dictionary<string, object> config)
         {
-            Assert.Throws<AnonymizerConfigurationErrorsException>(() => PerturbSetting.ValidateRuleSettings(config));
+            Assert.Throws<AnonymizerConfigurationException>(() => PerturbSetting.ValidateRuleSettings(config));
         }
     }
 }

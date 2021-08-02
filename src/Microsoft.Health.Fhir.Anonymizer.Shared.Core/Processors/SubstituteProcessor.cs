@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using EnsureThat;
+using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using Hl7.Fhir.Rest;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Specification;
 using Hl7.FhirPath.Sprache;
-using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 
@@ -40,7 +40,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 if (replacementNodeType == null)
                 {
                     // Shall never throws here
-                    throw new Exception($"Node type is invalid at path {node.GetFhirPath()}.");
+                    throw new AnonymizerProcessingException($"Node type is invalid at path {node.GetFhirPath()}.");
                 }
                 // Convert null object to empty object
                 var replaceWith = substituteSetting.ReplaceWith ?? "{}";
@@ -69,8 +69,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             var replaceChildrenNames = replacementNode.Children().Select(element => element.Name).ToHashSet();
             foreach (var name in replaceChildrenNames)
             {
-                var children = node.Children(name).Cast<ElementNode>().ToList();
-                var targetChildren = replacementNode.Children(name).Cast<ElementNode>().ToList();
+                var children = node.Children(name).CastElementNodes().ToList();
+                var targetChildren = replacementNode.Children(name).CastElementNodes().ToList();
 
                 int i = 0;
                 foreach (var child in children)
@@ -108,7 +108,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             // children nodes not presented in replacement value, we need either remove or keep a dummy copy
             var nonReplacementChildren = node.Children()
                 .Where(element => !replaceChildrenNames.Contains(element.Name))
-                .Cast<ElementNode>().ToList();
+                .CastElementNodes().ToList();
             foreach (var child in nonReplacementChildren)
             {
                 if (visitedNodes.Contains(child))
@@ -135,7 +135,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
         {
             var shouldKeep = false;
             // If a child (no matter how deep) has been modified, this node should be kept
-            foreach (var child in node.Children().Cast<ElementNode>())
+            foreach (var child in node.Children().CastElementNodes())
             {
                 shouldKeep |= GenerateKeepNodeSetForSubstitution(child, visitedNodes, keepNodes);
             }
@@ -154,7 +154,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
         private void MarkSubstitutedFragmentAsVisited(ElementNode node, HashSet<ElementNode> visitedNodes)
         {
             visitedNodes.Add(node);
-            foreach (var child in node.Children().Cast<ElementNode>())
+            foreach (var child in node.Children().CastElementNodes())
             {
                 MarkSubstitutedFragmentAsVisited(child, visitedNodes);
             }

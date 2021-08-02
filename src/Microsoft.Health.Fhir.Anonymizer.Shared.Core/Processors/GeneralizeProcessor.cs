@@ -6,7 +6,7 @@ using Hl7.Fhir.Model;
 using Hl7.FhirPath;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
-using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
@@ -19,7 +19,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(settings);
 
             var result = new ProcessResult();
-            if (!ModelInfo.IsPrimitive(node.InstanceType) || node.Value == null)
+            if (!ModelInfo.IsPrimitive(node.InstanceType))
+            {
+                throw new AnonymizerRuleNotApplicableException(
+                    $"Generalization is not applicable on the node with type {node.InstanceType}. Only FHIR primitive nodes (ref: https://www.hl7.org/fhir/datatypes.html#primitive) are applicable.");
+            }
+
+            if (node.Value == null)
             {
                 return result;
             }
@@ -36,9 +42,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                         return result;
                     }
                 }
-                catch (InvalidOperationException ex)
+                catch (Exception ex)
                 {
-                    throw new AnonymizerConfigurationErrorsException($"Invalid cases expression {eachCase}.", ex);
+                    throw new AnonymizerProcessingException($"Generalize failed when processing {eachCase}.", ex);
                 }
             }
 
