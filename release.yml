@@ -2,7 +2,9 @@
 trigger:
 - refs/heads/master
 - refs/heads/dev
-pr: ['dev']
+pr:
+- master
+- dev
 
 variables:
   solution: '**/*.sln'
