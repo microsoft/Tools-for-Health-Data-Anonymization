@@ -1,0 +1,12 @@
+﻿{
+  "fhirPathRules": [
+    {
+      "path": "Condition.onset as Age",
+      "method": "generalize",
+      "cases": {
+        "$this>=0 and $this<10": "10"
+      },
+      "otherValues": "unknown"
+    }
+  ]
+}

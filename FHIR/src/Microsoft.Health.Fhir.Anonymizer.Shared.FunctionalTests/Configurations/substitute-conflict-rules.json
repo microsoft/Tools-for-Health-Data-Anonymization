@@ -1,0 +1,22 @@
+﻿{
+  "fhirPathRules": [
+    {
+      "path": "Patient.name.period.start",
+      "method": "redact"
+    },
+    {
+      "path": "Patient.name",
+      "method": "substitute",
+      "replaceWith": {
+        "family": "example",
+        "given": [
+          "test",
+          "testing"
+        ]
+      }
+    }
+  ],
+  "parameters": {
+    "enablePartialDatesForRedact": true
+  }
+}

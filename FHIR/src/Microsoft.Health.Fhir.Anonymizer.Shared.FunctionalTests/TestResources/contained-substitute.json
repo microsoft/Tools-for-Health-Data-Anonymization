@@ -1,0 +1,36 @@
+{
+  "resourceType": "Condition",
+  "contained": [
+    {
+      "resourceType": "Patient",
+      "id": "p1",
+      "name": [
+        {
+          "family": "Family1",
+          "given": [
+            "Patricia"
+          ]
+        }
+      ]
+    },
+    {
+      "resourceType": "Patient",
+      "id": "p2",
+      "name": [
+        {
+          "family": "Family2",
+          "given": [
+            "Patricia",
+            "Jim"
+          ],
+          "period": {
+            "start": "1999-01-01"
+          }
+        }
+      ]
+    }
+  ],
+  "asserter": {
+    "reference": "#p1"
+  }
+}

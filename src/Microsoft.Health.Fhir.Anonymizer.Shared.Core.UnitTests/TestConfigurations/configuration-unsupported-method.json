@@ -1,9 +1,0 @@
-﻿{
-    "fhirVersion": "",
-    "fhirPathRules": [
-        {
-            "path": "Patient",
-            "method": "invaliid"
-        }
-    ]
-}

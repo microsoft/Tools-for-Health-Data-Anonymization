@@ -1,8 +1,0 @@
-﻿{
-  "fhirPathRules": [
-    {
-      "path": "Patient",
-      "method": "substitute"
-    }
-  ]
-}

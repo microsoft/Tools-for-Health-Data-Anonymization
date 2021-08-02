@@ -1,9 +1,0 @@
-﻿{
-  "fhirPathRules": [
-    {
-      "path": "Patient.name.family",
-      "method": "substitute",
-      "replaceWith": "example"
-    }
-  ]
-}

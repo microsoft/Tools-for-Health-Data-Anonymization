@@ -61,9 +61,9 @@ You can also export FHIR resource from your FHIR server using [Bulk Export](http
 ## Anonymize FHIR data using the command line tool
 Once you have built the command line tool, you will find two executable files for R4 and STU 3 respectively: 
 
-1. Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.exe in the $SOURCE\src\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder. 
+1. Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.exe in the $SOURCE\FHIR\src\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder. 
 
-2. Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.exe in the $SOURCE\src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder.
+2. Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.exe in the $SOURCE\FHIR\src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder.
 
  You can use these executables to anonymize FHIR resource files in a folder.   
 ```
@@ -119,7 +119,7 @@ You can also export FHIR resources from a FHIR server using [Bulk Export](https:
 
 ### Create Data Factory pipeline
 
-1. Enter the project folder $SOURCE\src\Microsoft.Health.Fhir.Anonymizer.\<version>.AzureDataFactoryPipeline. Locate _AzureDataFactorySettings.json_ in the project and replace the values as described below.
+1. Enter the project folder $SOURCE\FHIR\src\Microsoft.Health.Fhir.Anonymizer.\<version>.AzureDataFactoryPipeline. Locate _AzureDataFactorySettings.json_ in the project and replace the values as described below.
 
 > **[!NOTE]**
 > dataFactoryName can contain only lowercase characters or numbers, and must be 3-19 characters in length.
@@ -219,7 +219,7 @@ Out of the 18 identifier types mentioned in HIPAA Safe Harbor method (2)(i), thi
 This configuration file is provided in a best-effort manner. We **strongly** recommend that you review the HIPAA guidelines as well as the implementation of this project before using it for you anonymization requirements. 
 
 
-The safe harbor configuration files can be accessed via [R4](src/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool/configuration-sample.json) and [STU 3](src/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool/configuration-sample.json) links.
+The safe harbor configuration files can be accessed via [R4](FHIR/src/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool/configuration-sample.json) and [STU 3](FHIR/src/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool/configuration-sample.json) links.
 
 # Concepts
 
@@ -302,7 +302,7 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
 |encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
 |substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value. |
-|generalize|Elements of primitive types|[Generalizes](#Generalize-method) the value into a more general, less distinguishing value.
+|generalize|Elements of [primitive types](https://www.hl7.org/fhir/datatypes.html#primitive)|[Generalizes](#Generalize-method) the value into a more general, less distinguishing value.
 
 Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
@@ -402,18 +402,18 @@ To substitute Address data types with a fixed json fragement
 To generalize valueQuantity fields of Observation resource using expression to define the range mapping
 ```json
 {
-  "path": "nodesByType('Observation').value.value",
+  "path": "nodesByType('Observation').ofType(Quantity).value",
   "method": "generalize",
   "cases":{
-    "$this.value>=0 and $this.value<20": "20",
-    "$this.value>=20 and $this.value<40": "40",
-    "$this.value>=40 and $this.value<60": "60",
-    "$this.value>=60 and $this.value<80": "80"     
+    "$this>=0 and $this<20": "20",
+    "$this>=20 and $this<40": "40",
+    "$this>=40 and $this<60": "60",
+    "$this>=60 and $this<80": "80"     
   },
   "otherValues":"redact"
 }
 ```
-> [!Note] : Take care of the expression for field has choices of types. e.g. Observation.value[x]. The expression for the path should be Observation.value.
+> [!Note] : Take care of the expression for field has choices of types. e.g. Observation.value[x]. The expression for the path should be Observation.ofType(x).value.
 
 To generalize string data type using expression to define the value set mapping
 

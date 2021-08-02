@@ -1,0 +1,9 @@
+﻿{
+  "fhirVersion": "",
+  "fhirPathRules": [
+    {
+      "path": "Resource",
+      "method": "redact"
+    }
+  ]
+}
