@@ -2,6 +2,7 @@
 trigger:
 - refs/heads/master
 - refs/heads/dev
+
 pr:
 - master
 - dev
