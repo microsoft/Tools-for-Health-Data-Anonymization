@@ -1,0 +1,33 @@
+{
+  "resourceType": "ProcessRequest",
+  "id": "b5e38ee79ad5c587fe56a273b27cbe52c923bff2399222d383d3961fcd2fa9f6",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "redacted"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "cryptographic hash function"
+      },
+      {
+        "code": "PERTURBED",
+        "display": "exact value is replaced with another exact value"
+      }
+    ]
+  },
+  "identifier": [
+    {
+      "system": "http://happyvalley.com/processrequest"
+    }
+  ],
+  "status": "active",
+  "action": "poll",
+  "created": "2014-08-08",
+  "organization": {
+    "reference": "Organization/ccc8c71905806db18c0241b58a8e36e949ab8a45961041b4226b2a4284568e69"
+  }
+}

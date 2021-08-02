@@ -1,0 +1,104 @@
+﻿{
+  "fhirVersion": "",
+  "fhirPathRules": [
+    {
+      "path": "Patient.nodesByType('HumanName').use",
+      "method": "keep"
+    },
+    {
+      "path": "Patient.nodesByType('Address').state",
+      "method": "keep"
+    },
+    {
+      "path": "Patient.nodesByType('Address').country",
+      "method": "keep"
+    },
+    {
+      "path": "Patient.nodesByType('Address').where(city='KeepTest')",
+      "method": "keep"
+    },
+    {
+      "path": "Patient.generalPractitioner",
+      "method": "redact"
+    },
+    {
+      "path": "Patient.link.other",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('date')",
+      "method": "dateShift"
+    },
+    {
+      "path": "nodesByType('dateTime')",
+      "method": "dateShift"
+    },
+    {
+      "path": "nodesByType('instant')",
+      "method": "dateShift"
+    },
+    {
+      "path": "nodesByType('Identifier')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('HumanName')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('Address')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('Annotation')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('Attachment')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('ContactPoint')",
+      "method": "redact"
+    },
+    {
+      "path": "nodesByType('Narrative')",
+      "method": "redact"
+    },
+    {
+      "path": "Patient.id",
+      "method": "cryptoHash"
+    },
+    {
+      "path": "Observation.subject",
+      "method": "cryptoHash"
+    },
+    {
+      "path": "Bundle.entry.fullUrl",
+      "method": "redact"
+    }
+  ],
+  "parameters": {
+    "dateShiftKey": "123",
+    "cryptoHashKey": "123",
+    "enablePartialAgesForRedact": true,
+    "enablePartialDatesForRedact": true,
+    "enablePartialZipCodesForRedact": true,
+    "restrictedZipCodeTabulationAreas": [
+      "036",
+      "059",
+      "102",
+      "203",
+      "205",
+      "369",
+      "556",
+      "692",
+      "821",
+      "823",
+      "878",
+      "879",
+      "884",
+      "893"
+    ]
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "resourceType": "Claim",
+  "id": "ea29e890d7fe155a0c0a25d2e2998f4ffee9fcb7722a96946c358674f363d196",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "redacted"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "cryptographic hash function"
+      },
+      {
+        "code": "PERTURBED",
+        "display": "exact value is replaced with another exact value"
+      }
+    ]
+  },
+  "identifier": [
+    {
+      "system": "http://happyvalley.com/claim"
+    }
+  ],
+  "status": "active",
+  "type": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/ex-claimtype"
+      }
+    ]
+  },
+  "use": "complete",
+  "patient": {
+    "reference": "Patient/ccc8c71905806db18c0241b58a8e36e949ab8a45961041b4226b2a4284568e69"
+  },
+  "created": "2014-07-06",
+  "insurer": {
+    "reference": "Organization/8b808a62f8893cf1ce0f44fb62b433e3c21a4f5605687689d9f0bb1a3524439b"
+  },
+  "organization": {
+    "reference": "Organization/ccc8c71905806db18c0241b58a8e36e949ab8a45961041b4226b2a4284568e69"
+  },
+  "careTeam": [
+    {
+      "sequence": 1,
+      "provider": {
+        "reference": "Practitioner/698d54f0494528a759f19c8e87a9f99e75a5881b9267ee3926bcf62c992d84ba"
+      }
+    }
+  ],
+  "diagnosis": [
+    {
+      "sequence": 1
+    }
+  ],
+  "insurance": [
+    {
+      "sequence": 1,
+      "focal": true,
+      "coverage": {
+        "reference": "Coverage/f2775138c72a7e7fdefd351ef3ac911db4127020dc05eaff91f8702602ce81f8"
+      }
+    }
+  ],
+  "item": [
+    {
+      "sequence": 1,
+      "careTeamLinkId": [
+        1
+      ],
+      "servicedDate": "2014-07-06",
+      "unitPrice": {
+        "value": 135.57,
+        "system": "urn:iso:std:iso:4217",
+        "code": "USD"
+      },
+      "net": {
+        "value": 135.57,
+        "system": "urn:iso:std:iso:4217",
+        "code": "USD"
+      }
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-references",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "http://example.org/fhir/Patient/23",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "23",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: 23</p><p><b>identifier</b>: 1234567</p></div>"
+        },
+        "identifier": [
+          {
+            "system": "http://example.org/ids",
+            "value": "1234567"
+          }
+        ],
+        "name": [
+          {
+            "use": "official",
+            "family": "Family",
+            "given": [
+              "GivenFirst",
+              "GivenSecond"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:04121321-4af5-424c-a0e1-ed3aab1c349d",
+      "resource": {
+        "resourceType": "Patient",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative with Details</b></p></div>"
+        },
+        "name": [
+          {
+            "use": "nickname",
+            "family": "Family02",
+            "given": [
+              "GivenFirst02",
+              "GivenSecond02"
+            ],
+            "period": {
+              "end": "2012-12-30"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://example.org/fhir/Observation/123",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "123",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative with Details</b></p><p><b>id</b>: 123</p><p><b>status</b>: final</p><p><b>code</b>: Glucose [Moles/volume] in Blood <span>(Details : {LOINC code '15074-8' = 'Glucose [Moles/volume] in Blood', given as 'Glucose [Moles/volume] in Blood'})</span></p><p><b>subject</b>: <a>Patient/23</a></p></div>"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "15074-8",
+              "display": "Test display"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/23"
+        }
+      }
+    }
+  ]
+}

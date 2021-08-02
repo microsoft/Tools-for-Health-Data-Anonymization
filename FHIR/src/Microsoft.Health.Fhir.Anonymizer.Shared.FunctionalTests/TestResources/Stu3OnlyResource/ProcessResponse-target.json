@@ -1,0 +1,45 @@
+{
+  "resourceType": "ProcessResponse",
+  "id": "e6d4ae054f078e1674237de9e14c5700cb31cca0a9e2d059b4e6b5b7f0d852dc",
+  "meta": {
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "REDACTED",
+        "display": "redacted"
+      },
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "CRYTOHASH",
+        "display": "cryptographic hash function"
+      },
+      {
+        "code": "PERTURBED",
+        "display": "exact value is replaced with another exact value"
+      }
+    ]
+  },
+  "identifier": [
+    {
+      "system": "http://www.BenefitsInc.com/fhir/processresponse"
+    }
+  ],
+  "status": "active",
+  "created": "2014-09-23",
+  "organization": {
+    "reference": "Organization/8b808a62f8893cf1ce0f44fb62b433e3c21a4f5605687689d9f0bb1a3524439b"
+  },
+  "request": {
+    "reference": "60a9e4bc1586eea5e4f281c2924cd5e2d080ca774ba45d39b6a867e12c7eb6f5"
+  },
+  "outcome": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/processoutcomecodes"
+      }
+    ]
+  },
+  "requestOrganization": {
+    "reference": "Organization/ccc8c71905806db18c0241b58a8e36e949ab8a45961041b4226b2a4284568e69"
+  }
+}

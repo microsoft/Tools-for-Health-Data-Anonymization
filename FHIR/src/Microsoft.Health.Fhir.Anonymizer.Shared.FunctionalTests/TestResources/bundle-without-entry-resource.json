@@ -1,0 +1,25 @@
+﻿{
+  "resourceType": "Bundle",
+  "id": "bundle-transaction",
+  "meta": {
+    "lastUpdated": "2014-08-18T01:43:30Z",
+    "tag": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActReason",
+        "code": "HTEST",
+        "display": "test health data"
+      }
+    ]
+  },
+  "type": "transaction",
+  "entry": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "Patient/12334",
+        "ifNoneMatch": "W/\"4\"",
+        "ifModifiedSince": "2015-08-31T08:14:33+10:00"
+      }
+    }
+  ]
+}
