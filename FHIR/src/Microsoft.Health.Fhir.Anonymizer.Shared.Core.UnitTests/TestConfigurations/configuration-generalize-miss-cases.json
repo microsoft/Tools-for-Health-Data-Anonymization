@@ -1,9 +1,0 @@
-﻿{
-  "fhirPathRules": [
-    {
-      "path": "Condition.onset as Age",
-      "method": "generalize",
-      "otherValues": "keep"
-    }
-  ]
-}

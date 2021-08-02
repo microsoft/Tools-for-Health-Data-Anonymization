@@ -1,0 +1,3 @@
+*.cs      text    eol=LF
+*.json    text    eol=LF
+*.md      text    eol=LF

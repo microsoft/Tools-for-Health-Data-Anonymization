@@ -1,9 +1,0 @@
-﻿{
-  "fhirVersion": "",
-  "fhirPathRules": [
-    {
-      "path": "invalid()",
-      "method": "redact"
-    }
-  ]
-}
