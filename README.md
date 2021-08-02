@@ -61,9 +61,9 @@ You can also export FHIR resource from your FHIR server using [Bulk Export](http
 ## Anonymize FHIR data using the command line tool
 Once you have built the command line tool, you will find two executable files for R4 and STU 3 respectively: 
 
-1. Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.exe in the $SOURCE\src\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder. 
+1. Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.exe in the $SOURCE\FHIR\src\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder. 
 
-2. Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.exe in the $SOURCE\src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder.
+2. Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.exe in the $SOURCE\FHIR\src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder.
 
  You can use these executables to anonymize FHIR resource files in a folder.   
 ```
@@ -119,7 +119,7 @@ You can also export FHIR resources from a FHIR server using [Bulk Export](https:
 
 ### Create Data Factory pipeline
 
-1. Enter the project folder $SOURCE\src\Microsoft.Health.Fhir.Anonymizer.\<version>.AzureDataFactoryPipeline. Locate _AzureDataFactorySettings.json_ in the project and replace the values as described below.
+1. Enter the project folder $SOURCE\FHIR\src\Microsoft.Health.Fhir.Anonymizer.\<version>.AzureDataFactoryPipeline. Locate _AzureDataFactorySettings.json_ in the project and replace the values as described below.
 
 > **[!NOTE]**
 > dataFactoryName can contain only lowercase characters or numbers, and must be 3-19 characters in length.
@@ -219,7 +219,7 @@ Out of the 18 identifier types mentioned in HIPAA Safe Harbor method (2)(i), thi
 This configuration file is provided in a best-effort manner. We **strongly** recommend that you review the HIPAA guidelines as well as the implementation of this project before using it for you anonymization requirements. 
 
 
-The safe harbor configuration files can be accessed via [R4](src/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool/configuration-sample.json) and [STU 3](src/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool/configuration-sample.json) links.
+The safe harbor configuration files can be accessed via [R4](FHIR/src/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool/configuration-sample.json) and [STU 3](FHIR/src/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool/configuration-sample.json) links.
 
 # Concepts
 
@@ -302,7 +302,7 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 |cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
 |encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
 |substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value. |
-|generalize|Elements of primitive types|[Generalizes](#Generalize-method) the value into a more general, less distinguishing value.
+|generalize|Elements of [primitive types](https://www.hl7.org/fhir/datatypes.html#primitive)|[Generalizes](#Generalize-method) the value into a more general, less distinguishing value.
 
 Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
@@ -360,6 +360,17 @@ To perturb age fields of Condition resource by adding random noise having range 
 }
 ```
 
+To perturb a valueQuantity field in Observation resource by adding random noise having range ```[-0.1*originalValue, 0.1*originalValue]```
+```json
+{
+  "path": "(nodesByType('Observation').value as Quantity).value",
+  "method": "perturb",
+  "span": 0.2,
+  "rangeType": "proportional",
+  "roundTo": 0
+}
+```
+
 To generate hash of Resource Id
 ```json
 {"path": "Resource.id", "method": "cryptoHash"}
@@ -388,10 +399,10 @@ To substitute Address data types with a fixed json fragement
   }
 }
 ```
-To generalize age fields of Condition resource using expression to define the range mapping
+To generalize valueQuantity fields of Observation resource using expression to define the range mapping
 ```json
 {
-  "path": "condition.onset.value as Age",
+  "path": "nodesByType('Observation').ofType(Quantity).value",
   "method": "generalize",
   "cases":{
     "$this>=0 and $this<20": "20",
@@ -402,11 +413,13 @@ To generalize age fields of Condition resource using expression to define the ra
   "otherValues":"redact"
 }
 ```
+> [!Note] : Take care of the expression for field has choices of types. e.g. Observation.value[x]. The expression for the path should be Observation.ofType(x).value.
+
 To generalize string data type using expression to define the value set mapping
 
 ```json
 {
-  "path": "patient.communication.language",
+  "path": "Patient.communication.language.coding.code",
   "method": "generalize",
   "cases":{
     "$this in ('en-AU' | 'en-CA' | 'en-GB' |'en-IN' | 'en-NZ' | 'en-SG' | 'en-US')": "'en'",
@@ -420,10 +433,10 @@ To generalize string data type using expression for masking
 
 ```json
 {
-  "path": "patient.address.postalcode",
+  "path": "Patient.address.postalCode",
   "method": "generalize",
   "cases":{
-    "$this.startsWith('123') or $this.startsWith('234')": "$this.subString(0,2)+'****'", 
+    "$this.startsWith('123') or $this.startsWith('234')": "$this.substring(0,2)+'****'", 
   },
   "otherValues":"redact"
   }
@@ -432,11 +445,11 @@ To generalize dateTime, time, date and instant type using expression
 
 ```json
 {
-  "path": "person.birthDate",
+  "path": "Patient.birthDate",
   "method": "generalize",
   "cases":{
-    "$this >= @1990-1-1 and $this <= @2000-1-1": "@1990", 
-     "$this >= @2010-1-1 and $this <= @2020-1-1":"@2010-1-1T00:00:00"
+    "$this >= @1990-01-01 and $this <= @2000-01-01": "@1990", 
+     "$this >= @2010-01-01 and $this <= @2020-01-01":"@2010-01-01"
   },
   "otherValues":"redact"
 }
@@ -506,7 +519,7 @@ Generalization uses FHIRPath predicate expression to define a set of cases that 
 |string| _"$this in ('es-AR' \| 'es-ES' \| 'es-UY')": "'es'"_|Data fall in the value set will be mapped to "es".|'es-UY' -> 'es'|
 |string| _"$this.startsWith(\'123\')": "$this.subString(0,2)+\'*\*\*\*\' "_ |Mask sensitive string code.|'1230005' -> '123****'|
 |date, dateTime, time|_"$this >= @2010-1-1": "@2010"_|Data fall in a date/time/dateTime range will be mapped to one date/time/dateTime value.| 2016-03-10 -> 2010|
-|date, dateTime, time|_"$this.replaceMatches('(?&lt;year&gt;\\\d{2,4})-(?&lt;month&gt;\\\d{1,2})-(?&lt;day&gt;\\\d{1,2})\\\b', '${year}-${month}'"_|Omit "day" to generalize specific date.|2016-01-01 -> 2016-01|
+|date, dateTime, time|"$this.replaceMatches('(?&lt;year&gt;\\\d{2,4})-(?&lt;month&gt;\\\d{1,2})-(?&lt;day&gt;\\\d{1,2})\\\b', '${year}-${month}'" |Omit "day" to generalize specific date.|2016-01-01 -> 2016-01|
 
 For each generalization rule, there are several additional settings to specify in configuration files:
 - [required] **cases** An object defining key-value pairs to specify case condition and replacement value using FHIRPath predicate expression. _key_ represents case condition and _value_ represents target value.
