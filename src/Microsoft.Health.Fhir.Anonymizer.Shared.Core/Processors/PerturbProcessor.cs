@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EnsureThat;
-using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
 using MathNet.Numerics.Distributions;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
-    public partial class PerturbProcessor : IAnonymizerProcessor
+    public class PerturbProcessor : IAnonymizerProcessor
     {
         private static readonly HashSet<string> s_primitiveValueTypeNames = new HashSet<string> 
         {
@@ -35,32 +35,31 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(settings);
 
             var result = new ProcessResult();
+            var descendantsAndSelf = node.DescendantsAndSelf();
 
-            ElementNode valueNode = null;
-            if (s_primitiveValueTypeNames.Contains(node.InstanceType, StringComparer.InvariantCultureIgnoreCase))
+            foreach (var element in descendantsAndSelf)
             {
-                valueNode = node;
-            }
-            else if (s_quantityTypeNames.Contains(node.InstanceType, StringComparer.InvariantCultureIgnoreCase))
-            {
-                valueNode = node.Children(Constants.ValueNodeName).CastElementNodes().FirstOrDefault();
+                // Perturb will not happen if value node is empty or visited.
+                if (element.Value == null || context.VisitedNodes.Contains(element))
+                {
+                    continue;
+                }
+
+                if (!s_primitiveValueTypeNames.Contains(element.InstanceType, StringComparer.InvariantCultureIgnoreCase))
+                {
+                    throw new AnonymizerProcessingException(
+                        $"Perturb is not applicable on node with type {element.InstanceType}. Only FHIR integer, decimal, unsignedInt and positiveInt are applicable.");
+                }
+
+                var perturbSetting = PerturbSetting.CreateFromRuleSettings(settings);
+                AddNoise((ElementNode) element, perturbSetting);
+                result.AddProcessRecord(AnonymizationOperations.Perturb, element);
             }
 
-            // Perturb will not happen if value node is empty or visited.
-            if (valueNode?.Value == null || context.VisitedNodes.Contains(valueNode))
-            {
-                return result;
-            }
-
-            var perturbSetting = PerturbSetting.CreateFromRuleSettings(settings);
-
-            AddNoise(valueNode, perturbSetting);
-            context.VisitedNodes.UnionWith(node.Descendants().CastElementNodes());
-            result.AddProcessRecord(AnonymizationOperations.Perturb, node);
             return result;
         }
 
-        private void AddNoise(ElementNode node, PerturbSetting perturbSetting) 
+        private static void AddNoise(ElementNode node, PerturbSetting perturbSetting) 
         {
             if (s_integerValueTypeNames.Contains(node.InstanceType, StringComparer.InvariantCultureIgnoreCase))
             {
@@ -85,7 +84,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 perturbedValue = 0;
             }
             node.Value = perturbedValue;
-            return;
         }
     }
 }

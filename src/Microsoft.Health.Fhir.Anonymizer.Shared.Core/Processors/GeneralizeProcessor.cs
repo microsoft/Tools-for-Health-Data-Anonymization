@@ -10,7 +10,7 @@ using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
-    public partial class GeneralizeProcessor : IAnonymizerProcessor
+    public class GeneralizeProcessor : IAnonymizerProcessor
     {      
         public ProcessResult Process(ElementNode node, ProcessContext context = null, Dictionary<string, object> settings = null)
         {
@@ -25,7 +25,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                     $"Generalization is not applicable on the node with type {node.InstanceType}. Only FHIR primitive nodes (ref: https://www.hl7.org/fhir/datatypes.html#primitive) are applicable.");
             }
 
-            if (node.Value == null)
+            if (node.Value == null || context.VisitedNodes.Contains(node))
             {
                 return result;
             }

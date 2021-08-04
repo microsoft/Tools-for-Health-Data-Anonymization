@@ -11,63 +11,42 @@ using Microsoft.Health.Fhir.Anonymizer.Core.Visitors;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 {
-    public static class ElementNodeOperationExtensions
+    public static class TypedElementOperationExtensions
     {
         private static readonly PocoStructureDefinitionSummaryProvider s_provider = new PocoStructureDefinitionSummaryProvider();
         private const string _metaNodeName = "meta";
 
-        public static ElementNode Anonymize(this ElementNode node, AnonymizationFhirPathRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
+        public static ITypedElement Anonymize(this ITypedElement node, AnonymizationFhirPathRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
         {
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, processors);
-            node.Accept(visitor);
+            var handler = new AnonymizationHandler(rules, processors);
+            handler.Handle(node);
             node.RemoveNullChildren();
 
             return node;
         }
 
-        // Remove null children of current node, and return true => current node is null
-        public static bool RemoveNullChildren(this ElementNode node)
+        public static void RemoveNullChildren(this ITypedElement node)
         {
-            if (node == null)
-            {
-                return true;
-            }
-
-            var children = node.Children().CastElementNodes().ToList();
+            var children = node.Children().ToList();
             foreach (var child in children)
             {
-                // Remove child if it is null => return true
-                if (RemoveNullChildren(child))
-                {
-                    node.Remove(child);
-                }
-            }
+                RemoveNullChildren(child);
 
-            bool currentNodeIsEmpty = !node.Children().Any() && node.Value == null;
-            bool currentNodeIsFhirResource = node.IsFhirResource();
-            if (currentNodeIsEmpty && !currentNodeIsFhirResource)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
+                if (ShouldRemoveNode(child))
+                {
+                    ((ElementNode)node).Remove((ElementNode)child);
+                }
             }
         }
 
-        public static void AddSecurityTag(this ElementNode node, ProcessResult result)
+        public static void AddSecurityTag(this ITypedElement node, ProcessResult result)
         {
-            if (node == null)
+            if (node == null || result.ProcessRecords.Count == 0)
             {
                 return;
             }
 
-            if (result.ProcessRecords.Count == 0)
-            {
-                return;
-            }
-
-            ElementNode metaNode = node.GetMeta();
+            var metaNode = node.GetMeta();
             Meta meta = metaNode?.ToPoco<Meta>() ?? new Meta();
 
             if (result.IsRedacted && !meta.Security.Any(x =>
@@ -115,12 +94,22 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
             ElementNode newMetaNode = ElementNode.FromElement(meta.ToTypedElement());
             if (metaNode == null)
             {
-                node.Add(s_provider, newMetaNode, _metaNodeName);
+                ((ElementNode)node).Add(s_provider, newMetaNode, _metaNodeName);
             }
             else
             {
-                node.Replace(s_provider, metaNode, newMetaNode);
+                ((ElementNode)node).Replace(s_provider, (ElementNode)metaNode, newMetaNode);
             }
+        }
+
+        private static bool ShouldRemoveNode(this ITypedElement node)
+        {
+            if (node == null)
+            {
+                return true;
+            }
+
+            return !node.Children().Any() && node.Value == null && !node.IsFhirResource();
         }
     }
 }

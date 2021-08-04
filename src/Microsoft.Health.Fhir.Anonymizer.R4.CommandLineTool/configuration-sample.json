@@ -3,6 +3,7 @@
   "processingErrors": "raise",
   "fhirPathRules": [
     {"path": "nodesByType('Extension')", "method": "redact"},
+    {"path": "DomainResource.contained", "method": "redact"},
 
     {"path": "Organization.identifier", "method": "keep"},
     {"path": "Organization.telecom", "method": "keep"},

@@ -20,16 +20,23 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
         public ProcessResult Process(ElementNode node, ProcessContext context = null, Dictionary<string, object> settings = null)
         {
             var processResult = new ProcessResult();
-            if (string.IsNullOrEmpty(node?.Value?.ToString()))
+            var descendantsAndSelf = node.DescendantsAndSelf();
+
+            foreach (var element in descendantsAndSelf)
             {
-                return processResult;
+                if (element.Value == null || context?.VisitedNodes != null && context.VisitedNodes.Contains(element))
+                {
+                    continue;
+                }
+
+                var elementNode = (ElementNode) element;
+                var input = elementNode.Value.ToString();
+                elementNode.Value = EncryptUtility.EncryptTextToBase64WithAes(input, _key);
+                processResult.AddProcessRecord(AnonymizationOperations.Encrypt, elementNode);
+
+                _logger.LogDebug($"Fhir value '{input}' at '{elementNode.Location}' is encrypted to '{elementNode.Value}'.");
             }
 
-            var input = node.Value.ToString();
-            node.Value = EncryptUtility.EncryptTextToBase64WithAes(input, _key);
-            _logger.LogDebug($"Fhir value '{input}' at '{node.Location}' is encrypted to '{node.Value}'.");
-
-            processResult.AddProcessRecord(AnonymizationOperations.Encrypt, node);
             return processResult;
         }
     }

@@ -106,7 +106,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             SubstituteProcessor processor = new SubstituteProcessor();
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<ElementNode>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
 
@@ -125,7 +125,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             var node = ElementNode.FromElement(data.ToTypedElement());
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<ElementNode>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
 
@@ -144,7 +144,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             var node = ElementNode.FromElement(data.ToTypedElement());
             var context = new ProcessContext
             {
-                VisitedNodes = node.Select(processedNodePath).CastElementNodes().ToHashSet()
+                VisitedNodes = new HashSet<ITypedElement>(node.Select(processedNodePath).CastElementNodes())
             }; 
             Assert.NotEmpty(context.VisitedNodes);
             var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
@@ -171,7 +171,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             var node = ElementNode.FromElement(data.ToTypedElement());
             var context = new ProcessContext
             {
-                VisitedNodes = new HashSet<ElementNode>()
+                VisitedNodes = new HashSet<ITypedElement>()
             };
             var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(configJson);
 

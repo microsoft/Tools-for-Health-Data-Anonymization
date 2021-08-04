@@ -26,6 +26,10 @@
       "method": "redact"
     },
     {
+      "path": "nodesByType('date').extension.url",
+      "method": "keep"
+    },
+    {
       "path": "nodesByType('date')",
       "method": "dateShift"
     },

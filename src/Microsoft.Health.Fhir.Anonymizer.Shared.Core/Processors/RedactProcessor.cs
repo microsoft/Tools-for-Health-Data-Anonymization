@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Hl7.Fhir.ElementModel;
-using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
@@ -34,34 +33,42 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
         public ProcessResult Process(ElementNode node, ProcessContext context = null, Dictionary<string, object> settings = null)
         {
-            if (string.IsNullOrEmpty(node?.Value?.ToString()))
+            var result = new ProcessResult();
+            var descendantsAndSelf = node.DescendantsAndSelf();
+
+            foreach (var element in descendantsAndSelf)
             {
-                return new ProcessResult();
+                if (element.Value == null || context?.VisitedNodes != null && context.VisitedNodes.Contains(element))
+                {
+                    continue;
+                }
+
+                var elementNode = (ElementNode) element;
+
+                if (elementNode.IsDateNode())
+                {
+                    result.Update(DateTimeUtility.RedactDateNode(elementNode, EnablePartialDatesForRedact));
+                }
+                else if (elementNode.IsDateTimeNode() || elementNode.IsInstantNode())
+                {
+                    result.Update(DateTimeUtility.RedactDateTimeAndInstantNode(elementNode, EnablePartialDatesForRedact));
+                }
+                else if (elementNode.IsAgeDecimalNode())
+                {
+                    result.Update(DateTimeUtility.RedactAgeDecimalNode(elementNode, EnablePartialAgesForRedact));
+                }
+                else if (elementNode.IsPostalCodeNode())
+                {
+                    result.Update(PostalCodeUtility.RedactPostalCode(elementNode, EnablePartialZipCodesForRedact, RestrictedZipCodeTabulationAreas));
+                }
+                else
+                {
+                    elementNode.Value = null;
+                    result.AddProcessRecord(AnonymizationOperations.Redact, elementNode);
+                }
             }
 
-            if (node.IsDateNode())
-            {
-                return DateTimeUtility.RedactDateNode(node, EnablePartialDatesForRedact);
-            }
-            else if (node.IsDateTimeNode() || node.IsInstantNode())
-            {
-                return DateTimeUtility.RedactDateTimeAndInstantNode(node, EnablePartialDatesForRedact);
-            }
-            else if (node.IsAgeDecimalNode())
-            {
-                return DateTimeUtility.RedactAgeDecimalNode(node, EnablePartialAgesForRedact);
-            }
-            else if (node.IsPostalCodeNode())
-            {
-                return PostalCodeUtility.RedactPostalCode(node, EnablePartialZipCodesForRedact, RestrictedZipCodeTabulationAreas);
-            }
-            else
-            {
-                node.Value = null;
-                ProcessResult result = new ProcessResult();
-                result.AddProcessRecord(AnonymizationOperations.Redact, node);
-                return result;
-            }
+            return result;
         }
     }
 }

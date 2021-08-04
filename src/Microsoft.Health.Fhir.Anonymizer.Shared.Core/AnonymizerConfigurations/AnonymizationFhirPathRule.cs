@@ -6,13 +6,15 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizationFhirPathRule : AnonymizerRule
     {
-        private static Regex s_pathRegex = new Regex(@"^(?<resourceType>[A-Z][a-zA-Z]*)?(\.)?(?<expression>.*?)$");
+        public static readonly Regex TypeRuleRegex = new Regex(@"^nodesByType\([\'|\""](?<resourceType>[A-Za-z0-9]*)[\'|\""]\)(\.)?(?<expression>[^\.]*?)$");
+        public static readonly Regex NameRuleRegex = new Regex(@"^nodesByName\([\'|\""](?<name>[A-Za-z0-9]*)[\'|\""]\)(\.)?(?<expression>[^\.]*?)$");
+        private static readonly Regex s_pathRegex = new Regex(@"^(?<resourceType>[A-Z][a-zA-Z]*)?(\.)?(?<expression>.*?)$");
 
         public string Expression { get; set; }
 
-        public string ResourceType { get; private set; }
+        public string ResourceType { get; }
 
-        public bool IsResourceTypeRule { get { return Path.Equals(ResourceType);  } }
+        public bool IsResourceTypeRule => Path.Equals(ResourceType);
 
         public static AnonymizationFhirPathRule CreateAnonymizationFhirPathRule(Dictionary<string, object> config)
         {

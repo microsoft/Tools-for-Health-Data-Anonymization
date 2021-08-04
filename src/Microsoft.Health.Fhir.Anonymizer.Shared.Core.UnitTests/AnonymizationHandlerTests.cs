@@ -12,11 +12,11 @@ using Microsoft.Health.Fhir.Anonymizer.Core.Utility;
 using Microsoft.Health.Fhir.Anonymizer.Core.Visitors;
 using Xunit;
 
-namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
 {
-    public class AnonymizationVisitorTests
+    public class AnonymizationHandlerTests
     {
-        public AnonymizationVisitorTests()
+        public AnonymizationHandlerTests()
         {
             FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
         }
@@ -29,11 +29,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Patient.address", "address", "Patient", "redact", AnonymizerRuleType.FhirPathRule, "Patient.address"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor);
+            handler.Handle(patientNode);
             patientNode.RemoveNullChildren();
 
             var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
@@ -52,11 +52,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Patient.address", "address", "Patient", "cryptoHash", AnonymizerRuleType.FhirPathRule, "Patient.address"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor);
+            handler.Handle(patientNode);
             patientNode.RemoveNullChildren();
 
             var patientAddress = patientNode.Select("Patient.address[0].city").FirstOrDefault();
@@ -75,11 +75,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Patient.address", "address", "Patient", "encrypt", AnonymizerRuleType.FhirPathRule, "Patient.address"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor);
+            handler.Handle(patientNode);
             patientNode.RemoveNullChildren();
 
             var patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
@@ -101,7 +101,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                     new Dictionary<string, object> { {"replaceWith", "ExampleCity2020" } })           
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
@@ -110,7 +110,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             var patientCountry = patientNode.Select("Patient.address[0].country").FirstOrDefault();
             Assert.Equal("patienttestcountry1", patientCountry.Value.ToString());
 
-            patientNode.Accept(visitor);
+            handler.Handle(patientNode);
             patientNode.RemoveNullChildren();
 
             patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
@@ -134,7 +134,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                     new Dictionary<string, object> { {"replaceWith", "{ \"city\": \"ExampleCity2020\" }" } } ),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
@@ -143,7 +143,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             var patientCountry = patientNode.Select("Patient.address[0].country").FirstOrDefault();
             Assert.Equal("patienttestcountry1", patientCountry.Value.ToString());
 
-            patientNode.Accept(visitor);
+            handler.Handle(patientNode);
             patientNode.RemoveNullChildren();
 
             patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
@@ -168,11 +168,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Observation.referenceRange.high.value", "referenceRange.high.value", "Observation", "perturb", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.high.value",
                     new Dictionary<string, object> { { "span", "0.2" }, { "rangeType", "proportional" } })
             };
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var observation = CreateTestObservation();
             var observationNode = ElementNode.FromElement(observation.ToTypedElement());
-            observationNode.Accept(visitor);
+            handler.Handle(observationNode);
             observationNode.RemoveNullChildren();
 
             var lowNode = observationNode.Select("Observation.referenceRange.low");
@@ -196,18 +196,15 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                     new Dictionary<string, object> { { "span", "2" } }),
                 new AnonymizationFhirPathRule("Observation.referenceRange.low", "referenceRange.low", "Observation", "redact", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low")
             };
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var observation = CreateTestObservation();
             var observationNode = ElementNode.FromElement(observation.ToTypedElement());
-            observationNode.Accept(visitor);
+            handler.Handle(observationNode);
 
             var lowNode = observationNode.Select("Observation.referenceRange.low");
             var perturbedValue = decimal.Parse(lowNode.Children("value").First().Value.ToString());
             Assert.InRange(perturbedValue, 9, 11);
-
-            var unitNode = observationNode.Select("Observation.referenceRange.low.unit").First();
-            Assert.Equal("TestUnit", unitNode.Value.ToString());
 
             observation = observationNode.ToPoco<Observation>();
             Assert.Contains(SecurityLabels.PERTURBED.Code, observation.Meta.Security.Select(s => s.Code));
@@ -223,11 +220,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Observation.referenceRange.low", "referenceRange.low", "Observation", "perturb", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low",
                     new Dictionary<string, object> { { "span", "2" } }),
             };
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var observation = CreateTestObservation();
             var observationNode = ElementNode.FromElement(observation.ToTypedElement());
-            observationNode.Accept(visitor);
+            handler.Handle(observationNode);
 
             var lowNode = observationNode.Select("Observation.referenceRange.low");
             var perturbedValue = lowNode.Children("value").First().Value;
@@ -246,12 +243,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Patient.id", "id", "Patient", "redact", AnonymizerRuleType.FhirPathRule, "Patient.id"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = new Patient();
             patient.Id = "Test";
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor);
+            handler.Handle(patientNode);
             patientNode.RemoveNullChildren();
 
             var patientId = patientNode.Select("Patient.id").FirstOrDefault();
@@ -271,11 +268,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Patient.address", "address", "Patient", "redact", AnonymizerRuleType.FhirPathRule, "Patient.address"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor); 
+            handler.Handle(patientNode); 
             string patientCity = patientNode.Select("Patient.address[0].city").First().Value.ToString();
             string patientCountry = patientNode.Select("Patient.address[0].country").First().Value.ToString();
 
@@ -294,7 +291,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Person.address.city", "address.city", "Person", "redact", AnonymizerRuleType.FhirPathRule, "Person.address"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
             var org = CreateTestOrganization();
@@ -304,7 +301,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             org.Contained.Add(person);
 
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor);
+            handler.Handle(patientNode);
             patientNode.RemoveNullChildren();
             var personCity = patientNode.Select("Patient.contained[0].contained[0].address[0].city[0]").FirstOrDefault();
 
@@ -325,14 +322,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Person.address.city", "address.city", "Person", "redact", AnonymizerRuleType.FhirPathRule, "Person.address"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var person = CreateTestPerson();
             var bundle = new Bundle();
             bundle.AddResourceEntry(person, "http://example.org/fhir/Person/1");
 
             var bundleNode = ElementNode.FromElement(bundle.ToTypedElement());
-            bundleNode.Accept(visitor);
+            handler.Handle(bundleNode);
             bundleNode.RemoveNullChildren();
             var personCity = bundleNode.Select("Bundle.entry[0].resource[0].address[0].city[0]").FirstOrDefault();
 
@@ -347,14 +344,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Person", "Person", "Person", "redact", AnonymizerRuleType.FhirPathRule, "Person.address"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var person = CreateTestPerson();
             var bundle = new Bundle();
             bundle.AddResourceEntry(person, "http://example.org/fhir/Person/1");
 
             var bundleNode = ElementNode.FromElement(bundle.ToTypedElement());
-            bundleNode.Accept(visitor);
+            handler.Handle(bundleNode);
             bundleNode.RemoveNullChildren();
             person = bundleNode.Select("Bundle.entry[0].resource[0]").FirstOrDefault().ToPoco<Person>();
 
@@ -371,7 +368,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Person.nodesByType('Address')", "nodesByType('Address')", "Person", "redact", AnonymizerRuleType.FhirPathRule, "Person.nodesByType('Address')"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
             var org = CreateTestOrganization();
@@ -381,7 +378,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             org.Contained.Add(person);
 
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor);
+            handler.Handle(patientNode);
             patientNode.RemoveNullChildren();
 
             var personAddress = patientNode.Select("Patient.contained[0].contained[0].address[0]").FirstOrDefault();
@@ -401,7 +398,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("nodesByType('Address')", "nodesByType('Address')", "", "redact", AnonymizerRuleType.FhirPathRule, "nodesByType('Address')"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
             var org = CreateTestOrganization();
@@ -411,7 +408,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             org.Contained.Add(person);
 
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor);
+            handler.Handle(patientNode);
             patientNode.RemoveNullChildren();
             var personAddress = patientNode.Select("Patient.contained[0].contained[0].address[0]").FirstOrDefault();
             var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
@@ -436,9 +433,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             bundle.AddResourceEntry(patient, "http://example.org/fhir/Patient/1");
 
             var bundleNode = ElementNode.FromElement(bundle.ToTypedElement());
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
-            bundleNode.Accept(visitor);
+            handler.Handle(bundleNode);
             bundleNode.RemoveNullChildren();
 
             bundle = bundleNode.ToPoco<Bundle>();
@@ -463,11 +460,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Resource.address", "address", "Patient", "redact", AnonymizerRuleType.FhirPathRule, "Patient.address"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor);
+            handler.Handle(patientNode);
             patientNode.RemoveNullChildren();
 
             var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
@@ -486,11 +483,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
                 new AnonymizationFhirPathRule("Resource", "Resource", "Resource", "redact", AnonymizerRuleType.FhirPathRule, "Resource"),
             };
 
-            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+            AnonymizationHandler handler = new AnonymizationHandler(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor);
+            handler.Handle(patientNode);
             patientNode.RemoveNullChildren();
 
             var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
@@ -563,8 +560,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             observation.ReferenceRange.Add(
                 new Observation.ReferenceRangeComponent
                 {
-                    Low = new Quantity { Value = 10, Unit = "TestUnit" },
-                    High = new Quantity { Value = 100},
+                    Low = new Quantity { Value = 10 },
+                    High = new Quantity { Value = 100 }
                 });
             return observation;
         }

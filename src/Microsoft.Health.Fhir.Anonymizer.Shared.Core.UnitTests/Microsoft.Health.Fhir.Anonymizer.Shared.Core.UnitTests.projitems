@@ -16,7 +16,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)EmptyElementTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngineTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeNavExtensionTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeVisitorExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementTypeExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\FhirPathSymbolExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SecurityTagExtensionsTests.cs" />
@@ -70,7 +69,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utility\PostalCodeUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utility\ReferenceUtilityTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\AttributeValidatorTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Visitors\AnonymizationVisitorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationHandlerTests.cs" />
     <None Include="$(MSBuildThisFileDirectory)TestConfigurations\configuration-raise-processing-error.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

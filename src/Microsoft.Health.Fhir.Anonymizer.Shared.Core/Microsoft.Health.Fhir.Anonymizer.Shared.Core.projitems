@@ -26,11 +26,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerLogging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeExtension.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeNavExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeOperationExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeVisitorExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypedElementNavExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypedElementOperationExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\FhirPathSymbolExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypedElementExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\EmptyElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ProcessResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ProcessContext.cs" />
@@ -66,7 +66,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Validation\AttributeValidator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\ResourceNotValidException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validation\ResourceValidator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Visitors\AbstractElementNodeVisitor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Visitors\AnonymizationVisitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AnonymizationHandler.cs" />
   </ItemGroup>
 </Project>

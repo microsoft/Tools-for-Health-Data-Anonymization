@@ -23,26 +23,34 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
         public ProcessResult Process(ElementNode node, ProcessContext context = null, Dictionary<string, object> settings = null)
         {
             var processResult = new ProcessResult();
-            if (string.IsNullOrEmpty(node?.Value?.ToString()))
+            var descendantsAndSelf = node.DescendantsAndSelf();
+
+            foreach (var element in descendantsAndSelf)
             {
-                return processResult;
+                if (element.Value == null || context?.VisitedNodes != null && context.VisitedNodes.Contains(element))
+                {
+                    continue;
+                }
+
+                var elementNode = (ElementNode) element;
+                var input = elementNode.Value.ToString();
+
+                // Hash the id part for "Reference.reference" node and hash whole input for other node types
+                if (elementNode.IsReferenceStringNode())
+                {
+                    var newReference = ReferenceUtility.TransformReferenceId(input, _cryptoHashFunction);
+                    elementNode.Value = newReference;
+                }
+                else
+                {
+                    elementNode.Value = _cryptoHashFunction(input);
+                }
+
+                processResult.AddProcessRecord(AnonymizationOperations.CryptoHash, elementNode);
+
+                _logger.LogDebug($"Fhir value '{input}' at '{elementNode.Location}' is hashed to '{elementNode.Value}'.");
             }
 
-            var input = node.Value.ToString();
-            // Hash the id part for "Reference.reference" node and hash whole input for other node types
-            if (node.IsReferenceStringNode())
-            {
-                var newReference = ReferenceUtility.TransformReferenceId(input, _cryptoHashFunction);
-                node.Value = newReference;
-            }
-            else
-            {
-                node.Value = _cryptoHashFunction(input);
-            }
-
-            _logger.LogDebug($"Fhir value '{input}' at '{node.Location}' is hashed to '{node.Value}'.");
-
-            processResult.AddProcessRecord(AnonymizationOperations.CryptoHash, node);
             return processResult;
         }
 
