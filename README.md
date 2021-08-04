@@ -640,11 +640,11 @@ Here is an example, the first rule will use `perturb` setting in _defaultSetting
 
 |anonymization method|Description|Setting Configuration|
 |-----|-----|-----|
-|keep|Retains the value as is.|No|
+|keep|Retain the value as is.|No|
 |redact|Clean the value.|Yes|
 |remove|Remove the element. |No|
 |perturb|Perturb the value with random noise addition.|Yes|
-|dateShift|Shift the value using the Date-shift algorithm.|Yes|
+|dateShift|Shift the value using the Date-shift method.|Yes|
 |cryptoHash|Transform the value using Crypto-hash method.|Yes|
 |encrypt|Transform the value using Encrypt method.|Yes|
 |substitute|Substitute the value to a predefined value.|Yes|
@@ -670,7 +670,7 @@ Here is a sample rule using redact method. It uses _defaultSettings_ which enabl
     "defaultSettings":[
         {"redact":{"enablePartialAgesForRedact": true","enablePartialDatesForRedact": true}}
     ],
-    "cutomizedSettings":[
+    "customSettings":[
     ]
 }
 
@@ -682,8 +682,8 @@ With perturb rule, you can replace specific values by adding noise. Perturb func
 
 |Parameters|Description|Valid Value|Required|default value|
 |----|----|----|----|---|
-|Span| A non-negative value representing the random noise range. For fixed range type, the noise will be sampled from a uniform distribution over [-span/2, span/2]. For proportional range type, the noise will be sampled from a uniform distribution over [-span/2 * value, span/2 * value]|Positive Integer|True|1|
-|RangeType|Define whether the span value is fixed or proportional. If type is fixed, the range will be [-span/2, span/2], and for proportional range, it will be [-span/2 * value, span/2 * value]. |fixed , proportional|False|proportional|
+|Span| A non-negative value representing the random noise range. For fixed range type, the noise will be sampled from a uniform distribution over [-span/2, span/2]. For proportional range type, the noise will be sampled from a uniform distribution over [-span/2 * value, span/2 * value]|Positive Integer|False|1|
+|RangeType|Defines whether the span value is fixed or proportional. If type is fixed, the range will be [-span/2, span/2], and for proportional range, it will be [-span/2 * value, span/2 * value]. |Fixed, Proportional|False|proportional|
 |RoundTo| specifies the number of decimal places to round to.|A value from 0 to 28|False|2|
 
 Here is a sample rule using perturb method and using _perturbCustomerSetting_ as setting with a fixed range [-5, 5] with decimal place round to 0:
