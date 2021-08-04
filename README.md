@@ -650,7 +650,7 @@ Here is an example, the first rule will use `perturb` setting in _defaultSetting
 |substitute|Substitute the value to a predefined value.|Yes|
 |refreshUID|replace with a non-zero length UID|No|
 
-Setting configuration indicates the algorithm needs _defaultSettings_ and _customSettings_ or not.
+The True/False values in the `Setting Configuration` column above indicates whether the algorithm needs _defaultSettings_ and _customSettings_.
 
 ### Redact 
 
