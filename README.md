@@ -572,26 +572,26 @@ The command-line tool can be used to anonymize one DICOM file or a folder contai
 
 Example usage to anonymize DICOM files in a folder:
 ```
->.\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.exe convert -I myInputFolder -O myOutputFolder -c myConfigFile
+.\Microsoft.Health.Dicom.Anonymizer.CommandLineTool.exe -I myInputFolder -O myOutputFolder -c myConfigFile
 ```
 
 ## Sample configuration file
-The configuration is specified in JSON format and has three required high-level sections. The first section named _rules_, it specifies anonymization methods for DICOM tag. The second and third sections are _defaultSettings_ and _customizedSettings_ which specify default settings and customized settings for anonymization methods respectively.
+The configuration is specified in JSON format and has three required high-level sections. The first section named _rules_, it specifies anonymization methods for DICOM tag. The second and third sections are _defaultSettings_ and _customSettings_ which specify default settings and custom settings for anonymization methods respectively.
 
 |Fields|Description|
 |----|----|
-|rules|De-ID rules for tags.|
+|rules|Anonymization rules for tags.|
 |defaultSettings|Default settings for anonymization functions. Default settings will be used if not specify settings in rules.|
 |customSettings|Custom settings for anonymization functions.|
 
 
-DICOM Anonymization tool comes with a sample configuration file to help meet the requirements of HIPAA Safe Harbor Method. DICOM standard also describes attributes within a DICOM dataset that may potentially result in leakage of individually identifiable information according to HIPAA Safe Harbor. Our tool will build in a sample [configuration file]() that covers [application level confidentiality profile attributes](http://dicom.nema.org/medical/dicom/2018e/output/chtml/part15/chapter_E.html) defined in DICOM standard.
+DICOM Anonymization tool comes with a sample configuration file to help meet the requirements of HIPAA Safe Harbor Method. DICOM standard also describes attributes within a DICOM dataset that may potentially result in leakage of individually identifiable information according to HIPAA Safe Harbor. Our tool will build in a sample [configuration file](DICOM/src/Microsoft.Health.Dicom.Anonymizer.CommandLineTool/configuration.json) that covers [application level confidentiality profile attributes](http://dicom.nema.org/medical/dicom/2018e/output/chtml/part15/chapter_E.html) defined in DICOM standard.
 
 ## Customize configuration file
 
 ### How to set rules
 
-Users can list anonymization rules for individual DICOM tag ( by tag value or tag name) as well as a set of tags (by masked value or DICOM VR). Ex：
+Users can list anonymization rules for individual DICOM tag (by tag value or tag name) as well as a set of tags (by masked value or DICOM VR). Ex：
 ```
 {
     "rules": [
@@ -607,28 +607,28 @@ Parameters in each rules:
 |Fields|Description| Valid Value|Required|default value|
 |--|-----|-----|--|--|
 |tag|Used to define DICOM elements |1. Tag Value, e.g. (0010, 0010) or 0010,0010 or 00100010. <br>2. Tag Name. e.g. PatientName. <br> 3. Masked DICOM Tag. e.g. (0010, xxxx) or (xx10, xx10). <br> 4. DICOM VR. e.g. PN, DA.|True|null| 
-|method|De-ID method.| keep, redact, perturb, dateshift, encrypt, cryptohash, substitute, refreshUID, remove.| True|null|
-|setting| Setting for de-id method. Users can add custom settings in the field of "customSettings" and specify setting's name here. |valid setting's name |False|Default setting in the field of "defaultSettings"|
-|params|parameters override setting for de-id methods.|valid parameters|False|null|
+|method|anonymization method| keep, redact, perturb, dateshift, encrypt, cryptohash, substitute, refreshUID, remove.| True|null|
+|setting| Setting for anonymization method. Users can add custom settings in the field of "customSettings" and specify setting's name here. |valid setting's name |False|Default setting in the field of "defaultSettings"|
+|params|parameters override setting for anonymization methods.|valid parameters|False|null|
 
 Each DICOM tag can only be anonymized once, if two rules have conflicts on one tag, only the former rule will be applied.
 
 ### How to set settings
-_defaultSettings_ and _customSettings_ are used to config anonymization method. (Detailed parameters are defined in [anonymization Methods Section]()). _defaultSettings_ are used when user does not specify settings in rule. As for _customSettings_, users need to add the setting with unique name. This setting can be used in "rules" by name.
+_defaultSettings_ and _customSettings_ are used to config anonymization method. (Detailed parameters are defined in [Anonymization algorithm](#anonymization-algorithm). _defaultSettings_ are used when user does not specify settings in rule. As for _customSettings_, users need to add the setting with unique name. This setting can be used in "rules" by name.
 
-Here is an example, the first rule will use perturb setting in _defaultSettings_ and the second one will use perturbCustomerSetting in field _cutomSettings_.
+Here is an example, the first rule will use `perturb` setting in _defaultSettings_ and the second one will use `perturbCustomerSetting` in field _cutomSettings_.
 
 ```
 {
     "rules": [
         {"tag": "(0010,0020)","method": "perturb"},
-        {"tag": "(0010,1010)","method": "perturb", "setting":"perturbCustomerSetting"}
+        {"tag": "(0010,1010)","method": "perturb", "setting":"perturbCustomSetting"}
     ],
     "defaultSettings":[
-        {"perturb":{ "span": "1", "roundTo": 2, "rangeType": "Proportional", "NoiseFunction" : "Uniform"}}
+        {"perturb":{ "span": "1", "roundTo": 2, "rangeType": "Proportional"}}
     ],
-    "cutomizedSettings":[
-        {"perturbCustomerSetting":{ "span": "1", "roundTo": 2, "rangeType": "Proportional", "NoiseFunction" : "Uniform"}}
+    "customSettings":[
+        {"perturbCustomSetting":{ "span": "10", "roundTo": 2, "rangeType": "Fixed"}}
     ]
 }
 ```
@@ -638,7 +638,7 @@ Here is an example, the first rule will use perturb setting in _defaultSettings_
 ### Overview
 
 
-|De-id Method|Description|Setting Configuration|
+|anonymization method|Description|Setting Configuration|
 |-----|-----|-----|
 |keep|Retains the value as is.|No|
 |redact|Clean the value.|Yes|
@@ -759,7 +759,7 @@ Users can set encrypt key in encrypt setting.
 > **[NOTE]**
 > Similar with cryptoHash function, you should use the method on those fields that accept a Base64 encoded value and avoid encrypting data fields with length limits because the Base64 encoded value will be longer than the original value.
 
-Here is a sample rule using encrypt method on PN tags with customized setting:
+Here is a sample rule using encrypt method on PN tags with custom setting:
 ```
 {
     "rules": [
