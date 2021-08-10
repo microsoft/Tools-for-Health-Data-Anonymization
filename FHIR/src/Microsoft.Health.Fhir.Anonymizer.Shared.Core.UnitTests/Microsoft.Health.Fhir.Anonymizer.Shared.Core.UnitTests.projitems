@@ -15,11 +15,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfigurationValidatorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EmptyElementTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngineTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeNavExtensionTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypedElementNavExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeVisitorExtensionsTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementTypeExtensionsTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeOperationExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\FhirPathSymbolExtensionsTests.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SecurityTagExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirEnumerableReaderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirPartitionedExecutionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirStreamConsumerTests.cs" />

@@ -25,49 +25,31 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
             return node;
         }
 
-        // Remove null children of current node, and return true => current node is null
-        public static bool RemoveNullChildren(this ElementNode node)
+        public static void RemoveNullChildren(this ElementNode node)
         {
-            if (node == null)
-            {
-                return true;
-            }
-
-            var children = node.Children().CastElementNodes().ToList();
+            var children = node.Children().ToList();
             foreach (var child in children)
             {
-                // Remove child if it is null => return true
-                if (RemoveNullChildren(child))
-                {
-                    node.Remove(child);
-                }
-            }
+                var elementNodeChild = (ElementNode)child;
 
-            bool currentNodeIsEmpty = !node.Children().Any() && node.Value == null;
-            bool currentNodeIsFhirResource = node.IsFhirResource();
-            if (currentNodeIsEmpty && !currentNodeIsFhirResource)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
+                // Remove null children recursively
+                RemoveNullChildren(elementNodeChild);
+
+                if (ShouldRemoveNode(elementNodeChild))
+                {
+                    node.Remove(elementNodeChild);
+                }
             }
         }
 
         public static void AddSecurityTag(this ElementNode node, ProcessResult result)
         {
-            if (node == null)
+            if (node == null || result.ProcessRecords.Count == 0)
             {
                 return;
             }
 
-            if (result.ProcessRecords.Count == 0)
-            {
-                return;
-            }
-
-            ElementNode metaNode = node.GetMeta();
+            ElementNode metaNode = (ElementNode)node.GetMeta();
             Meta meta = metaNode?.ToPoco<Meta>() ?? new Meta();
 
             if (result.IsRedacted && !meta.Security.Any(x =>
@@ -121,6 +103,16 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
             {
                 node.Replace(s_provider, metaNode, newMetaNode);
             }
+        }
+
+        private static bool ShouldRemoveNode(ITypedElement node)
+        {
+            if (node == null)
+            {
+                return true;
+            }
+
+            return !node.Children().Any() && node.Value == null && !node.IsFhirResource();
         }
     }
 }

@@ -18,20 +18,19 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
 {
     public class AnonymizerEngine
     {
-        private readonly FhirJsonParser _parser = new FhirJsonParser();
-        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
-        private readonly ResourceValidator _validator = new ResourceValidator();
         private readonly AnonymizerConfigurationManager _configurationManager;
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
         private readonly AnonymizationFhirPathRule[] _rules;
         private readonly IStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
+        private readonly ResourceValidator _validator = new ResourceValidator();
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
 
         public static void InitializeFhirPathExtensionSymbols()
         {
             FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
         }
 
-        public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath)) 
+        public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath))
         {
             
         }
@@ -52,15 +51,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         {
             var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
             var dateShiftScope = configurationManager.GetParameterConfiguration().DateShiftScope;
-            var dateShiftKeyPrefix = string.Empty;
-            if (dateShiftScope == DateShiftScope.File)
+            var dateShiftKeyPrefix = dateShiftScope switch
             {
-                dateShiftKeyPrefix = Path.GetFileName(fileName);
-            }
-            else if (dateShiftScope == DateShiftScope.Folder)
-            {
-                dateShiftKeyPrefix = Path.GetFileName(inputFolderName.TrimEnd('\\', '/'));
-            }
+                DateShiftScope.File => Path.GetFileName(fileName),
+                DateShiftScope.Folder => Path.GetFileName(inputFolderName.TrimEnd('\\', '/')),
+                _ => string.Empty
+            };
 
             configurationManager.SetDateShiftKeyPrefix(dateShiftKeyPrefix);
             return new AnonymizerEngine(configurationManager);
@@ -101,13 +97,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         {
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));
 
-            var resource = _parser.Parse<Resource>(json);
-            ITypedElement anonymizedElement= AnonymizeElement(resource.ToTypedElement(), settings);
+            var element = FhirJsonNode.Parse(json).ToTypedElement(_provider);
+            var anonymizedElement = AnonymizeElement(element);
 
-            FhirJsonSerializationSettings serializationSettings = new FhirJsonSerializationSettings
+            var serializationSettings = new FhirJsonSerializationSettings
             {
                 Pretty = settings != null && settings.IsPrettyOutput
             };
+
             return anonymizedElement.ToJson(serializationSettings);
         }
 

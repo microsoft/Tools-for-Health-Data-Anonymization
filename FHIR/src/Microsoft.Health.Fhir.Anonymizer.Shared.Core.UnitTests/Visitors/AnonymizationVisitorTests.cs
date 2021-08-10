@@ -188,7 +188,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
         }
 
         [Fact]
-        public void GivenAPerturbRuleAndARedactRule_WhenProcess_NodeShouldBePerturbed()
+        public void GivenAPerturbRuleAndThenARedactRule_WhenProcess_NodeShouldBePerturbed()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
@@ -215,7 +215,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
         }
 
         [Fact]
-        public void GivenARedactRuleAndAPerturbRule_WhenProcess_NodeShouldBeProcessedCorrectly()
+        public void GivenARedactRuleAndThenAPerturbRule_WhenProcess_NodeShouldBeRedacted()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
@@ -263,7 +263,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
         }
 
         [Fact]
-        public void Given2ConflictRules_WhenProcess_SecondRuleShouldBeOverridden()
+        public void Given2ConflictRules_WhenProcess_SecondRuleShouldBeIgnored()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
@@ -364,7 +364,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
         }
 
         [Fact]
-        public void GivenARuleWithNodeByTypeAndResourceType_WhenProcess_OnlyNodeInSpecificResourceTypeShouldBeRedact()
+        public void GivenANodesByTypeRuleWithResourceType_WhenProcess_OnlyNodesInSpecificResourceTypeShouldBeProcessed()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
@@ -394,7 +394,85 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
         }
 
         [Fact]
-        public void GivenARuleWithoutResourceType_WhenProcess_AllNodesShouldBeRedact()
+        public void GivenANodesByTypeRuleWithExpression_WhenProcess_OnlyNodesMatchSpecificExpressionShouldBeProcessed()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("nodesByType('Address').city", "nodesByType('Address').city", "", "redact", AnonymizerRuleType.FhirPathRule, "nodesByType('Address').city"),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var patient = CreateTestPatient();
+            var patientNode = ElementNode.FromElement(patient.ToTypedElement());
+            patientNode.Accept(visitor);
+            patientNode.RemoveNullChildren();
+
+            var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
+            var patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
+            var patientCountry = patientNode.Select("Patient.address[0].country").First().Value.ToString();
+
+            Assert.NotNull(patientAddress);
+            Assert.Null(patientCity);
+            Assert.Equal("patienttestcountry1", patientCountry);
+        }
+
+        [Fact]
+        public void GivenANodesByTypeRuleWithExpressionFunction_WhenProcess_OnlyNodesMatchSpecificExpressionFunctionShouldBeProcessed()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("nodesByType('Address').where(city='patienttestcity1').city", "nodesByType('Address').where(city='patienttestcity1').city", "", "redact", AnonymizerRuleType.FhirPathRule, "nodesByType('Address').where(city='patienttestcity1').city"),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var patient = CreateTestPatient();
+            var patientNode = ElementNode.FromElement(patient.ToTypedElement());
+            patientNode.Accept(visitor);
+            patientNode.RemoveNullChildren();
+
+            var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
+            var patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
+            var patientCountry = patientNode.Select("Patient.address[0].country").First().Value.ToString();
+
+            Assert.NotNull(patientAddress);
+            Assert.Null(patientCity);
+            Assert.Equal("patienttestcountry1", patientCountry);
+        }
+
+        [Fact]
+        public void GivenAKeepRuleAndThenANodesByTypeRule_WhenProcess_NodesShouldBeProcessedCorrectly()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("Person.address.country", "Person.address.country", "Person", "keep", AnonymizerRuleType.FhirPathRule, "Person.address.country"),
+                new AnonymizationFhirPathRule("nodesByType('Address')", "nodesByType('Address')", "", "redact", AnonymizerRuleType.FhirPathRule, "nodesByType('Address')"),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var patient = CreateTestPatient();
+            var person = CreateTestPerson();
+            patient.Contained.Add(person);
+
+            var patientNode = ElementNode.FromElement(patient.ToTypedElement());
+            patientNode.Accept(visitor);
+            patientNode.RemoveNullChildren();
+
+            var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
+            var personAddress = patientNode.Select("Patient.contained[0].address[0]").FirstOrDefault();
+            var personCity = patientNode.Select("Patient.contained[0].address[0].city").FirstOrDefault();
+            var personCountry = patientNode.Select("Patient.contained[0].address[0].country").First().Value.ToString();
+
+            Assert.Null(patientAddress);
+            Assert.NotNull(personAddress);
+            Assert.Null(personCity);
+            Assert.Equal("persontestcountry", personCountry);
+        }
+
+        [Fact]
+        public void GivenANodesByTypeRule_WhenProcess_AllNodesShouldBeProcessed()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {

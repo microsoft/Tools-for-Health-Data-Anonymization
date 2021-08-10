@@ -7,7 +7,6 @@ using Hl7.Fhir.ElementModel;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 
@@ -15,10 +14,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
 {
     public class AnonymizationVisitor : AbstractElementNodeVisitor
     {
-        private AnonymizationFhirPathRule[] _rules;
-        private Dictionary<string, IAnonymizerProcessor> _processors;
+        private readonly AnonymizationFhirPathRule[] _rules;
+        private readonly Dictionary<string, IAnonymizerProcessor> _processors;
         private HashSet<ElementNode> _visitedNodes = new HashSet<ElementNode>();
         private Stack<Tuple<ElementNode, ProcessResult>> _contextStack = new Stack<Tuple<ElementNode, ProcessResult>>();
+        private Dictionary<string, List<ITypedElement>> _typeToNodeCache = new Dictionary<string, List<ITypedElement>>();
+        private Dictionary<string, List<ITypedElement>> _nameToNodeCache = new Dictionary<string, List<ITypedElement>>();
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizationVisitor>();
 
         public bool AddSecurityTag { get; set; } = true;
@@ -53,7 +54,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
                     throw new ConstraintException("Internal error: access wrong context.");
                 }
                 
-                if (_contextStack.Count() > 0)
+                if (_contextStack.Any())
                 {
                     _contextStack.Peek().Item2.Update(result);
                 }
@@ -67,6 +68,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
 
         private ProcessResult ProcessResourceNode(ElementNode node)
         {
+            // Initialize cache for every resource node
+            InitializeNodeCache(node);
+
             ProcessResult result = new ProcessResult();
             string typeString = node.InstanceType;
             IEnumerable<AnonymizationFhirPathRule> resourceSpecificAndGeneralRules = GetRulesByType(typeString);
@@ -85,34 +89,128 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
                     continue;
                 }
 
-                IEnumerable<ElementNode> matchNodes;
-                if (rule.IsResourceTypeRule)
-                {
-                    /** 
-                     * Special case handling:
-                     * Senario: FHIR path only contains resourceType: Patient, Resource. 
-                     * Sample AnonymizationFhirPathRule: { "path": "Patient", "method": "keep" }
-                     * 
-                     * Current FHIR path lib do not support navigate such ResourceType FHIR path from resource in bundle.
-                     * Example: navigate with FHIR path "Patient" from "Bundle.entry[0].resource[0]" is not support
-                     */
-                    matchNodes = new List<ElementNode>() { node };
-                }
-                else
-                {
-                    matchNodes = node.Select(rule.Expression).CastElementNodes();
-                }
-                
+                var matchNodes = GetMatchNodes(rule, node);
                 foreach (var matchNode in matchNodes)
                 {
-                    resultOnRule.Update(ProcessNodeRecursive(matchNode, _processors[method], context, rule.RuleSettings));
+                    resultOnRule.Update(ProcessNodeRecursive((ElementNode)matchNode.ToElement(), _processors[method], context, rule.RuleSettings));
                 }
+
                 LogProcessResult(node, rule, resultOnRule);
 
                 result.Update(resultOnRule);
             }
 
             return result;
+        }
+
+        private void InitializeNodeCache(ITypedElement node)
+        {
+            _typeToNodeCache.Clear();
+            _nameToNodeCache.Clear();
+
+            InitializeNodeCacheRecursive(node);
+        }
+
+        private void InitializeNodeCacheRecursive(ITypedElement node)
+        {
+            foreach (var child in node.Children())
+            {
+                // Cache instance type
+                if (_typeToNodeCache.ContainsKey(child.InstanceType))
+                {
+                    _typeToNodeCache[child.InstanceType].Add(child);
+                }
+                else
+                {
+                    _typeToNodeCache[child.InstanceType] = new List<ITypedElement> { child };
+                }
+
+                // Cache name
+                if (_nameToNodeCache.ContainsKey(child.Name))
+                {
+                    _nameToNodeCache[child.Name].Add(child);
+                }
+                else
+                {
+                    _nameToNodeCache[child.Name] = new List<ITypedElement> { child };
+                }
+
+                // Recursively process node's children except resource children, which will be processed independently as a resource
+                if (!child.IsFhirResource())
+                {
+                    InitializeNodeCacheRecursive(child);
+                }
+            }
+        }
+
+        private IEnumerable<ITypedElement> GetMatchNodes(AnonymizationFhirPathRule rule, ITypedElement node)
+        {
+            var matchNodes = new List<ITypedElement>();
+            var resourceTypeMatch = AnonymizationFhirPathRule.TypeRuleRegex.Match(rule.Path);
+            var nameMatch = AnonymizationFhirPathRule.NameRuleRegex.Match(rule.Path);
+
+            if (resourceTypeMatch.Success)
+            {
+                var resourceType = resourceTypeMatch.Groups["type"].Value;
+                if (!_typeToNodeCache.ContainsKey(resourceType))
+                {
+                    return matchNodes;
+                }
+
+                var expression = resourceTypeMatch.Groups["expression"].Value;
+                if (!string.IsNullOrEmpty(expression))
+                {
+                    var typeNodes = _typeToNodeCache[resourceType];
+                    foreach (var typeNode in typeNodes)
+                    {
+                        matchNodes.AddRange(typeNode.Select(expression));
+                    }
+                }
+                else
+                {
+                    matchNodes = _typeToNodeCache[resourceType];
+                }
+            }
+            else if (nameMatch.Success)
+            {
+                var name = nameMatch.Groups["name"].Value;
+                if (!_nameToNodeCache.ContainsKey(name))
+                {
+                    return matchNodes;
+                }
+
+                var expression = nameMatch.Groups["expression"].Value;
+                if (!string.IsNullOrEmpty(expression))
+                {
+                    var nameNodes = _nameToNodeCache[name];
+                    foreach (var nameNode in nameNodes)
+                    {
+                        matchNodes.AddRange(nameNode.Select(expression));
+                    }
+                }
+                else
+                {
+                    matchNodes = _nameToNodeCache[name];
+                }
+            }
+            else if (rule.IsResourceTypeRule)
+            {
+                /*
+                * Special case handling:
+                * Senario: FHIR path only contains resourceType: Patient, Resource. 
+                * Sample AnonymizationFhirPathRule: { "path": "Patient", "method": "keep" }
+                * 
+                * Current FHIR path lib do not support navigate such ResourceType FHIR path from resource in bundle.
+                * Example: navigate with FHIR path "Patient" from "Bundle.entry[0].resource[0]" is not support
+                */
+                matchNodes = new List<ITypedElement> { node };
+            }
+            else
+            {
+                matchNodes = node.Select(rule.Expression).ToList();
+            }
+
+            return matchNodes;
         }
 
         private void LogProcessResult(ElementNode node, AnonymizationFhirPathRule rule, ProcessResult resultOnRule)
@@ -149,14 +247,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
             result = processor.Process(node, context, settings);
             _visitedNodes.Add(node);
 
-            foreach (var child in node.Children().CastElementNodes())
+            foreach (var child in node.Children())
             {
                 if (child.IsFhirResource())
                 {
                     continue;
                 }
 
-                result.Update(ProcessNodeRecursive(child, processor, context, settings));
+                result.Update(ProcessNodeRecursive((ElementNode)child, processor, context, settings));
             }
 
             return result;

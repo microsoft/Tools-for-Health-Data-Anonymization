@@ -43,7 +43,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             }
             else if (s_quantityTypeNames.Contains(node.InstanceType, StringComparer.InvariantCultureIgnoreCase))
             {
-                valueNode = node.Children(Constants.ValueNodeName).CastElementNodes().FirstOrDefault();
+                valueNode = (ElementNode)node.Children(Constants.ValueNodeName).FirstOrDefault();
             }
 
             // Perturb will not happen if value node is empty or visited.
