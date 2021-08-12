@@ -1,21 +1,10 @@
 # FHIR Data Anonymization
 
-## Table of Contents
-
-- [Getting started](#getting-started)
-- [Anonymize FHIR data: using the command line tool](#anonymize-fhir-data-using-the-command-line-tool)
-- [Anonymize FHIR data: using Azure Data Factory](#anonymize-fhir-data-using-azure-data-factory)
-- [Sample configuration file](#sample-configuration-file)
-- [Sample rules using FHIR Path](#sample-rules-using-fhir-path)
-- [Data anonymization algorithms](#data-anonymization-algorithms)
-
 FHIR data anonymization is available in the following ways:
 
 1. A command line tool. Can be used on-premises or in the cloud to anonymize data.
 2. An Azure Data Factory (ADF) pipeline. Comes with a [script](#anonymize-fhir-data-using-azure-data-factory) to create a pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
 3. [De-identified $export](#how-to-perform-de-identified-export-operation-on-the-fhir-server) operation in the [FHIR server for Azure](https://github.com/microsoft/fhir-server).
-
-## Getting started
 
 ### Features
 * Support anonymization of FHIR R4 and STU3 data in JSON as well as NDJSON format
@@ -31,6 +20,14 @@ Use the .Net Core 3.1 SDK to build FHIR Tools for Anonymization. If you don't ha
 This repo contains a few [sample](samples/) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
 
 You can also export FHIR resource from your FHIR server using [Bulk Export](https://docs.microsoft.com/en-us/azure/healthcare-apis/configure-export-data).
+
+### Table of Contents
+
+- [Anonymize FHIR data: using the command line tool](#anonymize-fhir-data-using-the-command-line-tool)
+- [Anonymize FHIR data: using Azure Data Factory](#anonymize-fhir-data-using-azure-data-factory)
+- [Sample configuration file](#sample-configuration-file)
+- [Sample rules using FHIR Path](#sample-rules-using-fhir-path)
+- [Data anonymization algorithms](#data-anonymization-algorithms)
 
 ## Anonymize FHIR data: using the command line tool
 Once you have built the command line tool, you will find two executable files for R4 and STU3 respectively: 
