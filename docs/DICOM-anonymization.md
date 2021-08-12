@@ -14,6 +14,14 @@ Use the .Net Core 3.1 SDK to build DICOM Anonymization Tool. If you don't have .
 ### Prepare DICOM Data
 You can prepare your own DICOM files as input, or use sample DICOM files in folder $SOURCE\DICOM\samples of the project.
 
+### Table of Contents
+
+- [Anonymize DICOM data: using the command line tool](#anonymize-dicom-data-using-the-command-line-tool)
+- [Customize configuration file](#customize-configuration-file)
+- [Data anonymization algorithms](#data-anonymization-algorithms)
+- [Output validation](#output-validation)
+
+
 ## Anonymize DICOM data: using the command line tool
 
 Once you have built the command line tool, you will find executable file Microsoft.Health.Dicom.Anonymizer.CommandLineTool.exe in the $SOURCE\DICOM\src\Microsoft.Health.Dicom.Anonymizer.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder.
@@ -104,7 +112,7 @@ Here is an example, the first rule will use `perturb` setting in _defaultSetting
 }
 ```
 
-## Anonymization algorithms
+## Data anonymization algorithms
 
 ### Overview
 
