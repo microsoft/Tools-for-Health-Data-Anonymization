@@ -524,8 +524,8 @@ here, _\_container_ is the name of the target container within the blob account 
 ### How can we use FHIR Tools for Anonymization to anonymize HL7 v2.x data
 You can build a pipeline to use [FHIR converter](https://github.com/microsoft/FHIR-Converter) to convert HL7 v2.x data to FHIR format, and subsequently use FHIR Tools for Anonymization to anonymize your data. 
 
-### Can we use custom de-identification methods?
-Currently you can use the prebuilt de-identification methods and control their behavior by passing parameters. We are planning to support custom de-identification methods in future.
+### Can we use custom anonymization methods?
+Currently you can use the prebuilt anonymization methods and control their behavior by passing parameters. We are planning to support custom de-identification methods in future.
 
 # DICOM Data Anonymization
 
@@ -564,8 +564,8 @@ The command-line tool can be used to anonymize one DICOM file or a folder contai
 | -c | configFile | Optional |configuration.json | Anonymizer configuration file path. It reads the default file from the current directory. |
 | -I | inputFolder | Required (for folder conversion) |  | Input folder. |
 | -O | outputFolder | Required (for folder conversion) |  | Output folder. |
-| --validateInput | validateInput | Optional | false | Validate input DICOM file against value multiplicity, value types and format in DICOM specification. |
-| --validateOutput | validateOutput | Optional | false | Validate output DICOM file against value multiplicity, value types and format in DICOM specification. |
+| --validateInput | validateInput | Optional | false | Validate input DICOM file against value multiplicity, value types and format in [DICOM specification](http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part06/chapter_6.html). |
+| --validateOutput | validateOutput | Optional | false | Validate output DICOM file against value multiplicity, value types and format in [DICOM specification](http://dicom.nema.org/medical/Dicom/2017e/output/chtml/part06/chapter_6.html). |
 
 > **[NOTE]**
 > To anonymize one DICOM file, inputFile and outputFile are required. To anonymize a DICOM folder, inputFolder and outputFolder are required.
@@ -703,7 +703,7 @@ Here is a sample rule using perturb method and using _perturbCustomerSetting_ as
 
 ### DateShift
 
-With this method, the input date/dateTime/ value will be shifted within a specific range. Dateshift function can only be used for date (DA) and date time (DT) types. In configuration, customers can define dateShiftRange, DateShiftKey and dateShiftScope. 
+With this method, the input date or dateTime value will be shifted within a specific range. Dateshift function can only be used for date (DA) and date time (DT) types. In configuration, customers can define dateShiftRange, dateShiftKey and dateShiftScope. 
 
 |Parameters|Description|Valid Value|Required|default value|
 |----|----|--|--|--|
@@ -779,7 +779,7 @@ Using substitue, you can specify a fixed and valid value to replace a target fie
 
 |Parameters|Description|Valid Values|Required|default value|
 |----|------|--|--|--|
-|replaceWith| New value for substitute|string|True|"ANONYMOUS"|
+|replaceWith| new value to substitute with |string|True|"ANONYMOUS"|
 
 Here is a sample rule using substitute method on dateTime tags and replace the value to "20000101":
 ```
