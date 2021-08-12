@@ -1,10 +1,21 @@
 # FHIR Data Anonymization
 
+## Table of Contents
+
+- [Getting started](#getting-started)
+- [Anonymize FHIR data: using the command line tool](#anonymize-fhir-data-using-the-command-line-tool)
+- [Anonymize FHIR data: using Azure Data Factory](#anonymize-fhir-data-using-azure-data-factory)
+- [Sample configuration file](#sample-configuration-file)
+- [Sample rules using FHIR Path](#sample-rules-using-fhir-path)
+- [Data anonymization algorithms](#data-anonymization-algorithms)
+
 FHIR data anonymization is available in the following ways:
 
 1. A command line tool. Can be used on-premises or in the cloud to anonymize data.
 2. An Azure Data Factory (ADF) pipeline. Comes with a [script](#anonymize-fhir-data-using-azure-data-factory) to create a pipeline that reads data from Azure blob store and writes anonymized data back to a specified blob store.
 3. [De-identified $export](#how-to-perform-de-identified-export-operation-on-the-fhir-server) operation in the [FHIR server for Azure](https://github.com/microsoft/fhir-server).
+
+## Getting started
 
 ### Features
 * Support anonymization of FHIR R4 and STU3 data in JSON as well as NDJSON format
@@ -401,7 +412,7 @@ To generalize dateTime, time, date and instant type using expression
   "otherValues":"redact"
 }
 ```
-## Anonymization algorithms
+## Data anonymization algorithms
 
 ### Date-shift
 You can specify dateShift as a anonymization method in the configuration file. With this method, the input date/dateTime/instant value will be shifted within a 100-day differential. The following algorithm is used to shift the target dates:
