@@ -30,6 +30,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
             node.Children("child2").CastElementNodes().First().Value = null;
             node.RemoveNullChildren();
             Assert.Empty(node.Children());
+
+            node = null;
+            node.RemoveNullChildren();
+            Assert.Null(node);
         }
 
         [Fact]

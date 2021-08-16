@@ -145,69 +145,50 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Visitors
 
         private IEnumerable<ITypedElement> GetMatchNodes(AnonymizationFhirPathRule rule, ITypedElement node)
         {
-            var matchNodes = new List<ITypedElement>();
-            var resourceTypeMatch = AnonymizationFhirPathRule.TypeRuleRegex.Match(rule.Path);
+            var typeMatch = AnonymizationFhirPathRule.TypeRuleRegex.Match(rule.Path);
             var nameMatch = AnonymizationFhirPathRule.NameRuleRegex.Match(rule.Path);
 
-            if (resourceTypeMatch.Success)
+            if (typeMatch.Success)
             {
-                var resourceType = resourceTypeMatch.Groups["type"].Value;
-                if (!_typeToNodeCache.ContainsKey(resourceType))
-                {
-                    return matchNodes;
-                }
-
-                var expression = resourceTypeMatch.Groups["expression"].Value;
-                if (!string.IsNullOrEmpty(expression))
-                {
-                    var typeNodes = _typeToNodeCache[resourceType];
-                    foreach (var typeNode in typeNodes)
-                    {
-                        matchNodes.AddRange(typeNode.Select(expression));
-                    }
-                }
-                else
-                {
-                    matchNodes = _typeToNodeCache[resourceType];
-                }
+                return GetMatchNodesFromLookUp(_typeToNodeCache, typeMatch.Groups["type"].Value, typeMatch.Groups["expression"].Value);
             }
-            else if (nameMatch.Success)
+            
+            if (nameMatch.Success)
             {
-                var name = nameMatch.Groups["name"].Value;
-                if (!_nameToNodeCache.ContainsKey(name))
-                {
-                    return matchNodes;
-                }
-
-                var expression = nameMatch.Groups["expression"].Value;
-                if (!string.IsNullOrEmpty(expression))
-                {
-                    var nameNodes = _nameToNodeCache[name];
-                    foreach (var nameNode in nameNodes)
-                    {
-                        matchNodes.AddRange(nameNode.Select(expression));
-                    }
-                }
-                else
-                {
-                    matchNodes = _nameToNodeCache[name];
-                }
+                return GetMatchNodesFromLookUp(_nameToNodeCache, nameMatch.Groups["name"].Value, nameMatch.Groups["expression"].Value);
             }
-            else if (rule.IsResourceTypeRule)
+
+            /*
+            * Special case handling:
+            * Senario: FHIR path only contains resourceType: Patient, Resource. 
+            * Sample AnonymizationFhirPathRule: { "path": "Patient", "method": "keep" }
+            * 
+            * Current FHIR path lib do not support navigate such ResourceType FHIR path from resource in bundle.
+            * Example: navigate with FHIR path "Patient" from "Bundle.entry[0].resource[0]" is not support
+            */
+            return rule.IsResourceTypeRule ? new List<ITypedElement> { node } : node.Select(rule.Expression).ToList();
+        }
+
+        private static IEnumerable<ITypedElement> GetMatchNodesFromLookUp(Dictionary<string, List<ITypedElement>> lookUp, string key, string expression)
+        {
+            var matchNodes = new List<ITypedElement>();
+
+            if (!lookUp.ContainsKey(key))
             {
-                /*
-                * Special case handling:
-                * Senario: FHIR path only contains resourceType: Patient, Resource. 
-                * Sample AnonymizationFhirPathRule: { "path": "Patient", "method": "keep" }
-                * 
-                * Current FHIR path lib do not support navigate such ResourceType FHIR path from resource in bundle.
-                * Example: navigate with FHIR path "Patient" from "Bundle.entry[0].resource[0]" is not support
-                */
-                matchNodes = new List<ITypedElement> { node };
+                return matchNodes;
+            }
+
+            if (!string.IsNullOrEmpty(expression))
+            {
+                var nodes = lookUp[key];
+                foreach (var node in nodes)
+                {
+                    matchNodes.AddRange(node.Select(expression));
+                }
             }
             else
             {
-                matchNodes = node.Select(rule.Expression).ToList();
+                matchNodes = lookUp[key];
             }
 
             return matchNodes;

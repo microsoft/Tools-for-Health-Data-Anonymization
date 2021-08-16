@@ -27,6 +27,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 
         public static void RemoveNullChildren(this ElementNode node)
         {
+            if (node == null)
+            {
+                return;
+            }
+
             var children = node.Children().ToList();
             foreach (var child in children)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using EnsureThat;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
@@ -22,10 +23,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
 
         public static AnonymizationFhirPathRule CreateAnonymizationFhirPathRule(Dictionary<string, object> config)
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+            EnsureArg.IsNotNull(config);
 
             if (!config.ContainsKey(Constants.PathKey))
             {
@@ -64,10 +62,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
             AnonymizerRuleType type, string source, Dictionary<string, object> settings = null)
             : base(path, method, type, source)
         {
-            if (string.IsNullOrEmpty(expression))
-            {
-                throw new ArgumentNullException(nameof(expression));
-            }
+            EnsureArg.IsNotNull(expression);
 
             Expression = expression;
             ResourceType = resourceType;
