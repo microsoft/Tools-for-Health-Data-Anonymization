@@ -173,7 +173,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             BatchCount = 0;
         }
 
+#pragma warning disable CS1998
         public async Task<int> ConsumeAsync(IEnumerable<string> data)
+#pragma warning restore CS1998
         {
             BatchCount++;
             int result = 0;
@@ -195,7 +197,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             return result;
         }
 
+#pragma warning disable CS1998
         public async Task CompleteAsync()
+#pragma warning restore CS1998
         {
             Assert.Equal(ItemCount, CurrentOffset);
         }
@@ -215,7 +219,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             CurrentOffset = 0;
         }
 
+#pragma warning disable CS1998
         public async Task<string> NextAsync()
+#pragma warning restore CS1998
         {
             if (CurrentOffset == ItemCount)
             {
