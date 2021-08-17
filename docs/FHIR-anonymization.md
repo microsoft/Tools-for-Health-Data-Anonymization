@@ -251,12 +251,12 @@ The elements can be specified using [FHIRPath](http://hl7.org/fhirpath/) syntax.
 | ----- | ----- | ----- |
 |keep|All elements| Retains the value as is. |
 |redact|All elements| Removes the element. See the parameters section below to handle special cases.|
-|dateShift|Elements of type date, dateTime, and instant | Shifts the value using the [Date-shift algorithm](#date-shift-algorithm).
-|perturb|Elements of numeric and quantity types| [Perturb](#Perturb-method) the value with random noise addition.  |
-|cryptoHash|All elements| Transforms the value using [Crypto-hash method](#Crypto-hash-method). |
-|encrypt|All elements| Transforms the value using [Encrypt method](#Encrypt-method).  |
-|substitute|All elements| [Substitutes](#Substitute-method) the value to a predefined value. |
-|generalize|Elements of primitive types|[Generalizes](#Generalize-method) the value into a more general, less distinguishing value.
+|dateShift|Elements of type date, dateTime, and instant | Shifts the value using the [Date-shift algorithm](#date-shift).
+|perturb|Elements of numeric and quantity types| [Perturb](#perturb) the value with random noise addition.  |
+|cryptoHash|All elements| Transforms the value using [Crypto-hash method](#crypto-hash). |
+|encrypt|All elements| Transforms the value using [Encrypt method](#encrypt).  |
+|substitute|All elements| [Substitutes](#substitute) the value to a predefined value. |
+|generalize|Elements of primitive types|[Generalizes](#generalize) the value into a more general, less distinguishing value.
 
 Two extension methods can be used in FHIR path rule to simplify the FHIR path:
 - nodesByType('_typename_'): return descendants of type '_typename_'. Nodes in bundle resource and contained list will be excluded. 
@@ -267,10 +267,10 @@ Parameters affect the anonymization methods specified in the FHIR path rules.
 
 |Method| Parameter | Affected fields | Valid values | Default value | Description
 | ----- | ----- | ----- | ----- | ----- | ----- |
-| dateShift |dateShiftKey|date, dateTime, instant fields| string|A randomly generated string|This key is used to generate date-shift amount in the [Date-shift algorithm](#date-shift-algorithm). 
+| dateShift |dateShiftKey|date, dateTime, instant fields| string|A randomly generated string|This key is used to generate date-shift amount in the [Date-shift algorithm](#date-shift). 
 | dateShift |dateShiftScope|date, dateTime, instant fields| resource, file, folder | resource | This parameter is used to select date-shift scope. Dates within the same scope will be shifted the same amount. Please provide dateShiftKey together with it. |
-| cryptoHash |cryptoHashKey|All hashing fields| string|A randomly generated string|This key is used for HMAC-SHA256 algorithm in [Crypto-hash method](#Crypto-hash-method). 
-| encrypt |encryptKey|All encrypting fields| string|A randomly generated 256-bit string|This key is used for AES encryption algorithm in [Encrypt method](#Encrypt-method). 
+| cryptoHash |cryptoHashKey|All hashing fields| string|A randomly generated string|This key is used for HMAC-SHA256 algorithm in [Crypto-hash method](#crypto-hash). 
+| encrypt |encryptKey|All encrypting fields| string|A randomly generated 256-bit string|This key is used for AES encryption algorithm in [Encrypt method](#encrypt). 
 | redact | enablePartialAgesForRedact |Age fields | boolean | false | If the value is set to **true**, only age values over 89 will be redacted. |
 | redact | enablePartialDatesForRedact  | date, dateTime, instant fields | boolean | false | If the value is set to **true**, date, dateTime, instant will keep year if indicative age is not over 89. |
 | redact | enablePartialZipCodesForRedact  | Zip Code fields | boolean | false | If the value is set to **true**, Zip Code will be redacted as per the HIPAA Safe Harbor rule. |
