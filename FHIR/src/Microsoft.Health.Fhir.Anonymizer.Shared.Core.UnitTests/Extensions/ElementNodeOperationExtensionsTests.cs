@@ -15,24 +15,24 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
         private readonly PocoStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
 
         [Fact]
-        public void GivenAnElementNode_WhenRemoveNullChildren_NullChildrenShouldBeRemoved()
+        public void GivenAnElementNode_WhenRemoveEmptyNodes_NullChildrenShouldBeRemoved()
         {
             var node = GetSampleNode();
             Assert.Equal(2, node.Children().Count());
 
-            node.RemoveNullChildren();
+            node.RemoveEmptyNodes();
             Assert.Equal(2, node.Children().Count());
 
             node.Children("child1").CastElementNodes().First().Value = null;
-            node.RemoveNullChildren();
+            node.RemoveEmptyNodes();
             Assert.Single(node.Children());
 
             node.Children("child2").CastElementNodes().First().Value = null;
-            node.RemoveNullChildren();
+            node.RemoveEmptyNodes();
             Assert.Empty(node.Children());
 
             node = null;
-            node.RemoveNullChildren();
+            node.RemoveEmptyNodes();
             Assert.Null(node);
         }
 

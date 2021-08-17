@@ -34,7 +34,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
             Assert.Null(patientAddress);
@@ -57,7 +57,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             var patientAddress = patientNode.Select("Patient.address[0].city").FirstOrDefault();
             Assert.Equal("c4321653de997f3029d2efa38dd4baa6c9c2f6bd67b8a52be789f157f8b286ce", patientAddress.Value.ToString());
@@ -80,7 +80,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             var patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
             var key = Encoding.UTF8.GetBytes("1234567890123456");
@@ -111,7 +111,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             Assert.Equal("patienttestcountry1", patientCountry.Value.ToString());
 
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
             Assert.Equal("ExampleCity2020", patientCity.Value.ToString());
@@ -144,7 +144,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             Assert.Equal("patienttestcountry1", patientCountry.Value.ToString());
 
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
             Assert.Equal("ExampleCity2020", patientCity.Value.ToString());
@@ -173,7 +173,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             var observation = CreateTestObservation();
             var observationNode = ElementNode.FromElement(observation.ToTypedElement());
             observationNode.Accept(visitor);
-            observationNode.RemoveNullChildren();
+            observationNode.RemoveEmptyNodes();
 
             var lowNode = observationNode.Select("Observation.referenceRange.low");
             var perturbedValue = decimal.Parse(lowNode.Children("value").First().Value.ToString());
@@ -252,7 +252,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             patient.Id = "Test";
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             var patientId = patientNode.Select("Patient.id").FirstOrDefault();
             Assert.Null(patientId);
@@ -305,7 +305,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
 
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
             var personCity = patientNode.Select("Patient.contained[0].contained[0].address[0].city[0]").FirstOrDefault();
 
             Assert.Null(personCity);
@@ -333,7 +333,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
 
             var bundleNode = ElementNode.FromElement(bundle.ToTypedElement());
             bundleNode.Accept(visitor);
-            bundleNode.RemoveNullChildren();
+            bundleNode.RemoveEmptyNodes();
             var personCity = bundleNode.Select("Bundle.entry[0].resource[0].address[0].city[0]").FirstOrDefault();
 
             Assert.Null(personCity);
@@ -355,7 +355,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
 
             var bundleNode = ElementNode.FromElement(bundle.ToTypedElement());
             bundleNode.Accept(visitor);
-            bundleNode.RemoveNullChildren();
+            bundleNode.RemoveEmptyNodes();
             person = bundleNode.Select("Bundle.entry[0].resource[0]").FirstOrDefault().ToPoco<Person>();
 
             Assert.NotNull(person);
@@ -382,7 +382,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
 
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             var personAddress = patientNode.Select("Patient.contained[0].contained[0].address[0]").FirstOrDefault();
             string patientCity = patientNode.Select("Patient.address[0].city").First().Value.ToString();
@@ -406,7 +406,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
             var patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
@@ -430,7 +430,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
             var patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
@@ -458,7 +458,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
 
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
             var personAddress = patientNode.Select("Patient.contained[0].address[0]").FirstOrDefault();
@@ -490,7 +490,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
 
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
             var personAddress = patientNode.Select("Patient.contained[0].contained[0].address[0]").FirstOrDefault();
             var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
 
@@ -517,7 +517,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
 
             bundleNode.Accept(visitor);
-            bundleNode.RemoveNullChildren();
+            bundleNode.RemoveEmptyNodes();
 
             bundle = bundleNode.ToPoco<Bundle>();
             Assert.Equal(2, bundle.Meta.Security.Count);
@@ -546,7 +546,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
             Assert.Null(patientAddress);
@@ -569,7 +569,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
-            patientNode.RemoveNullChildren();
+            patientNode.RemoveEmptyNodes();
 
             var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
             Assert.Null(patientAddress);

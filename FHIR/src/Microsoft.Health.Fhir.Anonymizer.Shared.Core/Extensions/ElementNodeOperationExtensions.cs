@@ -20,12 +20,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
         {
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, processors);
             node.Accept(visitor);
-            node.RemoveNullChildren();
+            node.RemoveEmptyNodes();
 
             return node;
         }
 
-        public static void RemoveNullChildren(this ElementNode node)
+        public static void RemoveEmptyNodes(this ElementNode node)
         {
             if (node == null)
             {
@@ -37,10 +37,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
             {
                 var elementNodeChild = (ElementNode)child;
 
-                // Remove null children recursively
-                RemoveNullChildren(elementNodeChild);
+                // Remove empty nodes recursively
+                RemoveEmptyNodes(elementNodeChild);
 
-                if (ShouldRemoveNode(elementNodeChild))
+                if (IsEmptyNode(elementNodeChild))
                 {
                     node.Remove(elementNodeChild);
                 }
@@ -110,8 +110,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
             }
         }
 
-        private static bool ShouldRemoveNode(ITypedElement node)
+        private static bool IsEmptyNode(ITypedElement node)
         {
+            // A node is considered empty when: 1) it is null; 2) it has no children and its value is null.
             if (node == null)
             {
                 return true;
