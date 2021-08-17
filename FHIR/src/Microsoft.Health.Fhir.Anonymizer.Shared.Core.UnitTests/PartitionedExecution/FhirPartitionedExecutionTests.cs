@@ -173,7 +173,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             BatchCount = 0;
         }
 
-#pragma warning disable CS1998
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<int> ConsumeAsync(IEnumerable<string> data)
 #pragma warning restore CS1998
         {
@@ -197,7 +197,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             return result;
         }
 
-#pragma warning disable CS1998
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task CompleteAsync()
 #pragma warning restore CS1998
         {
@@ -219,7 +219,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.PartitionedExecution
             CurrentOffset = 0;
         }
 
-#pragma warning disable CS1998
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<string> NextAsync()
 #pragma warning restore CS1998
         {
