@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\GeneralizeProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\PerturbProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\ResourceProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeSettingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\SubstituteSettingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbSettingTests.cs" />

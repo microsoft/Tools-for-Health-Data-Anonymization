@@ -53,6 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\KeepProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\PerturbProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\ResourceProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeOtherValuesOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbRangeType.cs" />

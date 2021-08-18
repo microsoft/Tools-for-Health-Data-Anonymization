@@ -145,7 +145,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             }
             catch (Exception ex)
             {
-                throw new InvalidInputException($"The input FHIR resource JSON in invalid: {json}", ex);
+                throw new InvalidInputException($"The input FHIR resource JSON is invalid: {json}", ex);
             }
         }
 

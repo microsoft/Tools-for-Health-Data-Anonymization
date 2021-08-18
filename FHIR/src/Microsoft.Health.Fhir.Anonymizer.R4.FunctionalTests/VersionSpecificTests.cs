@@ -59,7 +59,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
             var exception = Assert.Throws<InvalidInputException>(() => engine.AnonymizeJson(testContent));
             var expectedError = "type (at Cannot locate type information for type '"+ ResourceName + "')";
 
-            Assert.StartsWith("The input FHIR resource JSON in invalid: ", exception.Message);
+            Assert.StartsWith("The input FHIR resource JSON is invalid: ", exception.Message);
             Assert.True(exception.InnerException is FormatException);
             Assert.Equal(expectedError, exception.InnerException.Message);
             

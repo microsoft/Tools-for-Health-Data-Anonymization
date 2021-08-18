@@ -364,6 +364,34 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
         }
 
         [Fact]
+        public void GivenANodesByTypeRule_WhenProcess_AllNodesShouldBeProcessed()
+        {
+            AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
+            {
+                new AnonymizationFhirPathRule("nodesByType('Address')", "nodesByType('Address')", "", "redact", AnonymizerRuleType.FhirPathRule, "nodesByType('Address')"),
+            };
+
+            AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
+
+            var patient = CreateTestPatient();
+            var org = CreateTestOrganization();
+            var person = CreateTestPerson();
+
+            patient.Contained.Add(org);
+            org.Contained.Add(person);
+
+            var patientNode = ElementNode.FromElement(patient.ToTypedElement());
+            patientNode.Accept(visitor);
+            patientNode.RemoveEmptyNodes();
+
+            var personAddress = patientNode.Select("Patient.contained[0].contained[0].address[0]").FirstOrDefault();
+            var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
+
+            Assert.Null(personAddress);
+            Assert.Null(patientAddress);
+        }
+
+        [Fact]
         public void GivenANodesByTypeRuleWithResourceType_WhenProcess_OnlyNodesInSpecificResourceTypeShouldBeProcessed()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
@@ -472,30 +500,39 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
         }
 
         [Fact]
-        public void GivenANodesByTypeRule_WhenProcess_AllNodesShouldBeProcessed()
+        public void GivenANodesByNameRule_WhenProcess_AllNodesShouldBeProcessed()
         {
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
-                new AnonymizationFhirPathRule("nodesByType('Address')", "nodesByType('Address')", "", "redact", AnonymizerRuleType.FhirPathRule, "nodesByType('Address')"),
+                new AnonymizationFhirPathRule("nodesByName('city')", "nodesByName('city')", "", "redact", AnonymizerRuleType.FhirPathRule, "nodesByName('city')"),
             };
 
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
 
             var patient = CreateTestPatient();
-            var org = CreateTestOrganization();
+            var organization = CreateTestOrganization();
             var person = CreateTestPerson();
 
-            patient.Contained.Add(org);
-            org.Contained.Add(person);
+            patient.Contained.Add(organization);
+            organization.Contained.Add(person);
 
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
             patientNode.Accept(visitor);
             patientNode.RemoveEmptyNodes();
-            var personAddress = patientNode.Select("Patient.contained[0].contained[0].address[0]").FirstOrDefault();
-            var patientAddress = patientNode.Select("Patient.address[0]").FirstOrDefault();
 
-            Assert.Null(personAddress);
-            Assert.Null(patientAddress);
+            var personCity = patientNode.Select("Patient.contained[0].contained[0].address[0].city").FirstOrDefault();
+            var personCountry = patientNode.Select("Patient.contained[0].contained[0].address[0].country").First().Value.ToString();
+            var organizationCity = patientNode.Select("Patient.contained[0].address[0].city").FirstOrDefault();
+            var organizationCountry = patientNode.Select("Patient.contained[0].address[0].country").First().Value.ToString();
+            var patientCity = patientNode.Select("Patient.address[0].city").FirstOrDefault();
+            var patientCountry = patientNode.Select("Patient.address[0].country").First().Value.ToString();
+
+            Assert.Null(personCity);
+            Assert.Null(organizationCity);
+            Assert.Null(patientCity);
+            Assert.Equal("persontestcountry", personCountry);
+            Assert.Equal("OrgTestCountry", organizationCountry);
+            Assert.Equal("patienttestcountry1", patientCountry);
         }
 
         [Fact]
