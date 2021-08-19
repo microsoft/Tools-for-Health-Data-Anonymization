@@ -207,13 +207,15 @@ The safe harbor configuration files can be accessed via [R4](src/Microsoft.Healt
 
 ### Configuration file format
 
-The configuration is specified in JSON format. It has three high-level sections. One of these sections, namely _fhirVersion_ specify the configuration file's version for anonymizer. The second section named _fhirPathRules_ is meant to specify anonymization methods for data elements. The third section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. 
+The configuration is specified in JSON format. It has four high-level sections.
+One of these sections, namely _fhirVersion_ specify the configuration file's version for anonymizer. The second sections is _processingErrors_ to specify the behaviors for processing errors. The third section named _fhirPathRules_ is meant to specify anonymization methods for data elements. The last section named _parameters_ affects global behavior. _fhirPathRules_ are executed in the order of appearance in the configuration file. 
 
 Here is a sample configuration for R4:
 
 ```json
 {
   "fhirVersion": "R4",
+  "processingError":"raise",
   "fhirPathRules": [
     {"path": "nodesByType('Extension')", "method": "redact"},
     {"path": "Organization.identifier", "method": "keep"},
@@ -238,6 +240,36 @@ Here is a sample configuration for R4:
 |Empty or Null| The configuration file targets the same FHIR version as the executable.
 |Other values| Other values will raise an exception.
 
+### Processing Errors Specification
+
+Anonymization engine will throw three main exceptions in the program: _AnonymizationConfigurationException_, _AnonymizationProcessingException_ and _InvalidInputException_.
+|Exception|Description|
+|-----|-----|
+|AnonymizationConfigurationException|Raised when configuration file has invalid format or value.|
+|AnonymizationProcessingException|Raised during the process of anonymizing a FHIR node.|
+|InvalidInputException|Raised by invalid format of input FHIR resources.|
+
+Since _AnonymizationProcessingException_ may caused by a specific FHIR resource, customers can set the behavior when meeting this kind of exceptions in the section _processingErrors_ in configuration file. The setting will affect the output especially for the batch work.
+
+|processingErrors|Description|
+|----|----|
+|raise|Raise _AnonymizationProcessingException_ with program failed and stopped.|
+|skip| Skip _AnonymizationProcessingException_ and return an empty FHIR resource with program continued. |
+
+Here is the structure of empty FHIR resource for patient:
+```
+{
+     "resourceType": "Patient",
+     "meta": {
+            "security": [
+                  {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+            "code": "REDACTED",
+            "display": "redacted"
+        }
+    ]
+}
+```
 
 ### FHIR Path Rules
 FHIR path rules can be used to specify the anonymization methods for individual elements as well as elements of specific data types. Ex:
