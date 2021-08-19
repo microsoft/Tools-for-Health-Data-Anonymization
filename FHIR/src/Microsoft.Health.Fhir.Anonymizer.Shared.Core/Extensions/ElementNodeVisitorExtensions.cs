@@ -1,5 +1,4 @@
-﻿using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
-using Hl7.Fhir.ElementModel;
+﻿using Hl7.Fhir.ElementModel;
 using Microsoft.Health.Fhir.Anonymizer.Core.Visitors;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
@@ -12,9 +11,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 
             if (shouldVisitChild)
             {
-                foreach (var child in node.Children().CastElementNodes())
+                foreach (var child in node.Children())
                 {
-                    child.Accept(visitor);
+                    ((ElementNode)child).Accept(visitor);
                 }
             }
 
