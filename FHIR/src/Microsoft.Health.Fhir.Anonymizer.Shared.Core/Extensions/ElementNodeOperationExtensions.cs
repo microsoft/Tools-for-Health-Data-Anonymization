@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using EnsureThat;
 using Hl7.Fhir.ElementModel;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
@@ -42,12 +43,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 
         private static bool IsEmptyNode(ITypedElement node)
         {
-            // A node is considered empty when: 1) it is null; 2) it has no children and its value is null.
-            if (node == null)
-            {
-                return true;
-            }
+            EnsureArg.IsNotNull(node);
 
+            // A node is considered empty when it has no children and its value is null
             return !node.Children().Any() && node.Value == null && !node.IsFhirResource();
         }
     }
