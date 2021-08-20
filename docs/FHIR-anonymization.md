@@ -245,7 +245,7 @@ Here is a sample configuration for R4:
 Anonymization engine will throw three main exceptions in the program: _AnonymizationConfigurationException_, _AnonymizationProcessingException_ and _InvalidInputException_.
 |Exception|Description|
 |-----|-----|
-|AnonymizationConfigurationException|Raised when configuration file has invalid format or value.|
+|AnonymizationConfigurationException or AnonymizerRuleNotApplicableException|Raised when configuration file has invalid format or value.|
 |AnonymizationProcessingException|Raised during the process of anonymizing a FHIR node.|
 |InvalidInputException|Raised by invalid format of input FHIR resources.|
 
