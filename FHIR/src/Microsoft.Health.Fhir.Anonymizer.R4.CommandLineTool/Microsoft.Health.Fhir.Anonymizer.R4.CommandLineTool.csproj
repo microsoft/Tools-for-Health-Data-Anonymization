@@ -21,6 +21,15 @@
     </None>
   </ItemGroup>
 
+    <ItemGroup>
+    <None Include="..\..\..\LICENSE" Link="LICENSE">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="..\..\..\bin\notice\OSPO\*.txt">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
   <Import Project="..\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems" Label="Shared" />
 
 </Project>

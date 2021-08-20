@@ -13,7 +13,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 {
     public class DicomUtilityTests
     {
-        private static readonly TimeSpan _timeSpan = TimeSpan.FromHours(TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours);
+        private static readonly TimeSpan _timeSpan = TimeSpan.FromHours(TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).Hours);
 
         public static IEnumerable<object[]> GetValidDicomDateStringForParsing()
         {
