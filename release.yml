@@ -35,7 +35,22 @@ stages:
         command: test
         projects: '$(testProjects)'
         arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
-        
+
+    - task: ComponentGovernanceComponentDetection@0
+      displayName: 'component detection'
+
+    - task: notice@0
+      displayName: 'generate NOTICE file'
+      inputs:
+        outputformat: 'text'
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'NOTICE.txt'
+        downloadPath: '$(Build.SourcesDirectory)/bin/notice'
+                
     - task: DotNetCoreCLI@2
       displayName: 'dotnet publish'
       inputs:

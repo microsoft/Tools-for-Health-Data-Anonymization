@@ -1,25 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using EnsureThat;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
 {
     public class AnonymizationFhirPathRule : AnonymizerRule
     {
+        // Example: nodesByType('Patient').use
+        public static readonly Regex TypeRuleRegex = new Regex(@"^nodesByType\([\'|\""](?<type>[A-Za-z0-9]+)[\'|\""]\)(\.(?<expression>[A-Za-z0-9]+))?$");
+
+        // Example: nodesByName("telecom").value
+        public static readonly Regex NameRuleRegex = new Regex(@"^nodesByName\([\'|\""](?<name>[A-Za-z0-9]+)[\'|\""]\)(\.(?<expression>[A-Za-z0-9]+))?$");
+
         private static Regex s_pathRegex = new Regex(@"^(?<resourceType>[A-Z][a-zA-Z]*)?(\.)?(?<expression>.*?)$");
 
         public string Expression { get; set; }
 
-        public string ResourceType { get; private set; }
+        public string ResourceType { get; }
 
-        public bool IsResourceTypeRule { get { return Path.Equals(ResourceType);  } }
+        public bool IsResourceTypeRule => Path.Equals(ResourceType);
 
         public static AnonymizationFhirPathRule CreateAnonymizationFhirPathRule(Dictionary<string, object> config)
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException("config");
-            }
+            EnsureArg.IsNotNull(config);
 
             if (!config.ContainsKey(Constants.PathKey))
             {
@@ -58,10 +62,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
             AnonymizerRuleType type, string source, Dictionary<string, object> settings = null)
             : base(path, method, type, source)
         {
-            if (string.IsNullOrEmpty(expression))
-            {
-                throw new ArgumentNullException("expression");
-            }
+            EnsureArg.IsNotNull(expression);
 
             Expression = expression;
             ResourceType = resourceType;

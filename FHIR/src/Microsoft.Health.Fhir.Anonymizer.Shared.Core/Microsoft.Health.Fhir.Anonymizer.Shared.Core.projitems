@@ -26,8 +26,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerLogging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeExtension.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeNavExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\InvalidInputException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypedElementExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\TypedElementNavExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeOperationExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeVisitorExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\FhirPathSymbolExtensions.cs" />
@@ -51,6 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\KeepProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\PerturbProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\RedactProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\ResourceProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\GeneralizeOtherValuesOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\Settings\PerturbRangeType.cs" />
