@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using EnsureThat;
 using Hl7.Fhir.ElementModel;
@@ -18,20 +19,19 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
 {
     public class AnonymizerEngine
     {
-        private readonly FhirJsonParser _parser = new FhirJsonParser();
-        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
-        private readonly ResourceValidator _validator = new ResourceValidator();
         private readonly AnonymizerConfigurationManager _configurationManager;
         private readonly Dictionary<string, IAnonymizerProcessor> _processors;
         private readonly AnonymizationFhirPathRule[] _rules;
         private readonly IStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
+        private readonly ResourceValidator _validator = new ResourceValidator();
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
 
         public static void InitializeFhirPathExtensionSymbols()
         {
             FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
         }
 
-        public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath)) 
+        public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath))
         {
             
         }
@@ -52,15 +52,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         {
             var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
             var dateShiftScope = configurationManager.GetParameterConfiguration().DateShiftScope;
-            var dateShiftKeyPrefix = string.Empty;
-            if (dateShiftScope == DateShiftScope.File)
+            var dateShiftKeyPrefix = dateShiftScope switch
             {
-                dateShiftKeyPrefix = Path.GetFileName(fileName);
-            }
-            else if (dateShiftScope == DateShiftScope.Folder)
-            {
-                dateShiftKeyPrefix = Path.GetFileName(inputFolderName.TrimEnd('\\', '/'));
-            }
+                DateShiftScope.File => Path.GetFileName(fileName),
+                DateShiftScope.Folder => Path.GetFileName(inputFolderName.TrimEnd('\\', '/')),
+                _ => string.Empty
+            };
 
             configurationManager.SetDateShiftKeyPrefix(dateShiftKeyPrefix);
             return new AnonymizerEngine(configurationManager);
@@ -71,7 +68,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             EnsureArg.IsNotNull(element, nameof(element));
             try
             {
-                ElementNode resourceNode = ElementNode.FromElement(element);
+                ElementNode resourceNode = ParseTypedElementToElementNode(element);
                 return resourceNode.Anonymize(_rules, _processors);
             }
             catch (AnonymizerProcessingException)
@@ -101,13 +98,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         {
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));
 
-            var resource = _parser.Parse<Resource>(json);
-            ITypedElement anonymizedElement= AnonymizeElement(resource.ToTypedElement(), settings);
+            var element = ParseJsonToTypedElement(json);
+            var anonymizedElement = AnonymizeElement(element);
 
-            FhirJsonSerializationSettings serializationSettings = new FhirJsonSerializationSettings
+            var serializationSettings = new FhirJsonSerializationSettings
             {
                 Pretty = settings != null && settings.IsPrettyOutput
             };
+
             return anonymizedElement.ToJson(serializationSettings);
         }
 
@@ -137,6 +135,30 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             _processors[AnonymizerMethod.Perturb.ToString().ToUpperInvariant()] = new PerturbProcessor();
             _processors[AnonymizerMethod.Keep.ToString().ToUpperInvariant()] = new KeepProcessor();
             _processors[AnonymizerMethod.Generalize.ToString().ToUpperInvariant()] = new GeneralizeProcessor();
+        }
+
+        private ITypedElement ParseJsonToTypedElement(string json)
+        {
+            try
+            {
+                return FhirJsonNode.Parse(json).ToTypedElement(_provider);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidInputException($"The input FHIR resource JSON is invalid: {json}", ex);
+            }
+        }
+
+        private static ElementNode ParseTypedElementToElementNode(ITypedElement element)
+        {
+            try
+            {
+                return ElementNode.FromElement(element);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidInputException("The input FHIR resource is invalid", ex);
+            }
         }
     }
 }

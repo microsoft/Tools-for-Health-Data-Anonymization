@@ -4,10 +4,8 @@ using EnsureThat;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
-using Hl7.Fhir.Rest;
 using Hl7.Fhir.Serialization;
 using Hl7.Fhir.Specification;
-using Hl7.FhirPath.Sprache;
 using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
@@ -52,12 +50,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             // Retrieve all nodes that have been processed before to keep 
             _ = GenerateKeepNodeSetForSubstitution(node, context.VisitedNodes, keepNodes);
             var processResult = SubstituteNode(node, replacementNode, context.VisitedNodes, keepNodes);
-            MarkSubstitutedFragmentAsVisited(node, context.VisitedNodes);
+            context.VisitedNodes.UnionWith(node.Descendants().CastElementNodes());
 
             return processResult;
         }
 
-        private ProcessResult SubstituteNode(ElementNode node, ElementNode replacementNode, HashSet<ElementNode> visitedNodes, HashSet<ElementNode> keepNodes)
+        private static ProcessResult SubstituteNode(ElementNode node, ITypedElement replacementNode, HashSet<ElementNode> visitedNodes, HashSet<ElementNode> keepNodes)
         {
             var processResult = new ProcessResult();
             if (node == null || replacementNode == null || visitedNodes.Contains(node))
@@ -70,7 +68,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             foreach (var name in replaceChildrenNames)
             {
                 var children = node.Children(name).CastElementNodes().ToList();
-                var targetChildren = replacementNode.Children(name).CastElementNodes().ToList();
+                var targetChildren = replacementNode.Children(name).ToList();
 
                 int i = 0;
                 foreach (var child in children)
@@ -81,7 +79,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                         i++;
                         continue;
                     }
-                    else if (i < targetChildren.Count)
+
+                    if (i < targetChildren.Count)
                     {
                         // We still have target nodes, do replacement
                         SubstituteNode(child, targetChildren[i++], visitedNodes, keepNodes);
@@ -115,7 +114,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 {
                     continue;
                 }
-                else if (keepNodes.Contains(child))
+
+                if (keepNodes.Contains(child))
                 {
                     SubstituteNode(child, GetDummyNode(), visitedNodes, keepNodes);
                 }
@@ -131,13 +131,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
         }
 
         // To keep consistent anonymization changes made by preceding rules, we should figure out whether a node can be removed during substitution
-        private bool GenerateKeepNodeSetForSubstitution(ElementNode node, HashSet<ElementNode> visitedNodes, HashSet<ElementNode> keepNodes)
+        private static bool GenerateKeepNodeSetForSubstitution(ElementNode node, HashSet<ElementNode> visitedNodes, HashSet<ElementNode> keepNodes)
         {
             var shouldKeep = false;
             // If a child (no matter how deep) has been modified, this node should be kept
-            foreach (var child in node.Children().CastElementNodes())
+            foreach (var child in node.Children())
             {
-                shouldKeep |= GenerateKeepNodeSetForSubstitution(child, visitedNodes, keepNodes);
+                shouldKeep |= GenerateKeepNodeSetForSubstitution((ElementNode)child, visitedNodes, keepNodes);
             }
 
             // If this node its self has been modified, it should be kept
@@ -147,20 +147,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 return true;
             }
 
-            return shouldKeep;
+            return false;
         }
 
-        // Post-process to mark all substituted children nodes as visited
-        private void MarkSubstitutedFragmentAsVisited(ElementNode node, HashSet<ElementNode> visitedNodes)
-        {
-            visitedNodes.Add(node);
-            foreach (var child in node.Children().CastElementNodes())
-            {
-                MarkSubstitutedFragmentAsVisited(child, visitedNodes);
-            }
-        }
-
-        private ElementNode GetPrimitiveNode(string value)
+        private static ElementNode GetPrimitiveNode(string value)
         {
             var node = ElementNode.FromElement(ElementNode.ForPrimitive(value ?? string.Empty));
             if (value == null)
@@ -171,7 +161,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             return node;
         }
 
-        private ElementNode GetDummyNode()
+        private static ElementNode GetDummyNode()
         {
             var dummy = GetPrimitiveNode(null);
             return dummy;

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using EnsureThat;
 using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Model;
-using Hl7.Fhir.Specification;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Microsoft.Health.Fhir.Anonymizer.Core.Visitors;
 
@@ -13,114 +10,43 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 {
     public static class ElementNodeOperationExtensions
     {
-        private static readonly PocoStructureDefinitionSummaryProvider s_provider = new PocoStructureDefinitionSummaryProvider();
-        private const string _metaNodeName = "meta";
-
         public static ElementNode Anonymize(this ElementNode node, AnonymizationFhirPathRule[] rules, Dictionary<string, IAnonymizerProcessor> processors)
         {
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, processors);
             node.Accept(visitor);
-            node.RemoveNullChildren();
+            node.RemoveEmptyNodes();
 
             return node;
         }
 
-        // Remove null children of current node, and return true => current node is null
-        public static bool RemoveNullChildren(this ElementNode node)
+        public static void RemoveEmptyNodes(this ElementNode node)
         {
             if (node == null)
             {
-                return true;
+                return;
             }
 
-            var children = node.Children().CastElementNodes().ToList();
+            var children = node.Children().ToList();
             foreach (var child in children)
             {
-                // Remove child if it is null => return true
-                if (RemoveNullChildren(child))
-                {
-                    node.Remove(child);
-                }
-            }
+                var elementNodeChild = (ElementNode)child;
 
-            bool currentNodeIsEmpty = !node.Children().Any() && node.Value == null;
-            bool currentNodeIsFhirResource = node.IsFhirResource();
-            if (currentNodeIsEmpty && !currentNodeIsFhirResource)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
+                // Remove empty nodes recursively
+                RemoveEmptyNodes(elementNodeChild);
+
+                if (IsEmptyNode(elementNodeChild))
+                {
+                    node.Remove(elementNodeChild);
+                }
             }
         }
 
-        public static void AddSecurityTag(this ElementNode node, ProcessResult result)
+        private static bool IsEmptyNode(ITypedElement node)
         {
-            if (node == null)
-            {
-                return;
-            }
+            EnsureArg.IsNotNull(node);
 
-            if (result.ProcessRecords.Count == 0)
-            {
-                return;
-            }
-
-            ElementNode metaNode = node.GetMeta();
-            Meta meta = metaNode?.ToPoco<Meta>() ?? new Meta();
-
-            if (result.IsRedacted && !meta.Security.Any(x =>
-                string.Equals(x.Code, SecurityLabels.REDACT.Code, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                meta.Security.Add(SecurityLabels.REDACT);
-            }
-
-            if (result.IsAbstracted && !meta.Security.Any(x =>
-                string.Equals(x.Code, SecurityLabels.ABSTRED.Code, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                meta.Security.Add(SecurityLabels.ABSTRED);
-            }
-
-            if (result.IsCryptoHashed && !meta.Security.Any(x =>
-                string.Equals(x.Code, SecurityLabels.CRYTOHASH.Code, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                meta.Security.Add(SecurityLabels.CRYTOHASH);
-            }
-
-            if (result.IsEncrypted && !meta.Security.Any(x =>
-                string.Equals(x.Code, SecurityLabels.ENCRYPT.Code, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                meta.Security.Add(SecurityLabels.ENCRYPT);
-            }
-
-            if (result.IsPerturbed && !meta.Security.Any(x =>
-                string.Equals(x.Code, SecurityLabels.PERTURBED.Code, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                meta.Security.Add(SecurityLabels.PERTURBED);
-            }
-
-            if (result.IsSubstituted && !meta.Security.Any(x =>
-                string.Equals(x.Code, SecurityLabels.SUBSTITUTED.Code, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                meta.Security.Add(SecurityLabels.SUBSTITUTED);
-            }
-
-            if (result.IsGeneralized && !meta.Security.Any(x =>
-                string.Equals(x.Code, SecurityLabels.GENERALIZED.Code, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                meta.Security.Add(SecurityLabels.GENERALIZED);
-            }
-
-            ElementNode newMetaNode = ElementNode.FromElement(meta.ToTypedElement());
-            if (metaNode == null)
-            {
-                node.Add(s_provider, newMetaNode, _metaNodeName);
-            }
-            else
-            {
-                node.Replace(s_provider, metaNode, newMetaNode);
-            }
+            // A node is considered empty when it has no children and its value is null
+            return !node.Children().Any() && node.Value == null && !node.IsFhirResource();
         }
     }
 }

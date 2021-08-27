@@ -4,6 +4,7 @@ using System.IO;
 using Hl7.FhirPath;
 using Hl7.Fhir.ElementModel;
 using Microsoft.Health.Fhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Xunit;
 
@@ -55,10 +56,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         {
             AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
-            var ex = Assert.Throws<FormatException>(() => engine.AnonymizeJson(testContent));
+            var exception = Assert.Throws<InvalidInputException>(() => engine.AnonymizeJson(testContent));
             var expectedError = "type (at Cannot locate type information for type '"+ ResourceName + "')";
+
+            Assert.StartsWith("The input FHIR resource JSON is invalid: ", exception.Message);
+            Assert.True(exception.InnerException is FormatException);
+            Assert.Equal(expectedError, exception.InnerException.Message);
             
-            Assert.Equal(expectedError, ex.Message.ToString());
         }
 
         [Theory]
@@ -84,7 +88,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
             AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
             
-            Assert.Throws<FormatException>(() => engine.AnonymizeJson(testContent));
+            var exception = Assert.Throws<InvalidInputException>(() => engine.AnonymizeJson(testContent));
+            Assert.Equal("The input FHIR resource is invalid", exception.Message);
+            Assert.True(exception.InnerException is StructuralTypeException);
+            Assert.StartsWith("Type checking the data: Encountered unknown element", exception.InnerException.Message);
         }
 
         [Theory]
@@ -94,7 +101,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
             AnonymizerEngine engine = new AnonymizerEngine("r4-configuration-sample.json");
             string testContent = File.ReadAllText(ResourceTestsFile(testFile));
 
-            Assert.Throws<StructuralTypeException>(() => engine.AnonymizeJson(testContent));
+            var exception = Assert.Throws<InvalidInputException>(() => engine.AnonymizeJson(testContent));
+            Assert.Equal("The input FHIR resource is invalid", exception.Message);
+            Assert.True(exception.InnerException is StructuralTypeException);
+            Assert.StartsWith("Type checking the data: Encountered unknown element", exception.InnerException.Message);
         }
 
         private string ResourceTestsFile(string fileName)

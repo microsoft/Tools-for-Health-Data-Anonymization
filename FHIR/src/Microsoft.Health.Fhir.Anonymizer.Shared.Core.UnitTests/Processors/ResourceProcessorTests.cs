@@ -2,15 +2,21 @@
 using System.Linq;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
-using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Xunit;
 
-namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
+namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
 {
-    public class SecurityTagExtensionsTests
+    public class ResourceProcessorTests
     {
+        private readonly ResourceProcessor _resourceProcessor;
+
+        public ResourceProcessorTests()
+        {
+            _resourceProcessor = new ResourceProcessor(null, null);
+        }
+
         [Fact]
         public void GivenAResourceWithoutSecurityLabels_WhenTryAddSecurityLabels_SecurityLabelsShouldBeAdded()
         {
@@ -19,7 +25,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
             result.AddProcessRecord(AnonymizationOperations.Redact, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
-            resourceNode.AddSecurityTag(result);
+            _resourceProcessor.AddSecurityTag(resourceNode, result);
             Assert.Single(resourceNode.Children("meta"));
 
             resource = resourceNode.ToPoco<Patient>();
@@ -31,13 +37,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
         [Fact]
         public void GivenAResourceWithDifferentSecurityLabels_WhenTryAddSecurityLabels_SecurityLabelsShouldBeAddedWithoutRemovingOriginalOnes()
         {
-            var resource = new Patient()
+            var resource = new Patient
             {
-                Meta = new Meta()
+                Meta = new Meta
                 {
-                    Security = new List<Coding>()
+                    Security = new List<Coding>
                     {
-                        new Coding() { Code = "MASKED" }
+                        new Coding { Code = "MASKED" }
                     }
                 }
             };
@@ -45,7 +51,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
             result.AddProcessRecord(AnonymizationOperations.Redact, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
-            resourceNode.AddSecurityTag(result);
+            _resourceProcessor.AddSecurityTag(resourceNode, result);
             Assert.Single(resourceNode.Children("meta"));
 
             resource = resourceNode.ToPoco<Patient>();
@@ -58,9 +64,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
         [Fact]
         public void GivenAResourceWithVersionId_WhenTryAddSecurityLabels_VersionIdShouldBeKept()
         {
-            var resource = new Patient()
+            var resource = new Patient
             {
-                Meta = new Meta()
+                Meta = new Meta
                 {
                     VersionId = "Test"
                 }
@@ -70,7 +76,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
             result.AddProcessRecord(AnonymizationOperations.Redact, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
-            resourceNode.AddSecurityTag(result);
+            _resourceProcessor.AddSecurityTag(resourceNode, result);
             resource = resourceNode.ToPoco<Patient>();
 
             Assert.Equal("Test", resource.Meta.VersionId);
@@ -79,13 +85,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
         [Fact]
         public void GivenAResourceWithSameSecurityLabels_WhenTryAddSecurityLabels_SecurityLabelsShouldNotBeAddedAgain()
         {
-            var resource = new Patient()
+            var resource = new Patient
             {
-                Meta = new Meta()
+                Meta = new Meta
                 {
-                    Security = new List<Coding>()
+                    Security = new List<Coding>
                     {
-                        new Coding() { Code = "REDACTED" }
+                        new Coding { Code = "REDACTED" }
                     }
                 }
             };
@@ -93,7 +99,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
             result.AddProcessRecord(AnonymizationOperations.Redact, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
-            resourceNode.AddSecurityTag(result);
+            _resourceProcessor.AddSecurityTag(resourceNode, result);
             resource = resourceNode.ToPoco<Patient>();
 
             Assert.Single(resource.Meta.Security);
@@ -111,7 +117,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
             result.AddProcessRecord(AnonymizationOperations.Perturb, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
-            resourceNode.AddSecurityTag(result);
+            _resourceProcessor.AddSecurityTag(resourceNode, result);
             resource = resourceNode.ToPoco<Patient>();
 
             Assert.Equal(3, resource.Meta.Security.Count);
@@ -123,14 +129,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
         [Fact]
         public void GivenAResourceWithSecurityLabels_WhenTryAddMultipleSecurityLabels_SecurityLabelsShouldBeAddedAgain()
         {
-            var resource = new Patient()
+            var resource = new Patient
             {
-                Meta = new Meta()
+                Meta = new Meta
                 {
-                    Security = new List<Coding>()
+                    Security = new List<Coding>
                     {
-                        new Coding() { Code = "REDACTED" },
-                        new Coding() { Code = "ADDITION" }
+                        new Coding { Code = "REDACTED" },
+                        new Coding { Code = "ADDITION" }
                     }
                 }
             };
@@ -141,7 +147,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
             result.AddProcessRecord(AnonymizationOperations.Perturb, ElementNode.ForPrimitive(1));
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
-            resourceNode.AddSecurityTag(result);
+            _resourceProcessor.AddSecurityTag(resourceNode, result);
             resource = resourceNode.ToPoco<Patient>();
 
             Assert.Equal(4, resource.Meta.Security.Count);
@@ -153,21 +159,21 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
         [Fact]
         public void GivenAResource_WhenTryToAddSecuritytagWithNoResult_MetaShouldNotBeChange()
         {
-            var resource = new Patient()
+            var resource = new Patient
             {
-                Meta = new Meta()
+                Meta = new Meta
                 {
-                    Security = new List<Coding>()
+                    Security = new List<Coding>
                     {
-                        new Coding() { Code = "REDACTED" },
-                        new Coding() { Code = "ADDITION" }
+                        new Coding { Code = "REDACTED" },
+                        new Coding { Code = "ADDITION" }
                     }
                 }
             };
             var result = new ProcessResult();
 
             var resourceNode = ElementNode.FromElement(resource.ToTypedElement());
-            resourceNode.AddSecurityTag(result);
+            _resourceProcessor.AddSecurityTag(resourceNode, result);
             resource = resourceNode.ToPoco<Patient>();
 
             Assert.Equal(2, resource.Meta.Security.Count);
@@ -177,7 +183,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Extensions
             resource = new Patient();
             result = new ProcessResult();
             resourceNode = ElementNode.FromElement(resource.ToTypedElement());
-            resourceNode.AddSecurityTag(result);
+            _resourceProcessor.AddSecurityTag(resourceNode, result);
             resource = resourceNode.ToPoco<Patient>();
             Assert.Null(resource.Meta);
         }

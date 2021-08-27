@@ -1,30 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Hl7.Fhir.ElementModel;
-using Hl7.FhirPath;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
 {
     public static class ElementNodeNavExtensions
     {
-        public static List<ElementNode> GetEntryResourceChildren(this ElementNode node)
+        public static IEnumerable<ITypedElement> GetEntryResourceChildren(this ITypedElement node)
         {
             return node?.Children(Constants.EntryNodeName)
                     .Select(entry => entry?.Children(Constants.EntryResourceNodeName).FirstOrDefault())
-                    .Where(resource => resource != null)
-                    .CastElementNodes()
-                    .ToList();
+                    .Where(resource => resource != null);
         }
 
-        public static List<ElementNode> GetContainedChildren(this ElementNode node)
+        public static IEnumerable<ITypedElement> GetContainedChildren(this ITypedElement node)
         {
-            return node?.Children(Constants.ContainedNodeName).CastElementNodes().ToList();
+            return node?.Children(Constants.ContainedNodeName);
         }
 
-        public static IEnumerable<ElementNode> ResourceDescendantsWithoutSubResource(this ElementNode node)
+        public static IEnumerable<ITypedElement> ResourceDescendantsWithoutSubResource(this ITypedElement node)
         {
-            foreach (var child in node.Children().CastElementNodes())
+            foreach (var child in node.Children())
             {
                 // Skip sub resources in bundle entry and contained list
                 if (child.IsFhirResource())
@@ -41,7 +37,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Extensions
             }
         }
 
-        public static IEnumerable<ElementNode> SelfAndDescendantsWithoutSubResource(this IEnumerable<ElementNode> nodes)
+        public static IEnumerable<ITypedElement> SelfAndDescendantsWithoutSubResource(this IEnumerable<ITypedElement> nodes)
         {
             foreach (var node in nodes)
             {

@@ -48,7 +48,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Models
 
         public IElementDefinitionSummary Definition => ElementDefinitionSummary.ForRoot(_provider.Provide(InstanceType));
 
-        public IEnumerable<ITypedElement> Children(string? name = null) => 
+        public IEnumerable<ITypedElement> Children(string name = null) => 
             name == null ? ChildList : ChildList.Where(c => c.Name.MatchesPrefix(name));
 
         public static bool IsEmptyElement(ITypedElement element)
