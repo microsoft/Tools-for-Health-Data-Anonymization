@@ -109,6 +109,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             return anonymizedElement.ToJson(serializationSettings);
         }
 
+        public void AddCustomProcessors(string methodKey, IAnonymizerProcessor processor)
+        {
+            EnsureArg.IsNotNullOrEmpty(methodKey, nameof(methodKey));
+            EnsureArg.IsNotNull(processor, nameof(processor));
+
+            _processors[methodKey.ToUpperInvariant()] = processor;
+        }
+
         private void ValidateInput(AnonymizerSettings settings, Resource resource)
         {
             if (settings != null && settings.ValidateInput)
