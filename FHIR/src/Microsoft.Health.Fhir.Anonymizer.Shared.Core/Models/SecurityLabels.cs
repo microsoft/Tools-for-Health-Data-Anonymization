@@ -25,10 +25,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Models
             Display = "cryptographic hash function"
         };
 
-        public static readonly Coding ENCRYPT = new Coding()
+        public static readonly Coding MASKED = new Coding()
         {
-            Code = "ENCRYPT",
-            Display = "exact value is transformed into ciphertext"
+            System = "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+            Code = "MASKED",
+            Display = "masked"
         };
 
         public static readonly Coding PERTURBED = new Coding()
