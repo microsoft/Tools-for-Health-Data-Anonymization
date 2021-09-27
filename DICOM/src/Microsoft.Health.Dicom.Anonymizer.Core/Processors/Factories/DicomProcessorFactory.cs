@@ -15,6 +15,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
         public IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null)
         {
+            EnsureArg.IsNotNullOrEmpty(method, nameof(method));
+
             return method.ToLower() switch
             {
                 "perturb" => new PerturbProcessor(settingObject),
@@ -26,7 +28,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 "remove" => new RemoveProcessor(),
                 "refreshuid" => new RefreshUIDProcessor(),
                 "keep" => new KeepProcessor(),
-                _ => CreateCustomProcessor(method)
+                _ => _customProcessors.GetValueOrDefault(method)
             };
         }
 
@@ -36,13 +38,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(processor, nameof(processor));
 
             _customProcessors[method.ToLower()] = processor;
-        }
-
-        private IAnonymizerProcessor CreateCustomProcessor(string method)
-        {
-            EnsureArg.IsNotNullOrEmpty(method, nameof(method));
-
-            return _customProcessors.GetValueOrDefault(method);
         }
     }
 }
