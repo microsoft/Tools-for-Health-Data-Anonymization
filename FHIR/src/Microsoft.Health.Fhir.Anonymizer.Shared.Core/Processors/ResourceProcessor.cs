@@ -21,7 +21,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
         private readonly HashSet<ElementNode> _visitedNodes = new HashSet<ElementNode>();
         private readonly Dictionary<string, List<ITypedElement>> _typeToNodeLookUp = new Dictionary<string, List<ITypedElement>>();
         private readonly Dictionary<string, List<ITypedElement>> _nameToNodeLookUp = new Dictionary<string, List<ITypedElement>>();
-        
+
         private static readonly PocoStructureDefinitionSummaryProvider s_provider = new PocoStructureDefinitionSummaryProvider();
         private const string _metaNodeName = "meta";
 
@@ -54,7 +54,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                 }
 
                 var matchNodes = GetMatchNodes(rule, node);
-                
+
                 foreach (var matchNode in matchNodes)
                 {
                     ruleResult.Update(ProcessNodeRecursive((ElementNode) matchNode.ToElement(), _processors[method], ruleContext, rule.RuleSettings));
@@ -97,9 +97,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             }
 
             if (result.IsEncrypted && !meta.Security.Any(x =>
-                string.Equals(x.Code, SecurityLabels.ENCRYPT.Code, StringComparison.InvariantCultureIgnoreCase)))
+                string.Equals(x.Code, SecurityLabels.MASKED.Code, StringComparison.InvariantCultureIgnoreCase)))
             {
-                meta.Security.Add(SecurityLabels.ENCRYPT);
+                meta.Security.Add(SecurityLabels.MASKED);
             }
 
             if (result.IsPerturbed && !meta.Security.Any(x =>
@@ -198,7 +198,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             * Special case handling:
             * Senario: FHIR path only contains resourceType: Patient, Resource. 
             * Sample AnonymizationFhirPathRule: { "path": "Patient", "method": "keep" }
-            * 
+            *
             * Current FHIR path lib do not support navigate such ResourceType FHIR path from resource in bundle.
             * Example: navigate with FHIR path "Patient" from "Bundle.entry[0].resource[0]" is not support
             */
