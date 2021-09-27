@@ -11,7 +11,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class DicomProcessorFactory : IAnonymizerProcessorFactory
     {
-        private readonly Dictionary<string, IAnonymizerProcessor> _customerProcessors = new Dictionary<string, IAnonymizerProcessor>() { };
+        private readonly Dictionary<string, IAnonymizerProcessor> _customProcessors = new Dictionary<string, IAnonymizerProcessor>() { };
 
         public IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null)
         {
@@ -30,19 +30,19 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             };
         }
 
-        public void AddCustomerProcessor(string method, IAnonymizerProcessor processor)
+        public void AddCustomProcessor(string method, IAnonymizerProcessor processor)
         {
             EnsureArg.IsNotNullOrEmpty(method, nameof(method));
             EnsureArg.IsNotNull(processor, nameof(processor));
 
-            _customerProcessors[method.ToLower()] = processor;
+            _customProcessors[method.ToLower()] = processor;
         }
 
         private IAnonymizerProcessor CreateCustomProcessor(string method)
         {
             EnsureArg.IsNotNullOrEmpty(method, nameof(method));
 
-            return _customerProcessors.GetValueOrDefault(method);
+            return _customProcessors.GetValueOrDefault(method);
         }
     }
 }

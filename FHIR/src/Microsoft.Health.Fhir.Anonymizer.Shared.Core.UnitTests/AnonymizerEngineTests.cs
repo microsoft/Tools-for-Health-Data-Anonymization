@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Xunit;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
@@ -30,6 +33,17 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
 
             var result = engine.AnonymizeJson(TestPatientSample);
             Assert.Equal(OneLineOutputTarget, result);
+        }
+
+        [Fact]
+        public void GivenADicomProcessorFactory_AddingCustomProcessor_GivenMethod_CorrectProcessorWillBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-test-sample.json"));
+
+            engine.AddCustomProcessors("test", new MockAnonymizerProcessor());
+            var expectedProcessors = engine.GetType().GetField("_processors", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(engine);
+            var test = expectedProcessors as Dictionary<string, IAnonymizerProcessor>;
+            Assert.Equal(typeof(MockAnonymizerProcessor), test["TEST"].GetType());
         }
 
         private const string TestPatientSample =

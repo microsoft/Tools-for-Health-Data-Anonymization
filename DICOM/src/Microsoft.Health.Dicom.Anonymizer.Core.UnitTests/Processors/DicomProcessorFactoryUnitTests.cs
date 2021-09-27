@@ -29,7 +29,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
         public void GivenADicomProcessorFactory_AddingCustomProcessor_GivenMethod_CorrectProcessorWillBeReturned()
         {
             var factory = new DicomProcessorFactory();
-            factory.AddCustomerProcessor("test", new MockAnonymizerProcessor());
+            factory.AddCustomProcessor("test", new MockAnonymizerProcessor());
             Assert.Equal(typeof(MockAnonymizerProcessor), factory.CreateProcessor("test", new JObject()).GetType());
         }
     }
