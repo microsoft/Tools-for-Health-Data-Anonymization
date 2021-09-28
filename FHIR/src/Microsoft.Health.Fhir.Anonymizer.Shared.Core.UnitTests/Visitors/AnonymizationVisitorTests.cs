@@ -89,7 +89,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
 
             patient = patientNode.ToPoco<Patient>();
             Assert.Single(patient.Meta.Security);
-            Assert.Contains(SecurityLabels.ENCRYPT.Code, patient.Meta.Security.Select(s => s.Code));
+            Assert.Contains(SecurityLabels.MASKED.Code, patient.Meta.Security.Select(s => s.Code));
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
                 new AnonymizationFhirPathRule("Patient.address.city", "address.city", "Patient", "substitute", AnonymizerRuleType.FhirPathRule, "Patient.address.city",
-                    new Dictionary<string, object> { {"replaceWith", "ExampleCity2020" } })           
+                    new Dictionary<string, object> { {"replaceWith", "ExampleCity2020" } })
             };
 
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
@@ -275,7 +275,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
 
             var patient = CreateTestPatient();
             var patientNode = ElementNode.FromElement(patient.ToTypedElement());
-            patientNode.Accept(visitor); 
+            patientNode.Accept(visitor);
             string patientCity = patientNode.Select("Patient.address[0].city").First().Value.ToString();
             string patientCountry = patientNode.Select("Patient.address[0].country").First().Value.ToString();
 
