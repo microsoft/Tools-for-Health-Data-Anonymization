@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using EnsureThat;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
@@ -114,6 +115,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             EnsureArg.IsNotNullOrEmpty(methodKey, nameof(methodKey));
             EnsureArg.IsNotNull(processor, nameof(processor));
 
+            var builtInMethods = Enum.GetNames(typeof(AnonymizerMethod)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+            if (builtInMethods.Contains(methodKey))
+            {
+                throw new AddCustomProcessorException($"Anonymization method {methodKey} is a built-in method. Please add custom processor with unique method name.");
+            }
             _processors[methodKey.ToUpperInvariant()] = processor;
         }
 

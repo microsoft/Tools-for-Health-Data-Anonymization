@@ -7,6 +7,7 @@ using Hl7.Fhir.Specification;
 using Hl7.FhirPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 
@@ -50,7 +51,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
                 if (!_processors.ContainsKey(method))
                 {
-                    continue;
+                    throw new AnonymizerConfigurationException($"Anonymization method {method} not supported.");
                 }
 
                 var matchNodes = GetMatchNodes(rule, node);

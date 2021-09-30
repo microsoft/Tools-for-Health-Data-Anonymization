@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using EnsureThat;
+using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
@@ -36,6 +37,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNullOrEmpty(method, nameof(method));
             EnsureArg.IsNotNull(processor, nameof(processor));
+
+            if (Constants.BuiltInMethods.Contains(method))
+            {
+                throw new AddCustomProcessorException(DicomAnonymizationErrorCode.AddCustomProcessorFailed, $"Anonymization method {method} is a built-in method. Please add custom processor with unique method name.");
+            }
 
             _customProcessors[method.ToLower()] = processor;
         }

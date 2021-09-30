@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dicom;
 using EnsureThat;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
@@ -23,7 +24,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
         private readonly IAnonymizerProcessorFactory _processorFactory;
 
-        private static readonly HashSet<string> _supportedMethods = Enum.GetNames(typeof(AnonymizerMethod)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerRuleFactory>();
 
         public AnonymizerRuleFactory(AnonymizerConfiguration configuration, IAnonymizerProcessorFactory processorFactory)
         {
@@ -51,12 +52,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             }
 
             var method = ruleContent[Constants.MethodKey].ToString();
-            if (!_supportedMethods.Contains(method))
+            if (!Constants.BuiltInMethods.Contains(method))
             {
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationRule, $"Anonymization method '{method}' is not supported.");
+                _logger.LogWarning($"Anonymization method {method} is not a built-in method. Please make sure method {method} has been added as custom processor.");
             }
 
-            // Parse and validate settings
+
+            // Parse and validate settings. ruleSetting wil be null if methods are customer added.
             JObject ruleSetting = ExtractRuleSetting(ruleContent, method);
 
             // Parse and validate tag
