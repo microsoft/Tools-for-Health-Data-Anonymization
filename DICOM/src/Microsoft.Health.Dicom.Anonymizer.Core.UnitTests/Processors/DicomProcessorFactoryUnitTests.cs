@@ -3,6 +3,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -31,6 +32,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             var factory = new DicomProcessorFactory();
             factory.AddCustomProcessor("test", new MockAnonymizerProcessor());
             Assert.Equal(typeof(MockAnonymizerProcessor), factory.CreateProcessor("test", new JObject()).GetType());
+        }
+
+        [Fact]
+        public void GivenADicomProcessorFactory_AddingCustomProcessoWithBuiltInName_ExceptionWillBeThrown()
+        {
+            var factory = new DicomProcessorFactory();
+            Assert.Throws<AddCustomProcessorException>(() => factory.AddCustomProcessor("redact", new MockAnonymizerProcessor()));
         }
     }
 }

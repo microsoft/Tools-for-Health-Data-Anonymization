@@ -9,7 +9,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
     {
         public ProcessResult Process(ElementNode node, ProcessContext context = null, Dictionary<string, object> settings = null)
         {
-            throw new System.NotImplementedException();
+            return new ProcessResult();
         }
     }
 }

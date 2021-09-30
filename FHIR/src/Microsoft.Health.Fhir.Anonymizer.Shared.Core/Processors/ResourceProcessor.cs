@@ -49,7 +49,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
                     VisitedNodes = _visitedNodes
                 };
 
-                if (!_processors.ContainsKey(method))
+                if (!_processors.ContainsKey(method.ToUpperInvariant()))
                 {
                     throw new AnonymizerConfigurationException($"Anonymization method {method} not supported.");
                 }
