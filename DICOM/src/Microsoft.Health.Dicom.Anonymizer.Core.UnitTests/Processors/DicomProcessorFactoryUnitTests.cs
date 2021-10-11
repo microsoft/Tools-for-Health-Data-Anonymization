@@ -35,7 +35,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
         }
 
         [Fact]
-        public void GivenADicomProcessorFactory_AddingCustomProcessoWithBuiltInName_ExceptionWillBeThrown()
+        public void GivenADicomProcessorFactory_AddingCustomProcessorWithBuiltInName_ExceptionWillBeThrown()
         {
             var factory = new DicomProcessorFactory();
             Assert.Throws<AddCustomProcessorException>(() => factory.AddCustomProcessor("redact", new MockAnonymizerProcessor()));

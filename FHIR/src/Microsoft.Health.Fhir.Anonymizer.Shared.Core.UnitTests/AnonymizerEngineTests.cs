@@ -48,7 +48,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void GivenAnonymizerEngine_AddingCustomProcessorWithBuiltInName_CustomProcessorWillBeAdded()
+        public void GivenAnonymizerEngine_AddingCustomProcessorWithBuiltInName_ExceptionWillBeThrown()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-test-sample.json"));
 
