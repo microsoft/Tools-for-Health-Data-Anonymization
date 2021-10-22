@@ -57,7 +57,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 _logger.LogWarning($"Anonymization method {method} is not a built-in method. Please make sure method {method} has been added as custom processor.");
             }
 
-
             // Parse and validate settings. ruleSetting wil be null if methods are customer added.
             JObject ruleSetting = ExtractRuleSetting(ruleContent, method);
 

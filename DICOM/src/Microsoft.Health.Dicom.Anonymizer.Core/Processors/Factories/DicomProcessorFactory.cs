@@ -3,18 +3,14 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using EnsureThat;
-using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class DicomProcessorFactory : IAnonymizerProcessorFactory
     {
-        private readonly Dictionary<string, IAnonymizerProcessor> _customProcessors = new Dictionary<string, IAnonymizerProcessor>() { };
-
-        public IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null)
+        public virtual IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null)
         {
             EnsureArg.IsNotNullOrEmpty(method, nameof(method));
 
@@ -29,21 +25,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 "remove" => new RemoveProcessor(),
                 "refreshuid" => new RefreshUIDProcessor(),
                 "keep" => new KeepProcessor(),
-                _ => _customProcessors.GetValueOrDefault(method)
+                _ => null,
             };
-        }
-
-        public void AddCustomProcessor(string method, IAnonymizerProcessor processor)
-        {
-            EnsureArg.IsNotNullOrEmpty(method, nameof(method));
-            EnsureArg.IsNotNull(processor, nameof(processor));
-
-            if (Constants.BuiltInMethods.Contains(method))
-            {
-                throw new AddCustomProcessorException(DicomAnonymizationErrorCode.AddCustomProcessorFailed, $"Anonymization method {method} is a built-in method. Please add custom processor with unique method name.");
-            }
-
-            _customProcessors[method.ToLower()] = processor;
         }
     }
 }

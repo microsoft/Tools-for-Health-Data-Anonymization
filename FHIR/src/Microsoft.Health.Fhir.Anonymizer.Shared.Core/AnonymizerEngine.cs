@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using EnsureThat;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
@@ -15,6 +16,7 @@ using Microsoft.Health.Fhir.Anonymizer.Core.Extensions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
 using Microsoft.Health.Fhir.Anonymizer.Core.Validation;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core
 {
@@ -26,30 +28,32 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         private readonly IStructureDefinitionSummaryProvider _provider = new PocoStructureDefinitionSummaryProvider();
         private readonly ResourceValidator _validator = new ResourceValidator();
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
+        private readonly IAnonymizerProcessorFactory _customProcessorFactory;
 
         public static void InitializeFhirPathExtensionSymbols()
         {
             FhirPathCompiler.DefaultSymbolTable.AddExtensionSymbols();
         }
 
-        public AnonymizerEngine(string configFilePath) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath))
+        public AnonymizerEngine(string configFilePath, IAnonymizerProcessorFactory customProcessorFactory = null) : this(AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath), customProcessorFactory)
         {
             
         }
 
-        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager)
+        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, IAnonymizerProcessorFactory customProcessorFactory = null)
         {
             _configurationManager = configurationManager;
             _processors = new Dictionary<string, IAnonymizerProcessor>();
 
+            _customProcessorFactory = customProcessorFactory;
+
             InitializeProcessors(_configurationManager);
 
             _rules = _configurationManager.FhirPathRules;
-
             _logger.LogDebug("AnonymizerEngine initialized successfully");
         }
 
-        public static AnonymizerEngine CreateWithFileContext(string configFilePath, string fileName, string inputFolderName)
+        public static AnonymizerEngine CreateWithFileContext(string configFilePath, string fileName, string inputFolderName, IAnonymizerProcessorFactory customProcessorFactory = null)
         {
             var configurationManager = AnonymizerConfigurationManager.CreateFromConfigurationFile(configFilePath);
             var dateShiftScope = configurationManager.GetParameterConfiguration().DateShiftScope;
@@ -61,7 +65,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             };
 
             configurationManager.SetDateShiftKeyPrefix(dateShiftKeyPrefix);
-            return new AnonymizerEngine(configurationManager);
+            return new AnonymizerEngine(configurationManager, customProcessorFactory);
         }
 
         public ITypedElement AnonymizeElement(ITypedElement element, AnonymizerSettings settings = null)
@@ -110,19 +114,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             return anonymizedElement.ToJson(serializationSettings);
         }
 
-        public void AddCustomProcessors(string methodKey, IAnonymizerProcessor processor)
-        {
-            EnsureArg.IsNotNullOrEmpty(methodKey, nameof(methodKey));
-            EnsureArg.IsNotNull(processor, nameof(processor));
-
-            var builtInMethods = Enum.GetNames(typeof(AnonymizerMethod)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
-            if (builtInMethods.Contains(methodKey))
-            {
-                throw new AddCustomProcessorException($"Anonymization method {methodKey} is a built-in method. Please add custom processor with unique method name.");
-            }
-            _processors[methodKey.ToUpperInvariant()] = processor;
-        }
-
         private void ValidateInput(AnonymizerSettings settings, Resource resource)
         {
             if (settings != null && settings.ValidateInput)
@@ -149,6 +140,16 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             _processors[AnonymizerMethod.Perturb.ToString().ToUpperInvariant()] = new PerturbProcessor();
             _processors[AnonymizerMethod.Keep.ToString().ToUpperInvariant()] = new KeepProcessor();
             _processors[AnonymizerMethod.Generalize.ToString().ToUpperInvariant()] = new GeneralizeProcessor();
+            InitializeCustomProcessors(configurationManager);
+        }
+
+        private void InitializeCustomProcessors(AnonymizerConfigurationManager configurationManager)
+        {
+            var processors = _customProcessorFactory.GetType().GetField("CustomProcessors", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_customProcessorFactory) as Dictionary<string, Type>;
+            foreach(var processor in processors)
+            {
+                _processors[processor.Key.ToUpperInvariant()] = _customProcessorFactory.CreateProcessor(processor.Key, configurationManager.GetParameterConfiguration().CustomSettings);
+            }
         }
 
         private ITypedElement ParseJsonToTypedElement(string json)

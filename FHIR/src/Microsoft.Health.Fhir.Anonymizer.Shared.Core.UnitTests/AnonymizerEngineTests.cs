@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
+﻿using System.IO;
 using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
 using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
@@ -37,22 +35,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void GivenAnonymizerEngine_AddingCustomProcessor_CustomProcessorWillBeAdded()
+        public void GivenAnonymizerEngine_AddingCustomProcessor_WhenAnonymize_CorrectResultWillBeReturned()
         {
-            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-test-sample.json"));
+            var factory = new CustomProcessorFactory();
+            factory.AddProcessors(typeof(MaskProcessor));
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-custom-Processor.json"), factory);
 
-            engine.AddCustomProcessors("test", new MockAnonymizerProcessor());
-            var expectedProcessors = engine.GetType().GetField("_processors", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(engine);
-            var test = expectedProcessors as Dictionary<string, IAnonymizerProcessor>;
-            Assert.Equal(typeof(MockAnonymizerProcessor), test["TEST"].GetType());
-        }
-
-        [Fact]
-        public void GivenAnonymizerEngine_AddingCustomProcessorWithBuiltInName_ExceptionWillBeThrown()
-        {
-            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-test-sample.json"));
-
-            Assert.Throws<AddCustomProcessorException>(() => engine.AddCustomProcessors("redact", new MockAnonymizerProcessor()));
+            var result = engine.AnonymizeJson(TestPatientSample);
+            Assert.Equal(CustomTarget, result);
         }
 
         [Fact]
@@ -61,21 +51,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-unsupported-method.json"));
 
             Assert.Throws<AnonymizerConfigurationException>(() => engine.AnonymizeJson(TestPatientSample));
-        }
-
-        [Fact]
-        public void GivenAnonymizerEngine_IfConfigurationHasUnsupportedMethod_WhenAddingUnsupportedMethodAsCustomProcessor_CorrectResultWillBeReturned()
-        {
-            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-unsupported-method.json"));
-            var settings = new AnonymizerSettings()
-            {
-                IsPrettyOutput = true
-            };
-
-            engine.AddCustomProcessors("skip", new MockAnonymizerProcessor());
-            var result = engine.AnonymizeJson(TestPatientSample, settings);
-
-            Assert.Equal(TestPatientSample, result);
         }
 
         private const string TestPatientSample =
@@ -110,5 +85,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
 }";
 
         private const string OneLineOutputTarget = "{\"resourceType\":\"Patient\",\"id\":\"example\",\"meta\":{\"security\":[{\"system\":\"http://terminology.hl7.org/CodeSystem/v3-ObservationValue\",\"code\":\"REDACTED\",\"display\":\"redacted\"}]}}";
+        private const string CustomTarget = "{\"resourceType\":\"Patient\",\"id\":\"example\",\"name\":[{\"use\":\"***icial\",\"family\":\"***lmers\",\"given\":[\"***er\",\"***es\"]}]}";
     }
 }

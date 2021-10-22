@@ -7,11 +7,16 @@ using System;
 using Dicom;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 {
     public class MockAnonymizerProcessor : IAnonymizerProcessor
     {
+        public MockAnonymizerProcessor(JObject settintgs)
+        {
+        }
+
         public bool IsSupported(DicomItem item)
         {
             throw new NotImplementedException();
