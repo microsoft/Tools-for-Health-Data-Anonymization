@@ -14,16 +14,16 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
     public class CustomProcessorFactory :IAnonymizerProcessorFactory
     {
-        private readonly Dictionary<string, Type> CustomProcessors = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase) { };
+        private readonly Dictionary<string, Type> _customProcessors = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase) { };
 
         public IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null)
         {
             EnsureArg.IsNotNullOrEmpty(method, nameof(method));
 
-            if (CustomProcessors.ContainsKey(method))
+            if (_customProcessors.ContainsKey(method))
             {
                 return (IAnonymizerProcessor)Activator.CreateInstance(
-                   CustomProcessors[method],
+                   _customProcessors[method],
                    new object[] { settingObject });
             }
 
@@ -43,19 +43,19 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
         {
             foreach (Type processor in processors)
             {
-                var method = GetMethodName(processor.ToString());
+                var method = GetMethodName(processor.Name);
                 if (Constants.BuiltInMethods.Contains(method))
                 {
                     throw new AddCustomProcessorException( $"Anonymization method {method} is a built-in method. Please add custom processor with unique method name.");
                 }
 
-                CustomProcessors.Add(method, processor);
+                _customProcessors.Add(method, processor);
             }
         }
 
         private string GetMethodName(string processor)
         {
-            return processor.Split(".").Last().Replace("Processor", string.Empty);
+            return processor.Replace("Processor", string.Empty);
         }
     }
 }

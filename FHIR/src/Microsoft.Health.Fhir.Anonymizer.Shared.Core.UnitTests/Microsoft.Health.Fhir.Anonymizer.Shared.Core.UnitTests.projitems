@@ -20,11 +20,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeOperationExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\FhirPathSymbolExtensionsTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MaskProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MockAnonymizerProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirEnumerableReaderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirPartitionedExecutionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirStreamConsumerTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PartitionedExecution\FhirStreamReaderTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\CryptoHashProcessorTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\CustomProcessorFactoryUnitTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\DateShiftProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\EncryptProcessorTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\GeneralizeProcessorTests.cs" />

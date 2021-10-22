@@ -148,7 +148,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
 
         private void InitializeCustomProcessors(AnonymizerConfigurationManager configurationManager)
         {
-            var processors = _customProcessorFactory.GetType().GetField("CustomProcessors", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_customProcessorFactory) as Dictionary<string, Type>;
+            var processors = _customProcessorFactory.GetType().GetField("_customProcessors", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(_customProcessorFactory) as Dictionary<string, Type>;
             foreach(var processor in processors)
             {
                 _processors[processor.Key.ToUpperInvariant()] = _customProcessorFactory.CreateProcessor(processor.Key, configurationManager.GetParameterConfiguration().CustomSettings);

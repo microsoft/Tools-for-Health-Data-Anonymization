@@ -91,7 +91,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
         private HashSet<string> GetCustomMethods()
         {
-            var processorField = _processorFactory.GetType().GetField("CustomProcessors", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var processorField = _processorFactory.GetType().GetField("_customProcessors", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             if (processorField == null)
             {
                 return new HashSet<string>();
