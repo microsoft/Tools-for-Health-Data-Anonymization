@@ -14,7 +14,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
     public class CustomProcessorFactory :IAnonymizerProcessorFactory
     {
-        public readonly Dictionary<string, Type> CustomProcessors = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase) { };
+        private readonly Dictionary<string, Type> CustomProcessors = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase) { };
 
         public IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null)
         {
