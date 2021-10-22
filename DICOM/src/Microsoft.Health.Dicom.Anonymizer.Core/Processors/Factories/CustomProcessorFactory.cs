@@ -22,7 +22,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             if (Constants.BuiltInMethods.Contains(method))
             {
-                return this.CreateProcessor(method, settingObject);
+                return base.CreateProcessor(method, settingObject);
             }
 
             return CreateCustomProcessor(method, settingObject);
