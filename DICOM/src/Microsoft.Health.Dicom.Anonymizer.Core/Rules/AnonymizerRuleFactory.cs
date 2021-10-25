@@ -6,8 +6,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Dicom;
 using EnsureThat;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
@@ -22,8 +24,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
         private readonly Dictionary<string, JObject> _customSettings;
 
         private readonly IAnonymizerProcessorFactory _processorFactory;
-
-        private static readonly HashSet<string> _supportedMethods = Enum.GetNames(typeof(AnonymizerMethod)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
 
         public AnonymizerRuleFactory(AnonymizerConfiguration configuration, IAnonymizerProcessorFactory processorFactory)
         {
@@ -51,12 +51,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             }
 
             var method = ruleContent[Constants.MethodKey].ToString();
-            if (!_supportedMethods.Contains(method))
+            if (!Constants.BuiltInMethods.Contains(method) && !GetCustomMethods().Contains(method))
             {
                 throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationRule, $"Anonymization method '{method}' is not supported.");
             }
 
-            // Parse and validate settings
+            // Parse and validate settings.
             JObject ruleSetting = ExtractRuleSetting(ruleContent, method);
 
             // Parse and validate tag
@@ -87,6 +87,18 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             {
                 throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingConfigurationFields, "Missing a required field 'tag' in rule config.");
             }
+        }
+
+        private HashSet<string> GetCustomMethods()
+        {
+            var processorField = _processorFactory.GetType().GetField("_customProcessors", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (processorField == null)
+            {
+                return new HashSet<string>();
+            }
+
+            var processors = processorField.GetValue(_processorFactory) as Dictionary<string, Type>;
+            return processors.Select(x => x.Key).ToHashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         private JObject ExtractRuleSetting(JObject ruleContent, string method)

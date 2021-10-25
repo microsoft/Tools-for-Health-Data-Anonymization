@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core
 {
@@ -30,6 +33,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
 
         internal const string GeneralResourceType = "Resource";
         internal const string GeneralDomainResourceType = "DomainResource";
+
+        internal static readonly HashSet<string> BuiltInMethods = Enum.GetNames(typeof(AnonymizerMethod)).ToHashSet(StringComparer.InvariantCultureIgnoreCase);
 
     }
 }
