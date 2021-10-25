@@ -38,7 +38,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
         public void GivenAnonymizerEngine_AddingCustomProcessor_WhenAnonymize_CorrectResultWillBeReturned()
         {
             var factory = new CustomProcessorFactory();
-            factory.AddProcessors(typeof(MaskProcessor));
+            factory.RegisterProcessors(typeof(MaskProcessor));
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("TestConfigurations", "configuration-custom-Processor.json"), factory);
 
             var result = engine.AnonymizeJson(TestPatientSample);

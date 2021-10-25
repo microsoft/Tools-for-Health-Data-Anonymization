@@ -16,7 +16,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
         public void GivenAFhirProcessorFactory_AddingCustomProcessor_GivenMethod_CorrectProcessorWillBeReturned()
         {
             var factory = new CustomProcessorFactory();
-            factory.AddProcessors(typeof(MaskProcessor), typeof(MockAnonymizerProcessor));
+            factory.RegisterProcessors(typeof(MaskProcessor), typeof(MockAnonymizerProcessor));
             Assert.Equal(typeof(MaskProcessor), factory.CreateProcessor("mask", JObject.Parse("{\"maskedLength\":\"3\"}")).GetType());
             Assert.Equal(typeof(MockAnonymizerProcessor), factory.CreateProcessor("mockanonymizer", null).GetType());
         }
@@ -25,7 +25,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
         public void GivenAFhirProcessorFactory_AddingBuildInProcessor_ExceptionWillBeThrown()
         {
             var factory = new CustomProcessorFactory();
-            Assert.Throws<AddCustomProcessorException>(() => factory.AddProcessors(typeof(RedactProcessor)));
+            Assert.Throws<AddCustomProcessorException>(() => factory.RegisterProcessors(typeof(RedactProcessor)));
         }
     }
 }

@@ -65,7 +65,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         public void GivenDicomDataSet_UsingCustomProcessor_WhenAnonymize_ValidDicomDatasetWillBeReturned()
         {
             var processorFactory = new CustomProcessorFactory();
-            processorFactory.AddProcessors(typeof(MaskProcessor));
+            processorFactory.RegisterProcessors(typeof(MaskProcessor));
 
             var engine = new AnonymizerEngine("./TestConfigurations/configuration-custom.json", processorFactory: processorFactory);
 

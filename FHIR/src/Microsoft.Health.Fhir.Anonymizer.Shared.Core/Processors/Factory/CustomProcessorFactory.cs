@@ -31,15 +31,15 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
         }
 
 
-        public void AddProcessors(params Type[] processors)
+        public void RegisterProcessors(params Type[] processors)
         {
             if (processors != null)
             {
-                AddProcessors(processors.AsEnumerable());
+                RegisterProcessors(processors.AsEnumerable());
             }
         }
 
-        public void AddProcessors(IEnumerable<Type> processors)
+        public void RegisterProcessors(IEnumerable<Type> processors)
         {
             foreach (Type processor in processors)
             {
