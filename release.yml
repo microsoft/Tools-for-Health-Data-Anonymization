@@ -16,7 +16,7 @@ variables:
   version: $(major).$(minor).$(patch).$(buildnum)
 
 stages:
-- stage: Build And Tests
+- stage: Build
   pool:
       vmImage: 'windows-latest'
   jobs:
@@ -37,7 +37,7 @@ stages:
         arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
 
     
-- stage: Publish Artifacts
+- stage: Publish_Artifacts
   pool:
       vmImage: 'windows-latest'
   jobs:
