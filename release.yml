@@ -60,7 +60,7 @@ stages:
         downloadType: 'single'
         artifactName: 'NOTICE.txt'
         downloadPath: '$(Build.SourcesDirectory)/bin/notice'
-                
+
     - task: DotNetCoreCLI@2
       displayName: 'dotnet publish'
       inputs:
@@ -78,7 +78,6 @@ stages:
         packDirectory: '$(build.artifactStagingDirectory)/nupkgs'
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'nuget_version'
-        nobuild: true
         zipAfterPublish: true
       env:
         nuget_version: $(version)
