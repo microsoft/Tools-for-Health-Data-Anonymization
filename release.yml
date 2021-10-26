@@ -16,7 +16,7 @@ variables:
   version: $(major).$(minor).$(patch).$(buildnum)
 
 stages:
-- stage: Build
+- stage: Build And Tests
   pool:
       vmImage: 'windows-latest'
   jobs:
@@ -36,7 +36,15 @@ stages:
         projects: '$(testProjects)'
         arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
 
+    
+- stage: Publish Artifacts
+  pool:
+      vmImage: 'windows-latest'
+  jobs:
+  - job: Publish
+    steps:
     - task: ComponentGovernanceComponentDetection@0
+      condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
       displayName: 'component detection'
 
     - task: notice@0
@@ -92,7 +100,7 @@ stages:
 - stage: Release
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
   jobs:
-  - job: publish
+  - job: Release
     pool:
         vmImage: 'windows-latest'
     steps:
