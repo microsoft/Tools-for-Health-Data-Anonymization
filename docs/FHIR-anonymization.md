@@ -17,7 +17,7 @@ FHIR data anonymization is available in the following ways:
 Use the .Net Core 3.1 SDK to build FHIR Tools for Anonymization. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet-core/3.1).
 
 ### Get sample FHIR files
-This repo contains a few [sample](samples/) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
+This repo contains a few [sample](../FHIR/samples/) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
 
 You can also export FHIR resource from your FHIR server using [Bulk Export](https://docs.microsoft.com/en-us/azure/healthcare-apis/configure-export-data).
 
