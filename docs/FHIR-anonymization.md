@@ -203,7 +203,7 @@ Out of the 18 identifier types mentioned in HIPAA Safe Harbor method (2)(i), thi
 This configuration file is provided in a best-effort manner. We **strongly** recommend that you review the HIPAA guidelines as well as the implementation of this project before using it for you anonymization requirements. 
 
 
-The safe harbor configuration files can be accessed via [R4](FHIR/src/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool/configuration-sample.json) and [STU3](FHIR/src/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool/configuration-sample.json) links.
+The safe harbor configuration files can be accessed via [R4](../FHIR/src/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool/configuration-sample.json) and [STU3](../FHIR/src/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool/configuration-sample.json) links.
 
 ### Configuration file format
 
