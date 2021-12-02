@@ -9,8 +9,8 @@ variables:
   testProjects: "**/*Tests/*.csproj"
   publishProject: "**/*Tool/*.csproj"
   buildConfiguration: 'Release'
-  major: 2
-  minor: 2
+  major: 3
+  minor: 0
   patch: 0
   buildnum: $[counter(format('{0}.{1}.{2}',variables['major'],variables['minor'], variables['patch']), 1)]
   version: $(major).$(minor).$(patch).$(buildnum)
@@ -37,14 +37,17 @@ stages:
         arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
 
     - task: ComponentGovernanceComponentDetection@0
+      condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
       displayName: 'component detection'
 
     - task: notice@0
+      condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
       displayName: 'generate NOTICE file'
       inputs:
         outputformat: 'text'
 
     - task: DownloadBuildArtifacts@0
+      condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
       inputs:
         buildType: 'current'
         downloadType: 'single'
@@ -113,3 +116,7 @@ stages:
           $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.zip
           $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.zip
           $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Dicom.Anonymizer.CommandLineTool.zip
+
+add_seconds : firstSegments.MSH.8.Value
+add_seconds : 60
+add_seconds : "60"
