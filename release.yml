@@ -116,7 +116,3 @@ stages:
           $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.zip
           $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.zip
           $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Dicom.Anonymizer.CommandLineTool.zip
-
-add_seconds : firstSegments.MSH.8.Value
-add_seconds : 60
-add_seconds : "60"
