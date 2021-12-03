@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizationFhirPathRule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\AnonymizerConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AnonymizerConfigurations\ProcessingErrorsOption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AddCustomProcessorException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerProcessingException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerRuleNotApplicableException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\AnonymizerConfigurationException.cs" />
@@ -48,6 +49,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Processors\CryptoHashProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\DateShiftProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\EncryptProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Factory\CustomProcessorFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Processors\Factory\IAnonymizerProcessorFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\GeneralizeProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\IAnonymizerProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Processors\KeepProcessor.cs" />

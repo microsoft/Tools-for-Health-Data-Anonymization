@@ -5,6 +5,7 @@
 
 using Dicom;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
+using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Xunit;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
@@ -58,6 +59,23 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Dataset.AddOrUpdate(DicomTag.PatientAge, "invalid");
             var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerEngineOptions(validateInput: true));
             Assert.Throws<DicomValidationException>(() => engine.AnonymizeDataset(Dataset));
+        }
+
+        [Fact]
+        public void GivenDicomDataSet_UsingCustomProcessor_WhenAnonymize_ValidDicomDatasetWillBeReturned()
+        {
+            var processorFactory = new CustomProcessorFactory();
+            processorFactory.RegisterProcessors(typeof(MaskProcessor));
+
+            var engine = new AnonymizerEngine("./TestConfigurations/configuration-custom.json", processorFactory: processorFactory);
+
+            engine.AnonymizeDataset(Dataset);
+
+            var dicomFile = DicomFile.Open("DicomResults/custom.dcm");
+            foreach (var item in Dataset)
+            {
+                Assert.Equal(((DicomElement)item).Get<string>(), dicomFile.Dataset.GetString(item.Tag));
+            }
         }
 
         [Fact]
