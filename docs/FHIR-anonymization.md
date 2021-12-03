@@ -570,11 +570,7 @@ For each generalization rule, there are several additional settings to specify i
 - [required] **cases** An object defining key-value pairs to specify case condition and replacement value using FHIRPath predicate expression. _key_ represents case condition and _value_ represents target value.
 - [optional] **otherValues** Define the operation for values that do not match any of the cases. The value could be "redact" or "keep". The default value is "redact".
 
-Since the output of FHIR expression is flexible, users should provide expressions with valid output value to avoid unexcepted errors.
-
-> **[Important]**:
-> * When using a [FHIR Path function](http://hl7.org/fhirpath/) like `replaceMatches` make sure the type is compatible with string. In case of error, try to add a `toString` before.
-> * The `replaceMatches` function only supports regular expressions which does not contained escaped.
+Since the output of FHIR expression is flexible, users should provide expressions with valid output value to avoid unexcepted errors. When using a [FHIR Path function](http://hl7.org/fhirpath/) like `replaceMatches` make sure the type is compatible with string. In case of error, try to add a `toString` before. The `replaceMatches` function only supports regular expressions which does not contained escaped.
 
 ## Current limitations
 
