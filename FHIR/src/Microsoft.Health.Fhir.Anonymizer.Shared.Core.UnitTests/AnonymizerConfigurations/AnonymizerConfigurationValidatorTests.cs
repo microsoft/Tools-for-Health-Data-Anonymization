@@ -14,7 +14,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
         public static IEnumerable<object[]> GetInvalidConfigs()
         {
             yield return new object[] { "./TestConfigurations/configuration-miss-rules.json" };
-            yield return new object[] { "./TestConfigurations/configuration-unsupported-method.json" };
             yield return new object[] { "./TestConfigurations/configuration-invalid-fhirpath.json" };
             yield return new object[] { "./TestConfigurations/configuration-invalid-encryptkey.json" };
             yield return new object[] { "./TestConfigurations/configuration-miss-replacement.json" };

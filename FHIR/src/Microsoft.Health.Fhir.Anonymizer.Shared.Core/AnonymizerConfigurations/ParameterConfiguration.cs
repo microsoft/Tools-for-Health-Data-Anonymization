@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
@@ -29,6 +30,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
 
         [DataMember(Name = "restrictedZipCodeTabulationAreas")]
         public List<string> RestrictedZipCodeTabulationAreas { get; set; }
+
+        [DataMember(Name = "customSettings")]
+        public JObject CustomSettings { get; set; }
 
         public string DateShiftKeyPrefix { get; set; }
     }
