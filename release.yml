@@ -10,7 +10,7 @@ variables:
   publishProject: "**/*Tool/*.csproj"
   buildConfiguration: 'Release'
   major: 3
-  minor: 0
+  minor: 1
   patch: 0
   buildnum: $[counter(format('{0}.{1}.{2}',variables['major'],variables['minor'], variables['patch']), 1)]
   version: $(major).$(minor).$(patch).$(buildnum)
@@ -36,21 +36,31 @@ stages:
         projects: '$(testProjects)'
         arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
 
+    
+- stage: Publish_Artifacts
+  pool:
+      vmImage: 'windows-latest'
+  jobs:
+  - job: Publish
+    steps:
     - task: ComponentGovernanceComponentDetection@0
+      condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
       displayName: 'component detection'
 
     - task: notice@0
+      condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
       displayName: 'generate NOTICE file'
       inputs:
         outputformat: 'text'
 
     - task: DownloadBuildArtifacts@0
+      condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
       inputs:
         buildType: 'current'
         downloadType: 'single'
         artifactName: 'NOTICE.txt'
         downloadPath: '$(Build.SourcesDirectory)/bin/notice'
-                
+
     - task: DotNetCoreCLI@2
       displayName: 'dotnet publish'
       inputs:
@@ -68,7 +78,6 @@ stages:
         packDirectory: '$(build.artifactStagingDirectory)/nupkgs'
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'nuget_version'
-        nobuild: true
         zipAfterPublish: true
       env:
         nuget_version: $(version)
@@ -90,7 +99,7 @@ stages:
 - stage: Release
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
   jobs:
-  - job: publish
+  - job: Release
     pool:
         vmImage: 'windows-latest'
     steps:

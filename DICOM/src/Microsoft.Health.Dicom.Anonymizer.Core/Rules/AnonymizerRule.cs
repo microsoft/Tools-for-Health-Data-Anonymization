@@ -26,6 +26,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             Description = description;
             processorFactory ??= new DicomProcessorFactory();
             _processor = processorFactory.CreateProcessor(method, ruleSetting);
+
+            if (_processor == null)
+            {
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationRule, $"Anonymization method '{method}' is not supported.");
+            }
         }
 
         public string Description { get; set; }

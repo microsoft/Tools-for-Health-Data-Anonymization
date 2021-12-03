@@ -3,7 +3,7 @@
     "fhirPathRules": [
         {
             "path": "Patient",
-            "method": "invaliid"
+            "method": "skip"
         }
     ]
 }
