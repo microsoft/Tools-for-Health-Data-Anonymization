@@ -15,5 +15,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Exceptions
         InvalidRuleSettings = 1006,
 
         UnsupportedAnonymizationMethod = 1101,
+        AddCustomProcessorFailed = 1102,
     }
 }

@@ -18,17 +18,18 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         private readonly AnonymizerEngineOptions _anonymizerSettings;
         private readonly AnonymizerRule[] _rules;
 
-        public AnonymizerEngine(string configFilePath = "configuration.json", AnonymizerEngineOptions anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null)
-            : this(AnonymizerConfigurationManager.CreateFromJsonFile(configFilePath), anonymizerSettings, ruleFactory)
+        public AnonymizerEngine(string configFilePath = "configuration.json", AnonymizerEngineOptions anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null, IAnonymizerProcessorFactory processorFactory = null)
+            : this(AnonymizerConfigurationManager.CreateFromJsonFile(configFilePath), anonymizerSettings, ruleFactory, processorFactory)
         {
         }
 
-        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, AnonymizerEngineOptions anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null)
+        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, AnonymizerEngineOptions anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null, IAnonymizerProcessorFactory processorFactory = null)
         {
             EnsureArg.IsNotNull(configurationManager, nameof(configurationManager));
 
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerEngineOptions();
-            ruleFactory ??= new AnonymizerRuleFactory(configurationManager.Configuration, new DicomProcessorFactory());
+
+            ruleFactory ??= new AnonymizerRuleFactory(configurationManager.Configuration, processorFactory ?? new DicomProcessorFactory());
             _rules = ruleFactory.CreateDicomAnonymizationRules(configurationManager.Configuration.RuleContent);
             _logger.LogDebug("Successfully initialized anonymizer engine.");
         }

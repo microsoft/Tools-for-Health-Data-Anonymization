@@ -53,7 +53,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
                 string method = rule[Constants.MethodKey].ToString();
                 if (!supportedMethods.Contains(method))
                 {
-                    throw new AnonymizerConfigurationException($"Anonymization method {method} not supported.");
+                    _logger.LogWarning($"Anonymization method {method} is not a built-in method. Please make sure method {method} has been added as custom processor.");
                 }
 
                 // Should provide replacement value for substitute rule

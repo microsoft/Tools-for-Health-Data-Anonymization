@@ -3,14 +3,17 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using EnsureThat;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class DicomProcessorFactory : IAnonymizerProcessorFactory
     {
-        public IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null)
+        public virtual IAnonymizerProcessor CreateProcessor(string method, JObject settingObject = null)
         {
+            EnsureArg.IsNotNullOrEmpty(method, nameof(method));
+
             return method.ToLower() switch
             {
                 "perturb" => new PerturbProcessor(settingObject),
