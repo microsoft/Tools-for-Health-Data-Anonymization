@@ -45,6 +45,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anony
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool", "src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.csproj", "{DA3123C7-D0C4-4636-8A85-DF1F52A04794}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.Fhir.Anonymizer.CommandLineTool", "src\Microsoft.Health.Fhir.Anonymizer.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.CommandLineTool.csproj", "{301A640D-58E6-469F-B14E-5C9D36D7028E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems*{140255c7-6c80-4a3c-a248-ae8cdfdcf907}*SharedItemsImports = 13
@@ -119,6 +121,10 @@ Global
 		{DA3123C7-D0C4-4636-8A85-DF1F52A04794}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA3123C7-D0C4-4636-8A85-DF1F52A04794}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA3123C7-D0C4-4636-8A85-DF1F52A04794}.Release|Any CPU.Build.0 = Release|Any CPU
+		{301A640D-58E6-469F-B14E-5C9D36D7028E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{301A640D-58E6-469F-B14E-5C9D36D7028E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{301A640D-58E6-469F-B14E-5C9D36D7028E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{301A640D-58E6-469F-B14E-5C9D36D7028E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,6 +148,7 @@ Global
 		{57035793-441B-4347-935C-3D19CE52C709} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{8BAD1364-4C47-443A-95E9-DB624FDF78C8} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 		{DA3123C7-D0C4-4636-8A85-DF1F52A04794} = {4273D1F5-D916-4291-8B60-7D74202D425E}
+		{301A640D-58E6-469F-B14E-5C9D36D7028E} = {4273D1F5-D916-4291-8B60-7D74202D425E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19A940B3-FA97-4729-AC91-EE68070BCFC1}

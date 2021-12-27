@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Health.Fhir.Anonymizer.R4.Core\Microsoft.Health.Fhir.Anonymizer.R4.Core.csproj">
+      <Aliases>R4Core</Aliases>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Health.Fhir.Anonymizer.Stu3.Core\Microsoft.Health.Fhir.Anonymizer.Stu3.Core.csproj">
+      <Aliases>R3Core</Aliases>
+    </ProjectReference>
+  </ItemGroup>
+
+</Project>

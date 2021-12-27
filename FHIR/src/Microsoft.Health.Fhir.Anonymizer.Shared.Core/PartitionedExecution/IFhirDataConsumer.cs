@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Microsoft.Health.Fhir.Anonymizer.Core
+namespace Microsoft.Health.Fhir.Anonymizer.Core.PartitionedExecution
 {
     public interface IFhirDataConsumer<T>
     {

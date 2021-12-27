@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
 using Microsoft.Health.Fhir.Anonymizer.AzureDataFactoryPipeline.src;
-using Microsoft.Health.Fhir.Anonymizer.Core;
+using Microsoft.Health.Fhir.Anonymizer.Core.PartitionedExecution;
 using Microsoft.Health.Fhir.Anonymizer.DataFactoryTool;
 using Xunit;
 
