@@ -31,7 +31,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
     {
         public async static Task Main(string[] args)
         {
-            args = "-i input -o output".Split();
             await CommandLine.Parser.Default.ParseArguments<Options>(args)
                .MapResult(async options => await AnonymizationLogic.AnonymizeAsync(options).ConfigureAwait(false), _ => Task.FromResult(1)).ConfigureAwait(false);
         }        
