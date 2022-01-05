@@ -7,9 +7,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
 {
     class Options
     {
-        [Option('i', "inputFolder", Required = true, HelpText = "Folder to locate input resource files.")]
+        [Option('I', "inputFile", Required = false, HelpText = "Input resource files.")]
+        public string InputFile { get; set; }
+        [Option('O', "outputFile", Required = false, HelpText = "Output anonymized resource files.")]
+        public string OutputFile { get; set; }
+        [Option('i', "inputFolder", Required = false, HelpText = "Folder to locate input resource files.")]
         public string InputFolder { get; set; }
-        [Option('o', "outputFolder", Required = true, HelpText = "Folder to save anonymized resource files.")]
+        [Option('o', "outputFolder", Required = false, HelpText = "Folder to save anonymized resource files.")]
         public string OutputFolder { get; set; }
         [Option('c', "configFile", Required = false, Default = "configuration-sample.json", HelpText = "Anonymizer configuration file path.")]
         public string ConfigurationFilePath { get; set; }
