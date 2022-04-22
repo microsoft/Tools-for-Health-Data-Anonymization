@@ -276,13 +276,13 @@ Here is a sample rule using substitute method on dateTime tags and replace the v
 ```
 
 ## Output validation
-Anonymizer tool may transform a value to an invalid output. If you enable  validateOutput, it will validate against value multiplicity, value types and format in DICOM specification. 
+Anonymizer tool can transform the input values into an invalid output. If you enable validateOutput, it will validate against **value multiplicity**, **value types** and **format** in DICOM specification. 
 
-For example, if using encryption method on PatientID, which is a 64 chars maximum string, the encrypted output may exceed 64 chars. If disable validateOutput, the output DICOM file may be invalid for the continuing process. If you enable validateOutput, the anonymize process will be failed.
+For example, if using encryption method on PatientID, which is a 64 chars maximum string, the encrypted output may exceed 64 chars. If disable validateOutput, the output DICOM file may be invalid for the continuing process. If you enable validateOutput, the anonymization process will fail.
 
-Output validation only check value for each DICOM tag, but not check the constrains for DICOM file. For example, if some tags changed or removed (e.g. SOPInstanceUID is required in DICOM file and the value for SpecificCharaterSet will effect other tags's value.), the output DICOM file may be damaged. 
+Output validation only checks value for each DICOM tag, but does not check the constraints for DICOM file. For example, if some tags are changed or removed (e.g. SOPInstanceUID is required in DICOM file and the value for SpecificCharaterSet will effect other tags's value.), the output DICOM file may be damaged. 
 
 ## Current limitations
-* We only support metadata anonymization in DICOM. Not applicable on pixel data. 
+* We only support DICOM **metadata** anonymization. The anonymization is currently unavailable for image pixel data. 
 * For DICOM tag which is a Sequence of Items (SQ), we only support redact and remove methods on the entire sequence.
-* The constranis amoung tags are not considered in output validation for now. Customers should take care of the effect when changing tags' values.
+* The constraints among tags are not considered in output validation for now. Customers should take care of the effect when changing the tag values.
