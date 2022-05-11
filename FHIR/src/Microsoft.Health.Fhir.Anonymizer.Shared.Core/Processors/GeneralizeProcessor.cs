@@ -18,6 +18,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
         private readonly SubstituteProcessor substituteProcessor;
         private readonly PerturbProcessor perturbProcessor;
 
+        public GeneralizeProcessor()
+        {
+
+        }
+
         public GeneralizeProcessor(DateShiftProcessor _dateShiftProcessor, CryptoHashProcessor _cryptoHashProcessor, EncryptProcessor _encryptProcessor, SubstituteProcessor _substituteProcessor, PerturbProcessor _perturbProcessor)        {
             dateShiftProcessor = _dateShiftProcessor;
             cryptoHashProcessor = _cryptoHashProcessor;
