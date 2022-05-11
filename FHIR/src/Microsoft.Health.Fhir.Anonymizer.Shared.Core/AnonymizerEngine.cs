@@ -132,14 +132,21 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
 
         private void InitializeProcessors(AnonymizerConfigurationManager configurationManager)
         {
-            _processors[AnonymizerMethod.DateShift.ToString().ToUpperInvariant()] = DateShiftProcessor.Create(configurationManager);
-            _processors[AnonymizerMethod.Redact.ToString().ToUpperInvariant()] = RedactProcessor.Create(configurationManager);
-            _processors[AnonymizerMethod.CryptoHash.ToString().ToUpperInvariant()] = new CryptoHashProcessor(configurationManager.GetParameterConfiguration().CryptoHashKey);
-            _processors[AnonymizerMethod.Encrypt.ToString().ToUpperInvariant()] = new EncryptProcessor(configurationManager.GetParameterConfiguration().EncryptKey);
-            _processors[AnonymizerMethod.Substitute.ToString().ToUpperInvariant()] = new SubstituteProcessor();
-            _processors[AnonymizerMethod.Perturb.ToString().ToUpperInvariant()] = new PerturbProcessor();
-            _processors[AnonymizerMethod.Keep.ToString().ToUpperInvariant()] = new KeepProcessor();
-            _processors[AnonymizerMethod.Generalize.ToString().ToUpperInvariant()] = new GeneralizeProcessor();
+            CryptoHashProcessor _cryptoHashProcessor = new CryptoHashProcessor(configurationManager.GetParameterConfiguration().CryptoHashKey);
+            DateShiftProcessor _dateShiftProcessor = DateShiftProcessor.Create(configurationManager);
+            RedactProcessor _redactProcessor = RedactProcessor.Create(configurationManager);
+            EncryptProcessor _encryptProcessor = new EncryptProcessor(configurationManager.GetParameterConfiguration().EncryptKey);
+            SubstituteProcessor _substituteProcessor = new SubstituteProcessor();
+            PerturbProcessor _perturbProcessor = new PerturbProcessor();
+            KeepProcessor _keepProcessor = new KeepProcessor();
+            _processors[AnonymizerMethod.DateShift.ToString().ToUpperInvariant()] = _dateShiftProcessor;
+            _processors[AnonymizerMethod.Redact.ToString().ToUpperInvariant()] = _redactProcessor;
+            _processors[AnonymizerMethod.CryptoHash.ToString().ToUpperInvariant()] = _cryptoHashProcessor;
+            _processors[AnonymizerMethod.Encrypt.ToString().ToUpperInvariant()] = _encryptProcessor;
+            _processors[AnonymizerMethod.Substitute.ToString().ToUpperInvariant()] = _substituteProcessor;
+            _processors[AnonymizerMethod.Perturb.ToString().ToUpperInvariant()] = _perturbProcessor;
+            _processors[AnonymizerMethod.Keep.ToString().ToUpperInvariant()] = _keepProcessor;
+            _processors[AnonymizerMethod.Generalize.ToString().ToUpperInvariant()] = new GeneralizeProcessor(_dateShiftProcessor, _cryptoHashProcessor, _encryptProcessor, _substituteProcessor, _perturbProcessor);
             if (_customProcessorFactory != null)
             {
                 InitializeCustomProcessors(configurationManager);

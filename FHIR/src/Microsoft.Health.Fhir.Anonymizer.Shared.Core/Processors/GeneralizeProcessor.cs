@@ -11,7 +11,20 @@ using Microsoft.Health.Fhir.Anonymizer.Core.Exceptions;
 namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 {
     public partial class GeneralizeProcessor : IAnonymizerProcessor
-    {      
+    {
+        private readonly DateShiftProcessor dateShiftProcessor;
+        private readonly CryptoHashProcessor cryptoHashProcessor;
+        private readonly EncryptProcessor encryptProcessor;
+        private readonly SubstituteProcessor substituteProcessor;
+        private readonly PerturbProcessor perturbProcessor;
+
+        public GeneralizeProcessor(DateShiftProcessor _dateShiftProcessor, CryptoHashProcessor _cryptoHashProcessor, EncryptProcessor _encryptProcessor, SubstituteProcessor _substituteProcessor, PerturbProcessor _perturbProcessor)        {
+            dateShiftProcessor = _dateShiftProcessor;
+            cryptoHashProcessor = _cryptoHashProcessor;
+            encryptProcessor = _encryptProcessor;
+            substituteProcessor = _substituteProcessor;
+            perturbProcessor = _perturbProcessor;
+        }
         public ProcessResult Process(ElementNode node, ProcessContext context = null, Dictionary<string, object> settings = null)
         {
             EnsureArg.IsNotNull(node);
@@ -51,6 +64,26 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
             if (generalizeSetting.OtherValues == GeneralizationOtherValuesOperation.Redact)
             {
                 node.Value = null;
+            }
+            else if (generalizeSetting.OtherValues == GeneralizationOtherValuesOperation.CryptoHash)
+            {
+                cryptoHashProcessor.Process(node);
+            }
+            else if (generalizeSetting.OtherValues == GeneralizationOtherValuesOperation.DateShift)
+            {
+                dateShiftProcessor.Process(node);
+            }
+            else if (generalizeSetting.OtherValues == GeneralizationOtherValuesOperation.Encrypt)
+            {
+                encryptProcessor.Process(node);
+            }
+            else if (generalizeSetting.OtherValues == GeneralizationOtherValuesOperation.Substitute)
+            {
+                substituteProcessor.Process(node);
+            }
+            else if (generalizeSetting.OtherValues == GeneralizationOtherValuesOperation.Perturb)
+            {
+                perturbProcessor.Process(node);
             }
 
             result.AddProcessRecord(AnonymizationOperations.Generalize, node);
