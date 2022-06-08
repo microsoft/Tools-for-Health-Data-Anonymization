@@ -163,23 +163,27 @@ namespace Microsoft.Health.Fhir.Anonymizer.DataFactoryTool
                     };
                     string output = engine.AnonymizeJson(input, settings);
 
-                    using (MemoryStream outputStream = new MemoryStream(reader.CurrentEncoding.GetBytes(output)))
-                    {
-                        await OperationExecutionHelper.InvokeWithTimeoutRetryAsync(async () =>
+                    if (output != string.Empty) {
+                        using (MemoryStream outputStream = new MemoryStream(reader.CurrentEncoding.GetBytes(output)))
                         {
-                            outputStream.Position = 0;
-                            using MemoryStream stream = new MemoryStream();
-                            await outputStream.CopyToAsync(stream).ConfigureAwait(false);
-                            stream.Position = 0;
+                            await OperationExecutionHelper.InvokeWithTimeoutRetryAsync(async () =>
+                            {
+                                outputStream.Position = 0;
+                                using MemoryStream stream = new MemoryStream();
+                                await outputStream.CopyToAsync(stream).ConfigureAwait(false);
+                                stream.Position = 0;
 
-                            return await outputBlobClient.UploadAsync(stream).ConfigureAwait(false);
-                        }, 
-                        TimeSpan.FromSeconds(FhirAzureConstants.DefaultBlockUploadTimeoutInSeconds), 
-                        FhirAzureConstants.DefaultBlockUploadTimeoutRetryCount,
-                        isRetrableException: OperationExecutionHelper.IsRetrableException).ConfigureAwait(false);
+                                return await outputBlobClient.UploadAsync(stream).ConfigureAwait(false);
+                            }, 
+                            TimeSpan.FromSeconds(FhirAzureConstants.DefaultBlockUploadTimeoutInSeconds), 
+                            FhirAzureConstants.DefaultBlockUploadTimeoutRetryCount,
+                            isRetrableException: OperationExecutionHelper.IsRetrableException).ConfigureAwait(false);
+                        }
+
+                        Console.WriteLine($"[{blobName}]: Anonymize completed.");
+                    } else {
+                        Console.WriteLine($"[{blobName}]: Anonymize skipped due to invalid JSON.");
                     }
-
-                    Console.WriteLine($"[{blobName}]: Anonymize completed.");
                 }
             }
             catch (Exception ex)

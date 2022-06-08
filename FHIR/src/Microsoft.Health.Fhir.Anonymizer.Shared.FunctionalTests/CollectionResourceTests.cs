@@ -22,6 +22,13 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
         }
 
         [Fact]
+        public void GivenAResourceWithContained_WhenAnonymizingWithBadFile_IfIgnore_EmptyResultWillBeReturned()
+        {
+            AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-ignoreinvalid-processing-error.json"));
+            FunctionalTestUtility.VerifyEmptyStringFromFile(engine, CollectionResourceTestsFile("invalid-resource.json"));
+        }
+
+        [Fact]
         public void GivenAResourceWithContained_WhenAnonymizingWithProcessingError_IfSkip_EmptyResultWillBeReturned()
         {
             AnonymizerEngine engine = new AnonymizerEngine(Path.Combine("Configurations", "configuration-skip-processing-error.json"));
