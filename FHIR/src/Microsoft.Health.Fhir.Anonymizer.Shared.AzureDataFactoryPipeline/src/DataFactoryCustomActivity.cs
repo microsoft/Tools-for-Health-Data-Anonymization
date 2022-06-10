@@ -231,6 +231,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.DataFactoryTool
             };
 
             await executor.ExecuteAsync(CancellationToken.None, progress).ConfigureAwait(false);
+
+            // If nothing was successfully processed, do not write the file.
+            if (processedCount == 0) {
+              await outputBlobClient.DeleteIfExistsAsync().ConfigureAwait(false);
+            }
         }
 
         private string GetBlobPrefixFromFolderPath(string folderPath)
