@@ -102,6 +102,9 @@
     <None Include="$(MSBuildThisFileDirectory)TestResources\invalid-resource.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="$(MSBuildThisFileDirectory)TestResources\invalid-json-resource.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="$(MSBuildThisFileDirectory)TestResources\patient-generalize-target.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
