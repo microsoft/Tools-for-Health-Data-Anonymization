@@ -103,10 +103,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         {
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));
             ITypedElement element;
+            ITypedElement anonymizedElement;
 
             try
             {
                 element = ParseJsonToTypedElement(json);
+                anonymizedElement = AnonymizeElement(element);
             }
             catch (InvalidInputException) {
                 if(_configurationManager.Configuration.processingErrors == ProcessingErrorsOption.IgnoreInvalid)
@@ -117,8 +119,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
 
                 throw;
             }
-
-            var anonymizedElement = AnonymizeElement(element);
 
             var serializationSettings = new FhirJsonSerializationSettings
             {
