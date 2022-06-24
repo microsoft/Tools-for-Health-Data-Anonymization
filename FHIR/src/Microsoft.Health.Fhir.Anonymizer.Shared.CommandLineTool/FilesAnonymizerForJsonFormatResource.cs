@@ -53,7 +53,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"Error:\nResource: {file}\nErrorMessage: {ex.ToString()}");
+                    Console.Error.WriteLine($"ErrorMessage: {ex}");
                     throw;
                 }
             };
@@ -106,7 +106,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
             }
             catch (Exception innerException)
             {
-                Console.Error.WriteLine($"[{fileName}] Error:\nResource: {resourceJson}\nErrorMessage: {innerException.ToString()}");
+                Console.Error.WriteLine($"[{fileName}] Error.\nErrorMessage: {innerException}");
                 throw;
             }
         }
