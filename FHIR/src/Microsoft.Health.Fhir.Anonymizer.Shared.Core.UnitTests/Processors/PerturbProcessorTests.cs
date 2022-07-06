@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model;
-using Hl7.Fhir.Serialization;
-using Hl7.FhirPath;
 using Microsoft.Health.Fhir.Anonymizer.Core.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core.Processors;
-using Microsoft.Health.Fhir.Anonymizer.Core.Processors.Settings;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
@@ -90,7 +87,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             };
             yield return new object[] 
             {
-                new Quantity { Value = decimal.Parse("25,162.1378") },
+                new Quantity { Value = decimal.Parse("25,162.1378", NumberStyles.Any, CultureInfo.InvariantCulture) },
                 2.26,
                 2,
                 25161.01,
@@ -134,7 +131,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Processors
             };
             yield return new object[] 
             {
-                new Quantity { Value = decimal.Parse("25,162.1378") },
+                new Quantity { Value = decimal.Parse("25,162.1378", NumberStyles.Any, CultureInfo.InvariantCulture) },
                 1,
                 2,
                 12581.07,

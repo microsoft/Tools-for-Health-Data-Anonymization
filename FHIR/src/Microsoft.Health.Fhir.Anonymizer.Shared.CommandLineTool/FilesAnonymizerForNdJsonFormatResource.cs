@@ -86,7 +86,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
                         }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine($"Error:\nResource: {content}\nErrorMessage: {ex.ToString()}");
+                            Console.Error.WriteLine($"ErrorMessage: {ex}");
                             throw;
                         }
                     };
