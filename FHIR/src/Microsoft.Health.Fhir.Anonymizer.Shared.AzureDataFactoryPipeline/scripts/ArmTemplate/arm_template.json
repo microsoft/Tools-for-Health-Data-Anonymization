@@ -77,7 +77,7 @@
             "type": "Microsoft.DataFactory/factories",
             "apiVersion": "2018-06-01",
             "name": "[parameters('factoryName')]",
-            "location": "WestUs",
+            "location": "[parameters('location')]",
             "tags": {
                 "FHIRAnonymizer": "[parameters('solutionName')]"
             },
