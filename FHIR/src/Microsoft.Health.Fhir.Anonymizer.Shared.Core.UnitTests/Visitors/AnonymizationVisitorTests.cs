@@ -164,9 +164,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Visitors
             AnonymizationFhirPathRule[] rules = new AnonymizationFhirPathRule[]
             {
                 new AnonymizationFhirPathRule("Observation.referenceRange.low", "referenceRange.low", "Observation", "perturb", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.low",
-                    new Dictionary<string, object> { { "span", "4" } }),
+                    new Dictionary<string, object> { { "span", 4 } }),
                 new AnonymizationFhirPathRule("Observation.referenceRange.high.value", "referenceRange.high.value", "Observation", "perturb", AnonymizerRuleType.FhirPathRule, "Observation.referenceRange.high.value",
-                    new Dictionary<string, object> { { "span", "0.2" }, { "rangeType", "proportional" } })
+                    new Dictionary<string, object> { { "span", 0.2 }, { "rangeType", "proportional" } })
             };
             AnonymizationVisitor visitor = new AnonymizationVisitor(rules, CreateTestProcessors());
 
