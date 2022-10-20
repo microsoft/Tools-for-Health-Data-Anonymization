@@ -32,9 +32,9 @@ You can also export FHIR resource from your FHIR server using [Bulk Export](http
 ## Anonymize FHIR data: using the command line tool
 Once you have built the command line tool, you will find two executable files for R4 and STU3 respectively: 
 
-1. Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.exe in the $SOURCE\FHIR\src\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder. 
+1. Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.exe in the $SOURCE\FHIR\src\Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool\bin\Debug|Release\net6.0 folder. 
 
-2. Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.exe in the $SOURCE\FHIR\src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder.
+2. Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.exe in the $SOURCE\FHIR\src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\bin\Debug|Release\net6.0 folder.
 
  You can use these executables to anonymize FHIR resource files in a folder.   
 ```
