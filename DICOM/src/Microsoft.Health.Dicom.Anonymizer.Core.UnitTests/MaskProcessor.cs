@@ -41,7 +41,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             var mask = new string('*', this._maskedLength);
             if (item is DicomStringElement)
             {
-                var values = ((DicomStringElement)item).Get<string[]>().Where(x => !string.IsNullOrEmpty(x)).Select(x => x.Length > _maskedLength?mask + x[this._maskedLength..] : mask);
+                var values = ((DicomStringElement)item).Get<string[]>().Where(x => !string.IsNullOrEmpty(x)).Select(x => x.Length > _maskedLength ? mask + x[this._maskedLength..] : mask);
                 if (values.Count() != 0)
                 {
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.ToArray());
