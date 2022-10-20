@@ -24,7 +24,7 @@ You can prepare your own DICOM files as input, or use sample DICOM files in fold
 
 ## Anonymize DICOM data: using the command line tool
 
-Once you have built the command line tool, you will find executable file Microsoft.Health.Dicom.Anonymizer.CommandLineTool.exe in the $SOURCE\DICOM\src\Microsoft.Health.Dicom.Anonymizer.CommandLineTool\bin\Debug|Release\netcoreapp3.1 folder.
+Once you have built the command line tool, you will find executable file Microsoft.Health.Dicom.Anonymizer.CommandLineTool.exe in the $SOURCE\DICOM\src\Microsoft.Health.Dicom.Anonymizer.CommandLineTool\bin\Debug|Release\net6.0 folder.
 
 You can use this executable file to anonymize DICOM file.
 
