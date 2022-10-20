@@ -14,7 +14,7 @@ FHIR data anonymization is available in the following ways:
 * Ability to run the tool on premise to anonymize a dataset locally
 
 ### Building the solution
-Use the .Net Core SDK to build FHIR Tools for Anonymization. If you don't have .Net Core installed, instructions and download links are available [here](https://dotnet.microsoft.com/en-us/download/dotnet/6.0).
+Use the .Net Core SDK to build FHIR Tools for Anonymization. If you don't have .Net Core installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet/6.0).
 
 ### Get sample FHIR files
 This repo contains a few [sample](../FHIR/samples/) FHIR files that you can download. These files were generated using  [Synthea&trade; Patient Generator](https://github.com/synthetichealth/synthea). 
