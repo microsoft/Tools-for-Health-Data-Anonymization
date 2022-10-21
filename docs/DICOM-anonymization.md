@@ -9,7 +9,7 @@ The Digital Imaging and Communication in Medicine (DICOM) standard has been comm
 - Ability to run the tool on premise to anonymize a dataset locally.
 
 ### Build the solution
-Use the .Net Core 3.1 SDK to build DICOM Anonymization Tool. If you don't have .Net Core 3.1 installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet/3.1).
+Use the .Net Core SDK to build DICOM Anonymization Tool. If you don't have .Net Core installed, instructions and download links are available [here](https://dotnet.microsoft.com/download/dotnet/6.0).
 
 ### Prepare DICOM Data
 You can prepare your own DICOM files as input, or use sample DICOM files in folder $SOURCE\DICOM\samples of the project.
