@@ -12,6 +12,8 @@ namespace Microsoft.Health.DeIdentification.Batch
         protected override async Task ProcessInternalAsync(Channel<TSource> inputChannel, Channel<TProgress> outputChannel, CancellationToken cancellationToken)
         {
             await base.ProcessInternalAsync(inputChannel, outputChannel, cancellationToken);
+
+            await CommitAsync(cancellationToken);
         }
 
         protected abstract Task CommitAsync(CancellationToken cancellationToken);
