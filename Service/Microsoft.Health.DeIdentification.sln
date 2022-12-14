@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.33027.314
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.DeIdentification.Contract", "Microsoft.Health.DeIdentification\Microsoft.Health.DeIdentification.Contract.csproj", "{E9089D76-4813-4800-A68E-B0E2DCA9C5E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.DeIdentification.Azure", "Microsoft.Health.DeIdentification.Azure\Microsoft.Health.DeIdentification.Azure.csproj", "{01764F55-00EC-4693-B4CE-742EA7E8501D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.DeIdentification.Web", "Microsoft.Health.DeIdentification.Web\Microsoft.Health.DeIdentification.Web.csproj", "{EE1FBC29-C811-4E8B-B573-977F6B2D6E4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.DeIdentification.FreeText", "Microsoft.Health.DeIdentification.FreeText\Microsoft.Health.DeIdentification.FreeText.csproj", "{F01C4B1A-FA96-42CE-AEBF-4EEC60B4F533}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.DeIdentification.Batch", "Microsoft.Health.DeIdentification.Batch\Microsoft.Health.DeIdentification.Batch.csproj", "{A327A753-0258-4D9F-89E8-D8E3C3B17C02}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E9089D76-4813-4800-A68E-B0E2DCA9C5E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9089D76-4813-4800-A68E-B0E2DCA9C5E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9089D76-4813-4800-A68E-B0E2DCA9C5E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9089D76-4813-4800-A68E-B0E2DCA9C5E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01764F55-00EC-4693-B4CE-742EA7E8501D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01764F55-00EC-4693-B4CE-742EA7E8501D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01764F55-00EC-4693-B4CE-742EA7E8501D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01764F55-00EC-4693-B4CE-742EA7E8501D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE1FBC29-C811-4E8B-B573-977F6B2D6E4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE1FBC29-C811-4E8B-B573-977F6B2D6E4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE1FBC29-C811-4E8B-B573-977F6B2D6E4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE1FBC29-C811-4E8B-B573-977F6B2D6E4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F01C4B1A-FA96-42CE-AEBF-4EEC60B4F533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F01C4B1A-FA96-42CE-AEBF-4EEC60B4F533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F01C4B1A-FA96-42CE-AEBF-4EEC60B4F533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F01C4B1A-FA96-42CE-AEBF-4EEC60B4F533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A327A753-0258-4D9F-89E8-D8E3C3B17C02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A327A753-0258-4D9F-89E8-D8E3C3B17C02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A327A753-0258-4D9F-89E8-D8E3C3B17C02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A327A753-0258-4D9F-89E8-D8E3C3B17C02}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3311CDA8-1D42-44BB-B240-A2E46D2BCFFC}
+	EndGlobalSection
+EndGlobal

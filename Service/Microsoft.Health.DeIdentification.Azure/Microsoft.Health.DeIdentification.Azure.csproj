@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Health.DeIdentification.Batch\Microsoft.Health.DeIdentification.Batch.csproj" />
+    <ProjectReference Include="..\Microsoft.Health.DeIdentification\Microsoft.Health.DeIdentification.Contract.csproj" />
+  </ItemGroup>
+
+</Project>
