@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Health.DeIdentification.Contract
 {
-    public interface IDeIdRuleSetStore
+    public interface IDeIdConfigurationStore
     {
-        public DeIdRuleSet GetByName(string name);
+        public DeIdConfiguration GetByName(string name);
     }
 }

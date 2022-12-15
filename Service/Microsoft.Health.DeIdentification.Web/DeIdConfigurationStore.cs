@@ -2,19 +2,19 @@
 
 namespace Microsoft.Health.DeIdentification.Web
 {
-    public class DeIdRuleSetStore : IDeIdRuleSetStore
+    public class DeIdConfigurationStore : IDeIdConfigurationStore
     {
         private IArtifactStore _artifactStore;
 
-        public DeIdRuleSetStore(IArtifactStore artifactStore /* web service configuration */)
+        public DeIdConfigurationStore(IArtifactStore artifactStore /* web service configuration */)
         {
             _artifactStore = artifactStore;
         }
 
         // Possible to have minutes level cache for further improvement
-        public DeIdRuleSet GetByName(string name)
+        public DeIdConfiguration GetByName(string name)
         {
-            throw new NotImplementedException();
+            return _artifactStore.ResolveArtifact<DeIdConfiguration>(name);
         }
     }
 }
