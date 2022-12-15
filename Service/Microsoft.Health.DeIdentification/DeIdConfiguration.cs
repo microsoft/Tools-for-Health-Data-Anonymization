@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Health.DeIdentification.Contract
 {
-    public class DeIdRuleSet
+    public class DeIdConfiguration
     {
         public string Format { get; set; }
 
