@@ -2,6 +2,6 @@
 {
     public interface IDeIdOperationProvider
     {
-        public IDeIdOperation<TSource, TResult> CreateDeIdOperation<TSource, TResult>(DeIdRuleSet deIdRuleSet);
+        public IDeIdOperation<TSource, TResult> CreateDeIdOperation<TSource, TResult>(DeIdConfiguration deIdRuleSet);
     }
 }
