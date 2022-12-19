@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using Hl7.Fhir.Model;
+using Hl7.FhirPath;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Health.DeIdentification.Contract;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Microsoft.Health.DeIdentification.Web.Controllers
 {
@@ -21,8 +23,10 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         // Post: 
         [HttpPost]
         [Route("/base/fhir")]
-        public async Task<string> DeIdentification(string deidRuleSet, [FromBody] string resource)
+        public async Task<string> DeIdentification(string deidConfiguration, [FromBody] string resource)
         {
+            FhirPathCompiler compiler = new FhirPathCompiler();
+         //   Assert.Throws<Exception>(() => compiler.Compile("Patient.nodesByType('HumanName')"));
             var operation = new FhirDeIdOperation("configuration-sample.json");
             return operation.Process(resource);
         }
@@ -51,7 +55,7 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             // Return job with progress
         }
 
-        private DeIdRuleSet GenerateDeIdRuleSet(string deidRuleSet)
+        private DeIdConfiguration GenerateDeIdRuleSet(string deidConfiguration)
         {
             throw new NotImplementedException();
         }
