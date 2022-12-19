@@ -4,11 +4,14 @@
 // -------------------------------------------------------------------------------------------------
 
 using Hl7.Fhir.Model;
+using Hl7.Fhir.Serialization;
 using Hl7.FhirPath;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
+using Microsoft.Health.Fhir.Anonymizer.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,15 +23,21 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
 {
     public class FhirController
     {
+        private FhirDeIdOperationProvider _operationProvider;
+        public FhirController()
+        {
+            _operationProvider = new FhirDeIdOperationProvider();
+        }
+
         // Post: 
         [HttpPost]
         [Route("/base/fhir")]
-        public async Task<string> DeIdentification(string deidConfiguration, [FromBody] string resource)
+        public string DeIdentification(string deidConfiguration, [FromBody] Object resource)
         {
-            FhirPathCompiler compiler = new FhirPathCompiler();
-         //   Assert.Throws<Exception>(() => compiler.Compile("Patient.nodesByType('HumanName')"));
-            var operation = new FhirDeIdOperation("configuration-sample.json");
-            return operation.Process(resource);
+            var jsonPath = "configuration-sample.json";
+            var operation = _operationProvider.CreateDeIdOperationFromJson<string, string>(jsonPath);
+            var result = operation.Process(resource.ToString());
+            return result;
         }
 
         // Post: start batch job

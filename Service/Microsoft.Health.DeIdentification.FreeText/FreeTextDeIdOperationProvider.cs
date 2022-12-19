@@ -9,5 +9,10 @@ namespace Microsoft.Health.DeIdentification.FreeText
             // return null for format mismatch
             throw new NotImplementedException();
         }
+
+        public IDeIdOperation<TSource, TResult> CreateDeIdOperationFromJson<TSource, TResult>(string jsonPath)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

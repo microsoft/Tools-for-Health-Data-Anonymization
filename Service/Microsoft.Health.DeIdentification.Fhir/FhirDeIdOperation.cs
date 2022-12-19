@@ -9,6 +9,7 @@ namespace Microsoft.Health.DeIdentification.Fhir
 
         public FhirDeIdOperation(string configFilePath)
         {
+            AnonymizerEngine.InitializeFhirPathExtensionSymbols();
             _anonymizerEngine = new AnonymizerEngine(configFilePath);
         }
 
