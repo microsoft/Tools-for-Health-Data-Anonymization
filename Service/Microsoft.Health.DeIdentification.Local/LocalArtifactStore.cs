@@ -5,7 +5,7 @@ namespace Microsoft.Health.DeIdentification.Local
 {
     public class LocalArtifactStore : IArtifactStore
     {
-        readonly string _defaultConfigFile = "D:\\work\\src\\deid-server\\Service\\configurations\\deid-configuration.json";
+        readonly string _defaultConfigFile = "configurations/deid-configuration.json";
         public LocalArtifactStore() 
         {
         }

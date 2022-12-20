@@ -14,4 +14,22 @@
     <ProjectReference Include="..\Microsoft.Health.DeIdentification\Microsoft.Health.DeIdentification.Contract.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="configurations\deid-configuration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="configurations\dicom-configuration-sample.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="configurations\fhir-R4-configuration-sample.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="configurations\fhir-Stu3-configuration-sample.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="configurations\freetext-fake-configuration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
