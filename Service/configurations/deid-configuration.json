@@ -1,19 +1,44 @@
 {
     "deidConfigurations": [
         {
-            "format": "fhir",
-            "name": "fhirDeidRuleSet1",
-            "reference": "./fhir-R4-configuration-sample.json"
+            "name": "fhirR4PathRuleSet",
+            "dataSourceType": "fhir",
+            "dataSourceVersion": "R4",
+            "description": "The fhir R4 resources deid configuration for fhir path rule set",
+            "modelConfigReferences":
+            {
+                "fhirR4PathRuleSet": "./fhir-R4-configuration-sample.json"
+            }
         },
         {
-            "format": "dicom",
-            "name": "dicomDeidRuleSet1",
-            "reference": "./dicom-configuration-sample.json"
+            "name": "fhirStu3PathRuleSet",
+            "dataSourceType": "fhir",
+            "dataSourceVersion": "Stu3",
+            "description": "The fhir Stu3 resources deid configuration for fhir path rule set",
+            "modelConfigReferences":
+            {
+                "fhirStu3PathRuleSet": "./fhir-Stu3-configuration-sample.json"
+            }
         },
         {
-            "format": "freetext",
-            "name": "freetextDeidRuleSet1",
-            "reference": "https://storage/freetext-deid-config.json"
+            "name": "dicomMetadataRuleSet",
+            "dataSourceType": "dicom",
+            "description": "The dicom deid configuration for dicom metadata rule set",
+            "modelConfigReferences":
+            {
+                "dicomMetadataRuleSet": "./dicom-configuration-sample.json"
+            }
+        },
+        {
+            "name": "fhirConfig2",
+            "dataSourceType": "fhir",
+            "dataSourceVersion": "R4",
+            "description": "The fake fhir deid configurations that using fhir R4 path ruleset and fake free text model",
+            "modelConfigReferences":
+            {
+                "fhirR4PathRuleSet": "https://storage/fhir-R4-configuration-sample.json",
+                "freeTextFakeModel": "./freetext-fake-configuration.json"
+            }
         }
     ]
 }
