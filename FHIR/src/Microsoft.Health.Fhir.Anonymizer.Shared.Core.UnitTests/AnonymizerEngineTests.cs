@@ -21,8 +21,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests
             {
                 IsPrettyOutput = true
             };
-            var inputs = "{\"resourceType\":\"Patient\",\"id\":\"example\",\"name\":[{\"use\":\"official\",\"family\":\"Chalmers\",\"given\":[\"Peter\",\"James\"]}]}";
-            var result = engine.AnonymizeJson(inputs, settings);
+            var result = engine.AnonymizeJson(TestPatientSample, settings);
             Assert.Equal(PrettyOutputTarget, result);
         }
 

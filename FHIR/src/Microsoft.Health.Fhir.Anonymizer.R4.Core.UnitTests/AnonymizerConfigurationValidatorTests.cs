@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Hl7.FhirPath;
@@ -37,9 +36,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.AnonymizerConfiguratio
         [MemberData(nameof(GetConfigsWithInvalidFhirVersion))]
         public void GivenAnInvalidVersion_WhenCreateAnonymizerConfigurationManager_ExceptionShouldBeThrown(string configFilePath)
         {
-            FhirPathCompiler compiler = new FhirPathCompiler();
-            var expression = compiler.Compile("Patient.nodesByType('HumanName')");
-            Assert.NotNull(expression);
             var content = File.ReadAllText(configFilePath);
             var _config = JsonConvert.DeserializeObject<AnonymizerConfiguration>(content);
             Assert.Throws<AnonymizerConfigurationException>(() => _validator.Validate(_config));
