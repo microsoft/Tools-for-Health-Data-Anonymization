@@ -25,12 +25,6 @@ namespace Microsoft.Health.DeIdentification.Fhir
             return operations;
         }
 
-        public IDeIdOperation<TSource, TResult> CreateDeIdOperationFromNdjson<TSource, TResult>(string configPath, string ndjsonPath)
-        {
-            var operation = new FhirDeIdOperation(configPath, ndjsonPath);
-            return (IDeIdOperation<TSource, TResult>)operation;
-        }
-
         public async Task<string> ExecuteProcess(List<FhirDeIdOperation> operations, List<Object> context)
         {
             Channel<string> source = Channel.CreateBounded<string>(new BoundedChannelOptions(outputChannedlLimit)
