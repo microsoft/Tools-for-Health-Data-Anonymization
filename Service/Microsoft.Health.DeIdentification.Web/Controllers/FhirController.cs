@@ -11,7 +11,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
+using Microsoft.Health.DeIdentification.Local;
+using Microsoft.Health.DeIdentification.Web.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,20 +27,50 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
     public class FhirController
     {
         private FhirDeIdOperationProvider _operationProvider;
+        private IArtifactStore _artifactStore;
+        private IDeIdConfigurationStore _deidConfigurationStore;
         public FhirController()
         {
             _operationProvider = new FhirDeIdOperationProvider();
+            _artifactStore = new LocalArtifactStore();
+            _deidConfigurationStore = new DeIdConfigurationStore(_artifactStore);
         }
 
         // Post: 
         [HttpPost]
-        [Route("/base/fhir")]
-        public string DeIdentification(string deidConfiguration, [FromBody] Object resource)
+        [Route("/fhirR4")]
+        public async Task<string> DeIdentification(string deidConfiguration, [FromBody] ResourceList resources)
         {
-            var jsonPath = "configuration-sample.json";
-            var operation = _operationProvider.CreateDeIdOperationFromJson<string, string>(jsonPath);
-            var result = operation.Process(resource.ToString());
+            var configuration = _deidConfigurationStore.GetByName(deidConfiguration);
+            // var operation = _operationProvider.CreateDeIdOperationFromJson<List<Object>, string>(configuration.ModelConfigReferences.);
+            var operations = _operationProvider.CreateDeIdOperations(configuration);
+            var result = await _operationProvider.ExecuteProcess((List<FhirDeIdOperation>)operations, resources.Resources);
             return result;
+        }
+
+        [HttpPost]
+        [Route("/fhirR4/ndjson")]
+        public async Task<string> DeIdentificationForNdjson(string deidConfiguration, [FromBody] NdjsonBody resource)
+        {
+            var configPath = "configuration-sample.json";
+            var inputPath = resource.filePath;
+            var client = new HttpClient();
+            var response = await client.SendAsync(GenerateRequest(inputPath));
+            var context = await response.Content.ReadAsStringAsync();
+            var operation = _operationProvider.CreateDeIdOperationFromJson<string, string>(configPath);
+            var result = operation.Process(context);
+            return result;
+            /*
+            var operation = _operationProvider.CreateDeIdOperationFromNdjson<string, string>(configPath, resource.filePath);
+            try
+            {
+                await operation.ProcessNdjson();
+                return "success";
+            }catch(Exception ex)
+            {
+                return $"error, {ex.Message}";
+            }
+            */
         }
 
         // Post: start batch job
@@ -67,6 +100,11 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         private DeIdConfiguration GenerateDeIdRuleSet(string deidConfiguration)
         {
             throw new NotImplementedException();
+        }
+
+        private HttpRequestMessage GenerateRequest(string path)
+        {
+            return new HttpRequestMessage(HttpMethod.Get, path);
         }
     }
 }

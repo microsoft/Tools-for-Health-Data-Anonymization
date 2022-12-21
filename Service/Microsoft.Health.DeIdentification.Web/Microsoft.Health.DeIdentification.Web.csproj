@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Health.DeIdentification.Azure\Microsoft.Health.DeIdentification.Azure.csproj" />
     <ProjectReference Include="..\Microsoft.Health.DeIdentification.Fhir\Microsoft.Health.DeIdentification.Fhir.csproj" />
+    <ProjectReference Include="..\Microsoft.Health.DeIdentification.Local\Microsoft.Health.DeIdentification.Local.csproj" />
     <ProjectReference Include="..\Microsoft.Health.DeIdentification\Microsoft.Health.DeIdentification.Contract.csproj" />
   </ItemGroup>
 

@@ -10,7 +10,7 @@ namespace Microsoft.Health.DeIdentification.FreeText
             throw new NotImplementedException();
         }
 
-        public IDeIdOperation<TSource, TResult> CreateDeIdOperationFromJson<TSource, TResult>(string jsonPath)
+        public IDeIdOperation<TSource, TResult> CreateDeIdOperationFromJson<TSource, TResult>(string configPath)
         {
             throw new NotImplementedException();
         }
