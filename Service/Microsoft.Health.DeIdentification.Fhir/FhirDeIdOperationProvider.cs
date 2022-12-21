@@ -15,12 +15,6 @@ namespace Microsoft.Health.DeIdentification.Fhir
             throw new NotImplementedException();
         }
 
-        public IDeIdOperation<TSource, TResult> CreateDeIdOperationFromJson<TSource, TResult>(string configPath)
-        {
-            var operation = new FhirDeIdOperation(configPath);
-            return (IDeIdOperation<TSource, TResult>)operation;
-        }
-
         public List<FhirDeIdOperation> CreateDeIdOperations(DeIdConfiguration deIdConfiguration)
         {
             List<FhirDeIdOperation> operations = new List<FhirDeIdOperation>();
