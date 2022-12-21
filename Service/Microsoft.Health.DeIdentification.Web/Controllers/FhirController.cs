@@ -29,11 +29,13 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         private FhirDeIdOperationProvider _operationProvider;
         private IArtifactStore _artifactStore;
         private IDeIdConfigurationStore _deidConfigurationStore;
+        private FhirDeIdHandler _handler;
         public FhirController()
         {
             _operationProvider = new FhirDeIdOperationProvider();
             _artifactStore = new LocalArtifactStore();
             _deidConfigurationStore = new DeIdConfigurationStore(_artifactStore);
+            _handler = new FhirDeIdHandler();
         }
 
         // Post: 
@@ -43,7 +45,7 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         {
             var configuration = _deidConfigurationStore.GetByName(deidConfiguration);
             var operations = _operationProvider.CreateDeIdOperations(configuration);
-            var result = await _operationProvider.ExecuteProcess((List<FhirDeIdOperation>)operations, resources.Resources);
+            var result = await _handler.ExecuteProcess((List<FhirDeIdOperation>)operations, resources.Resources);
             return result;
         }
 
