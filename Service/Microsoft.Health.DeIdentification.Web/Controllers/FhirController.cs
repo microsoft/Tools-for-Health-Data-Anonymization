@@ -8,6 +8,7 @@ using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
 using Microsoft.Health.DeIdentification.Local;
 using Microsoft.Health.DeIdentification.Web.Models;
+using System.Collections;
 
 namespace Microsoft.Health.DeIdentification.Web.Controllers
 {
@@ -28,7 +29,7 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         // Post: 
         [HttpPost]
         [Route("/fhirR4")]
-        public async Task<string> DeIdentification(string deidConfiguration, [FromBody] ResourceList resources)
+        public async Task<IList> DeIdentification(string deidConfiguration, [FromBody] ResourceList resources)
         {
             var configuration = _deidConfigurationStore.GetByName(deidConfiguration);
             var operations = _operationProvider.CreateDeIdOperations(configuration);

@@ -1,14 +1,11 @@
 ﻿using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.Fhir.Anonymizer.Core;
-using Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations;
-using Microsoft.Health.Fhir.Anonymizer.Core.PartitionedExecution;
+using Newtonsoft.Json;
 using System.Collections;
-using System.Diagnostics;
-using System.Text;
 
 namespace Microsoft.Health.DeIdentification.Fhir
 {
-    public class FhirDeIdOperation : IDeIdOperation<IList, string>
+    public class FhirDeIdOperation : IDeIdOperation<IList, IList>
     {
         private AnonymizerEngine _anonymizerEngine;
 
@@ -18,14 +15,14 @@ namespace Microsoft.Health.DeIdentification.Fhir
             _anonymizerEngine = new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromSettingsInJson(configContext));
         }
 
-        public string Process(IList source)
+        public IList Process(IList source)
         {
-            var result = new StringBuilder();
+            var result = new List<object>();
             foreach (var item in source)
             {
-                result.AppendLine(ProcessSingle(item.ToString()));
+                result.Add(JsonConvert.DeserializeObject(ProcessSingle(item.ToString())));
             }
-            return result.ToString();
+            return result;
         }
 
         public string ProcessSingle(string context)
