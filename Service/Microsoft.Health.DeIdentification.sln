@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentifi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentification.Fhir", "Microsoft.Health.DeIdentification.Fhir\Microsoft.Health.DeIdentification.Fhir.csproj", "{5C3AD33A-6991-4B10-A3AC-CC8AF3BE53C4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E3BE9E88-D854-4427-A6C2-A319CC48660E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentification.Web.App", "Microsoft.Health.DeIdentification.Web.App\Microsoft.Health.DeIdentification.Web.App.csproj", "{F69E354D-E1AB-4A2D-A9D7-190D2E5D64AD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentification.Local", "Microsoft.Health.DeIdentification.Local\Microsoft.Health.DeIdentification.Local.csproj", "{3B0EA0DD-9DD4-46E7-B490-1FA678B42D35}"
