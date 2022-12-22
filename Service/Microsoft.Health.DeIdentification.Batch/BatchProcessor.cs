@@ -55,7 +55,6 @@ namespace Microsoft.Health.DeIdentification.Batch
                     runningTasks.Add(Task.Run(() => BatchProcessFunc(new BatchInput<TSource>() { StartIndex = index, Sources = buffer.ToArray() })));
                     index += buffer.Count();
                     buffer.Clear();
-                    buffer.Add(resource);
                 }
 
                 runningTasks.Add(Task.Run(() => BatchProcessFunc(new BatchInput<TSource>() { StartIndex = index, Sources = buffer.ToArray() })));

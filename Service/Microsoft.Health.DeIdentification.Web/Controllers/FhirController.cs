@@ -3,24 +3,11 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Hl7.Fhir.Model;
-using Hl7.Fhir.Serialization;
-using Hl7.FhirPath;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyModel;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
 using Microsoft.Health.DeIdentification.Local;
 using Microsoft.Health.DeIdentification.Web.Models;
-using Microsoft.Health.Fhir.Anonymizer.Core;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace Microsoft.Health.DeIdentification.Web.Controllers
 {
@@ -45,7 +32,7 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         {
             var configuration = _deidConfigurationStore.GetByName(deidConfiguration);
             var operations = _operationProvider.CreateDeIdOperations(configuration);
-            var result = await _handler.ExecuteProcess((List<FhirDeIdOperation>)operations, resources.Resources);
+            var result = await _handler.ExecuteProcess(operations, resources.Resources);
             return result;
         }
 

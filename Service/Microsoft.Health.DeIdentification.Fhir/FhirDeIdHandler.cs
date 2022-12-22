@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using System.Text;
 using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace Microsoft.Health.DeIdentification.Fhir
 {
@@ -11,20 +8,20 @@ namespace Microsoft.Health.DeIdentification.Fhir
     {
         private readonly int outputChannelLimit = 1000;
         private readonly int maxRunningOperationCount = 5;
-        public async Task<string> ExecuteProcess(List<FhirDeIdOperation> operations, List<Object> context)
+        public async Task<string> ExecuteProcess(List<FhirDeIdOperation> operations, IList context)
         {
             Channel<string> source = Channel.CreateBounded<string>(new BoundedChannelOptions(outputChannelLimit)
             {
                 FullMode = BoundedChannelFullMode.Wait
             });
-            new Task(() =>
+            var enqueueTask = Task.Run(() =>
             {
                 foreach (var item in context)
                 {
                     source.Writer.WriteAsync(item.ToString());
                 }
-            }).Start();
-            var count = 0;
+                source.Writer.Complete();
+            });
             var tasks = new List<Task>();
             foreach (var operation in operations)
             {
@@ -49,11 +46,9 @@ namespace Microsoft.Health.DeIdentification.Fhir
                     {
                         tasks.Add(InternalProcess(target, operation, value));
                     }
-                    count++;
-                    if (count == context.Count) { source.Writer.Complete(); }
                 }
-                count = 0;
                 source = target;
+                source.Writer.Complete();
             }
             while (tasks.Count > 0)
             {
@@ -72,9 +67,10 @@ namespace Microsoft.Health.DeIdentification.Fhir
                 if (source.Reader.TryRead(out var value))
                 {
                     result.AppendLine(value);
+                } else
+                {
+                    source.Writer.Complete();
                 }
-                count++;
-                if (count == context.Count) { source.Writer.Complete(); }
             }
             return result.ToString();
         }
