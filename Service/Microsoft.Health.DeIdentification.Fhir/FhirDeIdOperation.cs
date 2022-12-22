@@ -11,10 +11,10 @@ namespace Microsoft.Health.DeIdentification.Fhir
     {
         private AnonymizerEngine _anonymizerEngine;
 
-        public FhirDeIdOperation(string configPath)
+        public FhirDeIdOperation(string configContext)
         {
             AnonymizerEngine.InitializeFhirPathExtensionSymbols();
-            _anonymizerEngine = new AnonymizerEngine(configPath);
+            _anonymizerEngine = new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromSettingsInJson(configContext));
         }
 
         public string Process(List<Object> source)

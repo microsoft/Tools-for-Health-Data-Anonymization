@@ -9,22 +9,23 @@ namespace Microsoft.Health.DeIdentification.Fhir
 {
     public class FhirDeIdHandler
     {
-        private readonly int outputChannelLimit = 100;
+        private readonly int outputChannelLimit = 1000;
+        private readonly int maxRunningOperationCount = 5;
         public async Task<string> ExecuteProcess(List<FhirDeIdOperation> operations, List<Object> context)
         {
             Channel<string> source = Channel.CreateBounded<string>(new BoundedChannelOptions(outputChannelLimit)
             {
                 FullMode = BoundedChannelFullMode.Wait
             });
-            var task = new Task(() =>
+            new Task(() =>
             {
                 foreach (var item in context)
                 {
                     source.Writer.WriteAsync(item.ToString());
                 }
-            });
-            task.RunSynchronously();
+            }).Start();
             var count = 0;
+            var tasks = new List<Task>();
             foreach (var operation in operations)
             {
                 Channel<string> target = Channel.CreateBounded<string>(new BoundedChannelOptions(outputChannelLimit)
@@ -33,16 +34,37 @@ namespace Microsoft.Health.DeIdentification.Fhir
                 });
                 while (await source.Reader.WaitToReadAsync())
                 {
+                    while (tasks.Count > maxRunningOperationCount)
+                    {
+                        try
+                        {
+                            await tasks.First();
+                            tasks.RemoveAt(0);
+                        } catch(Exception ex)
+                        {
+                            throw ex;
+                        }
+                    }
                     if (source.Reader.TryRead(out var value))
                     {
-                        await target.Writer.WriteAsync(operation.ProcessSingle(value));
+                        tasks.Add(InternalProcess(target, operation, value));
                     }
-
                     count++;
                     if (count == context.Count) { source.Writer.Complete(); }
                 }
                 count = 0;
                 source = target;
+            }
+            while (tasks.Count > 0)
+            {
+                try
+                    {
+                        await tasks.First();
+                        tasks.RemoveAt(0);
+                    } catch(Exception ex)
+                    {
+                        throw ex;
+                    }
             }
             var result = new StringBuilder();
             while (await source.Reader.WaitToReadAsync())
@@ -55,6 +77,10 @@ namespace Microsoft.Health.DeIdentification.Fhir
                 if (count == context.Count) { source.Writer.Complete(); }
             }
             return result.ToString();
+        }
+        private async Task InternalProcess(Channel<string> target, FhirDeIdOperation operation, string value)
+        {
+            await target.Writer.WriteAsync(operation.ProcessSingle(value));
         }
     }
 }

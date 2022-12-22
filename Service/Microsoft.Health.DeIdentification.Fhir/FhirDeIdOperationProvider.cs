@@ -20,7 +20,11 @@ namespace Microsoft.Health.DeIdentification.Fhir
             List<FhirDeIdOperation> operations = new List<FhirDeIdOperation>();
             foreach (var item in deIdConfiguration.ModelConfigReferences)
             {
-                operations.Add(new FhirDeIdOperation($"{pathPrefix+item.Value}"));
+                using (StreamReader reader = new StreamReader($"{pathPrefix+item.Value}"))
+                {
+                    string configContext = reader.ReadToEnd();
+                    operations.Add(new FhirDeIdOperation(configContext));
+                }
             }
             return operations;
         }
