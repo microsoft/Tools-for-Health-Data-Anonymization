@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.4.33110.190
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31EA56C6-84A2-4BB6-80BB-71D4212773C6}"
 EndProject
@@ -46,6 +46,26 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool", "src\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.csproj", "{DA3123C7-D0C4-4636-8A85-DF1F52A04794}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems*{140255c7-6c80-4a3c-a248-ae8cdfdcf907}*SharedItemsImports = 13
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems*{14f63b12-5a81-4706-a0d9-f07693da3089}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests.projitems*{19e3e7a2-17a6-4708-b9f2-04a2c9968c83}*SharedItemsImports = 13
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{24ca7a36-95ff-4e86-9ed8-2c073576db7b}*SharedItemsImports = 13
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{25653f35-598c-4312-9c29-6f1e96df1ffe}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core\Microsoft.Health.Fhir.Anonymizer.Shared.Core.projitems*{3cdef833-6d92-4770-bceb-164a47a7270e}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests.projitems*{4047a680-a94f-4b50-bcd9-8f34838d23e4}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core\Microsoft.Health.Fhir.Anonymizer.Shared.Core.projitems*{54f67473-3873-4eb0-bdf1-1647ef224910}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{57035793-441b-4347-935c-3d19ce52c709}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{60018a51-8d65-4599-8a0e-b691f94d5afa}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core\Microsoft.Health.Fhir.Anonymizer.Shared.Core.projitems*{8918ce75-f36e-4cb4-8232-12024a1e41ac}*SharedItemsImports = 13
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{8bad1364-4c47-443a-95e9-db624fdf78c8}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{a83e59e1-d6b2-4fa4-a08b-a38276c1a7d0}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{b1cc2f6c-f581-4495-8b38-adbfbb1a6c29}*SharedItemsImports = 13
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{d75382e2-8e86-4bb5-a08f-5f2015db30e9}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems*{da3123c7-d0c4-4636-8a85-df1f52a04794}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests.projitems*{e3ae92aa-1c32-4533-b220-2c3db4b3bf66}*SharedItemsImports = 5
+		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{f7a47fd1-bd24-41a6-b3c6-2dd062523271}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -125,25 +145,5 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {19A940B3-FA97-4729-AC91-EE68070BCFC1}
-	EndGlobalSection
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems*{140255c7-6c80-4a3c-a248-ae8cdfdcf907}*SharedItemsImports = 13
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems*{14f63b12-5a81-4706-a0d9-f07693da3089}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests.projitems*{19e3e7a2-17a6-4708-b9f2-04a2c9968c83}*SharedItemsImports = 13
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{24ca7a36-95ff-4e86-9ed8-2c073576db7b}*SharedItemsImports = 13
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{25653f35-598c-4312-9c29-6f1e96df1ffe}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core\Microsoft.Health.Fhir.Anonymizer.Shared.Core.projitems*{3cdef833-6d92-4770-bceb-164a47a7270e}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests.projitems*{4047a680-a94f-4b50-bcd9-8f34838d23e4}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core\Microsoft.Health.Fhir.Anonymizer.Shared.Core.projitems*{54f67473-3873-4eb0-bdf1-1647ef224910}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{57035793-441b-4347-935c-3d19ce52c709}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{60018a51-8d65-4599-8a0e-b691f94d5afa}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core\Microsoft.Health.Fhir.Anonymizer.Shared.Core.projitems*{8918ce75-f36e-4cb4-8232-12024a1e41ac}*SharedItemsImports = 13
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.UnitTests.projitems*{8bad1364-4c47-443a-95e9-db624fdf78c8}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{a83e59e1-d6b2-4fa4-a08b-a38276c1a7d0}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{b1cc2f6c-f581-4495-8b38-adbfbb1a6c29}*SharedItemsImports = 13
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems*{d75382e2-8e86-4bb5-a08f-5f2015db30e9}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool\Microsoft.Health.Fhir.Anonymizer.Shared.CommandLineTool.projitems*{da3123c7-d0c4-4636-8a85-df1f52a04794}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests\Microsoft.Health.Fhir.Anonymizer.Shared.FunctionalTests.projitems*{e3ae92aa-1c32-4533-b220-2c3db4b3bf66}*SharedItemsImports = 5
-		src\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests\Microsoft.Health.Fhir.Anonymizer.Shared.Core.UnitTests.projitems*{f7a47fd1-bd24-41a6-b3c6-2dd062523271}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
