@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections;
-using System.Text;
-using System.Text.Json.Nodes;
+﻿using System.Collections;
 using System.Threading.Channels;
 
 namespace Microsoft.Health.DeIdentification.Fhir
@@ -12,7 +8,7 @@ namespace Microsoft.Health.DeIdentification.Fhir
         private readonly int outputChannelLimit = 1000;
         private readonly int maxRunningOperationCount = 5;
         private readonly int maxContextCount = 700;
-        public async Task<IList> ExecuteProcess(List<FhirDeIdOperation> operations, IList context)
+        public async Task<ResourceList> ExecuteProcess(List<FhirDeIdOperation> operations, IList context)
         {
             if ( context.Count >= maxContextCount)
             {
@@ -73,19 +69,19 @@ namespace Microsoft.Health.DeIdentification.Fhir
                         throw ex;
                     }
                 }
-                var result = new List<Object>();
+                var result = new List<object>();
                 while (await source.Reader.WaitToReadAsync())
                 {
                     if (source.Reader.TryRead(out var value))
                     {
-                        result.Add(JsonConvert.DeserializeObject(value));
+                        result.Add(value);
                     }
                     else
                     {
                         source.Writer.Complete();
                     }
                 }
-                return result;
+                return new ResourceList() { Resources = result };
             } catch(Exception ex)
             {
                 throw ex;

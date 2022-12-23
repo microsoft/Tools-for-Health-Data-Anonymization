@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Hl7.Fhir.Model;
+using Newtonsoft.Json;
 using System.Collections;
 
-namespace Microsoft.Health.DeIdentification.Web.Models
+namespace Microsoft.Health.DeIdentification.Fhir
 {
     public class ResourceList
     {

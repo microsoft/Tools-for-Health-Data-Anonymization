@@ -25,4 +25,8 @@
     <ProjectReference Include="..\Microsoft.Health.DeIdentification\Microsoft.Health.DeIdentification.Contract.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

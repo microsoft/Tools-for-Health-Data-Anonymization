@@ -1,27 +1,22 @@
-var builder = WebApplication.CreateBuilder(args);
+// -------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
+// -------------------------------------------------------------------------------------------------
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+using Microsoft.AspNetCore;
 
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+namespace Microsoft.Health.DeIdentification.Web.App
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    public static class Program
+    {
+        public static void Main(string[] args)
+        {
+            var host = WebHost.CreateDefaultBuilder(args)
+                .UseContentRoot(Path.GetDirectoryName(typeof(Program).Assembly.Location))
+                .UseStartup<Startup>()
+                .Build();
+
+            host.Run();
+        }
+    }
 }
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.Run();
