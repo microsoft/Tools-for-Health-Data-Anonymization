@@ -7,7 +7,7 @@
             "description": "The fhir R4 resources deid configuration for fhir path rule set",
             "modelConfigReferences":
             {
-                "fhirR4PathRuleSet": "./fhir-R4-configuration-sample.json"
+                "fhirR4PathRuleSet": "fhir-R4-configuration-sample.json"
             }
         },
         {

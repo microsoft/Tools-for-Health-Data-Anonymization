@@ -3,17 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.33027.314
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.DeIdentification.Contract", "Microsoft.Health.DeIdentification\Microsoft.Health.DeIdentification.Contract.csproj", "{E9089D76-4813-4800-A68E-B0E2DCA9C5E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentification.Contract", "Microsoft.Health.DeIdentification\Microsoft.Health.DeIdentification.Contract.csproj", "{E9089D76-4813-4800-A68E-B0E2DCA9C5E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.DeIdentification.Azure", "Microsoft.Health.DeIdentification.Azure\Microsoft.Health.DeIdentification.Azure.csproj", "{01764F55-00EC-4693-B4CE-742EA7E8501D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentification.Azure", "Microsoft.Health.DeIdentification.Azure\Microsoft.Health.DeIdentification.Azure.csproj", "{01764F55-00EC-4693-B4CE-742EA7E8501D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.DeIdentification.Web", "Microsoft.Health.DeIdentification.Web\Microsoft.Health.DeIdentification.Web.csproj", "{EE1FBC29-C811-4E8B-B573-977F6B2D6E4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentification.Web", "Microsoft.Health.DeIdentification.Web\Microsoft.Health.DeIdentification.Web.csproj", "{EE1FBC29-C811-4E8B-B573-977F6B2D6E4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.DeIdentification.FreeText", "Microsoft.Health.DeIdentification.FreeText\Microsoft.Health.DeIdentification.FreeText.csproj", "{F01C4B1A-FA96-42CE-AEBF-4EEC60B4F533}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentification.FreeText", "Microsoft.Health.DeIdentification.FreeText\Microsoft.Health.DeIdentification.FreeText.csproj", "{F01C4B1A-FA96-42CE-AEBF-4EEC60B4F533}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.DeIdentification.Batch", "Microsoft.Health.DeIdentification.Batch\Microsoft.Health.DeIdentification.Batch.csproj", "{A327A753-0258-4D9F-89E8-D8E3C3B17C02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentification.Batch", "Microsoft.Health.DeIdentification.Batch\Microsoft.Health.DeIdentification.Batch.csproj", "{A327A753-0258-4D9F-89E8-D8E3C3B17C02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Health.DeIdentification.Local", "Microsoft.Health.DeIdentification.Local\Microsoft.Health.DeIdentification.Local.csproj", "{3B0EA0DD-9DD4-46E7-B490-1FA678B42D35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentification.Fhir", "Microsoft.Health.DeIdentification.Fhir\Microsoft.Health.DeIdentification.Fhir.csproj", "{5C3AD33A-6991-4B10-A3AC-CC8AF3BE53C4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentification.Web.App", "Microsoft.Health.DeIdentification.Web.App\Microsoft.Health.DeIdentification.Web.App.csproj", "{F69E354D-E1AB-4A2D-A9D7-190D2E5D64AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Health.DeIdentification.Local", "Microsoft.Health.DeIdentification.Local\Microsoft.Health.DeIdentification.Local.csproj", "{3B0EA0DD-9DD4-46E7-B490-1FA678B42D35}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +45,14 @@ Global
 		{A327A753-0258-4D9F-89E8-D8E3C3B17C02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A327A753-0258-4D9F-89E8-D8E3C3B17C02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A327A753-0258-4D9F-89E8-D8E3C3B17C02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C3AD33A-6991-4B10-A3AC-CC8AF3BE53C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C3AD33A-6991-4B10-A3AC-CC8AF3BE53C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C3AD33A-6991-4B10-A3AC-CC8AF3BE53C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C3AD33A-6991-4B10-A3AC-CC8AF3BE53C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F69E354D-E1AB-4A2D-A9D7-190D2E5D64AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F69E354D-E1AB-4A2D-A9D7-190D2E5D64AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F69E354D-E1AB-4A2D-A9D7-190D2E5D64AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F69E354D-E1AB-4A2D-A9D7-190D2E5D64AD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3B0EA0DD-9DD4-46E7-B490-1FA678B42D35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B0EA0DD-9DD4-46E7-B490-1FA678B42D35}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B0EA0DD-9DD4-46E7-B490-1FA678B42D35}.Release|Any CPU.ActiveCfg = Release|Any CPU
