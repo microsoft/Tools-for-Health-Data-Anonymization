@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Health.TaskManagement" Version="3.3.66" />
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
   </ItemGroup>
 

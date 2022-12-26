@@ -1,4 +1,7 @@
-﻿using System;
+﻿using EnsureThat;
+using Microsoft.Health.DeIdentification.Batch;
+using Microsoft.Health.JobManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +11,21 @@ namespace Microsoft.Health.DeIdentification.Web.Async
 {
     public class BackgroundService
     {
-        Task<string> StartAsync(string content)
+        private readonly JobHosting _jobHosting;
+
+        public BackgroundService(JobHosting jobHosting)
+        {
+            _jobHosting = EnsureArg.IsNotNull(jobHosting, nameof(jobHosting));
+        }
+
+        async Task<string> StartAsync(CancellationToken cancellationToken = default)
         {
             // start job hosting
             // We can leverage job hosting here for long running job
-            throw new NotImplementedException();
+            using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            _jobHosting.MaxRunningJobCount = 1;
+            await _jobHosting.StartAsync((byte)QueueType.Deid, Environment.MachineName, cancellationTokenSource);
+            return string.Empty;
         }
     }
 }

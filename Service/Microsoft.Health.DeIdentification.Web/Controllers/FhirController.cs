@@ -39,13 +39,15 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         // Post: start batch job
         public void BatchDeIdentification()
         {
-            // Create Job
+            // Create BatchFhirDeIdJobInputData with 
+            // Call queue client to enqueue Job
             // Return id to customer
         }
 
         // DELETE: Cancel batch job
         public void CancelDeIdentificationJob(string jobid)
         {
+            // queue client cancel job by id
             // Cancel Job
             // Return status
         }
@@ -55,6 +57,7 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         [Route("/base/fhir")]
         public async Task<string> GetDeIdentificationJobStatus(string jobid)
         {
+            // queue client getjobbyid
             return $"jobid is: " + jobid;
             // Get Job
             // Return job with progress

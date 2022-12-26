@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Health.TaskManagement" Version="3.3.66" />
+  </ItemGroup>
+
 </Project>
