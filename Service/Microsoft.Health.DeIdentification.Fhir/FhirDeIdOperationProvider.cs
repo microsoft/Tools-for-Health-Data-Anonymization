@@ -1,4 +1,9 @@
-﻿using EnsureThat;
+﻿// -------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
+// -------------------------------------------------------------------------------------------------
+
+using EnsureThat;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.Fhir.Anonymizer.Core;
 
@@ -27,6 +32,7 @@ namespace Microsoft.Health.DeIdentification.Fhir
                         var engine = new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromSettingsInJson(configurationContent));
                         deIdOperations.Add((IDeIdOperation<TSource, TResult>)new FhirPathRuleSetDeIdOperation(engine));
                         break;
+                    default: throw new ArgumentException($"Unsupported model type {modelReference.ModelType}.");
 
                 }
             }
