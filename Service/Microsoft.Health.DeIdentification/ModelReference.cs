@@ -3,15 +3,18 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Microsoft.Health.DeIdentification.Contract;
+using System.Runtime.Serialization;
 
-namespace Microsoft.Health.DeIdentification.FreeText
+namespace Microsoft.Health.DeIdentification.Contract
 {
-    public class FreeTextDeIdOperation : IDeIdOperation<string, string>
+    [DataContract]
+    public class ModelReference
     {
-        public string Process(string source)
-        {
-            throw new NotImplementedException();
-        }
+        [DataMember(Name = "modelType")]
+        public DeidModelType ModelType { get; set; }
+
+        [DataMember(Name = "configurationLocation")]
+        public string ConfigurationLocation { get; set; }
+
     }
 }

@@ -1,4 +1,13 @@
-﻿using Microsoft.Health.DeIdentification.Local;
+﻿// -------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
+// -------------------------------------------------------------------------------------------------
+
+using Microsoft.Health.DeIdentification.Contract;
+using Microsoft.Health.DeIdentification.Fhir;
+using Microsoft.Health.DeIdentification.Local;
+using Microsoft.Health.Extensions.DependencyInjection;
+using Microsoft.Health.Fhir.Anonymizer.Core;
 
 namespace Microsoft.Health.DeIdentification.Web.App
 {
@@ -14,8 +23,27 @@ namespace Microsoft.Health.DeIdentification.Web.App
         // This method gets called by the runtime. Use this method to add services to the container.
         public virtual void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<DeIdConfigurationSection>(options => Configuration.GetSection(ConfigurationConstants.DeIdConfigurationSectionKey).Bind(options));
+
             services.AddControllersWithViews();
-            services.AddScoped<InMemoryQueueClient>();
+            //services.AddScoped<InMemoryQueueClient>();
+            
+            // add artifact store
+            services.AddSingleton<IArtifactStore, LocalArtifactStore>();
+
+            services.AddSingleton<IDeIdConfigurationStore, DeIdConfigurationStore>();
+
+            services.AddSingleton<FhirDeIdHandler, FhirDeIdHandler>();
+
+            AnonymizerEngine.InitializeFhirPathExtensionSymbols();
+
+            services.AddFactory<IScoped<IDeIdOperation<ResourceList, ResourceList>>>();
+
+            services.Add<FhirDeIdOperationProvider>()
+                    .Transient()
+                    .AsService<IDeIdOperationProvider>();
+            //services.AddSingleton<IDeIdOperationProvider, FhirDeIdOperationProvider>();
+
         }
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

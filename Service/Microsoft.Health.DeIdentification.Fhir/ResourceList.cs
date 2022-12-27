@@ -1,4 +1,8 @@
-﻿using Hl7.Fhir.Model;
+﻿// -------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
+// -------------------------------------------------------------------------------------------------
+
 using Newtonsoft.Json;
 using System.Collections;
 
@@ -6,7 +10,7 @@ namespace Microsoft.Health.DeIdentification.Fhir
 {
     public class ResourceList
     {
-        [JsonProperty("Resources")]
+        [JsonProperty("resources")]
         public IList Resources { get; set; }
     }
 }

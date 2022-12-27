@@ -3,15 +3,10 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Microsoft.Health.DeIdentification.Contract;
-
-namespace Microsoft.Health.DeIdentification.FreeText
+namespace Microsoft.Health.DeIdentification.Contract
 {
-    public class FreeTextDeIdOperation : IDeIdOperation<string, string>
+    public static class ConfigurationConstants
     {
-        public string Process(string source)
-        {
-            throw new NotImplementedException();
-        }
+        public const string DeIdConfigurationSectionKey = "deIdConfigurationSection";
     }
 }
