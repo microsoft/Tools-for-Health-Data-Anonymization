@@ -1,11 +1,12 @@
 ﻿using Microsoft.Health.JobManagement;
 using System.Collections.ObjectModel;
+using System.Numerics;
 
 namespace Microsoft.Health.DeIdentification.Local
 {
     public class InMemoryQueueClient : IQueueClient
     {
-        private int largestId = 1;
+        private int defaultGroupId = 0;
         private List<JobInfo> jobInfos = new List<JobInfo>();
         public List<JobInfo> JobInfos
         {
@@ -26,10 +27,7 @@ namespace Microsoft.Health.DeIdentification.Local
                     jobInfo.Status = JobStatus.Cancelled;
                 }
 
-                if (jobInfo.Status == JobStatus.Running)
-                {
-                    jobInfo.CancelRequested = true;
-                }
+                jobInfo.CancelRequested = true;
             }
 
             return Task.CompletedTask;
@@ -38,7 +36,18 @@ namespace Microsoft.Health.DeIdentification.Local
         public async Task CompleteJobAsync(JobInfo jobInfo, bool requestCancellationOnFailure, CancellationToken cancellationToken)
         {
             JobInfo jobInfoStore = jobInfos.FirstOrDefault(t => t.Id == jobInfo.Id);
-            jobInfoStore.Status = jobInfo.Status;
+
+            if (jobInfo.Status == JobStatus.Failed)
+            {
+                jobInfoStore.Status = JobStatus.Failed;
+            } else if (jobInfo.CancelRequested = true)
+            {
+                jobInfoStore.Status = JobStatus.Cancelled;
+            } else
+            {
+                jobInfoStore.Status = JobStatus.Completed;
+            }
+
             jobInfoStore.Result = jobInfo.Result;
 
             if (requestCancellationOnFailure && jobInfo.Status == JobStatus.Failed)
@@ -49,37 +58,58 @@ namespace Microsoft.Health.DeIdentification.Local
 
         public Task<JobInfo> DequeueAsync(byte queueType, string worker, int heartbeatTimeoutSec, CancellationToken cancellationToken, long? jobId = null)
         {
-            JobInfo job = jobInfos.FirstOrDefault(t => t.Status == JobStatus.Created || (t.Status == JobStatus.Running && (DateTime.Now - t.HeartbeatDateTime) > TimeSpan.FromSeconds(heartbeatTimeoutSec)));
-            if (job != null)
-            {
-                job.Status = JobStatus.Running;
-                job.HeartbeatDateTime = DateTime.Now;
-            }
-
-            return Task.FromResult(job);
-        }
-
-        public async Task<IReadOnlyCollection<JobInfo>> DequeueJobsAsync(byte queueType, int numberOfJobsToDequeue, string worker, int heartbeatTimeoutSec, CancellationToken cancellationToken)
-        {
-            var jobs = new List<JobInfo>();
-            while(numberOfJobsToDequeue > 0)
+            try
             {
                 JobInfo job = jobInfos.FirstOrDefault(t => t.Status == JobStatus.Created || (t.Status == JobStatus.Running && (DateTime.Now - t.HeartbeatDateTime) > TimeSpan.FromSeconds(heartbeatTimeoutSec)));
+                if (job == null)
+                {
+                    throw new RetriableJobException("Job is null, dequeue failed.");
+                }
                 if (job != null)
                 {
                     job.Status = JobStatus.Running;
                     job.HeartbeatDateTime = DateTime.Now;
                 }
-                jobs.Add(job);
+
+                return Task.FromResult(job);
+            } catch(Exception ex)
+            {
+                throw;
             }
-            return jobs;
+            
+        }
+
+        public async Task<IReadOnlyCollection<JobInfo>> DequeueJobsAsync(byte queueType, int numberOfJobsToDequeue, string worker, int heartbeatTimeoutSec, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (numberOfJobsToDequeue > jobInfos.Count(t => t.Status == JobStatus.Created || t.Status == JobStatus.Running))
+                {
+                    throw new InvalidDataException("number exceed length");
+                }
+                var jobs = new List<JobInfo>();
+                while(numberOfJobsToDequeue > 0)
+                {
+                    JobInfo job = jobInfos.FirstOrDefault(t => t.Status == JobStatus.Created || (t.Status == JobStatus.Running && (DateTime.Now - t.HeartbeatDateTime) > TimeSpan.FromSeconds(heartbeatTimeoutSec)));
+                    if (job != null)
+                    {
+                        job.Status = JobStatus.Running;
+                        job.HeartbeatDateTime = DateTime.Now;
+                    }
+                    jobs.Add(job);
+                    numberOfJobsToDequeue--;
+                }
+                return jobs;
+            } catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public Task<IReadOnlyList<JobInfo>> EnqueueAsync(byte queueType, string[] definitions, long? groupId, bool forceOneActiveJobGroup, bool isCompleted, CancellationToken cancellationToken)
         {
             var result = new List<JobInfo>();
 
-            long gId = groupId ?? largestId++;
             foreach (string definition in definitions)
             {
                 if (jobInfos.Any(t => t.Definition.Equals(definition)))
@@ -90,13 +120,15 @@ namespace Microsoft.Health.DeIdentification.Local
 
                 result.Add(new JobInfo()
                 {
+                    QueueType = queueType,
+                    Result = string.Empty,
+                    CancelRequested = false,
                     Definition = definition,
-                    Id = largestId,
-                    GroupId = gId,
+                    Id = BitConverter.ToInt64(Guid.NewGuid().ToByteArray()),
+                    GroupId = defaultGroupId,
                     Status = JobStatus.Created,
                     HeartbeatDateTime = DateTime.Now,
                 });
-                largestId++;
             }
 
             jobInfos.AddRange(result);
