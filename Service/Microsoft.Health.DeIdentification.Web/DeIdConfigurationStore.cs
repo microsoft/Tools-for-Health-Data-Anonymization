@@ -1,4 +1,6 @@
-﻿using Microsoft.Health.DeIdentification.Contract;
+﻿using EnsureThat;
+using Microsoft.Extensions.Options;
+using Microsoft.Health.DeIdentification.Contract;
 
 namespace Microsoft.Health.DeIdentification.Web
 {
@@ -7,15 +9,15 @@ namespace Microsoft.Health.DeIdentification.Web
         private IArtifactStore _artifactStore;
         private Dictionary<string, DeIdConfiguration> _deIdConfigurations;
 
-        public DeIdConfigurationStore(IArtifactStore artifactStore /* web service configuration */)
+        public DeIdConfigurationStore(
+            IArtifactStore artifactStore, 
+            IOptions<DeIdConfigurationSection> configuration /* web service configuration */)
         {
-            _artifactStore = artifactStore;
+            _artifactStore = EnsureArg.IsNotNull(artifactStore, nameof(artifactStore));
 
-            // Load default configurations
-            // TODO: check configuration name unique
-            // lazy initialization
+            EnsureArg.IsNotNull(configuration, nameof(configuration));
 
-            _deIdConfigurations =_artifactStore.ResolveArtifact<Configuration>(_artifactStore.DefaultConfigFile).DeidConfigurations.ToDictionary(x => x.Name, x => x);
+            _deIdConfigurations = configuration.Value.DeIdConfigurations.ToDictionary(x => x.Name, x=>x);
         }
 
         // Possible to have minutes level cache for further improvement

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Microsoft.Health.DeIdentification.Web.Controllers
+﻿namespace Microsoft.Health.DeIdentification.Web.Controllers
 {
     public class FreeTextController
     {

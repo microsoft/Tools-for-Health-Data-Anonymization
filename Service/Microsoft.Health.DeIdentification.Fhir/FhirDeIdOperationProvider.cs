@@ -1,32 +1,37 @@
-﻿using Microsoft.Health.DeIdentification.Contract;
+﻿using EnsureThat;
+using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.Fhir.Anonymizer.Core;
-using System.Text;
-using System.Threading.Channels;
-using Xunit.Sdk;
 
 namespace Microsoft.Health.DeIdentification.Fhir
 {
     public class FhirDeIdOperationProvider : IDeIdOperationProvider
     {
-        private readonly int outputChannedlLimit = 100;
-        private readonly string pathPrefix = "../Microsoft.Health.DeIdentification.Local/configurations/";
-        public IDeIdOperation<TSource, TResult> CreateDeIdOperation<TSource, TResult>(DeIdConfiguration deIdConfiguration)
+        private IArtifactStore _artifactStore;
+
+        public  FhirDeIdOperationProvider(IArtifactStore artifactStore)
         {
-            throw new NotImplementedException();
+            _artifactStore = EnsureArg.IsNotNull(artifactStore, nameof(artifactStore));
         }
 
-        public List<FhirDeIdOperation> CreateDeIdOperations(DeIdConfiguration deIdConfiguration)
+        public IList<IDeIdOperation<TSource, TResult>> CreateDeIdOperations<TSource, TResult>(DeIdConfiguration deIdConfiguration)
         {
-            List<FhirDeIdOperation> operations = new List<FhirDeIdOperation>();
-            foreach (var item in deIdConfiguration.ModelConfigReferences)
+            EnsureArg.IsNotNull(deIdConfiguration, nameof(deIdConfiguration));
+            var deIdOperations = new List<IDeIdOperation<TSource, TResult>>();
+            foreach (var modelReference in deIdConfiguration.ModelConfigReferences)
             {
-                using (StreamReader reader = new StreamReader($"{pathPrefix+item.Value}"))
+                switch (modelReference.ModelType)
                 {
-                    string configContext = reader.ReadToEnd();
-                    operations.Add(new FhirDeIdOperation(configContext));
+                    case DeidModelType.FhirR4PathRuleSet:
+                        var configurationContent = _artifactStore.ResolveArtifact<string>(modelReference.ConfigurationLocation);
+
+                        var engine = new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromSettingsInJson(configurationContent));
+                        deIdOperations.Add((IDeIdOperation<TSource, TResult>)new FhirPathRuleSetDeIdOperation(engine));
+                        break;
+
                 }
             }
-            return operations;
+
+            return deIdOperations;
         }
     }
 }

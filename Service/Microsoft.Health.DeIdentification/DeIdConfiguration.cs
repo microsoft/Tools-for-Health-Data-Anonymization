@@ -22,7 +22,7 @@ namespace Microsoft.Health.DeIdentification.Contract
 
         [DataMember(Name = "modelConfigReferences")]
 
-        public Dictionary<DeidModelType, string> ModelConfigReferences { get; set; }
+        public List<ModelReference> ModelConfigReferences { get; set; }
 
         [DataMember(Name = "settings")]
         public Dictionary<string, string> Settings { get; set; }

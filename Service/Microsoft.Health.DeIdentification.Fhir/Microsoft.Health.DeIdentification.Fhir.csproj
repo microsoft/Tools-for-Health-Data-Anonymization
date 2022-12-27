@@ -13,7 +13,7 @@
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Health.Fhir.Anonymizer.R4.Core" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Health.Fhir.Anonymizer.R4.Core" Version="3.1.0.62" />
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
     <PackageReference Include="xunit.assert" Version="2.4.2" />
     <PackageReference Include="xunit.extensibility.core" Version="2.4.2" />
