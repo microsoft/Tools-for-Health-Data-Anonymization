@@ -61,10 +61,6 @@ namespace Microsoft.Health.DeIdentification.Local
             try
             {
                 JobInfo job = jobInfos.FirstOrDefault(t => t.Status == JobStatus.Created || (t.Status == JobStatus.Running && (DateTime.Now - t.HeartbeatDateTime) > TimeSpan.FromSeconds(heartbeatTimeoutSec)));
-                if (job == null)
-                {
-                    throw new RetriableJobException("Job is null, dequeue failed.");
-                }
                 if (job != null)
                 {
                     job.Status = JobStatus.Running;
@@ -72,7 +68,7 @@ namespace Microsoft.Health.DeIdentification.Local
                 }
 
                 return Task.FromResult(job);
-            } catch(Exception ex)
+            } catch
             {
                 throw;
             }
