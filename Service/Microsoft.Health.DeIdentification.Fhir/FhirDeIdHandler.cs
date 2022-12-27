@@ -1,5 +1,10 @@
-﻿using System.Collections;
-using System.Threading.Channels;
+﻿// -------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
+// -------------------------------------------------------------------------------------------------
+
+using EnsureThat;
+using Microsoft.Health.DeIdentification.Contract;
 
 namespace Microsoft.Health.DeIdentification.Fhir
 {
@@ -7,90 +12,32 @@ namespace Microsoft.Health.DeIdentification.Fhir
     {
         private readonly int outputChannelLimit = 1000;
         private readonly int maxRunningOperationCount = 5;
-        private readonly int maxContextCount = 700;
-        public async Task<ResourceList> ExecuteProcess(List<FhirDeIdOperation> operations, IList context)
+        private const int MaxContextCount = 700;
+        private IDeIdOperationProvider _deIdOperationProvider;
+
+        public FhirDeIdHandler(IDeIdOperationProvider deIdOperationProvider)
         {
-            if ( context.Count >= maxContextCount)
-            {
-                throw new Exception("Context count can't be greater than 700");
-            }
-            try
-            {
-                Channel<string> source = Channel.CreateBounded<string>(new BoundedChannelOptions(outputChannelLimit)
-                {
-                    FullMode = BoundedChannelFullMode.Wait
-                });
-                var enqueueTask = Task.Run(() =>
-                {
-                    foreach (var item in context)
-                    {
-                        source.Writer.WriteAsync(item.ToString());
-                    }
-                    source.Writer.Complete();
-                });
-                var tasks = new List<Task>();
-                foreach (var operation in operations)
-                {
-                    Channel<string> target = Channel.CreateBounded<string>(new BoundedChannelOptions(outputChannelLimit)
-                    {
-                        FullMode = BoundedChannelFullMode.Wait
-                    });
-                    while (await source.Reader.WaitToReadAsync())
-                    {
-                        while (tasks.Count > maxRunningOperationCount)
-                        {
-                            try
-                            {
-                                await tasks.First();
-                                tasks.RemoveAt(0);
-                            }
-                            catch (Exception ex)
-                            {
-                                throw ex;
-                            }
-                        }
-                        if (source.Reader.TryRead(out var value))
-                        {
-                            tasks.Add(InternalProcess(target, operation, value));
-                        }
-                    }
-                    source = target;
-                    source.Writer.Complete();
-                }
-                while (tasks.Count > 0)
-                {
-                    try
-                    {
-                        await tasks.First();
-                        tasks.RemoveAt(0);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw ex;
-                    }
-                }
-                var result = new List<object>();
-                while (await source.Reader.WaitToReadAsync())
-                {
-                    if (source.Reader.TryRead(out var value))
-                    {
-                        result.Add(value);
-                    }
-                    else
-                    {
-                        source.Writer.Complete();
-                    }
-                }
-                return new ResourceList() { Resources = result };
-            } catch(Exception ex)
-            {
-                throw ex;
-            }
-            
+            _deIdOperationProvider = EnsureArg.IsNotNull(deIdOperationProvider, nameof(deIdOperationProvider));
         }
-        private async Task InternalProcess(Channel<string> target, FhirDeIdOperation operation, string value)
+
+        public async Task<ResourceList> ProcessRequestAsync(DeIdConfiguration config, ResourceList resourceList)
         {
-            await target.Writer.WriteAsync(operation.ProcessSingle(value));
+            if (resourceList.Resources.Count >= MaxContextCount)
+            {
+                throw new Exception($"Context count can't be greater than {MaxContextCount}.");
+
+            }
+
+            var operations = _deIdOperationProvider.CreateDeIdOperations<ResourceList, ResourceList>(config);
+            foreach (var operation in operations)
+            {
+                resourceList = operation.Process(resourceList);
+
+            }
+
+            return resourceList;
+
         }
+
     }
 }

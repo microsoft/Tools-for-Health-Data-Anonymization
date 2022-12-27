@@ -1,38 +1,30 @@
-﻿using Microsoft.Health.DeIdentification.Contract;
-using Newtonsoft.Json.Linq;
+﻿// -------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
+// -------------------------------------------------------------------------------------------------
+
+using Microsoft.Health.DeIdentification.Contract;
 
 namespace Microsoft.Health.DeIdentification.Local
 {
     public class LocalArtifactStore : IArtifactStore
     {
 
-        readonly string _defaultConfigFile = "configurations/deid-configuration.json";
-
         public LocalArtifactStore() 
         {
         }
 
-        public string DefaultConfigFile { get { return _defaultConfigFile;} }
-
         public TContent ResolveArtifact<TContent>(string reference)
         {
+
             try
             {
                 var content = File.ReadAllText(reference);
-                JsonLoadSettings settings = new JsonLoadSettings
-                {
-                    DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error
-                };
-                var token = JToken.Parse(content, settings);
-                return token.ToObject<TContent>();
+                return (TContent)(object)content;
             }
-            catch (IOException innerException)
+            catch(Exception innerException)
             {
-                throw new Exception($"Failed to read file {reference}", innerException);
-            }
-            catch(Exception ex)
-            {
-                throw new Exception($"Failed to parse json", ex);
+                throw new Exception($"Failed to resolve artifact {reference}", innerException);
             }
         }
     }

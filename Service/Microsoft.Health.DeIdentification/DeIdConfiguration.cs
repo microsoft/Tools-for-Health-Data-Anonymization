@@ -1,4 +1,9 @@
-﻿using System.Runtime.Serialization;
+﻿// -------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
+// -------------------------------------------------------------------------------------------------
+
+using System.Runtime.Serialization;
 
 namespace Microsoft.Health.DeIdentification.Contract
 {
@@ -22,7 +27,7 @@ namespace Microsoft.Health.DeIdentification.Contract
 
         [DataMember(Name = "modelConfigReferences")]
 
-        public Dictionary<DeidModelType, string> ModelConfigReferences { get; set; }
+        public List<ModelReference> ModelConfigReferences { get; set; }
 
         [DataMember(Name = "settings")]
         public Dictionary<string, string> Settings { get; set; }
