@@ -67,6 +67,7 @@ namespace Microsoft.Health.DeIdentification.Batch
                 while (runningTasks.Count > 0)
                 {
                     TResult[] results = await runningTasks.First();
+                    runningTasks.RemoveAt(0);
                     foreach (TResult result in results)
                     {
                         await outputChannel.Writer.WriteAsync(result, cancellationToken);

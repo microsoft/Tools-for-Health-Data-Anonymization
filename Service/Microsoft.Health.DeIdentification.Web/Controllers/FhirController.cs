@@ -6,9 +6,14 @@
 using EnsureThat;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.DeIdentification.Batch.Models;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
+using Microsoft.Health.DeIdentification.Fhir.Models;
+using Microsoft.Health.DeIdentification.Local;
+using Microsoft.Health.JobManagement;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace Microsoft.Health.DeIdentification.Web.Controllers
 {
@@ -17,16 +22,21 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         private IDeIdConfigurationStore _deIdConfigurationStore;
         private FhirDeIdHandler _handler;
         private ILogger<FhirController> _logger;
+        private IQueueClient _client;
+        private LocalFhirBatchHandler _batchHandler;
 
         public FhirController(
             IDeIdConfigurationStore deIdConfigurationStore,
             FhirDeIdHandler handler,
-            ILogger<FhirController> logger)
+            ILogger<FhirController> logger, 
+            IQueueClient client,
+            LocalFhirBatchHandler batchHandler)
         {
             _deIdConfigurationStore = EnsureArg.IsNotNull(deIdConfigurationStore, nameof(deIdConfigurationStore));
             _handler = EnsureArg.IsNotNull(handler, nameof(handler));
             _logger = EnsureArg.IsNotNull(logger, nameof(logger));
-
+            _client = client;
+            _batchHandler = batchHandler;
         }
 
         // Post: 
@@ -50,11 +60,25 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         }
 
         // Post: start batch job
-        public void BatchDeIdentification()
+        [HttpPost]
+        [Route("/base/deidentify/dataset/fhir")]
+        public async Task<IActionResult> BatchDeIdentification(string deidConfiguration, [FromBody] BatchInputData requestBody)
         {
             // Create BatchFhirDeIdJobInputData with 
             // Call queue client to enqueue Job
             // Return id to customer
+            var configuration = _deIdConfigurationStore.GetByName(deidConfiguration);
+
+            if (configuration == null)
+            {
+                _logger.LogInformation("The configuration is null.");
+                return BatchResult.BadRequest();
+            }
+            else
+            {
+                var result = await _batchHandler.ProcessRequestAsync(configuration, requestBody);
+                return BatchResult.Accept();
+            }
         }
 
         // DELETE: Cancel batch job

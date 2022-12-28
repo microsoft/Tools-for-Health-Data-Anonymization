@@ -4,8 +4,6 @@
 // -------------------------------------------------------------------------------------------------
 
 using Microsoft.Health.JobManagement;
-using System.Collections.ObjectModel;
-using System.Numerics;
 
 namespace Microsoft.Health.DeIdentification.Local
 {
@@ -40,6 +38,7 @@ namespace Microsoft.Health.DeIdentification.Local
 
         public async Task CompleteJobAsync(JobInfo jobInfo, bool requestCancellationOnFailure, CancellationToken cancellationToken)
         {
+            // TODO verify job result overwrite
             JobInfo jobInfoStore = jobInfos.FirstOrDefault(t => t.Id == jobInfo.Id);
 
             if (jobInfo.Status == JobStatus.Failed)
@@ -66,10 +65,6 @@ namespace Microsoft.Health.DeIdentification.Local
             try
             {
                 JobInfo job = jobInfos.FirstOrDefault(t => t.Status == JobStatus.Created || (t.Status == JobStatus.Running && (DateTime.Now - t.HeartbeatDateTime) > TimeSpan.FromSeconds(heartbeatTimeoutSec)));
-                if (job == null)
-                {
-                    throw new RetriableJobException("Job is null, dequeue failed.");
-                }
                 if (job != null)
                 {
                     job.Status = JobStatus.Running;
@@ -113,6 +108,7 @@ namespace Microsoft.Health.DeIdentification.Local
 
         public Task<IReadOnlyList<JobInfo>> EnqueueAsync(byte queueType, string[] definitions, long? groupId, bool forceOneActiveJobGroup, bool isCompleted, CancellationToken cancellationToken)
         {
+            // TODO add lock for job enqueue and dequeue.
             var result = new List<JobInfo>();
 
             foreach (string definition in definitions)

@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.Health.TaskManagement" Version="3.3.66" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Health.DeIdentification\Microsoft.Health.DeIdentification.Contract.csproj" />
+  </ItemGroup>
+
 </Project>

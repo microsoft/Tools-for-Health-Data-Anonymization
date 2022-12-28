@@ -3,11 +3,15 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using Microsoft.Health.DeIdentification.Batch;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
+using Microsoft.Health.DeIdentification.Fhir.Local;
 using Microsoft.Health.DeIdentification.Local;
+using Microsoft.Health.DeIdentification.Web.Async;
 using Microsoft.Health.Extensions.DependencyInjection;
 using Microsoft.Health.Fhir.Anonymizer.Core;
+using Microsoft.Health.JobManagement;
 
 namespace Microsoft.Health.DeIdentification.Web.App
 {
@@ -31,9 +35,23 @@ namespace Microsoft.Health.DeIdentification.Web.App
             // add artifact store
             services.AddSingleton<IArtifactStore, LocalArtifactStore>();
 
+            services.AddSingleton<JobHosting, JobHosting>();
+
+            services.AddSingleton<IJobFactory, LocalJobFactory>();
+
+            services.AddHostedService<HostingBackgroundService>();
+
             services.AddSingleton<IDeIdConfigurationStore, DeIdConfigurationStore>();
 
             services.AddSingleton<FhirDeIdHandler, FhirDeIdHandler>();
+
+            services.AddSingleton<LocalFhirBatchHandler, LocalFhirBatchHandler>();
+
+            services.AddSingleton<LocalFhirDataLoader, LocalFhirDataLoader>();
+
+            services.AddSingleton<LocalFhirDataWriter, LocalFhirDataWriter>();
+
+            services.AddSingleton<IQueueClient, InMemoryQueueClient>();
 
             AnonymizerEngine.InitializeFhirPathExtensionSymbols();
 

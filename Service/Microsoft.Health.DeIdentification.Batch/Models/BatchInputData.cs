@@ -1,15 +1,12 @@
-﻿using Microsoft.Health.DeIdentification.Contract;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Microsoft.Health.DeIdentification.Fhir.Models
+namespace Microsoft.Health.DeIdentification.Batch.Models
 {
-    public class BatchFhirDeIdJobInputData
+    public class BatchInputData
     {
         public string dataSourceType { get; set; }
 
