@@ -38,6 +38,7 @@ namespace Microsoft.Health.DeIdentification.Local
 
         public async Task CompleteJobAsync(JobInfo jobInfo, bool requestCancellationOnFailure, CancellationToken cancellationToken)
         {
+            // TODO check if jobinfo result will be overwrite.
             JobInfo jobInfoStore = jobInfos.FirstOrDefault(t => t.Id == jobInfo.Id);
 
             if (jobInfo.Status == JobStatus.Failed)
@@ -107,6 +108,7 @@ namespace Microsoft.Health.DeIdentification.Local
 
         public Task<IReadOnlyList<JobInfo>> EnqueueAsync(byte queueType, string[] definitions, long? groupId, bool forceOneActiveJobGroup, bool isCompleted, CancellationToken cancellationToken)
         {
+            // TODO add lock for dequeue and enqueue
             var result = new List<JobInfo>();
 
             foreach (string definition in definitions)
