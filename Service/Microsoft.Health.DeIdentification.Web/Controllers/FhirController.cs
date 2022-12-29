@@ -11,7 +11,6 @@ using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
 using Microsoft.Health.DeIdentification.Local;
 using Microsoft.Health.JobManagement;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.DeIdentification.Web.Controllers

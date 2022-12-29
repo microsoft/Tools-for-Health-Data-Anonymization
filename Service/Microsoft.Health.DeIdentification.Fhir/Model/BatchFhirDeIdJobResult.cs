@@ -10,6 +10,7 @@ namespace Microsoft.Health.DeIdentification.Fhir.Models
     [DataContract]
     public class BatchFhirDeIdJobResult
     {
+        // TODO: the output should not larger than azure table entity 
         [DataMember(Name = "outputs")]
         public List<OutputInfo> Outputs { get; set; } = new List<OutputInfo>();
     }
