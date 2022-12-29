@@ -12,6 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Health.DeIdentification.Batch\Microsoft.Health.DeIdentification.Batch.csproj" />
+    <ProjectReference Include="..\Microsoft.Health.DeIdentification.Fhir\Microsoft.Health.DeIdentification.Fhir.csproj" />
     <ProjectReference Include="..\Microsoft.Health.DeIdentification\Microsoft.Health.DeIdentification.Contract.csproj" />
   </ItemGroup>
 

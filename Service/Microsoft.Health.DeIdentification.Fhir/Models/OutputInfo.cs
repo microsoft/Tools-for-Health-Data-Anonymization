@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Health.DeIdentification.Fhir.Models
 {
-    public class BatchFhirDeIdJobResult
+    public class OutputInfo
     {
-        public List<OutputInfo> outputs { get; set; }
+        public string sourceUrl { get; set; }
+
+        public string outputUrl { get; set; }
     }
 }

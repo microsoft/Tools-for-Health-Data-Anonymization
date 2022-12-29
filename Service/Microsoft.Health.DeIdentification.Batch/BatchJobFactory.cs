@@ -1,4 +1,7 @@
-﻿using Microsoft.Health.JobManagement;
+﻿using Microsoft.Health.DeIdentification.Batch.Models;
+using Microsoft.Health.DeIdentification.Contract;
+using Microsoft.Health.JobManagement;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +15,6 @@ namespace Microsoft.Health.DeIdentification.Batch
         public IJob Create(JobInfo jobInfo)
         {
             throw new NotImplementedException();
-            // Create FhirJob or DicomJob acording to inputdata
         }
     }
 }

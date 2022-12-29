@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ namespace Microsoft.Health.DeIdentification.Local
 
         public async Task CompleteJobAsync(JobInfo jobInfo, bool requestCancellationOnFailure, CancellationToken cancellationToken)
         {
-            // TODO check if jobinfo result will be overwrite.
+            // TODO verify job result overwrite
             JobInfo jobInfoStore = jobInfos.FirstOrDefault(t => t.Id == jobInfo.Id);
 
             if (jobInfo.Status == JobStatus.Failed)
@@ -72,7 +72,7 @@ namespace Microsoft.Health.DeIdentification.Local
                 }
 
                 return Task.FromResult(job);
-            } catch
+            } catch(Exception ex)
             {
                 throw;
             }
@@ -108,7 +108,7 @@ namespace Microsoft.Health.DeIdentification.Local
 
         public Task<IReadOnlyList<JobInfo>> EnqueueAsync(byte queueType, string[] definitions, long? groupId, bool forceOneActiveJobGroup, bool isCompleted, CancellationToken cancellationToken)
         {
-            // TODO add lock for dequeue and enqueue
+            // TODO add lock for job enqueue and dequeue.
             var result = new List<JobInfo>();
 
             foreach (string definition in definitions)

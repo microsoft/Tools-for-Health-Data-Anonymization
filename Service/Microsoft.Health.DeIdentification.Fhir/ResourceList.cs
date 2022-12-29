@@ -12,5 +12,9 @@ namespace Microsoft.Health.DeIdentification.Fhir
     {
         [JsonProperty("resources")]
         public IList Resources { get; set; }
+
+        public string inputFileName { get; set; }
+
+        public string outputFileName { get; set; }
     }
 }
