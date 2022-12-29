@@ -9,12 +9,12 @@ using Microsoft.Health.DeIdentification.Contract;
 
 namespace Microsoft.Health.DeIdentification.Web
 {
-    public class DeIdConfigurationStore : IDeIdConfigurationStore
+    public class DeIdConfigurationRegistration : IDeIdConfigurationRegistration
     {
         private IArtifactStore _artifactStore;
         private Dictionary<string, DeIdConfiguration> _deIdConfigurations;
 
-        public DeIdConfigurationStore(
+        public DeIdConfigurationRegistration(
             IArtifactStore artifactStore, 
             IOptions<DeIdConfigurationSection> configuration /* web service configuration */)
         {

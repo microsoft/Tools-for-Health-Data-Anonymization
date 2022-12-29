@@ -3,7 +3,6 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Microsoft.Health.DeIdentification.Batch;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
 using Microsoft.Health.DeIdentification.Fhir.Local;
@@ -29,9 +28,9 @@ namespace Microsoft.Health.DeIdentification.Web.App
         {
             services.Configure<DeIdConfigurationSection>(options => Configuration.GetSection(ConfigurationConstants.DeIdConfigurationSectionKey).Bind(options));
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddNewtonsoftJson();
             //services.AddScoped<InMemoryQueueClient>();
-            
+
             // add artifact store
             services.AddSingleton<IArtifactStore, LocalArtifactStore>();
 
@@ -41,7 +40,7 @@ namespace Microsoft.Health.DeIdentification.Web.App
 
             services.AddHostedService<HostingBackgroundService>();
 
-            services.AddSingleton<IDeIdConfigurationStore, DeIdConfigurationStore>();
+            services.AddSingleton<IDeIdConfigurationRegistration, DeIdConfigurationRegistration>();
 
             services.AddSingleton<FhirDeIdHandler, FhirDeIdHandler>();
 

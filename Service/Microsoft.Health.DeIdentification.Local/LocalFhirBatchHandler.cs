@@ -1,16 +1,16 @@
-﻿using EnsureThat;
-using Microsoft.Health.DeIdentification.Batch.Models;
+﻿// -------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
+// -------------------------------------------------------------------------------------------------
+
+using EnsureThat;
+using Microsoft.Health.DeIdentification.Batch.Model;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
 using Microsoft.Health.DeIdentification.Fhir.Models;
 using Microsoft.Health.Fhir.Anonymizer.Core;
 using Microsoft.Health.JobManagement;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Health.DeIdentification.Local
 {
@@ -28,10 +28,18 @@ namespace Microsoft.Health.DeIdentification.Local
             _client = client;
         }
 
-        public async Task<List<JobInfo>> ProcessRequestAsync(DeIdConfiguration configuration, BatchInputData inputData)
-        {
-            var result = await _client.EnqueueAsync(0, new string[] { JsonConvert.SerializeObject(inputData) }, 0, false, false, new CancellationToken());
-            return result.ToList();
+        public async Task<string> ProcessRequestAsync(DeIdConfiguration configuration, BatchDeIdRequestBody inputData)
+        {   
+            var input = new BatchFhirDeIdJobInputData
+            {
+                DataSourceType = configuration.DataSourceType,
+                DataSourceVersion = configuration.DataSourceVersion,
+                DeIdConfiguration = configuration,
+                SourceDataset = inputData.SourceDataset,
+                DestinationDataset = inputData.DestinationDataset,
+            };
+            var result = await _client.EnqueueAsync(0, new string[] { JsonConvert.SerializeObject(input) }, 0, false, false, new CancellationToken());
+            return result.First().Id.ToString();
         }
 
         public List<FhirDeIdBatchProcessor> GetFhirDeIdBatchProcessor(DeIdConfiguration configuration)

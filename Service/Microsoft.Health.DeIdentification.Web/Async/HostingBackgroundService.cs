@@ -6,12 +6,6 @@ using EnsureThat;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Health.DeIdentification.Batch;
 using Microsoft.Health.JobManagement;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.Health.DeIdentification.Web.Async
 {

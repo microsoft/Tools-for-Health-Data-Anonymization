@@ -1,16 +1,16 @@
-﻿using EnsureThat;
-using Microsoft.Health.DeIdentification.Batch.Models;
+﻿// -------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
+// -------------------------------------------------------------------------------------------------
+
+using EnsureThat;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
 using Microsoft.Health.DeIdentification.Fhir.Local;
+using Microsoft.Health.DeIdentification.Fhir.Models;
 using Microsoft.Health.DeIdentification.Local;
 using Microsoft.Health.JobManagement;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Health.DeIdentification.Web
 {
@@ -19,12 +19,12 @@ namespace Microsoft.Health.DeIdentification.Web
         private LocalFhirDataLoader _fhirDataLoader;
         private LocalFhirBatchHandler _fhirBatchHandler;
         private LocalFhirDataWriter _fhirDataWriter;
-        private IDeIdConfigurationStore _deIdConfigurationStore;
+        private IDeIdConfigurationRegistration _deIdConfigurationStore;
 
         public LocalJobFactory(LocalFhirDataLoader fhirDataLoader,
             LocalFhirBatchHandler fhirBatchHandler,
             LocalFhirDataWriter fhirDataWriter,
-            IDeIdConfigurationStore deIdConfiguration)
+            IDeIdConfigurationRegistration deIdConfiguration)
         { 
             EnsureArg.IsNotNull(fhirDataLoader, nameof(fhirDataLoader));
             EnsureArg.IsNotNull(fhirBatchHandler, nameof(fhirBatchHandler));
@@ -36,12 +36,13 @@ namespace Microsoft.Health.DeIdentification.Web
         }
         public IJob Create(JobInfo jobInfo)
         {
-            var inputData = JsonConvert.DeserializeObject<BatchInputData>(jobInfo.Definition);
+            var inputData = JsonConvert.DeserializeObject<BatchFhirDeIdJobInputData>(jobInfo.Definition);
+            
             IJob job;
-            switch (inputData.dataSourceType)
+            switch (inputData.DataSourceType)
             {
-                case "fhir":
-                    job = new BatchFhirDeIdJob(_fhirDataLoader, _fhirBatchHandler.GetFhirDeIdBatchProcessor(_deIdConfigurationStore.GetByName(inputData.deIdConfiguration)), _fhirDataWriter);
+                case DataSourceType.Fhir:
+                    job = new BatchFhirDeIdJob(_fhirDataLoader, _fhirBatchHandler.GetFhirDeIdBatchProcessor(inputData.DeIdConfiguration), _fhirDataWriter);
                     break;
                 default:
                     throw new InvalidOperationException("Not support DataSourceType");

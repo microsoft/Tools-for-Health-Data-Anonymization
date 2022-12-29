@@ -4,30 +4,28 @@
 // -------------------------------------------------------------------------------------------------
 
 using EnsureThat;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Health.DeIdentification.Batch.Models;
+using Microsoft.Health.DeIdentification.Batch.Model;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
-using Microsoft.Health.DeIdentification.Fhir.Models;
 using Microsoft.Health.DeIdentification.Local;
 using Microsoft.Health.JobManagement;
 using Newtonsoft.Json;
-using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.DeIdentification.Web.Controllers
 {
-    public class FhirController
+    public class FhirController: ControllerBase
     {
-        private IDeIdConfigurationStore _deIdConfigurationStore;
+        private IDeIdConfigurationRegistration _deIdConfigurationStore;
         private FhirDeIdHandler _handler;
         private ILogger<FhirController> _logger;
         private IQueueClient _client;
         private LocalFhirBatchHandler _batchHandler;
 
         public FhirController(
-            IDeIdConfigurationStore deIdConfigurationStore,
+            IDeIdConfigurationRegistration deIdConfigurationStore,
             FhirDeIdHandler handler,
             ILogger<FhirController> logger, 
             IQueueClient client,
@@ -42,8 +40,9 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
 
         // Post: 
         [HttpPost]
-        [Route("/fhirR4")]
-        public async Task<string> DeIdentification(string deidConfiguration, [FromBody] ResourceList resources)
+        [Route("/base/deidentify/fhirR4")]
+        [Produces("application/json")]
+        public async Task<IActionResult> DeIdentification(string deidConfiguration, [FromBody] ResourceList resources)
         {
             var configuration = _deIdConfigurationStore.GetByName(deidConfiguration);
             
@@ -51,19 +50,19 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             if (configuration == null)
             {
                 _logger.LogInformation("The configuration is null.");
-                return string.Empty;
+                return BadRequest();
             }
             else
             {
                 var result = await _handler.ProcessRequestAsync(configuration, resources);
-                return JsonConvert.SerializeObject(result);
+                return Ok(result);
             }
         }
 
         // Post: start batch job
         [HttpPost]
-        [Route("/base/deidentify/dataset/fhir")]
-        public async Task<IActionResult> BatchDeIdentification(string deidConfiguration, [FromBody] BatchInputData requestBody)
+        [Route("/base/deidentify/dataset/fhirR4")]
+        public async Task<IActionResult> BatchDeIdentification(string deidConfiguration, [FromBody] BatchDeIdRequestBody requestBody)
         {
             // Create BatchFhirDeIdJobInputData with 
             // Call queue client to enqueue Job
@@ -73,15 +72,14 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             if (configuration == null)
             {
                 _logger.LogInformation("The configuration is null.");
-                return BatchResult.BadRequest();
+                return BadRequest();
             }
             else
             {
-                var result = await _batchHandler.ProcessRequestAsync(configuration, requestBody);
-                IDictionary<string, string> headers = new Dictionary<string, string>();
-                var response = BatchResult.Accept(headers);
-                response = BatchResultExtension.SetContentLocationHeader(response, OperationConstants.Fhir, result);
-                return response;
+                var operationId = await _batchHandler.ProcessRequestAsync(configuration, requestBody);
+                string url = GenerateUrl(operationId);
+                return Accepted(url);
+
             }
         }
 
@@ -95,21 +93,37 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
 
         // GET: Get job progress
         [HttpGet]
-        [Route("/base/operation")]
-        public async Task<string> GetDeIdentificationJobStatus(string operationId)
+        [Route("/base/operation/{operationId}")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetDeIdentificationJobStatus(string operationId)
         {
             // queue client getjobbyid
             // Get Job
             // Return job with progress
             var jobInfo = await _client.GetJobByIdAsync(0, long.Parse(operationId), true, new CancellationToken());
-            if(jobInfo == null)
+            if (jobInfo == null)
             {
-                return string.Empty;
+                return NotFound();
+            }
+            if (jobInfo.Status == JobStatus.Completed)
+            {
+                return Ok(JObject.Parse(jobInfo.Result));
             }
             else
             {
-                return jobInfo.Result; 
+                string url = GenerateUrl(operationId);
+
+                if (string.IsNullOrWhiteSpace(jobInfo.Result))
+                {
+                    return Accepted(url);
+                }
+                else
+                {
+                    return Accepted(url, JObject.Parse(jobInfo.Result));
+                }
             }
         }
+
+        private static string GenerateUrl(string operationId) => $"{RouteNames.BaseUrl}operation/{operationId}";
     }
 }

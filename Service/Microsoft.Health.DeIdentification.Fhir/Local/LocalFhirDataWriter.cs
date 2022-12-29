@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// -------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
+// -------------------------------------------------------------------------------------------------
+
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.DeIdentification.Batch;
 using Microsoft.Health.DeIdentification.Fhir.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Health.DeIdentification.Fhir.Local
 {
@@ -27,7 +27,7 @@ namespace Microsoft.Health.DeIdentification.Fhir.Local
             foreach (var item in input.Sources)
             {
                 File.AppendAllText(item.outputFileName, JsonConvert.SerializeObject(item.Resources));
-                result.Add(new OutputInfo() { outputUrl = item.outputFileName, sourceUrl = item.inputFileName});
+                result.Add(new OutputInfo() { OutputUrl = item.outputFileName, SourceUrl = item.inputFileName});
             }
             return result.ToArray();
         }

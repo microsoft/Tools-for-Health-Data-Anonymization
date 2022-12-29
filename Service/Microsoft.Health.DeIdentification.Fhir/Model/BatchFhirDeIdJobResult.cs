@@ -3,10 +3,14 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.DeIdentification.Batch
+using System.Runtime.Serialization;
+
+namespace Microsoft.Health.DeIdentification.Fhir.Models
 {
-    public enum QueueType: byte
+    [DataContract]
+    public class BatchFhirDeIdJobResult
     {
-        Deid = 0,
+        [DataMember(Name = "outputs")]
+        public List<OutputInfo> Outputs { get; set; } = new List<OutputInfo>();
     }
 }

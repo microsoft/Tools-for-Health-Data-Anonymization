@@ -5,7 +5,6 @@
 
 using Microsoft.Health.DeIdentification.Batch;
 using Microsoft.Health.DeIdentification.Contract;
-using Microsoft.Health.DeIdentification.Fhir;
 
 namespace Microsoft.Health.DeIdentification.FreeText
 {

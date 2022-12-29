@@ -3,10 +3,16 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.DeIdentification.Batch
+using Newtonsoft.Json;
+
+namespace Microsoft.Health.DeIdentification.Batch.Model
 {
-    public enum QueueType: byte
+    public enum DataStoreType
     {
-        Deid = 0,
+        [JsonProperty("local")]
+        Local,
+
+        [JsonProperty("azureBlob")]
+        AzureBlob,
     }
 }
