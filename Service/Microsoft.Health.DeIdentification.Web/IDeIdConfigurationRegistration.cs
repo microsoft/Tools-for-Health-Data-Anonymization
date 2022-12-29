@@ -5,7 +5,7 @@
 
 namespace Microsoft.Health.DeIdentification.Contract
 {
-    public interface IDeIdConfigurationStore
+    public interface IDeIdConfigurationRegistration
     {
         public DeIdConfiguration GetByName(string name);
     }

@@ -3,10 +3,22 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.DeIdentification.Batch
+using Newtonsoft.Json;
+
+namespace Microsoft.Health.DeIdentification.Batch.Model
 {
-    public enum QueueType: byte
+    public enum DataFormatType
     {
-        Deid = 0,
+        [JsonProperty("json")]
+        Json,
+
+        [JsonProperty("ndjson")]
+        Ndjson,
+
+        [JsonProperty("dicom")]
+        dicom,
+
+        [JsonProperty("text")]
+        text,
     }
 }

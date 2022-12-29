@@ -3,10 +3,10 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-namespace Microsoft.Health.DeIdentification.Batch
+namespace Microsoft.Health.DeIdentification.Fhir.Models
 {
-    public enum QueueType: byte
+    public class Authentication
     {
-        Deid = 0,
+        public string type { get; set; }
     }
 }

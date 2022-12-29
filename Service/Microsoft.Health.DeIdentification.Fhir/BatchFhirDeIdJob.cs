@@ -4,7 +4,6 @@
 // -------------------------------------------------------------------------------------------------
 
 using EnsureThat;
-using Microsoft.Health.DeIdentification.Batch;
 using Microsoft.Health.DeIdentification.Fhir.Local;
 using Microsoft.Health.DeIdentification.Fhir.Models;
 using Microsoft.Health.JobManagement;
@@ -55,11 +54,7 @@ namespace Microsoft.Health.DeIdentification.Fhir
                     throw new OperationCanceledException();
                 }
                 
-                if (currentResult.outputs == null)
-                {
-                    currentResult.outputs = new List<OutputInfo>();
-                }
-                currentResult.outputs.Add(batchProgress);
+                currentResult.Outputs.Add(batchProgress);
                 progress.Report(JsonConvert.SerializeObject(batchProgress));
             }
 
