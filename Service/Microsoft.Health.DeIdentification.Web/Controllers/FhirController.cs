@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using EnsureThat;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.DeIdentification.Batch.Models;
@@ -78,14 +79,9 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             {
                 var result = await _batchHandler.ProcessRequestAsync(configuration, requestBody);
                 IDictionary<string, string> headers = new Dictionary<string, string>();
-                headers["Content-Type"] = "application/json";
-                headers["Accept"] = "application/json";
-                headers["Header Location"] = string.Empty;
-                foreach (var item in result)
-                {
-                    headers["Header Location"] = headers["Header Location"] + "https://localhost:7007/base/operation?operationId=" + item.Id + ",";
-                }
-                return BatchResult.Accept(headers);
+                var response = BatchResult.Accept(headers);
+                response = BatchResultExtension.SetContentLocationHeader(response, OperationConstants.Fhir, result);
+                return response;
             }
         }
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,5 +67,6 @@ namespace Microsoft.Health.DeIdentification.Web
 
             return result.ExecuteResultAsync(context);
         }
+
     }
 }
