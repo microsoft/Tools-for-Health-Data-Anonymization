@@ -77,7 +77,15 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             else
             {
                 var result = await _batchHandler.ProcessRequestAsync(configuration, requestBody);
-                return BatchResult.Accept();
+                IDictionary<string, string> headers = new Dictionary<string, string>();
+                headers["Content-Type"] = "application/json";
+                headers["Accept"] = "application/json";
+                headers["Url"] = string.Empty;
+                foreach (var item in result)
+                {
+                    headers["Url"] = headers["Url"] + "https://localhost:7007/base/fhir?jobid=" + item.Id + ",";
+                }
+                return BatchResult.Accept(headers);
             }
         }
 
@@ -95,9 +103,17 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         public async Task<string> GetDeIdentificationJobStatus(string jobid)
         {
             // queue client getjobbyid
-            return $"jobid is: " + jobid;
             // Get Job
             // Return job with progress
+            var jobInfo = await _client.GetJobByIdAsync(0, long.Parse(jobid), true, new CancellationToken());
+            if(jobInfo == null)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return jobInfo.Result; 
+            }
         }
     }
 }

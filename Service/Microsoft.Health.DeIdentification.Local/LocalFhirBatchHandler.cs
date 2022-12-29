@@ -30,7 +30,6 @@ namespace Microsoft.Health.DeIdentification.Local
 
         public async Task<List<JobInfo>> ProcessRequestAsync(DeIdConfiguration configuration, BatchInputData inputData)
         {
-            var processors = GetFhirDeIdBatchProcessor(configuration);
             var result = await _client.EnqueueAsync(0, new string[] { JsonConvert.SerializeObject(inputData) }, 0, false, false, new CancellationToken());
             return result.ToList();
         }

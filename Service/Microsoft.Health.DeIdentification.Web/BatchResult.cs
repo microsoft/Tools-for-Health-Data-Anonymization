@@ -20,11 +20,27 @@ namespace Microsoft.Health.DeIdentification.Web
             StatusCode= statusCode;
         }
 
+        public BatchResult(HttpStatusCode statusCode, IDictionary<string, string> headers)
+        {
+            StatusCode = statusCode;
+            foreach (var item in headers)
+            {
+                Headers.Add(item.Key, item.Value);
+            }
+        }
+
         public HttpStatusCode? StatusCode { get; set; }
+
+        public IHeaderDictionary Headers { get; } = new HeaderDictionary();
 
         public static BatchResult Accept()
         {
             return new BatchResult(HttpStatusCode.Accepted);
+        }
+
+        public static BatchResult Accept(IDictionary<string, string> headers)
+        {
+            return new BatchResult(HttpStatusCode.Accepted, headers);
         }
 
         public static BatchResult BadRequest()
@@ -39,8 +55,12 @@ namespace Microsoft.Health.DeIdentification.Web
 
             HttpResponse response = context.HttpContext.Response;
 
-            response.StatusCode = (int)HttpStatusCode.Accepted;
+            response.StatusCode = (int)StatusCode;
 
+            foreach (var item in Headers)
+            {
+                response.Headers.Add(item.Key, item.Value);
+            }
 
             ActionResult result = new EmptyResult();
 
