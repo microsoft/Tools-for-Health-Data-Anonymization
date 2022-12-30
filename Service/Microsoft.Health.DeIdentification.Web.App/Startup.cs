@@ -3,6 +3,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using Microsoft.Health.DeIdentification.Batch.Models.Data;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
 using Microsoft.Health.DeIdentification.Fhir.Local;
@@ -36,7 +37,7 @@ namespace Microsoft.Health.DeIdentification.Web.App
 
             services.AddSingleton<JobHosting, JobHosting>();
 
-            services.AddSingleton<IJobFactory, LocalJobFactory>();
+            services.AddSingleton<IJobFactory, BatchJobFactory>();
 
             services.AddHostedService<HostingBackgroundService>();
 
@@ -44,7 +45,7 @@ namespace Microsoft.Health.DeIdentification.Web.App
 
             services.AddSingleton<FhirDeIdHandler, FhirDeIdHandler>();
 
-            services.AddSingleton<LocalFhirBatchHandler, LocalFhirBatchHandler>();
+            services.AddSingleton<FhirDeIdBatchHandler, FhirDeIdBatchHandler>();
 
             services.AddSingleton<LocalFhirDataLoader, LocalFhirDataLoader>();
 
@@ -54,12 +55,11 @@ namespace Microsoft.Health.DeIdentification.Web.App
 
             AnonymizerEngine.InitializeFhirPathExtensionSymbols();
 
-            services.AddFactory<IScoped<IDeIdOperation<ResourceList, ResourceList>>>();
+            services.AddFactory<IScoped<IDeIdOperation<StringBatchData, StringBatchData>>>();
 
             services.Add<FhirDeIdOperationProvider>()
                     .Transient()
                     .AsService<IDeIdOperationProvider>();
-            //services.AddSingleton<IDeIdOperationProvider, FhirDeIdOperationProvider>();
 
         }
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -44,10 +44,12 @@ namespace Microsoft.Health.DeIdentification.Local
             if (jobInfo.Status == JobStatus.Failed)
             {
                 jobInfoStore.Status = JobStatus.Failed;
-            } else if (jobInfo.CancelRequested = true)
+            } 
+            else if (jobInfo.CancelRequested)
             {
                 jobInfoStore.Status = JobStatus.Cancelled;
-            } else
+            } 
+            else
             {
                 jobInfoStore.Status = JobStatus.Completed;
             }

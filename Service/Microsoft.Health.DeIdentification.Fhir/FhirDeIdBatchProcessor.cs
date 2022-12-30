@@ -4,30 +4,37 @@
 // -------------------------------------------------------------------------------------------------
 
 using Microsoft.Health.DeIdentification.Batch;
+using Microsoft.Health.DeIdentification.Batch.Models.Data;
 using Microsoft.Health.DeIdentification.Contract;
+using Microsoft.Health.DeIdentification.Fhir.Model;
 
 namespace Microsoft.Health.DeIdentification.Fhir
 {
-    public class FhirDeIdBatchProcessor : BatchProcessor<ResourceList, ResourceList>
+    public class FhirDeIdBatchProcessor : BatchProcessor<BatchFhirDataContext, BatchFhirDataContext>
     {
-        private IDeIdOperation<ResourceList, ResourceList> _operation;
+        private IDeIdOperation<StringBatchData, StringBatchData> _operation;
 
-        public FhirDeIdBatchProcessor(IDeIdOperation<ResourceList, ResourceList> operation)
+        public FhirDeIdBatchProcessor(IDeIdOperation<StringBatchData, StringBatchData> operation)
         {
             _operation = operation;
         }
 
-        public override ResourceList[] BatchProcessFunc(BatchInput<ResourceList> input)
+        public override BatchFhirDataContext[] BatchProcessFunc(BatchInput<BatchFhirDataContext> input)
         {
-            var inputFileNames = input.Sources.Select(source => source.inputFileName).ToArray();
-            var outputFileNames = input.Sources.Select(source => source.outputFileName).ToArray();
-            var result = input.Sources.Select(source => _operation.Process(source)).ToArray();
-            for (int idx=0; idx < result.Length; idx++)
+            var inputFileNames = input.Sources.Select(source => source.InputFileName).ToArray();
+            var outputFileNames = input.Sources.Select(source => source.OutputFileName).ToArray();
+            var resources = input.Sources.Select(source => _operation.Process(source.Resources)).ToArray();
+            var result = new List<BatchFhirDataContext>();
+            for (int idx=0; idx < resources.Length; idx++)
             {
-                result[idx].inputFileName = inputFileNames[idx];
-                result[idx].outputFileName = outputFileNames[idx];
+                result.Add(new BatchFhirDataContext()
+                {
+                    Resources = resources[idx],
+                    InputFileName = inputFileNames[idx],
+                    OutputFileName = outputFileNames[idx],
+                });
             }
-            return result;
+            return result.ToArray();
         }
     }
 }

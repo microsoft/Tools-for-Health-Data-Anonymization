@@ -6,19 +6,17 @@
 using EnsureThat;
 using Microsoft.Health.DeIdentification.Batch.Model;
 using Microsoft.Health.DeIdentification.Contract;
-using Microsoft.Health.DeIdentification.Fhir;
 using Microsoft.Health.DeIdentification.Fhir.Models;
-using Microsoft.Health.Fhir.Anonymizer.Core;
 using Microsoft.Health.JobManagement;
 using Newtonsoft.Json;
 
-namespace Microsoft.Health.DeIdentification.Local
+namespace Microsoft.Health.DeIdentification.Fhir
 {
-    public class LocalFhirBatchHandler
+    public class FhirDeIdBatchHandler
     {
         public IArtifactStore _artifactStore;
         public IQueueClient _client;
-        public LocalFhirBatchHandler(IArtifactStore artifactStore,
+        public FhirDeIdBatchHandler(IArtifactStore artifactStore,
             IQueueClient client)
         {
             EnsureArg.IsNotNull(artifactStore, nameof(artifactStore));
@@ -29,7 +27,7 @@ namespace Microsoft.Health.DeIdentification.Local
         }
 
         public async Task<string> ProcessRequestAsync(DeIdConfiguration configuration, BatchDeIdRequestBody inputData)
-        {   
+        {
             var input = new BatchFhirDeIdJobInputData
             {
                 DataSourceType = configuration.DataSourceType,
@@ -42,23 +40,10 @@ namespace Microsoft.Health.DeIdentification.Local
             return result.First().Id.ToString();
         }
 
-        public List<FhirDeIdBatchProcessor> GetFhirDeIdBatchProcessor(DeIdConfiguration configuration)
+        public async Task<JobInfo> GetJobStatusById(string id)
         {
-            var processors = new List<FhirDeIdBatchProcessor>();
-            foreach (var modelReference in configuration.ModelConfigReferences) 
-            {
-                switch (modelReference.ModelType)
-                {
-                    case DeidModelType.FhirR4PathRuleSet:
-                        var configurationContext = _artifactStore.ResolveArtifact<string>(modelReference.ConfigurationLocation);
-
-                        var engine = new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromSettingsInJson(configurationContext));
-                        processors.Add(new FhirDeIdBatchProcessor((IDeIdOperation<ResourceList, ResourceList>)new FhirPathRuleSetDeIdOperation(engine)));
-                        break;
-                    default: throw new ArgumentException($"Unsupported model type {modelReference.ModelType}.");
-                }
-            }
-            return processors;
+            var jobInfo = await _client.GetJobByIdAsync((byte)QueueType.Deid, long.Parse(id), true, new CancellationToken());
+            return jobInfo;
         }
     }
 }

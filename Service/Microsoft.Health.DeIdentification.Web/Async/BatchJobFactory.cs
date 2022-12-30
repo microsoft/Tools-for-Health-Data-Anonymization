@@ -4,35 +4,30 @@
 // -------------------------------------------------------------------------------------------------
 
 using EnsureThat;
+using Microsoft.Health.DeIdentification.Batch.Models.Data;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
 using Microsoft.Health.DeIdentification.Fhir.Local;
 using Microsoft.Health.DeIdentification.Fhir.Models;
-using Microsoft.Health.DeIdentification.Local;
 using Microsoft.Health.JobManagement;
 using Newtonsoft.Json;
 
 namespace Microsoft.Health.DeIdentification.Web
 {
-    public class LocalJobFactory : IJobFactory
+    public class BatchJobFactory : IJobFactory
     {
         private LocalFhirDataLoader _fhirDataLoader;
-        private LocalFhirBatchHandler _fhirBatchHandler;
         private LocalFhirDataWriter _fhirDataWriter;
-        private IDeIdConfigurationRegistration _deIdConfigurationStore;
+        private IDeIdOperationProvider _deIdOperationProvider;
 
-        public LocalJobFactory(LocalFhirDataLoader fhirDataLoader,
-            LocalFhirBatchHandler fhirBatchHandler,
+        public BatchJobFactory(LocalFhirDataLoader fhirDataLoader,
             LocalFhirDataWriter fhirDataWriter,
-            IDeIdConfigurationRegistration deIdConfiguration)
-        { 
-            EnsureArg.IsNotNull(fhirDataLoader, nameof(fhirDataLoader));
-            EnsureArg.IsNotNull(fhirBatchHandler, nameof(fhirBatchHandler));
+            IDeIdOperationProvider deIdOperationProvider)
+        {
+            _fhirDataLoader = EnsureArg.IsNotNull(fhirDataLoader, nameof(fhirDataLoader));
 
-            _fhirDataLoader = fhirDataLoader;
-            _fhirBatchHandler = fhirBatchHandler;
-            _fhirDataWriter = fhirDataWriter;
-            _deIdConfigurationStore = deIdConfiguration;
+            _fhirDataWriter = EnsureArg.IsNotNull(fhirDataWriter, nameof(fhirDataWriter));
+            _deIdOperationProvider = EnsureArg.IsNotNull(deIdOperationProvider, nameof(deIdOperationProvider));
         }
         public IJob Create(JobInfo jobInfo)
         {
@@ -42,7 +37,12 @@ namespace Microsoft.Health.DeIdentification.Web
             switch (inputData.DataSourceType)
             {
                 case DataSourceType.Fhir:
-                    job = new BatchFhirDeIdJob(_fhirDataLoader, _fhirBatchHandler.GetFhirDeIdBatchProcessor(inputData.DeIdConfiguration), _fhirDataWriter);
+
+                    var operations = _deIdOperationProvider.CreateDeIdOperations<StringBatchData, StringBatchData>(inputData.DeIdConfiguration);
+
+                    var processors = operations.Select(operation => new FhirDeIdBatchProcessor(operation)).ToList();
+
+                    job = new BatchFhirDeIdJob(_fhirDataLoader, processors, _fhirDataWriter);
                     break;
                 default:
                     throw new InvalidOperationException("Not support DataSourceType");
