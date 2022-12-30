@@ -4,7 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 using EnsureThat;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Health.DeIdentification.Batch;
+using Microsoft.Health.DeIdentification.Batch.Model;
 using Microsoft.Health.JobManagement;
 
 namespace Microsoft.Health.DeIdentification.Web.Async

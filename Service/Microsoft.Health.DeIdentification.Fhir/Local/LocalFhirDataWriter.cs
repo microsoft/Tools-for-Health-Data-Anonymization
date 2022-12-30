@@ -5,12 +5,14 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.DeIdentification.Batch;
+using Microsoft.Health.DeIdentification.Batch.Model;
+using Microsoft.Health.DeIdentification.Fhir.Model;
 using Microsoft.Health.DeIdentification.Fhir.Models;
 using Newtonsoft.Json;
 
 namespace Microsoft.Health.DeIdentification.Fhir.Local
 {
-    public class LocalFhirDataWriter : DataWriter<ResourceList, OutputInfo>
+    public class LocalFhirDataWriter : DataWriter<BatchFhirDataContext, OutputInfo>
     {
         private readonly ILogger<LocalFhirDataWriter> _logger;
 
@@ -21,13 +23,13 @@ namespace Microsoft.Health.DeIdentification.Fhir.Local
 
         public BatchFhirDeIdJobInputData inputData { get; set; }
         public BatchFhirDeIdJobResult jobResult { get; set; }
-        public override OutputInfo[] BatchProcessFunc(BatchInput<ResourceList> input)
+        public override OutputInfo[] BatchProcessFunc(BatchInput<BatchFhirDataContext> input)
         {
             var result = new List<OutputInfo>();
             foreach (var item in input.Sources)
             {
-                File.AppendAllText(item.outputFileName, JsonConvert.SerializeObject(item.Resources));
-                result.Add(new OutputInfo() { OutputUrl = item.outputFileName, SourceUrl = item.inputFileName});
+                File.AppendAllText(item.OutputFileName, JsonConvert.SerializeObject(item.Resources));
+                result.Add(new OutputInfo() { OutputUrl = item.OutputFileName, SourceUrl = item.InputFileName});
             }
             return result.ToArray();
         }

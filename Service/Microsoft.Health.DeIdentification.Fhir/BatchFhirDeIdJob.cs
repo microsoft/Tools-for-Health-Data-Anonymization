@@ -4,7 +4,9 @@
 // -------------------------------------------------------------------------------------------------
 
 using EnsureThat;
+using Microsoft.Health.DeIdentification.Batch.Model;
 using Microsoft.Health.DeIdentification.Fhir.Local;
+using Microsoft.Health.DeIdentification.Fhir.Model;
 using Microsoft.Health.DeIdentification.Fhir.Models;
 using Microsoft.Health.JobManagement;
 using Newtonsoft.Json;
@@ -33,18 +35,20 @@ namespace Microsoft.Health.DeIdentification.Fhir
         public async Task<string> ExecuteAsync(JobInfo jobInfo, IProgress<string> progress, CancellationToken cancellationToken)
         {
             _dataLoader.inputData = JsonConvert.DeserializeObject<BatchFhirDeIdJobInputData>(jobInfo.Definition);
+
             BatchFhirDeIdJobResult currentResult = string.IsNullOrEmpty(jobInfo.Result) ? new BatchFhirDeIdJobResult() : JsonConvert.DeserializeObject<BatchFhirDeIdJobResult>(jobInfo.Result);
 
-            (Channel<ResourceList> inputChannel, Task loadTask) = _dataLoader.Load(cancellationToken);
-            List<Channel<ResourceList>> innerChannels = new List<Channel<ResourceList>>();
+            (Channel<BatchFhirDataContext> inputChannel, Task loadTask) = _dataLoader.Load(cancellationToken);
+            List<Channel<BatchFhirDataContext>> innerChannels = new List<Channel<BatchFhirDataContext>>();
             List<Task> innerTasks = new List<Task>();
             foreach (var processor in _batchProcessors)
             {
-                (Channel<ResourceList> currentChannel, Task currentTask) = processor.Process(innerChannels.Count < 1 ? inputChannel : innerChannels.Last(), cancellationToken);
+                (Channel<BatchFhirDataContext> currentChannel, Task currentTask) = processor.Process(innerChannels.Count < 1 ? inputChannel : innerChannels.Last(), cancellationToken);
 
                 innerChannels.Add(currentChannel);
                 innerTasks.Add(currentTask);
             }
+
             (Channel<OutputInfo> outputChannel, Task writeTask) = _dataWriter.Process(innerChannels.Last(), cancellationToken);
 
             await foreach (OutputInfo batchProgress in outputChannel.Reader.ReadAllAsync(cancellationToken))
@@ -55,7 +59,7 @@ namespace Microsoft.Health.DeIdentification.Fhir
                 }
                 
                 currentResult.Outputs.Add(batchProgress);
-                progress.Report(JsonConvert.SerializeObject(batchProgress));
+                progress.Report(JsonConvert.SerializeObject(currentResult));
             }
 
             try

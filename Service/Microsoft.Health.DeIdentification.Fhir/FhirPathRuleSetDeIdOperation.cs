@@ -4,13 +4,13 @@
 // -------------------------------------------------------------------------------------------------
 
 using EnsureThat;
+using Microsoft.Health.DeIdentification.Batch.Models.Data;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.Fhir.Anonymizer.Core;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.DeIdentification.Fhir
 {
-    public class FhirPathRuleSetDeIdOperation : IDeIdOperation<ResourceList, ResourceList>
+    public class FhirPathRuleSetDeIdOperation : IDeIdOperation<StringBatchData, StringBatchData>
     {
         private readonly AnonymizerEngine _anonymizerEngine;
 
@@ -19,17 +19,16 @@ namespace Microsoft.Health.DeIdentification.Fhir
             _anonymizerEngine = EnsureArg.IsNotNull(anonymizerEngine, nameof(anonymizerEngine));
         }
 
-        public ResourceList Process(ResourceList source)
+        public StringBatchData Process(StringBatchData source)
         {
-            var result = new ResourceList();
-            result.Resources = new List<JObject>();
+            var result = new StringBatchData();
+            ;
             foreach (var item in source.Resources)
             {
-                result.Resources.Add(JObject.Parse(ProcessSingle(item.ToString())));
+                result.Resources.Add(ProcessSingle(item));
             }
 
             return result;
-
         }
 
         public string ProcessSingle(string context)

@@ -7,9 +7,9 @@ using EnsureThat;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.DeIdentification.Batch.Model;
+using Microsoft.Health.DeIdentification.Batch.Models.Data;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
-using Microsoft.Health.DeIdentification.Local;
 using Microsoft.Health.JobManagement;
 using Newtonsoft.Json.Linq;
 
@@ -20,20 +20,17 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         private IDeIdConfigurationRegistration _deIdConfigurationStore;
         private FhirDeIdHandler _handler;
         private ILogger<FhirController> _logger;
-        private IQueueClient _client;
-        private LocalFhirBatchHandler _batchHandler;
+        private FhirDeIdBatchHandler _batchHandler;
 
         public FhirController(
             IDeIdConfigurationRegistration deIdConfigurationStore,
             FhirDeIdHandler handler,
             ILogger<FhirController> logger, 
-            IQueueClient client,
-            LocalFhirBatchHandler batchHandler)
+            FhirDeIdBatchHandler batchHandler)
         {
             _deIdConfigurationStore = EnsureArg.IsNotNull(deIdConfigurationStore, nameof(deIdConfigurationStore));
             _handler = EnsureArg.IsNotNull(handler, nameof(handler));
             _logger = EnsureArg.IsNotNull(logger, nameof(logger));
-            _client = client;
             _batchHandler = batchHandler;
         }
 
@@ -41,7 +38,7 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
         [HttpPost]
         [Route("/base/deidentify/fhirR4")]
         [Produces("application/json")]
-        public async Task<IActionResult> DeIdentification(string deidConfiguration, [FromBody] ResourceList resources)
+        public async Task<IActionResult> DeIdentification(string deidConfiguration, [FromBody] JsonBatchData resources)
         {
             var configuration = _deIdConfigurationStore.GetByName(deidConfiguration);
             
@@ -99,7 +96,7 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             // queue client getjobbyid
             // Get Job
             // Return job with progress
-            var jobInfo = await _client.GetJobByIdAsync(0, long.Parse(operationId), true, new CancellationToken());
+            var jobInfo = await _batchHandler.GetJobStatusById(operationId);
             if (jobInfo == null)
             {
                 return NotFound();

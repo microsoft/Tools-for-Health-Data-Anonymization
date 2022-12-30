@@ -3,18 +3,10 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System.Runtime.Serialization;
-
-namespace Microsoft.Health.DeIdentification.Fhir.Models
+namespace Microsoft.Health.DeIdentification.Batch.Model
 {
-    [DataContract]
-    public class OutputInfo
+    public enum QueueType : byte
     {
-        [DataMember(Name = "sourceUrl")]
-
-        public string SourceUrl { get; set; }
-
-        [DataMember(Name = "outputUrl")]
-        public string OutputUrl { get; set; }
+        Deid = 0,
     }
 }

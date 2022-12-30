@@ -1,17 +1,14 @@
-﻿// -------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
-// -------------------------------------------------------------------------------------------------
-
-using Microsoft.Health.DeIdentification.Batch;
+﻿using Microsoft.Health.DeIdentification.Batch;
+using Microsoft.Health.DeIdentification.Batch.Model;
+using Microsoft.Health.DeIdentification.Fhir.Model;
 
 namespace Microsoft.Health.DeIdentification.Fhir
 {
-    public class FhirDataWriter : DataWriter<ResourceList, ResourceList>
+    public class FhirDataWriter : DataWriter<BatchFhirDataContext, OutputInfo>
     {
-        public override ResourceList[] BatchProcessFunc(BatchInput<ResourceList> input)
+        public override OutputInfo[] BatchProcessFunc(BatchInput<BatchFhirDataContext> input)
         {
-            return input.Sources.ToArray();
+            throw new NotImplementedException();
         }
 
         protected override Task CommitAsync(CancellationToken cancellationToken)

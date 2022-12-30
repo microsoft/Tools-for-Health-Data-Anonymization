@@ -3,15 +3,16 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Microsoft.Health.JobManagement;
+using Microsoft.Health.DeIdentification.Batch.Models.Data;
+using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Health.DeIdentification.Batch
+namespace Microsoft.Health.DeIdentification.Batch.Extensions
 {
-    public class BatchJobFactory : IJobFactory
+    public static class StringBatchDataExtensions
     {
-        public IJob Create(JobInfo jobInfo)
+        public static JsonBatchData ToJsonBatchData(this StringBatchData stringBatchData)
         {
-            throw new NotImplementedException();
+            return new JsonBatchData(stringBatchData.Resources.Select(str => JObject.Parse(str)).ToList());
         }
     }
 }

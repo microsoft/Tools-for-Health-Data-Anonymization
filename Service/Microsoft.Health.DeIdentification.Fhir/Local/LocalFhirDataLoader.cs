@@ -7,13 +7,15 @@ using Microsoft.Health.DeIdentification.Batch;
 using Microsoft.Health.DeIdentification.Fhir.Models;
 using System.Threading.Channels;
 using Microsoft.Health.DeIdentification.Batch.Model;
+using Microsoft.Health.DeIdentification.Fhir.Model;
+using Microsoft.Health.DeIdentification.Batch.Models.Data;
 
 namespace Microsoft.Health.DeIdentification.Fhir
 {
-    public class LocalFhirDataLoader : DataLoader<ResourceList>
+    public class LocalFhirDataLoader : DataLoader<BatchFhirDataContext>
     {
         public BatchFhirDeIdJobInputData inputData { get; set; }
-        protected override async Task LoadDataInternalAsync(Channel<ResourceList> outputChannel, CancellationToken cancellationToken)
+        protected override async Task LoadDataInternalAsync(Channel<BatchFhirDataContext> outputChannel, CancellationToken cancellationToken)
         {
             string _outputFolder = inputData.DestinationDataset.URL;
             string _inputFolder;
@@ -35,7 +37,7 @@ namespace Microsoft.Health.DeIdentification.Fhir
                     File.Delete(outputFileName);
                 }
 
-                List<string> initialData = new List<string>();
+                var initialData = new StringBatchData();
                 switch (inputData.SourceDataset.DataFormatType)
                 {
                     case DataFormatType.Ndjson:
@@ -43,20 +45,20 @@ namespace Microsoft.Health.DeIdentification.Fhir
                         {
                             while (!reader.EndOfStream)
                             {
-                                initialData.Add(reader.ReadLine());
+                                initialData.Resources.Add(reader.ReadLine());
                             }
                         }
 
                         break;
                     case DataFormatType.Json:
                         string resourceJson = await File.ReadAllTextAsync(fileName).ConfigureAwait(false);
-                        initialData.Add(resourceJson);
+                        initialData.Resources.Add(resourceJson);
                         break;
                     default:
                         throw new NotSupportedException($"The data format type {inputData.SourceDataset.DataFormatType} is unsupported by FHIR.");
                 }
 
-                await outputChannel.Writer.WriteAsync(new ResourceList() { Resources = initialData, inputFileName = fileName, outputFileName = outputFileName }, cancellationToken);
+                await outputChannel.Writer.WriteAsync(new BatchFhirDataContext() { Resources = initialData, InputFileName = fileName, OutputFileName = outputFileName }, cancellationToken);
 
                 Console.WriteLine($"Finished processing '{fileName}'!");
             }
