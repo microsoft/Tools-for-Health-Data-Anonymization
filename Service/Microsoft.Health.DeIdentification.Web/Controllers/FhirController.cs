@@ -64,6 +64,9 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             // Call queue client to enqueue Job
             // Return id to customer
             var configuration = _deIdConfigurationStore.GetByName(deidConfiguration);
+            Request.Headers.TryGetValue("Host", out var host);
+            RouteNames.BaseUrl = host;
+            RouteNames.Protocol = Request.IsHttps ? "https://" : "http://";
 
             if (configuration == null)
             {
@@ -120,6 +123,6 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             }
         }
 
-        private static string GenerateUrl(string operationId) => $"{RouteNames.BaseUrl}operation/{operationId}";
+        private static string GenerateUrl(string operationId) => $"{RouteNames.Protocol}{RouteNames.BaseUrl}/base/operation/{operationId}";
     }
 }

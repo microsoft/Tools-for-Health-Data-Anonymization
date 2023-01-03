@@ -5,10 +5,12 @@
 
 namespace Microsoft.Health.DeIdentification.Web
 {
-    internal class RouteNames
+    internal static class RouteNames
     {
-        internal const string BaseUrl = "https://localhost:7007/base/";
+        internal static string BaseUrl = "https://localhost:7007/base/";
 
-        internal const string GetDeIdentificationJobStatus = "GetDeIdentificationJobStatus";
+        internal static string GetDeIdentificationJobStatus = "GetDeIdentificationJobStatus";
+
+        internal static string Protocol = "https://";
     }
 }
