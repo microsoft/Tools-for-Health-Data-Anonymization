@@ -5,6 +5,7 @@
 
 using EnsureThat;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.DeIdentification.Batch.Model;
 using Microsoft.Health.DeIdentification.Batch.Models.Data;
@@ -120,6 +121,10 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             }
         }
 
-        private static string GenerateUrl(string operationId) => $"{RouteNames.BaseUrl}operation/{operationId}";
+        private string GenerateUrl(string operationId)
+        {
+            Request.Headers.TryGetValue("Host", out var host);
+            return $"{Request.HttpContext.Request.Scheme}://{host}/base/operation/{operationId}";
+        }
     }
 }
