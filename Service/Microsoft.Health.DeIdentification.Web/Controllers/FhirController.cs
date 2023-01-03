@@ -5,6 +5,7 @@
 
 using EnsureThat;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.DeIdentification.Batch.Model;
 using Microsoft.Health.DeIdentification.Batch.Models.Data;
@@ -65,8 +66,6 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             // Return id to customer
             var configuration = _deIdConfigurationStore.GetByName(deidConfiguration);
             Request.Headers.TryGetValue("Host", out var host);
-            RouteNames.BaseUrl = host;
-            RouteNames.Protocol = Request.IsHttps ? "https://" : "http://";
 
             if (configuration == null)
             {
@@ -76,7 +75,7 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             else
             {
                 var operationId = await _batchHandler.ProcessRequestAsync(configuration, requestBody);
-                string url = GenerateUrl(operationId);
+                string url = $"{Request.HttpContext.Request.Scheme}://{host}/base/operation/{operationId}";
                 return Accepted(url);
 
             }
@@ -99,6 +98,8 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             // queue client getjobbyid
             // Get Job
             // Return job with progress
+            Request.Headers.TryGetValue("Host", out var host);
+
             var jobInfo = await _batchHandler.GetJobStatusById(operationId);
             if (jobInfo == null)
             {
@@ -110,7 +111,7 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             }
             else
             {
-                string url = GenerateUrl(operationId);
+                string url = $"{Request.HttpContext.Request.Scheme}://{host}/base/operation/{operationId}";
 
                 if (string.IsNullOrWhiteSpace(jobInfo.Result))
                 {
@@ -122,7 +123,5 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
                 }
             }
         }
-
-        private static string GenerateUrl(string operationId) => $"{RouteNames.Protocol}{RouteNames.BaseUrl}/base/operation/{operationId}";
     }
 }
