@@ -65,7 +65,6 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             // Call queue client to enqueue Job
             // Return id to customer
             var configuration = _deIdConfigurationStore.GetByName(deidConfiguration);
-            Request.Headers.TryGetValue("Host", out var host);
 
             if (configuration == null)
             {
@@ -75,7 +74,7 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             else
             {
                 var operationId = await _batchHandler.ProcessRequestAsync(configuration, requestBody);
-                string url = $"{Request.HttpContext.Request.Scheme}://{host}/base/operation/{operationId}";
+                string url = GenerateUrl(operationId);
                 return Accepted(url);
 
             }
@@ -98,8 +97,6 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             // queue client getjobbyid
             // Get Job
             // Return job with progress
-            Request.Headers.TryGetValue("Host", out var host);
-
             var jobInfo = await _batchHandler.GetJobStatusById(operationId);
             if (jobInfo == null)
             {
@@ -111,7 +108,7 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
             }
             else
             {
-                string url = $"{Request.HttpContext.Request.Scheme}://{host}/base/operation/{operationId}";
+                string url = GenerateUrl(operationId);
 
                 if (string.IsNullOrWhiteSpace(jobInfo.Result))
                 {
@@ -122,6 +119,12 @@ namespace Microsoft.Health.DeIdentification.Web.Controllers
                     return Accepted(url, JObject.Parse(jobInfo.Result));
                 }
             }
+        }
+
+        private string GenerateUrl(string operationId)
+        {
+            Request.Headers.TryGetValue("Host", out var host);
+            return $"{Request.HttpContext.Request.Scheme}://{host}/base/operation/{operationId}";
         }
     }
 }
