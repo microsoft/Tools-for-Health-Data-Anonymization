@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using EnsureThat;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.DeIdentification.Batch.Models.Data;
 using Microsoft.Health.DeIdentification.Contract;
 using Microsoft.Health.DeIdentification.Fhir;
@@ -16,18 +17,26 @@ namespace Microsoft.Health.DeIdentification.Web
 {
     public class BatchJobFactory : IJobFactory
     {
-        private LocalFhirDataLoader _fhirDataLoader;
-        private LocalFhirDataWriter _fhirDataWriter;
-        private IDeIdOperationProvider _deIdOperationProvider;
+        private readonly LocalFhirDataLoader _fhirDataLoader;
+        private readonly LocalFhirDataWriter _fhirDataWriter;
+        private readonly IDeIdOperationProvider _deIdOperationProvider;
+
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger<BatchJobFactory> _logger;
 
         public BatchJobFactory(LocalFhirDataLoader fhirDataLoader,
             LocalFhirDataWriter fhirDataWriter,
-            IDeIdOperationProvider deIdOperationProvider)
+            IDeIdOperationProvider deIdOperationProvider,
+            ILoggerFactory loggerFactory,
+            ILogger<BatchJobFactory> logger)
         {
             _fhirDataLoader = EnsureArg.IsNotNull(fhirDataLoader, nameof(fhirDataLoader));
 
             _fhirDataWriter = EnsureArg.IsNotNull(fhirDataWriter, nameof(fhirDataWriter));
             _deIdOperationProvider = EnsureArg.IsNotNull(deIdOperationProvider, nameof(deIdOperationProvider));
+
+            _loggerFactory = EnsureArg.IsNotNull(loggerFactory, nameof(loggerFactory));
+            _logger = EnsureArg.IsNotNull(logger, nameof(logger));
         }
         public IJob Create(JobInfo jobInfo)
         {
@@ -38,11 +47,15 @@ namespace Microsoft.Health.DeIdentification.Web
             {
                 case DataSourceType.Fhir:
 
+                    BatchFhirDeIdJobResult result = string.IsNullOrWhiteSpace(jobInfo.Result)
+                        ? new BatchFhirDeIdJobResult() 
+                        : JsonConvert.DeserializeObject<BatchFhirDeIdJobResult>(jobInfo.Result);
+
                     var operations = _deIdOperationProvider.CreateDeIdOperations<StringBatchData, StringBatchData>(inputData.DeIdConfiguration);
 
                     var processors = operations.Select(operation => new FhirDeIdBatchProcessor(operation)).ToList();
 
-                    job = new BatchFhirDeIdJob(_fhirDataLoader, processors, _fhirDataWriter);
+                    job = new BatchFhirDeIdJob(inputData, result, _fhirDataLoader, processors, _fhirDataWriter,_loggerFactory.CreateLogger<BatchFhirDeIdJob>());
                     break;
                 default:
                     throw new InvalidOperationException("Not support DataSourceType");

@@ -21,7 +21,6 @@ namespace Microsoft.Health.DeIdentification.Fhir
 
         public override BatchFhirDataContext[] BatchProcessFunc(BatchInput<BatchFhirDataContext> input)
         {
-            var inputFileNames = input.Sources.Select(source => source.InputFileName).ToArray();
             var outputFileNames = input.Sources.Select(source => source.OutputFileName).ToArray();
             var resources = input.Sources.Select(source => _operation.Process(source.Resources)).ToArray();
             var result = new List<BatchFhirDataContext>();
@@ -30,8 +29,8 @@ namespace Microsoft.Health.DeIdentification.Fhir
                 result.Add(new BatchFhirDataContext()
                 {
                     Resources = resources[idx],
-                    InputFileName = inputFileNames[idx],
-                    OutputFileName = outputFileNames[idx],
+                    InputFileName = input.Sources[idx].InputFileName,
+                    OutputFileName = input.Sources[idx].OutputFileName,
                 });
             }
             return result.ToArray();
