@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using EnsureThat;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.DeIdentification.Batch.Model;
 using Microsoft.Health.DeIdentification.Fhir.Local;
 using Microsoft.Health.DeIdentification.Fhir.Model;
@@ -16,27 +17,35 @@ namespace Microsoft.Health.DeIdentification.Fhir
 {
     public class BatchFhirDeIdJob : IJob
     {
-        private LocalFhirDataLoader _dataLoader;
-        private List<FhirDeIdBatchProcessor> _batchProcessors;
-        private LocalFhirDataWriter _dataWriter;
+        private readonly BatchFhirDeIdJobInputData _input;
+        private BatchFhirDeIdJobResult _result;
 
-        public BatchFhirDeIdJob(LocalFhirDataLoader fhirDataLoader, 
+        private readonly LocalFhirDataLoader _dataLoader;
+        private readonly List<FhirDeIdBatchProcessor> _batchProcessors;
+        private readonly LocalFhirDataWriter _dataWriter;
+
+        private readonly ILogger<BatchFhirDeIdJob> _logger;
+
+        public BatchFhirDeIdJob(
+            BatchFhirDeIdJobInputData input,
+            BatchFhirDeIdJobResult result,
+            LocalFhirDataLoader fhirDataLoader, 
             List<FhirDeIdBatchProcessor> fhirDeIdBatchProcessors, 
-            LocalFhirDataWriter fhirDataWriter)
+            LocalFhirDataWriter fhirDataWriter,
+            ILogger<BatchFhirDeIdJob> logger)
         {
-            EnsureArg.IsNotNull(fhirDataLoader, nameof(fhirDataLoader));
-            EnsureArg.IsNotNull(fhirDeIdBatchProcessors, nameof(fhirDeIdBatchProcessors));
-            EnsureArg.IsNotNull(fhirDataWriter, nameof(fhirDataWriter));
+            _input = EnsureArg.IsNotNull(input, nameof(input));
+            _result = EnsureArg.IsNotNull(result, nameof(result));
 
-            _dataLoader = fhirDataLoader;
-            _batchProcessors = fhirDeIdBatchProcessors;
-            _dataWriter = fhirDataWriter;
+            _dataLoader = EnsureArg.IsNotNull(fhirDataLoader, nameof(fhirDataLoader));
+            _batchProcessors = EnsureArg.IsNotNull(fhirDeIdBatchProcessors, nameof(fhirDeIdBatchProcessors));
+            _dataWriter = EnsureArg.IsNotNull(fhirDataWriter, nameof(fhirDataWriter));
+
+            _logger = EnsureArg.IsNotNull(logger, nameof(logger));
         }
         public async Task<string> ExecuteAsync(JobInfo jobInfo, IProgress<string> progress, CancellationToken cancellationToken)
         {
-            _dataLoader.inputData = JsonConvert.DeserializeObject<BatchFhirDeIdJobInputData>(jobInfo.Definition);
-
-            BatchFhirDeIdJobResult currentResult = string.IsNullOrEmpty(jobInfo.Result) ? new BatchFhirDeIdJobResult() : JsonConvert.DeserializeObject<BatchFhirDeIdJobResult>(jobInfo.Result);
+            _dataLoader.inputData = _input;
 
             (Channel<BatchFhirDataContext> inputChannel, Task loadTask) = _dataLoader.Load(cancellationToken);
             List<Channel<BatchFhirDataContext>> innerChannels = new List<Channel<BatchFhirDataContext>>();
@@ -58,8 +67,8 @@ namespace Microsoft.Health.DeIdentification.Fhir
                     throw new OperationCanceledException();
                 }
                 
-                currentResult.Outputs.Add(batchProgress);
-                progress.Report(JsonConvert.SerializeObject(currentResult));
+                _result.Outputs.Add(batchProgress);
+                progress.Report(JsonConvert.SerializeObject(_result));
             }
 
             try
@@ -75,7 +84,12 @@ namespace Microsoft.Health.DeIdentification.Fhir
             {
                 throw;
             }
-            return JsonConvert.SerializeObject(currentResult);
+
+            _result.Metadata.FileCount = _result.Outputs.Count;
+            _result.Metadata.CompletedTime = DateTimeOffset.UtcNow;
+            _result.Metadata.ExecutionTimeInMS = (_result.Metadata.CompletedTime - _result.Metadata.StartTime).TotalMilliseconds;
+
+            return JsonConvert.SerializeObject(_result);
         }
     }
 }

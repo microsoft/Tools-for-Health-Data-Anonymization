@@ -128,8 +128,9 @@ namespace Microsoft.Health.DeIdentification.Local
                     CancelRequested = false,
                     Definition = definition,
                     Id = BitConverter.ToInt64(Guid.NewGuid().ToByteArray()),
-                    GroupId = defaultGroupId,
+                    GroupId = groupId ?? defaultGroupId,
                     Status = JobStatus.Created,
+                    CreateDate= DateTime.Now,
                     HeartbeatDateTime = DateTime.Now,
                 });
             }

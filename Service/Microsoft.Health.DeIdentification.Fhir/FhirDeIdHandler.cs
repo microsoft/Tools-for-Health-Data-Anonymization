@@ -24,11 +24,13 @@ namespace Microsoft.Health.DeIdentification.Fhir
 
         public async Task<JsonBatchData> ProcessRequestAsync(DeIdConfiguration config, JsonBatchData jsonBatchData)
         {
+            /*
             if (jsonBatchData.Resources.Count >= MaxContextCount)
             {
                 throw new Exception($"Context count can't be greater than {MaxContextCount}.");
 
             }
+            */
             StringBatchData resourceList = jsonBatchData.ToStringBatchData();
 
             var operations = _deIdOperationProvider.CreateDeIdOperations<StringBatchData, StringBatchData>(config);

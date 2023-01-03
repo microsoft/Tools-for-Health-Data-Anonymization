@@ -9,23 +9,32 @@ using System.Threading.Channels;
 using Microsoft.Health.DeIdentification.Batch.Model;
 using Microsoft.Health.DeIdentification.Fhir.Model;
 using Microsoft.Health.DeIdentification.Batch.Models.Data;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Health.DeIdentification.Fhir
 {
     public class LocalFhirDataLoader : DataLoader<BatchFhirDataContext>
     {
+        private readonly ILogger<LocalFhirDataLoader> _logger;
+
         public BatchFhirDeIdJobInputData inputData { get; set; }
+
+        public LocalFhirDataLoader(ILogger<LocalFhirDataLoader> logger)
+        {
+            _logger = logger;
+        }
+
         protected override async Task LoadDataInternalAsync(Channel<BatchFhirDataContext> outputChannel, CancellationToken cancellationToken)
         {
-            string _outputFolder = inputData.DestinationDataset.URL;
-            string _inputFolder;
-            List<string> files = GetFiles(inputData.SourceDataset.URL, inputData.SourceDataset.DataFormatType.ToString().ToLower(), out _inputFolder);
+            string outputFolder = inputData.DestinationDataset.URL;
+            string inputFolder;
+            List<string> files = GetFiles(inputData.SourceDataset.URL, inputData.SourceDataset.DataFormatType.ToString().ToLower(), out inputFolder);
 
             foreach (var fileName in files)
             {
-                Console.WriteLine($"Processing {fileName}");
+                _logger.LogInformation($"Processing {fileName}");
 
-                var outputFileName = GetResourceOutputFileName(fileName, _inputFolder, _outputFolder);
+                var outputFileName = GetResourceOutputFileName(fileName, inputFolder, outputFolder);
 
                 var resourceOutputFolder = Path.GetDirectoryName(outputFileName);
                 Directory.CreateDirectory(resourceOutputFolder);
@@ -33,7 +42,7 @@ namespace Microsoft.Health.DeIdentification.Fhir
                 // TODO: add config to skip existing file?
                 if (File.Exists(outputFileName))
                 {
-                    Console.WriteLine($"Remove existed target file {outputFileName}.");
+                    _logger.LogInformation($"Remove existed target file {outputFileName}.");
                     File.Delete(outputFileName);
                 }
 
@@ -58,9 +67,9 @@ namespace Microsoft.Health.DeIdentification.Fhir
                         throw new NotSupportedException($"The data format type {inputData.SourceDataset.DataFormatType} is unsupported by FHIR.");
                 }
 
-                await outputChannel.Writer.WriteAsync(new BatchFhirDataContext() { Resources = initialData, InputFileName = fileName, OutputFileName = outputFileName }, cancellationToken);
+                await outputChannel.Writer.WriteAsync(new BatchFhirDataContext() { Resources = initialData, InputFileName = fileName, OutputFileName = outputFileName}, cancellationToken);
 
-                Console.WriteLine($"Finished processing '{fileName}'!");
+                _logger.LogInformation($"Finished processing '{fileName}'!");
             }
 
             outputChannel.Writer.Complete();
@@ -91,7 +100,7 @@ namespace Microsoft.Health.DeIdentification.Fhir
             }
             else
             {
-                string patten = url.Split('\\').Last();
+                string patten = Path.GetFileName(url);
                 inputFolder = Path.GetDirectoryName(url);
 
                 fileList = Directory.EnumerateFiles(inputFolder, patten, SearchOption.AllDirectories).Where(f => f.EndsWith($".{dataFormatType}")).ToList();
