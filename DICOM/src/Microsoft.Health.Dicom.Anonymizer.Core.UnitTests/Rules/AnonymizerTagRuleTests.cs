@@ -35,7 +35,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
             var context = new ProcessContext();
             TagRule.Handle(Dataset, context);
             Assert.Single(context.VisitedNodes);
-            Assert.Empty(Dataset.GetString(DicomTag.PatientName));
+            Assert.Null(Dataset.GetString(DicomTag.PatientName));
         }
 
         [Fact]

@@ -36,8 +36,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
             var context = new ProcessContext();
             VRRule.Handle(Dataset, context);
             Assert.True(context.VisitedNodes.Count == 2);
-            Assert.Empty(Dataset.GetString(DicomTag.PatientName));
-            Assert.Empty(Dataset.GetString(DicomTag.Referring​Physician​Name));
+            Assert.Null(Dataset.GetString(DicomTag.PatientName));
+            Assert.Null(Dataset.GetString(DicomTag.Referring​Physician​Name));
         }
 
         [Fact]

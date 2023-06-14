@@ -39,10 +39,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
             var context = new ProcessContext();
             MaskedTagRule.Handle(Dataset, context);
             Assert.True(context.VisitedNodes.Count == 4);
-            Assert.Empty(Dataset.GetString(DicomTag.Parse("0008,0010")));
+            Assert.Null(Dataset.GetString(DicomTag.Parse("0008,0010")));
             Assert.Equal("20210101", Dataset.GetString(DicomTag.Parse("0008,0012")));
-            Assert.Empty(Dataset.GetString(DicomTag.Parse("0008,0013")));
-            Assert.Empty(Dataset.GetString(DicomTag.Parse("0008,0014")));
+            Assert.Null(Dataset.GetString(DicomTag.Parse("0008,0013")));
+            Assert.Null(Dataset.GetString(DicomTag.Parse("0008,0014")));
         }
 
         [Fact]
