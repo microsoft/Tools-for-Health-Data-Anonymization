@@ -6,7 +6,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Dicom;
+using FellowOakDicom;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;

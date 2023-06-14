@@ -4,7 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using Dicom;
+using FellowOakDicom;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
