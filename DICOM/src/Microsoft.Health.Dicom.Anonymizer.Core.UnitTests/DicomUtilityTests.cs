@@ -5,7 +5,7 @@
 
 using System;
 using System.Collections.Generic;
-using Dicom;
+using FellowOakDicom;
 using Microsoft.Health.Anonymizer.Common.Models;
 using Xunit;
 
