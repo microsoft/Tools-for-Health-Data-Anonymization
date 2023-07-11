@@ -13,10 +13,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Validation
         private readonly AttributeValidator _validator = new AttributeValidator();
 
         [Theory]
-        [InlineData("1+1", "'1+1' is not a correct literal for an id. At Patient.IdElement.Value.")]
-        [InlineData("1_1", "'1_1' is not a correct literal for an id. At Patient.IdElement.Value.")]
-        [InlineData("11|", "'11|' is not a correct literal for an id. At Patient.IdElement.Value.")]
-        [InlineData("00000000000000000000000000000000000000000000000000000000000000065", "'00000000000000000000000000000000000000000000000000000000000000065' is not a correct literal for an id. At Patient.IdElement.Value.")]
+        [InlineData("1+1", "'1+1' is not a correct literal for an id. At Patient.IdElement.Value, line , position ")]
+        [InlineData("1_1", "'1_1' is not a correct literal for an id. At Patient.IdElement.Value, line , position ")]
+        [InlineData("11|", "'11|' is not a correct literal for an id. At Patient.IdElement.Value, line , position ")]
+        [InlineData("00000000000000000000000000000000000000000000000000000000000000065", "'00000000000000000000000000000000000000000000000000000000000000065' is not a correct literal for an id. At Patient.IdElement.Value, line , position ")]
         public void GivenAnInvalidId_WhenValidateAResource_ThenValidationErrorsShouldBeReturned(string id, string expectedError)
         {
             var resource = new Patient
