@@ -66,7 +66,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Validation
             var validationErrors = _validator.Validate(resource).ToList();
             Assert.Single(validationErrors);
 
-            var expectedError = "Element with minimum cardinality 1 cannot be null. At Task.IntentElement.";
+            var expectedError = "Element 'IntentElement' with minimum cardinality 1 cannot be null. At Task.IntentElement, line , position ";
             var actualError = validationErrors.FirstOrDefault()?.ErrorMessage;
             Assert.Equal(expectedError, actualError);
 
