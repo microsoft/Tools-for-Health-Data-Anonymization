@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Dicom;
+using FellowOakDicom;
 using EnsureThat;
 using Microsoft.Health.Anonymizer.Common.Models;
 
