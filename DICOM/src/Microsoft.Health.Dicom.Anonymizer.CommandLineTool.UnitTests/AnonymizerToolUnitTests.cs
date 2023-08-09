@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Dicom;
+using FellowOakDicom;
 using Microsoft.Health.Dicom.Anonymizer.CommandLineTool;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Xunit;

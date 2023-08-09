@@ -5,8 +5,8 @@
 
 using System.Linq;
 using System.Text;
-using Dicom;
-using Dicom.IO.Buffer;
+using FellowOakDicom;
+using FellowOakDicom.IO.Buffer;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
 using Microsoft.Health.Anonymizer.Common;

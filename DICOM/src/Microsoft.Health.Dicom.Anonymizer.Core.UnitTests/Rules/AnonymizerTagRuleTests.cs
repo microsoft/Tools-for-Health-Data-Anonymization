@@ -3,7 +3,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Dicom;
+using FellowOakDicom;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
@@ -35,7 +35,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
             var context = new ProcessContext();
             TagRule.Handle(Dataset, context);
             Assert.Single(context.VisitedNodes);
-            Assert.Empty(Dataset.GetString(DicomTag.PatientName));
+            Assert.Null(Dataset.GetString(DicomTag.PatientName));
         }
 
         [Fact]

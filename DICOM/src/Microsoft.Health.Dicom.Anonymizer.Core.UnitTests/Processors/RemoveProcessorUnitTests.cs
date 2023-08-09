@@ -6,8 +6,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Dicom;
-using Dicom.IO.Buffer;
+using FellowOakDicom;
+using FellowOakDicom.IO.Buffer;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Xunit;
 

@@ -5,8 +5,8 @@
 
 using System;
 using System.Linq;
-using Dicom;
-using Dicom.IO.Buffer;
+using FellowOakDicom;
+using FellowOakDicom.IO.Buffer;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -90,7 +90,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
                 newProcessor.Process(dataset, item);
             }
 
-            Assert.Equal(string.Empty, dataset.GetDicomItem<DicomElement>(tag1).Get<string>());
+            Assert.Null(dataset.GetDicomItem<DicomElement>(tag1).Get<string>());
             Assert.Equal(@"010D\010W\100M\010Y", dataset.GetDicomItem<DicomElement>(tag2).Get<string>());
         }
 
@@ -119,7 +119,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             foreach (var item in itemList)
             {
                 Processor.Process(dataset, item);
-                Assert.Equal(string.Empty, dataset.GetDicomItem<DicomElement>(item.Tag).Get<string>());
+                Assert.Null(dataset.GetDicomItem<DicomElement>(item.Tag).Get<string>());
             }
         }
 
