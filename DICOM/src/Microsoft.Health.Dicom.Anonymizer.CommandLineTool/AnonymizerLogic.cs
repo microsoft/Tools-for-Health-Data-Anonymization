@@ -6,7 +6,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Dicom;
+using FellowOakDicom;
 using Microsoft.Health.Dicom.Anonymizer.Core;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 

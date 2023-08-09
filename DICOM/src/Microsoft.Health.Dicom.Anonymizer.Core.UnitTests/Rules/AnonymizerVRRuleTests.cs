@@ -3,7 +3,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using Dicom;
+using FellowOakDicom;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
@@ -36,8 +36,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
             var context = new ProcessContext();
             VRRule.Handle(Dataset, context);
             Assert.True(context.VisitedNodes.Count == 2);
-            Assert.Empty(Dataset.GetString(DicomTag.PatientName));
-            Assert.Empty(Dataset.GetString(DicomTag.Referring​Physician​Name));
+            Assert.Null(Dataset.GetString(DicomTag.PatientName));
+            Assert.Null(Dataset.GetString(DicomTag.Referring​Physician​Name));
         }
 
         [Fact]
