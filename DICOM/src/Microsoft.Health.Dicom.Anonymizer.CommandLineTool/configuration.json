@@ -267,7 +267,6 @@
         {"tag":"(0008,2112)", "method":"remove"}, 
         {"tag":"(300A,0216)", "method":"remove"}, 
         {"tag":"(3008,0105)", "method":"remove"}, 
-        {"tag":"(3008,0105)", "method":"remove"}, 
         {"tag":"(0038,0050)", "method":"remove"}, 
         {"tag":"(0018,9516)", "method":"remove"}, 
         {"tag":"(0008,1010)", "method":"remove"}, 
