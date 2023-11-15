@@ -82,6 +82,11 @@ stages:
       env:
         nuget_version: $(version)
 
+    - task: ManifestGeneratorTask@0
+      displayName: 'Generation Task'
+      inputs:
+        BuildDropPath: '$(System.ArtifactStagingDirectory)/out'
+
     # Publish artifacts
     - task: PublishBuildArtifacts@1
       displayName: 'publish binary artifacts'
