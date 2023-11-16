@@ -85,7 +85,8 @@ stages:
     - task: ManifestGeneratorTask@0
       displayName: 'Generation Task'
       inputs:
-        BuildDropPath: '$(System.ArtifactStagingDirectory)/out'
+        BuildDropPath: '$(build.artifactStagingDirectory)/nupkgs'
+        ManifestDirPath: '$(build.artifactStagingDirectory)/SBOM'
 
     # Publish artifacts
     - task: PublishBuildArtifacts@1
