@@ -101,7 +101,12 @@ namespace Microsoft.Health.Fhir.Anonymizer.Tool
                     ValidateOutput = _options.ValidateOutput
                 };
                 var resourceResult = engine.AnonymizeJson(resourceJson, settings);
-                await File.WriteAllTextAsync(resourceOutputFileName, resourceResult).ConfigureAwait(false);
+                if (resourceResult != string.Empty) {
+                  await File.WriteAllTextAsync(resourceOutputFileName, resourceResult).ConfigureAwait(false);
+                } else {
+                  Console.WriteLine($"Skip processing on file {fileName} due to invalid input.");
+                  return string.Empty;
+                }
                 return resourceResult;
             }
             catch (Exception innerException)
