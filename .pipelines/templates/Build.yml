@@ -1,0 +1,45 @@
+parameters:
+  - name: BuildConfiguration
+    type: string
+
+variables:
+  solution: '**/*.sln'
+  testProjects: '**/*Tests/*.csproj'
+  publishProject: '**/*Tool/*.csproj'
+  buildConfiguration: 'Release'
+  major: 3
+  minor: 1
+  patch: 0
+  buildnum: $[counter(format('{0}.{1}.{2}',variables['major'],variables['minor'], variables['patch']), 1)]
+  version: $(major).$(minor).$(patch).$(buildnum)
+
+steps:
+  - task: UseDotNet@2
+    condition: and(succeeded(), eq('${{ parameters.SkipContainerBuild }}', false))
+    continueOnError: true
+    inputs:
+      packageType: 'sdk'
+      useGlobalJson: true
+      performMultiLevelLookup: true
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build solution'
+    inputs:
+      command: 'build'
+      projects: '$(solution)'
+      arguments: '--configuration $(BuildConfiguration)'
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet test'
+    inputs:
+      command: test
+      projects: '$(testProjects)'
+      arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish test results'
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '$(Build.SourcesDirectory)\TestResults\**\*.trx'
+      failTaskOnFailedTests: true
