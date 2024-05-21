@@ -12,19 +12,22 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
         public string DateShiftKeyPrefix { get; set; } = string.Empty;
 
+        public int? dateShiftFixedOffsetInDays { get; set; } = null;
+
         public bool EnablePartialDatesForRedact { get; set; } = false;
 
-        public DateShiftProcessor(string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact)
+        public DateShiftProcessor(string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact, int? dateShiftFixedOffsetInDays = null)
         {
             this.DateShiftKey = dateShiftKey;
             this.DateShiftKeyPrefix = dateShiftKeyPrefix;
             this.EnablePartialDatesForRedact = enablePartialDatesForRedact;
+            this.dateShiftFixedOffsetInDays = dateShiftFixedOffsetInDays;
         }
 
         public static DateShiftProcessor Create(AnonymizerConfigurationManager configuratonManager)
         {
             var parameters = configuratonManager.GetParameterConfiguration();
-            return new DateShiftProcessor(parameters.DateShiftKey, parameters.DateShiftKeyPrefix, parameters.EnablePartialDatesForRedact);
+            return new DateShiftProcessor(parameters.DateShiftKey, parameters.DateShiftKeyPrefix, parameters.EnablePartialDatesForRedact, parameters.dateShiftFixedOffsetInDays ?? null);
         }
 
         public ProcessResult Process(ElementNode node, ProcessContext context = null, Dictionary<string, object> settings = null)
@@ -37,11 +40,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Processors
 
             if (node.IsDateNode())
             {
-                return DateTimeUtility.ShiftDateNode(node, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
+                return DateTimeUtility.ShiftDateNode(node, DateShiftKey, DateShiftKeyPrefix, dateShiftFixedOffsetInDays, EnablePartialDatesForRedact);
             }
             else if (node.IsDateTimeNode() || node.IsInstantNode())
             {
-                return DateTimeUtility.ShiftDateTimeAndInstantNode(node, DateShiftKey, DateShiftKeyPrefix, EnablePartialDatesForRedact);
+                return DateTimeUtility.ShiftDateTimeAndInstantNode(node, DateShiftKey, DateShiftKeyPrefix, dateShiftFixedOffsetInDays, EnablePartialDatesForRedact);
             }
 
             return processResult;

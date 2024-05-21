@@ -16,7 +16,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         public AnonymizationFhirPathRule[] FhirPathRules { get; private set; } = null;
         public AnonymizerConfiguration Configuration { get { return _configuration; } }
 
-        public AnonymizerConfigurationManager(AnonymizerConfiguration configuration)
+        public AnonymizerConfigurationManager(AnonymizerConfiguration configuration) 
         {
             _validator.Validate(configuration);
             configuration.GenerateDefaultParametersIfNotConfigured();
