@@ -70,7 +70,8 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
         public static IEnumerable<object[]> GetDateTimeDataForDateShiftWithFixedOffset()
         {
             yield return new object[] { new FhirDateTime("2015-02-07T13:28:47-05:00"), 0 };
-            yield return new object[] { new FhirDateTime("1998-10-02T00:47:25+16:00"), 2 };
+            yield return new object[] { new FhirDateTime("2015-02-07T13:28:47-05:00"), 11 };
+            yield return new object[] { new FhirDateTime("1998-10-02T08:47:25+08:00"), 2 };
             yield return new object[] { new FhirDateTime("2015-02-07T13:28:17-05:00"), -10 };
             yield return new object[] { new FhirDateTime("1998-10-02T08:47:25+08:00"), -15 };
         }
@@ -220,10 +221,11 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Utility
             var node = ElementNode.FromElement(dateTime.ToTypedElement());
             var processResult = DateTimeUtility.ShiftDateTimeAndInstantNode(node, Guid.NewGuid().ToString("N"), string.Empty, fixedOffsetInDays, true);
             var offsetActual = DateTime.Parse(node.Value.ToString()).Subtract(DateTime.Parse(dateTime.ToString()));
+            var offsetExpected = fixedOffsetInDays > 0 ? TimeSpan.FromDays(fixedOffsetInDays - 1) : TimeSpan.FromDays(fixedOffsetInDays);
 
             Assert.True(processResult.IsPerturbed);
-            Assert.Equal(fixedOffsetInDays, offsetActual.Days);
-        }
+            Assert.Equal(offsetExpected.Days, offsetActual.Days);
+        } 
 
         [Theory]
         [MemberData(nameof(GetDateTimeDataForDateShiftFormatTest))]
