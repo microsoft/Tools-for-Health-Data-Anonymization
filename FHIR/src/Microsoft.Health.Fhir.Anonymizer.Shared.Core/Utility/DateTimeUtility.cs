@@ -117,7 +117,15 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             var matchedGroups = s_dateRegex.Match(node.Value.ToString()).Groups;
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
-                int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
+                // If dateShiftFixedOffset parameter is present, use the fixed offset value to shift the date
+                if (!string.IsNullOrEmpty(dateShiftKey) && dateShiftKey.StartsWith("fixedOffset:"))
+                {
+                    int offset = int.Parse(dateShiftKey.Substring("fixedOffset:".Length));
+                }
+                else
+                {
+                    int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
+                }
                 node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
                 processResult.AddProcessRecord(AnonymizationOperations.Perturb, node);
             }
@@ -141,7 +149,15 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             var matchedGroups = s_dateTimeRegex.Match(node.Value.ToString()).Groups;
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
-                int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
+                // If dateShiftFixedOffset parameter is present, use the fixed offset value to shift the date
+                if (!string.IsNullOrEmpty(dateShiftKey) && dateShiftKey.StartsWith("fixedOffset:"))
+                {
+                    int offset = int.Parse(dateShiftKey.Substring("fixedOffset:".Length));
+                }
+                else
+                {
+                    int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
+                }
                 if (matchedGroups[s_timeIndex].Captures.Any())
                 {
                     var newDate = DateTimeOffset.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
