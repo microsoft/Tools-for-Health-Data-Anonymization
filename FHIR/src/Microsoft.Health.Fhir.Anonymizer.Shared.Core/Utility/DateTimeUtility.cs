@@ -118,7 +118,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
                 int offset = dateShiftFixedOffsetInDays.HasValue ? dateShiftFixedOffsetInDays.Value : GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
-                Console.WriteLine("Offset: " + offset);
                 node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
                 processResult.AddProcessRecord(AnonymizationOperations.Perturb, node);
             }
@@ -143,7 +142,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
                 int offset = dateShiftFixedOffsetInDays.HasValue ? dateShiftFixedOffsetInDays.Value : GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
-                Console.WriteLine("Offset: " + offset);
                 if (matchedGroups[s_timeIndex].Captures.Any())
                 {
                     var newDate = DateTimeOffset.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
@@ -197,7 +195,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             }
 
             offset -= s_dateShiftRange;
-            Console.WriteLine("Offset in GDSV: " + offset);
 
             return offset;
         }
