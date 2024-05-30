@@ -14,7 +14,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.AnonymizerConfigurations
         public DateShiftScope DateShiftScope { get; set; }
 
         [DataMember(Name = "dateShiftFixedOffsetInDays")]
-        public int? dateShiftFixedOffsetInDays { get; set; }
+        public int? DateShiftFixedOffsetInDays { get; set; }
 
         [DataMember(Name = "cryptoHashKey")]
         public string CryptoHashKey { get; set; }

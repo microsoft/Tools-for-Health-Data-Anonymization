@@ -301,6 +301,7 @@ Parameters affect the anonymization methods specified in the FHIR path rules.
 | ----- | ----- | ----- | ----- | ----- | ----- |
 | dateShift |dateShiftKey|date, dateTime, instant fields| string|A randomly generated string|This key is used to generate date-shift amount in the [Date-shift algorithm](#date-shift). 
 | dateShift |dateShiftScope|date, dateTime, instant fields| resource, file, folder | resource | This parameter is used to select date-shift scope. Dates within the same scope will be shifted the same amount. Please provide dateShiftKey together with it. |
+| dateShift |dateShiftFixedOffsetInDays|date, dateTime, instant fields| int|None (Optional)|If present, used to shift dates by a fixed amount in the [Date-shift algorithm](#date-shift). 
 | cryptoHash |cryptoHashKey|All hashing fields| string|A randomly generated string|This key is used for HMAC-SHA256 algorithm in [Crypto-hash method](#crypto-hash). 
 | encrypt |encryptKey|All encrypting fields| string|A randomly generated 256-bit string|This key is used for AES encryption algorithm in [Encrypt method](#encrypt). 
 | redact | enablePartialAgesForRedact |Age fields | boolean | false | If the value is set to **true**, only age values over 89 will be redacted. |
@@ -450,18 +451,20 @@ You can specify dateShift as a anonymization method in the configuration file. W
 - [Required] A date/dateTime/instant value
 - [Optional] _dateShiftKey_. If not specified, a randomly generated string will be used as default key.
 - [Optional] _dateShiftScope_. If not specified, _resource_ will be set as default scope.
+- [Optional] _dateShiftFixedOffsetInDays_. If specified, used as-is to shift the input date/dateTime/instant value.
 
 #### Output
 * A shifted date/datetime/instant value
 
 #### Steps
-1. Get _dateShiftKeyPrefix_ according to _dateShiftScope_.
+1. If _dateShiftFixedOffsetInDays_ is specified, proceed immediately to Step 5, letting "the above integer" reference _dateShiftFixedOffsetInDays_.
+2. Get _dateShiftKeyPrefix_ according to _dateShiftScope_.
 - For scope _resource_, _dateShiftKeyPrefix_ refers to the resource id.
 - For scope _file_, _dateShiftKeyPrefix_ refers to the file name.
 - For scope _folder_, _dateShiftKeyPrefix_ refers to the root input folder name.
-2. Create a string by combining _dateShiftKeyPrefix_ and _dateShiftKey_.
-3. Feed the above string to hash function to get an integer between [-50, 50]. 
-4. Use the above integer as the offset to shift the input date/dateTime/instant value.
+3. Create a string by combining _dateShiftKeyPrefix_ and _dateShiftKey_.
+4. Feed the above string to hash function to get an integer between [-50, 50]. 
+5. Use the above integer as the offset to shift the input date/dateTime/instant value.
 
 > **[NOTE]**
 > * If the input date/dateTime/instant value does not contain an exact day, for example dates with only a year ("yyyy") or only a year and month ("yyyy-MM"), the date cannot be shifted and redaction will be applied.
