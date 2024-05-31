@@ -106,7 +106,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             return processResult;
         }
 
-        public static ProcessResult ShiftDateNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
+        public static ProcessResult ShiftDateNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, int? dateShiftFixedOffsetInDays, bool enablePartialDatesForRedact = false)
         {
             var processResult = new ProcessResult();
             if (!node.IsDateNode() || string.IsNullOrEmpty(node?.Value?.ToString()))
@@ -117,7 +117,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             var matchedGroups = s_dateRegex.Match(node.Value.ToString()).Groups;
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
-                int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
+                int offset = dateShiftFixedOffsetInDays.HasValue ? dateShiftFixedOffsetInDays.Value : GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
                 processResult.AddProcessRecord(AnonymizationOperations.Perturb, node);
             }
@@ -129,7 +129,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             return processResult;
         }
 
-        public static ProcessResult ShiftDateTimeAndInstantNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, bool enablePartialDatesForRedact = false)
+        public static ProcessResult ShiftDateTimeAndInstantNode(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix, int? dateShiftFixedOffsetInDays, bool enablePartialDatesForRedact = false)
         {
             var processResult = new ProcessResult();
             if ((!node.IsDateTimeNode() && !node.IsInstantNode()) ||
@@ -141,14 +141,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             var matchedGroups = s_dateTimeRegex.Match(node.Value.ToString()).Groups;
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
-                int offset = GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
+                int offset = dateShiftFixedOffsetInDays.HasValue ? dateShiftFixedOffsetInDays.Value : GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 if (matchedGroups[s_timeIndex].Captures.Any())
                 {
                     var newDate = DateTimeOffset.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
                     var timestamp = matchedGroups[s_timeIndex].Value;
                     var timeMatch = s_timeRegex.Match(timestamp);
                     if (timeMatch.Captures.Any())
-                    { 
+                    {
                         string time = timeMatch.Captures.First().Value;
                         string newTime = Regex.Replace(time, @"\d", "0");
                         timestamp = timestamp.Replace(time, newTime);
@@ -177,7 +177,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             int age = DateTime.Now.Year - year -
                 (DateTime.Now.Month < month || (DateTime.Now.Month == month && DateTime.Now.Day < day) ? 1 : 0);
 
-            return age > s_ageThreshold; 
+            return age > s_ageThreshold;
         }
 
         private static int GetDateShiftValue(ElementNode node, string dateShiftKey, string dateShiftKeyPrefix)
