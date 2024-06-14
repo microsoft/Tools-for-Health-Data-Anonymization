@@ -78,7 +78,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
             }
             catch (AnonymizerProcessingException)
             {
-                if(_configurationManager.Configuration.processingErrors == ProcessingErrorsOption.Skip)
+                if(_configurationManager.Configuration.processingErrors == ProcessingErrorsOption.Skip || _configurationManager.Configuration.processingErrors == ProcessingErrorsOption.IgnoreInvalid)
                 {
                     // Return empty resource.
                     return new EmptyElement(element.InstanceType);
@@ -102,9 +102,23 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
         public string AnonymizeJson(string json, AnonymizerSettings settings = null)
         {
             EnsureArg.IsNotNullOrEmpty(json, nameof(json));
+            ITypedElement element;
+            ITypedElement anonymizedElement;
 
-            var element = ParseJsonToTypedElement(json);
-            var anonymizedElement = AnonymizeElement(element);
+            try
+            {
+                element = ParseJsonToTypedElement(json);
+                anonymizedElement = AnonymizeElement(element);
+            }
+            catch (InvalidInputException) {
+                if(_configurationManager.Configuration.processingErrors == ProcessingErrorsOption.IgnoreInvalid)
+                {
+                    // Return empty string to indicate that nothing should be written.
+                    return string.Empty;
+                }
+
+                throw;
+            }
 
             var serializationSettings = new FhirJsonSerializationSettings
             {
