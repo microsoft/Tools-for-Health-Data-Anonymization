@@ -24,12 +24,6 @@ namespace Microsoft.Health.Anonymizer.Common
             byte[] byteKey = cryptoHashSetting.GetCryptoHashByteKey();
             _hmac = cryptoHashSetting.CryptoHashType switch
             {
-#pragma warning disable CA5351 // Do Not Use Broken Cryptographic Algorithms
-                HashAlgorithmType.Md5 => new HMACMD5(byteKey),
-#pragma warning restore CA5351
-#pragma warning disable CA5350 // Do Not Use Weak Cryptographic Algorithms
-                HashAlgorithmType.Sha1 => new HMACSHA1(byteKey),
-#pragma warning restore CA5350
                 HashAlgorithmType.Sha256 => new HMACSHA256(byteKey),
                 HashAlgorithmType.Sha512 => new HMACSHA512(byteKey),
                 HashAlgorithmType.Sha384 => new HMACSHA384(byteKey),
