@@ -120,8 +120,9 @@ stages:
       inputs:
         gitHubConnection: microsoft
         repositoryName: microsoft/FHIR-Tools-for-Anonymization
+        action: create
         isDraft: true
-        tagSource: manual
+        tagSource: userSpecifiedTag
         tag: v$(major).$(minor).$(patch)    
         assets: |
           $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.zip
