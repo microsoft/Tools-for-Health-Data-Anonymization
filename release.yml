@@ -115,13 +115,14 @@ stages:
         artifactName: FhirAnonymizerBuild
         downloadPath: $(System.DefaultWorkingDirectory)
 
-    - task: GithubRelease@0 
+    - task: GithubRelease@1 
       displayName: 'Create GitHub Release'      
       inputs:
-        gitHubConnection: githubproject
+        gitHubConnection: microsoft
         repositoryName: microsoft/FHIR-Tools-for-Anonymization
+        action: create
         isDraft: true
-        tagSource: manual
+        tagSource: userSpecifiedTag
         tag: v$(major).$(minor).$(patch)    
         assets: |
           $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.zip
