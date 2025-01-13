@@ -115,7 +115,7 @@ stages:
         artifactName: FhirAnonymizerBuild
         downloadPath: $(System.DefaultWorkingDirectory)
 
-    - task: GithubRelease@0 
+    - task: GithubRelease@1 
       displayName: 'Create GitHub Release'      
       inputs:
         gitHubConnection: microsoft
