@@ -120,7 +120,7 @@ stages:
       inputs:
         gitHubConnection: githubproject
         repositoryName: microsoft/FHIR-Tools-for-Anonymization
-        isDraft: true
+        title: v$(major).$(minor).$(patch)
         tagSource: manual
         tag: v$(major).$(minor).$(patch)    
         assets: |
