@@ -115,13 +115,13 @@ stages:
         artifactName: FhirAnonymizerBuild
         downloadPath: $(System.DefaultWorkingDirectory)
 
-    - task: GithubRelease@0 
+    - task: GithubRelease@1 
       displayName: 'Create GitHub Release'      
       inputs:
-        gitHubConnection: githubproject
+        gitHubConnection: microsoft
         repositoryName: microsoft/FHIR-Tools-for-Anonymization
-        title: v$(major).$(minor).$(patch)
         action: create
+        title: v$(major).$(minor).$(patch)
         tagSource: userSpecifiedTag
         tag: v$(major).$(minor).$(patch)    
         assets: |
