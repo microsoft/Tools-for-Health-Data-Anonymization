@@ -32,10 +32,10 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Validation
         }
 
         [Theory]
-        [InlineData("******", "Value is not well-formatted Xml: Invalid Xml encountered. Details: Data at the root level is invalid. Line 1, position 1. At Patient.Text.DivElement.Value, line , position ")]
-        [InlineData("Should not be valid", "Value is not well-formatted Xml: Invalid Xml encountered. Details: Data at the root level is invalid. Line 1, position 1. At Patient.Text.DivElement.Value, line , position ")]
-        [InlineData("<body>Should not be valid</body>", "Value is not well-formed Xml adhering to the FHIR schema for Narrative: Root element of XHTML is not a <div> from the XHTML namespace (http://www.w3.org/1999/xhtml). At Patient.Text.DivElement.Value, line , position ")]
-        [InlineData("<div xmlns='http://www.w3.org/1999/xhtml'><p>should not be valid<p></div>", "Value is not well-formatted Xml: Invalid Xml encountered. Details: The 'p' start tag on line 1 position 66 does not match the end tag of 'div'. Line 1, position 70. At Patient.Text.DivElement.Value, line , position ")]
+        [InlineData("******", "Value is not well-formatted Xml: Invalid Xml encountered. Details: Data at the root level is invalid. Line 1, position 1. At Patient.Text.Div, line , position ")]
+        [InlineData("Should not be valid", "Value is not well-formatted Xml: Invalid Xml encountered. Details: Data at the root level is invalid. Line 1, position 1. At Patient.Text.Div, line , position ")]
+        [InlineData("<body>Should not be valid</body>", "Value is not well-formed Xml adhering to the FHIR schema for Narrative: Root element of XHTML is not a <div> from the XHTML namespace (http://www.w3.org/1999/xhtml). At Patient.Text.Div, line , position ")]
+        [InlineData("<div xmlns='http://www.w3.org/1999/xhtml'><p>should not be valid<p></div>", "Value is not well-formatted Xml: Invalid Xml encountered. Details: The 'p' start tag on line 1 position 66 does not match the end tag of 'div'. Line 1, position 70. At Patient.Text.Div, line , position ")]
         public void GivenAnInvalidNarrative_WhenValidateAResource_ThenValidationErrorsShouldBeReturned(string div, string expectedError)
         {
             var resource = new Patient
