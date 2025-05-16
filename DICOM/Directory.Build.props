@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
+    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" Version="1.1.118" />
   </ItemGroup>
   
 </Project>
