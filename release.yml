@@ -11,7 +11,7 @@ variables:
   buildConfiguration: 'Release'
   major: 4
   minor: 1
-  patch: 1
+  patch: 2
   buildnum: $[counter(format('{0}.{1}.{2}',variables['major'],variables['minor'], variables['patch']), 1)]
   version: $(major).$(minor).$(patch).$(buildnum)
 
