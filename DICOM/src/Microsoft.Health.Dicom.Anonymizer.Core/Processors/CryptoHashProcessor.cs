@@ -19,7 +19,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     /// <summary>
     /// This function hash the value and outputs a Hex encoded representation.
-    /// The length of output string depends on the hash function (e.g. sha256 will output 64 bytes length), you should pay attention to the length limitation of output DICOM file.
+    /// By default, the length of output string depends on the hash function (e.g. sha256 will output 64 bytes length), you should pay attention to the length limitation of output DICOM file.
+    /// Use matchStringLength parameter to match the length of the output string to the input for strings
     /// In cryptoHash setting, you can set cryptoHash key and cryptoHash function (only support sha256 for now) for cryptoHash.
     /// </summary>
     public class CryptoHashProcessor : IAnonymizerProcessor
@@ -84,8 +85,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(input, nameof(input));
 
-            var resultBytes = _cryptoHashFunction.Hash(Encoding.UTF8.GetBytes(input));
-            return string.Concat(resultBytes.Select(b => b.ToString("x2")));
+            return _cryptoHashFunction.Hash(input);
         }
     }
 }
