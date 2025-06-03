@@ -211,6 +211,8 @@ In cryptoHash setting, you can set cryptoHash key in setting.
 |Parameters|Description|Valid Values|Required|default value|
 |----|------|--|--|--|
 |cryptoHashKey| Key for cryptoHash|string|False|A randomly generated string|
+|cryptoHashType| Hash method|Defined by HashAlgorithmType|False|Sha256|
+|matchInputStringLength| If true, updated value will match length of input (for string values) |true, false|False|false|
 
 Here is a sample rule using cryptoHash on DICOM tag named PatientID with default cryptoHash setting:
 
