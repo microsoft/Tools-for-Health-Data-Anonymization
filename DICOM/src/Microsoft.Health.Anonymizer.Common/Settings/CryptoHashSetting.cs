@@ -14,7 +14,8 @@ namespace Microsoft.Health.Anonymizer.Common.Settings
         public string CryptoHashKey { private get; set; }
 
         public HashAlgorithmType CryptoHashType { get; set; } = HashAlgorithmType.Sha256;
-        public bool MatchInputStringLength { get; set; } = false;
+
+public bool MatchInputStringLength { get; set; } = false;
 
         public byte[] GetCryptoHashByteKey()
         {
