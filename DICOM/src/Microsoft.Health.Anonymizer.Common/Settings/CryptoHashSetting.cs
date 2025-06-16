@@ -15,6 +15,8 @@ namespace Microsoft.Health.Anonymizer.Common.Settings
 
         public HashAlgorithmType CryptoHashType { get; set; } = HashAlgorithmType.Sha256;
 
+        public bool MatchInputStringLength { get; set; } = false;
+
         public byte[] GetCryptoHashByteKey()
         {
             return CryptoHashKey == null ? Aes.Create().Key : Encoding.UTF8.GetBytes(CryptoHashKey);

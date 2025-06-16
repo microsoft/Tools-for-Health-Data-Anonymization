@@ -101,7 +101,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         public void GivenAString_WhenComputeHmac512_CorrectHashShouldBeReturned(string input, string expectedHash)
         {
             var hashData = CryptoHashFunction.Hash(input, new HMACSHA512(Encoding.UTF8.GetBytes(TestHashKey)));
-            Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
+            Assert.Equal(expectedHash, hashData);
         }
 
         [Theory]
@@ -125,7 +125,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         public void GivenAString_WhenComputeHmac_CorrectHashShouldBeReturned(string input, string expectedHash)
         {
             var hashData = _function.Hash(input);
-            Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
+            Assert.Equal(expectedHash, hashData);
         }
 
         [Theory]
