@@ -118,7 +118,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             if (matchedGroups[s_dayIndex].Captures.Any() && !IndicateAgeOverThreshold(matchedGroups))
             {
                 int offset = dateShiftFixedOffsetInDays.HasValue ? dateShiftFixedOffsetInDays.Value : GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
-                node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
+                node.Value = ShiftDateString(node.Value.ToString(), offset);
                 processResult.AddProcessRecord(AnonymizationOperations.Perturb, node);
             }
             else
@@ -144,7 +144,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
                 int offset = dateShiftFixedOffsetInDays.HasValue ? dateShiftFixedOffsetInDays.Value : GetDateShiftValue(node, dateShiftKey, dateShiftKeyPrefix);
                 if (matchedGroups[s_timeIndex].Captures.Any())
                 {
-                    var newDate = DateTimeOffset.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
+                    var newDate = ShiftDateString(node.Value.ToString(), offset);
                     var timestamp = matchedGroups[s_timeIndex].Value;
                     var timeMatch = s_timeRegex.Match(timestamp);
                     if (timeMatch.Captures.Any())
@@ -157,7 +157,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
                 }
                 else
                 {
-                    node.Value = DateTime.Parse(node.Value.ToString()).AddDays(offset).ToString(s_dateFormat);
+                    node.Value = ShiftDateString(node.Value.ToString(), offset);
                 }
                 processResult.AddProcessRecord(AnonymizationOperations.Perturb, node);
             }
@@ -207,6 +207,27 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
             }
 
             return node.GetNodeId();
+        }
+
+        private static bool IsDateTimeWithOffset(string value)
+        {
+            // Checks for 'T' (time), 'Z' (UTC), or timezone offset (+/-)
+            return value.Contains("T") || value.EndsWith("Z", StringComparison.OrdinalIgnoreCase) ||
+                   Regex.IsMatch(value, @"\+\d{2}:\d{2}$") || Regex.IsMatch(value, @"-\d{2}:\d{2}$");
+        }
+
+        private static string ShiftDateString(string value, int offset)
+        {
+            if (IsDateTimeWithOffset(value))
+            {
+                // Use DateTimeOffset for dateTime/instant
+                return DateTimeOffset.Parse(value).AddDays(offset).ToString("yyyy-MM-dd");
+            }
+            else
+            {
+                // Use DateTime for date
+                return DateTime.Parse(value).AddDays(offset).ToString("yyyy-MM-dd");
+            }
         }
     }
 }
