@@ -13,14 +13,26 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 {
     public class DicomUtilityTests
     {
-        private static readonly TimeSpan _timeSpan = TimeSpan.FromHours(TimeZoneInfo.Local.GetUtcOffset(DateTime.Now).Hours);
+        /// <summary>
+        /// Gets the local time zone offset for a specific date.
+        /// This is critical for DICOM date parsing tests: the offset can vary depending on the date due to daylight saving time (DST) or historical time zone changes.
+        /// Using the offset for the test date (not DateTime.Now) ensures that expected DateTimeOffset values match the actual values produced by the parser,
+        /// regardless of when or where the tests are run.
+        /// </summary>
+        private static TimeSpan GetOffsetForDate(int year, int month, int day)
+        {
+            return TimeZoneInfo.Local.GetUtcOffset(new DateTime(year, month, day));
+        }
+
+        // IMPORTANT: Always use GetOffsetForDate for expected DateTimeOffset values in tests.
+        // This ensures correct handling of daylight saving time and local time zone changes for the date being tested.
 
         public static IEnumerable<object[]> GetValidDicomDateStringForParsing()
         {
-            yield return new object[] { "20210613", new DateTimeOffset(2021, 6, 13, 0, 0, 0, _timeSpan) };
-            yield return new object[] { "19900101", new DateTimeOffset(1990, 1, 1, 0, 0, 0, _timeSpan) };
-            yield return new object[] { "19691120", new DateTimeOffset(1969, 11, 20, 0, 0, 0, _timeSpan) };
-            yield return new object[] { "00010102", new DateTimeOffset(1, 1, 2, 0, 0, 0, _timeSpan) };
+            yield return new object[] { "20210613", new DateTimeOffset(2021, 6, 13, 0, 0, 0, GetOffsetForDate(2021, 6, 13)) };
+            yield return new object[] { "19900101", new DateTimeOffset(1990, 1, 1, 0, 0, 0, GetOffsetForDate(1990, 1, 1)) };
+            yield return new object[] { "19691120", new DateTimeOffset(1969, 11, 20, 0, 0, 0, GetOffsetForDate(1969, 11, 20)) };
+            yield return new object[] { "00010102", new DateTimeOffset(1, 1, 2, 0, 0, 0, GetOffsetForDate(1, 1, 2)) };
         }
 
         public static IEnumerable<object[]> GetValidDicomDateTimeStringForParsing()
