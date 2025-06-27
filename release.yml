@@ -41,24 +41,35 @@ stages:
         version: '8.0.x'
 
     - task: DotNetCoreCLI@2
+      displayName: 'dotnet clean'
+      inputs:
+        command: 'custom'
+        custom: 'clean'
+        projects: '$(solution)'
+        arguments: '--configuration $(buildConfiguration) --verbosity normal'
+
+    - task: DotNetCoreCLI@2
       displayName: 'dotnet restore'
       inputs:
         command: 'restore'
         projects: '$(solution)'
+        arguments: '--verbosity normal --force --no-cache'
 
     - task: DotNetCoreCLI@2
       displayName: 'dotnet build'
       inputs:
         command: build
         projects: '$(solution)'
-        arguments: '--configuration $(buildConfiguration) --no-restore'
+        arguments: '--configuration $(buildConfiguration) --no-restore --verbosity normal'
 
     - task: DotNetCoreCLI@2
       displayName: 'dotnet test'
       inputs:
         command: test
         projects: '$(testProjects)'
-        arguments: '--configuration $(buildConfiguration) --no-build --collect "Code coverage"'
+        arguments: '--configuration $(buildConfiguration) --no-build --verbosity normal --collect "Code coverage"'
+        testRunTitle: 'Unit Tests'
+        failTaskOnFailedTests: false
 
     
 - stage: Publish_Artifacts
