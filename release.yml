@@ -41,18 +41,24 @@ stages:
         version: '8.0.x'
 
     - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: 'restore'
+        projects: '$(solution)'
+
+    - task: DotNetCoreCLI@2
       displayName: 'dotnet build'
       inputs:
         command: build
         projects: '$(solution)'
-        arguments: '--configuration $(buildConfiguration)'
+        arguments: '--configuration $(buildConfiguration) --no-restore'
 
     - task: DotNetCoreCLI@2
       displayName: 'dotnet test'
       inputs:
         command: test
         projects: '$(testProjects)'
-        arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+        arguments: '--configuration $(buildConfiguration) --no-build --collect "Code coverage"'
 
     
 - stage: Publish_Artifacts
@@ -79,6 +85,12 @@ stages:
         packageType: 'sdk'
         version: '8.0.x'
 
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: 'restore'
+        projects: '$(solution)'
+
     - task: ComponentGovernanceComponentDetection@0
       condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
       displayName: 'component detection'
@@ -102,7 +114,7 @@ stages:
       inputs:
         command: 'publish'
         projects: '$(publishProject)'
-        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        arguments: '--configuration $(buildConfiguration) --no-restore --output $(Build.ArtifactStagingDirectory)'
         publishWebProjects: false
         zipAfterPublish: True
           
@@ -112,6 +124,7 @@ stages:
         command: pack
         configuration: '$(buildConfiguration)'
         packDirectory: '$(build.artifactStagingDirectory)/nupkgs'
+        arguments: '--no-restore'
         versioningScheme: 'byEnvVar'
         versionEnvVar: 'nuget_version'
         zipAfterPublish: true
