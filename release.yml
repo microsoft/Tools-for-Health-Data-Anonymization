@@ -22,6 +22,12 @@ stages:
   jobs:
   - job: Build
     steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET 8 SDK'
+      inputs:
+        packageType: 'sdk'
+        version: '8.0.x'
+
     - task: DotNetCoreCLI@2
       displayName: 'dotnet build'
       inputs:

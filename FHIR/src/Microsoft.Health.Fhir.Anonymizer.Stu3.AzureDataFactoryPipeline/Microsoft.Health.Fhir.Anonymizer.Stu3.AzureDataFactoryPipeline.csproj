@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   
@@ -15,8 +15,8 @@
   <Import Project="..\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline\Microsoft.Health.Fhir.Anonymizer.Shared.AzureDataFactoryPipeline.projitems" Label="Shared" />
 
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
-    <PackageReference Include="CommandLineParser" Version="2.7.82" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.24.1" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 

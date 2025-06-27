@@ -32,7 +32,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.DataFactoryTool
 
             return options;
         });
-
         public ActivityInputData LoadActivityInput()
         {
             dynamic datasets = JsonConvert.DeserializeObject(File.ReadAllText(_datasetsConfigurationFile));
