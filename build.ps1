@@ -14,6 +14,18 @@ param(
 $SupportedFrameworks = @("net6.0", "net7.0", "net8.0")
 $RootPath = $PSScriptRoot
 
+# Define project configurations to eliminate duplication
+$Projects = @{
+    "DICOM" = @{
+        SolutionPath = "$RootPath\DICOM\Dicom.Anonymizer.sln"
+        DisplayName = "DICOM Anonymizer"
+    }
+    "FHIR" = @{
+        SolutionPath = "$RootPath\FHIR\Fhir.Anonymizer.sln"
+        DisplayName = "FHIR Anonymizer"
+    }
+}
+
 # Function to check if a .NET framework is available
 function Test-DotNetFramework {
     param([string]$Framework)
@@ -34,10 +46,10 @@ Write-Host "============================================================" -Foreg
 if ($Clean) {
     Write-Host "Cleaning previous builds..." -ForegroundColor Yellow
     if ($Project -eq "all" -or $Project -eq "DICOM") {
-        dotnet clean "$RootPath\DICOM\Dicom.Anonymizer.sln" -c $Configuration
+        dotnet clean $Projects["DICOM"].SolutionPath -c $Configuration
     }
     if ($Project -eq "all" -or $Project -eq "FHIR") {
-        dotnet clean "$RootPath\FHIR\Fhir.Anonymizer.sln" -c $Configuration
+        dotnet clean $Projects["FHIR"].SolutionPath -c $Configuration
     }
     Write-Host "Clean completed!" -ForegroundColor Green
     
@@ -52,10 +64,10 @@ if ($Clean) {
 if ($Restore) {
     Write-Host "Restoring NuGet packages..." -ForegroundColor Yellow
     if ($Project -eq "all" -or $Project -eq "DICOM") {
-        dotnet restore "$RootPath\DICOM\Dicom.Anonymizer.sln"
+        dotnet restore $Projects["DICOM"].SolutionPath
     }
     if ($Project -eq "all" -or $Project -eq "FHIR") {
-        dotnet restore "$RootPath\FHIR\Fhir.Anonymizer.sln"
+        dotnet restore $Projects["FHIR"].SolutionPath
     }
 }
 
@@ -160,31 +172,31 @@ if ($Framework -eq "all") {
     exit 1
 }
 
+# Get list of projects to build
+$projectsToProcess = @()
+if ($Project -eq "all") {
+    $projectsToProcess = @("DICOM", "FHIR")
+} else {
+    $projectsToProcess = @($Project)
+}
+
 # Build projects
 foreach ($fw in $FrameworksToBuild) {
     Write-Host "`nBuilding for framework: $fw" -ForegroundColor Yellow
     
-    if ($Project -eq "all" -or $Project -eq "DICOM") {
-        Build-Project "$RootPath\DICOM\Dicom.Anonymizer.sln" "DICOM Anonymizer" $fw
+    foreach ($proj in $projectsToProcess) {
+        $projectConfig = $Projects[$proj]
+        $solutionPath = $projectConfig.SolutionPath
+        $displayName = $projectConfig.DisplayName
+        
+        Build-Project $solutionPath $displayName $fw
         
         if ($Test) {
-            Test-Project "$RootPath\DICOM\Dicom.Anonymizer.sln" "DICOM Anonymizer" $fw
+            Test-Project $solutionPath $displayName $fw
         }
         
         if ($Pack) {
-            Pack-Project "$RootPath\DICOM\Dicom.Anonymizer.sln" "DICOM Anonymizer" $fw
-        }
-    }
-    
-    if ($Project -eq "all" -or $Project -eq "FHIR") {
-        Build-Project "$RootPath\FHIR\Fhir.Anonymizer.sln" "FHIR Anonymizer" $fw
-        
-        if ($Test) {
-            Test-Project "$RootPath\FHIR\Fhir.Anonymizer.sln" "FHIR Anonymizer" $fw
-        }
-        
-        if ($Pack) {
-            Pack-Project "$RootPath\FHIR\Fhir.Anonymizer.sln" "FHIR Anonymizer" $fw
+            Pack-Project $solutionPath $displayName $fw
         }
     }
 }

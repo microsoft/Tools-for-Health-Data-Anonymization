@@ -12,6 +12,12 @@ if "%FRAMEWORK%"=="" set FRAMEWORK=all
 if "%PROJECT%"=="" set PROJECT=all
 if "%CONFIG%"=="" set CONFIG=Release
 
+REM Define project configurations to eliminate duplication
+set DICOM_SOLUTION=DICOM\Dicom.Anonymizer.sln
+set DICOM_NAME=DICOM Anonymizer
+set FHIR_SOLUTION=FHIR\Fhir.Anonymizer.sln
+set FHIR_NAME=FHIR Anonymizer
+
 echo.
 echo Health Data Anonymization Tools - Multi-Target Build
 echo ===================================================
@@ -26,31 +32,29 @@ if "%PROJECT%"=="FHIR" goto build_fhir
 goto build_all
 
 :build_all
-call :build_dicom
-call :build_fhir
+call :build_project "%DICOM_SOLUTION%" "%DICOM_NAME%"
+call :build_project "%FHIR_SOLUTION%" "%FHIR_NAME%"
 goto end
 
 :build_dicom
-echo Building DICOM Anonymizer...
-if "%FRAMEWORK%"=="all" (
-    dotnet build "DICOM\Dicom.Anonymizer.sln" -c %CONFIG% --maxcpucount:1
-) else (
-    dotnet build "DICOM\Dicom.Anonymizer.sln" -c %CONFIG% -f %FRAMEWORK% --maxcpucount:1
-)
-if errorlevel 1 goto error
-echo DICOM build completed successfully.
-echo.
+call :build_project "%DICOM_SOLUTION%" "%DICOM_NAME%"
 goto :eof
 
 :build_fhir
-echo Building FHIR Anonymizer...
+call :build_project "%FHIR_SOLUTION%" "%FHIR_NAME%"
+goto :eof
+
+:build_project
+set SOLUTION_PATH=%~1
+set PROJECT_NAME=%~2
+echo Building %PROJECT_NAME%...
 if "%FRAMEWORK%"=="all" (
-    dotnet build "FHIR\Fhir.Anonymizer.sln" -c %CONFIG% --maxcpucount:1
+    dotnet build "%SOLUTION_PATH%" -c %CONFIG% --maxcpucount:1
 ) else (
-    dotnet build "FHIR\Fhir.Anonymizer.sln" -c %CONFIG% -f %FRAMEWORK% --maxcpucount:1
+    dotnet build "%SOLUTION_PATH%" -c %CONFIG% -f %FRAMEWORK% --maxcpucount:1
 )
 if errorlevel 1 goto error
-echo FHIR build completed successfully.
+echo %PROJECT_NAME% build completed successfully.
 echo.
 goto :eof
 
