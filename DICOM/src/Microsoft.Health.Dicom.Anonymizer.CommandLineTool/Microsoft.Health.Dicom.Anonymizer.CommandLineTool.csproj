@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <!-- Multi-target for .NET 6.0, 7.0, and 8.0 -->
-    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <!-- Multi-target frameworks inherited from root Directory.Build.props -->
+    <TargetFrameworks>$(SupportedTargetFrameworks)</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

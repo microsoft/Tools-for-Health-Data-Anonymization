@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <!-- Multi-target frameworks inherited from root Directory.Build.props -->
+    <TargetFrameworks>$(SupportedTargetFrameworks)</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <copyright>Copyright © Microsoft Corporation. All rights reserved.</copyright>

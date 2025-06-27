@@ -75,18 +75,26 @@ Command-line tools currently target .NET 8.0 by default:
 ## Configuration Files
 
 ### Directory.Build.props (Root)
-- Defines supported target frameworks globally
-- Common properties for all projects
-- Framework-specific conditional compilation symbols
+
+- **Central configuration hub** that imports `Framework.props`
+- Defines `SupportedTargetFrameworks` globally (net6.0;net7.0;net8.0)
+- Common properties for all projects (Nullable, ImplicitUsings, TreatWarningsAsErrors)
+- Package metadata for NuGet packages (license, copyright, version)
+- Framework-specific conditional compilation symbols (NET6_0_OR_GREATER, etc.)
 
 ### DICOM/Directory.Build.props
+
 - DICOM-specific build settings
 - StyleCop configuration
+- Inherits from root Directory.Build.props
 
 ### FHIR/Directory.Build.props
+
 - FHIR-specific build settings
+- Inherits from root Directory.Build.props
 
 ### Framework.props
+
 - Framework-specific package version management
 - Compatibility configurations
 
@@ -186,11 +194,13 @@ The NuGet system automatically selects the appropriate framework version based o
 
 ## Switching Between Single and Multi-Targeting
 
-### To enable multi-targeting for a project:
-Change `<TargetFramework>net8.0</TargetFramework>` to `<TargetFrameworks>$(DefaultTargetFrameworks)</TargetFrameworks>`
+### To enable multi-targeting for a project
 
-### To target only the latest framework:
-Change `<TargetFrameworks>$(DefaultTargetFrameworks)</TargetFrameworks>` to `<TargetFramework>net8.0</TargetFramework>`
+Change `<TargetFramework>net8.0</TargetFramework>` to `<TargetFrameworks>$(SupportedTargetFrameworks)</TargetFrameworks>`
+
+### To target only the latest framework
+
+Change `<TargetFrameworks>$(SupportedTargetFrameworks)</TargetFrameworks>` to `<TargetFramework>net8.0</TargetFramework>`
 
 ## Troubleshooting
 

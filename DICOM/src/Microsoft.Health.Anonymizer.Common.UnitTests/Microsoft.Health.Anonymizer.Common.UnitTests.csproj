@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>$(SupportedTargetFrameworks)</TargetFrameworks>
     
     <!-- Suppress Microsoft.NET.Test.Sdk target framework warnings for .NET 6.0/7.0 -->
     <!-- The Test SDK works fine with .NET 6.0/7.0 but shows warnings about "untested" support -->
