@@ -1,0 +1,8 @@
+<Project>
+  
+  <PropertyGroup>
+    <!-- Default target frameworks for FHIR projects -->
+    <DefaultTargetFrameworks>$(SupportedTargetFrameworks)</DefaultTargetFrameworks>
+  </PropertyGroup>
+  
+</Project>

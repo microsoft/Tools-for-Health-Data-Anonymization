@@ -2,8 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <!-- Multi-target for .NET 6.0, 7.0, and 8.0 -->
+    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
+    
+    <!-- Enable conditional compilation for framework-specific features -->
+    <DefineConstants Condition="'$(TargetFramework)' == 'net6.0'">$(DefineConstants);NET6_0_OR_GREATER</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' == 'net7.0'">$(DefineConstants);NET7_0_OR_GREATER</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' == 'net8.0'">$(DefineConstants);NET8_0_OR_GREATER</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
