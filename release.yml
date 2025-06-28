@@ -39,42 +39,18 @@ stages:
         packageType: 'sdk'
         version: '8.0.x'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet clean'
+    - task: PowerShell@2
+      displayName: 'Build and Test using build.ps1'
       inputs:
-        command: 'custom'
-        custom: 'clean'
-        projects: '$(solution)'
-        arguments: '--configuration $(buildConfiguration) --verbosity normal'
-
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet restore'
-      inputs:
-        command: 'restore'
-        projects: '$(solution)'
-        arguments: '--verbosity normal --force --no-cache'
-
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet build'
-      inputs:
-        command: build
-        projects: '$(solution)'
-        arguments: '--configuration $(buildConfiguration) --no-restore --verbosity normal'
-
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet test'
-      inputs:
-        command: test
-        projects: '$(testProjects)'
-        arguments: '--configuration $(buildConfiguration) --verbosity normal --collect "Code coverage"'
-        testRunTitle: 'Unit Tests'
-        failTaskOnFailedTests: false
-        publishTestResults: true
+        filePath: '$(Build.SourcesDirectory)/build.ps1'
+        arguments: '-Framework net8.0 -Configuration $(buildConfiguration) -Clean -Restore -Test'
+        workingDirectory: '$(Build.SourcesDirectory)'
 
     
 - stage: Publish_Artifacts
   pool:
       vmImage: 'windows-latest'
+      
   jobs:
   - job: Publish
     steps:
@@ -96,11 +72,12 @@ stages:
         packageType: 'sdk'
         version: '8.0.x'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet restore'
+    - task: PowerShell@2
+      displayName: 'Build for all frameworks using build.ps1'
       inputs:
-        command: 'restore'
-        projects: '$(solution)'
+        filePath: '$(Build.SourcesDirectory)/build.ps1'
+        arguments: '-Framework all -Configuration $(buildConfiguration) -Restore'
+        workingDirectory: '$(Build.SourcesDirectory)'
 
     - task: ComponentGovernanceComponentDetection@0
       condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
@@ -129,18 +106,19 @@ stages:
         publishWebProjects: false
         zipAfterPublish: True
           
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet pack nugets'
+    - task: PowerShell@2
+      displayName: 'Pack NuGet packages using build.ps1'
       inputs:
-        command: pack
-        configuration: '$(buildConfiguration)'
-        packDirectory: '$(build.artifactStagingDirectory)/nupkgs'
-        arguments: '--no-restore'
-        versioningScheme: 'byEnvVar'
-        versionEnvVar: 'nuget_version'
-        zipAfterPublish: true
-      env:
-        nuget_version: $(version)
+        filePath: '$(Build.SourcesDirectory)/build.ps1'
+        arguments: '-Framework all -Configuration $(buildConfiguration) -Pack'
+        workingDirectory: '$(Build.SourcesDirectory)'
+
+    - task: CopyFiles@2
+      displayName: 'Copy NuGet packages to staging'
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)/packages'
+        Contents: '**/*.nupkg'
+        TargetFolder: '$(build.artifactStagingDirectory)/nupkgs'
 
     - task: ManifestGeneratorTask@0
       displayName: 'Generation Task'
