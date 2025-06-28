@@ -66,7 +66,7 @@ stages:
       inputs:
         command: test
         projects: '$(testProjects)'
-        arguments: '--configuration $(buildConfiguration) --verbosity normal --collect "Code coverage" --no-restore'
+        arguments: '--configuration $(buildConfiguration) --verbosity normal --collect "Code coverage"'
         testRunTitle: 'Unit Tests'
         failTaskOnFailedTests: false
         publishTestResults: true
