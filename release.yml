@@ -98,11 +98,11 @@ stages:
         downloadPath: '$(Build.SourcesDirectory)/bin/notice'
 
     - task: DotNetCoreCLI@2
-      displayName: 'dotnet publish'
+      displayName: 'dotnet publish - net8.0'
       inputs:
         command: 'publish'
         projects: '$(publishProject)'
-        arguments: '--configuration $(buildConfiguration) --no-restore --output $(Build.ArtifactStagingDirectory)'
+        arguments: '--configuration $(buildConfiguration) --framework net8.0 --no-restore --output $(Build.ArtifactStagingDirectory)'
         publishWebProjects: false
         zipAfterPublish: True
           
