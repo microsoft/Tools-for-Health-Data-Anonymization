@@ -18,7 +18,6 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.Utility
         private static readonly int s_dateShiftSeed = 131;
         private static readonly int s_dateShiftRange = 50;
         private static readonly int s_ageThreshold = 89;
-        private static readonly string s_dateFormat = "yyyy-MM-dd";
         // The regex of date is defined in: https://www.hl7.org/fhir/datatypes.html#date
         private static readonly Regex s_dateRegex = new Regex(@"([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)(-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1]))?)?",
             RegexOptions.IgnorePatternWhitespace);

@@ -2,9 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <!-- Multi-target frameworks inherited from root Directory.Build.props -->
+    <TargetFrameworks>$(SupportedTargetFrameworks)</TargetFrameworks>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <copyright>Copyright © Microsoft Corporation. All rights reserved.</copyright>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

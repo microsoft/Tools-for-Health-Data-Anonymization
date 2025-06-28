@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
 using Microsoft.Health.Fhir.Anonymizer.AzureDataFactoryPipeline.src;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Xunit;
 
 namespace Microsoft.Health.Fhir.Anonymizer.Tools.UnitTests
