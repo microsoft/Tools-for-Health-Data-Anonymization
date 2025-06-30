@@ -49,14 +49,35 @@ Think of it like creating a "stunt double" for your data. The anonymized data lo
 - .NET 6.0+ ([download](https://dotnet.microsoft.com/download))
 - Git
 
-### Let's Go!
+### Option 1: Using Test FHIR Data 🧪
+
+Don't have FHIR data yet? Let's grab some from a public test server:
+
 ```bash
-# 1. Get the tool
+# Get sample patient data from HAPI test server
+curl -H "Accept: application/fhir+json" \
+     "https://hapi.fhir.org/baseR4/Patient?_count=5" \
+     -o sample-patients.json
+
+# Or get specific resource types
+curl "https://hapi.fhir.org/baseR4/Observation?_count=10" -o observations.json
+curl "https://hapi.fhir.org/baseR4/Encounter?_count=10" -o encounters.json
+```
+
+**Useful Test Servers:**
+- 🔗 [HAPI Test Server](https://hapi.fhir.org/) - R4, STU3, DSTU2 data
+- 🔗 [SMART Launcher](https://launch.smarthealthit.org/) - Synthetic patient data
+- 🔗 [Synthea Sample Data](https://synthea.mitre.org/downloads) - Realistic synthetic records
+
+### Option 2: Using Your Own Data
+
+```bash
+# 1. Get and build the tool
 git clone https://github.com/microsoft/Tools-for-Health-Data-Anonymization.git
 cd Tools-for-Health-Data-Anonymization
 dotnet build
 
-# 2. Create test data
+# 2. Create test data or use existing
 mkdir my-data
 echo '{"resourceType": "Patient", "id": "123", "name": [{"given": ["Jane"]}]}' > my-data/patient.json
 
@@ -65,6 +86,17 @@ cd FHIR/src/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool/bin/Debug/net8.0
 ./Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.exe -i my-data -o output
 
 # That's it! Check the output folder
+```
+
+## Working with Bulk Export Data 📦
+
+Many FHIR servers support bulk export in NDJSON format:
+
+```bash
+# If you have bulk exported data (NDJSON format)
+./Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.exe -i bulk-export -o anonymized -b
+
+# The -b flag tells the tool to expect NDJSON format
 ```
 
 ## Key Anonymization Methods 🔧
@@ -106,4 +138,4 @@ cd FHIR/src/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool/bin/Debug/net8.0
 
 ---
 
-> 💡 **Tip**: Start with the default configuration, then customize as needed!
+> 💡 **Tip**: Test with data from HAPI server first, then move to your production data!
