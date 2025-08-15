@@ -10,10 +10,10 @@ using Xunit;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 {
-    public class RuntimeSeedSettingsTests
+    public class RuntimeKeySettingsTests
     {
         [Fact]
-        public void GivenCryptoHashProcessor_WithRuntimeSeed_ShouldProduceDifferentResult()
+        public void GivenCryptoHashProcessor_WithRuntimeKey_ShouldProduceDifferentResult()
         {
             // Arrange
             var dataset1 = new DicomDataset
@@ -29,12 +29,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             var config = CreateTestConfiguration();
             var engine = new AnonymizerEngine(config);
 
-            var runtimeSeed1 = new RuntimeSeedSettings { CryptoHashKey = "seed123" };
-            var runtimeSeed2 = new RuntimeSeedSettings { CryptoHashKey = "seed456" };
+            var runtimeKey1 = new RuntimeKeySettings { CryptoHashKey = "key123" };
+            var runtimeKey2 = new RuntimeKeySettings { CryptoHashKey = "key456" };
 
             // Act
-            engine.AnonymizeDataset(dataset1, runtimeSeed1);
-            engine.AnonymizeDataset(dataset2, runtimeSeed2);
+            engine.AnonymizeDataset(dataset1, runtimeKey1);
+            engine.AnonymizeDataset(dataset2, runtimeKey2);
 
             // Assert
             var result1 = dataset1.GetSingleValueOrDefault(DicomTag.PatientName, string.Empty);
@@ -46,7 +46,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void GivenCryptoHashProcessor_WithSameRuntimeSeed_ShouldProduceSameResult()
+        public void GivenCryptoHashProcessor_WithSameRuntimeKey_ShouldProduceSameResult()
         {
             // Arrange
             var dataset1 = new DicomDataset
@@ -62,11 +62,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             var config = CreateTestConfiguration();
             var engine = new AnonymizerEngine(config);
 
-            var runtimeSeed = new RuntimeSeedSettings { CryptoHashKey = "seed123" };
+            var runtimeKey = new RuntimeKeySettings { CryptoHashKey = "key123" };
 
             // Act
-            engine.AnonymizeDataset(dataset1, runtimeSeed);
-            engine.AnonymizeDataset(dataset2, runtimeSeed);
+            engine.AnonymizeDataset(dataset1, runtimeKey);
+            engine.AnonymizeDataset(dataset2, runtimeKey);
 
             // Assert
             var result1 = dataset1.GetSingleValueOrDefault(DicomTag.PatientName, string.Empty);
@@ -77,7 +77,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void GivenCryptoHashProcessor_WithoutRuntimeSeed_ShouldUseConfigurationSeed()
+        public void GivenCryptoHashProcessor_WithoutRuntimeKey_ShouldUseConfigurationKey()
         {
             // Arrange
             var dataset1 = new DicomDataset
@@ -94,8 +94,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             var engine = new AnonymizerEngine(config);
 
             // Act
-            engine.AnonymizeDataset(dataset1); // No runtime seed
-            engine.AnonymizeDataset(dataset2, null); // Explicit null runtime seed
+            engine.AnonymizeDataset(dataset1); // No runtime key
+            engine.AnonymizeDataset(dataset2, null); // Explicit null runtime key
 
             // Assert
             var result1 = dataset1.GetSingleValueOrDefault(DicomTag.PatientName, string.Empty);
@@ -106,7 +106,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void GivenDateShiftProcessor_WithRuntimeSeed_ShouldProduceDifferentResult()
+        public void GivenDateShiftProcessor_WithRuntimeKey_ShouldProduceDifferentResult()
         {
             // Arrange
             var dataset1 = new DicomDataset
@@ -124,12 +124,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             var config = CreateTestConfigurationWithDateShift();
             var engine = new AnonymizerEngine(config);
 
-            var runtimeSeed1 = new RuntimeSeedSettings { DateShiftKey = "seed123" };
-            var runtimeSeed2 = new RuntimeSeedSettings { DateShiftKey = "seed456" };
+            var runtimeKey1 = new RuntimeKeySettings { DateShiftKey = "key123" };
+            var runtimeKey2 = new RuntimeKeySettings { DateShiftKey = "key456" };
 
             // Act
-            engine.AnonymizeDataset(dataset1, runtimeSeed1);
-            engine.AnonymizeDataset(dataset2, runtimeSeed2);
+            engine.AnonymizeDataset(dataset1, runtimeKey1);
+            engine.AnonymizeDataset(dataset2, runtimeKey2);
 
             // Assert
             var result1 = dataset1.GetSingleValueOrDefault(DicomTag.PatientBirthDate, string.Empty);

@@ -43,7 +43,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            // Use runtime seed if available, otherwise use configuration seed
+            // Use runtime key if available, otherwise use configuration key
             var cryptoHashFunction = GetCryptoHashFunction(context);
 
             if (item is DicomStringElement)
@@ -94,12 +94,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
         private CryptoHashFunction GetCryptoHashFunction(ProcessContext context)
         {
-            // If runtime seeds are provided and contain a crypto hash key, use it
-            if (context?.RuntimeSeeds?.CryptoHashKey != null)
+            // If runtime keys are provided and contain a crypto hash key, use it
+            if (context?.RuntimeKeys?.CryptoHashKey != null)
             {
                 var runtimeSetting = new CryptoHashSetting
                 {
-                    CryptoHashKey = context.RuntimeSeeds.CryptoHashKey,
+                    CryptoHashKey = context.RuntimeKeys.CryptoHashKey,
                     CryptoHashType = _cryptoHashSetting.CryptoHashType,
                     MatchInputStringLength = _cryptoHashSetting.MatchInputStringLength,
                 };

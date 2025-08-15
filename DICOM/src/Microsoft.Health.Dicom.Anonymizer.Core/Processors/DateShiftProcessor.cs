@@ -49,7 +49,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(item, nameof(item));
             EnsureArg.IsNotNull(context, nameof(context));
 
-            // Use runtime seed if available, otherwise use configuration seed
+            // Use runtime key if available, otherwise use configuration key
             var dateShiftFunction = GetDateShiftFunction(context);
 
             dateShiftFunction.SetDateShiftPrefix(_dateShiftScope switch
@@ -99,12 +99,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
         private DateShiftFunction GetDateShiftFunction(ProcessContext context)
         {
-            // If runtime seeds are provided and contain a date shift key, use it
-            if (context?.RuntimeSeeds?.DateShiftKey != null)
+            // If runtime keys are provided and contain a date shift key, use it
+            if (context?.RuntimeKeys?.DateShiftKey != null)
             {
                 var runtimeSetting = new DateShiftSetting
                 {
-                    DateShiftKey = context.RuntimeSeeds.DateShiftKey,
+                    DateShiftKey = context.RuntimeKeys.DateShiftKey,
                     DateShiftRange = _dateShiftSetting.DateShiftRange,
                     DateShiftKeyPrefix = _dateShiftSetting.DateShiftKeyPrefix,
                 };

@@ -39,7 +39,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             AnonymizeDataset(dataset, null);
         }
 
-        public void AnonymizeDataset(DicomDataset dataset, RuntimeSeedSettings runtimeSeedSettings)
+        public void AnonymizeDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
         {
             EnsureArg.IsNotNull(dataset, nameof(dataset));
 
@@ -50,7 +50,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
 
             var context = InitContext(dataset);
-            context.RuntimeSeeds = runtimeSeedSettings;
+            context.RuntimeKeys = runtimeKeySettings;
             DicomUtility.DisableAutoValidation(dataset);
 
             foreach (var rule in _rules)

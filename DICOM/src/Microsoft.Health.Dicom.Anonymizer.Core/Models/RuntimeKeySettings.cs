@@ -6,26 +6,26 @@
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
 {
     /// <summary>
-    /// Provides optional runtime seed values that can override configuration-based seeds
+    /// Provides optional runtime key values that can override configuration-based keys
     /// when de-identifying a specific dataset.
     /// </summary>
-    public class RuntimeSeedSettings
+    public class RuntimeKeySettings
     {
         /// <summary>
-        /// Gets or sets the runtime seed key for cryptographic hashing operations.
-        /// If null, the processor will use the seed from configuration.
+        /// Gets or sets the runtime key for cryptographic hashing operations.
+        /// If null, the processor will use the key from configuration.
         /// </summary>
         public string CryptoHashKey { get; set; }
 
         /// <summary>
-        /// Gets or sets the runtime seed key for date shifting operations.
-        /// If null, the processor will use the seed from configuration.
+        /// Gets or sets the runtime key for date shifting operations.
+        /// If null, the processor will use the key from configuration.
         /// </summary>
         public string DateShiftKey { get; set; }
 
         /// <summary>
-        /// Gets or sets the runtime seed key for encryption operations.
-        /// If null, the processor will use the seed from configuration.
+        /// Gets or sets the runtime key for encryption operations.
+        /// If null, the processor will use the key from configuration.
         /// </summary>
         public string EncryptKey { get; set; }
     }

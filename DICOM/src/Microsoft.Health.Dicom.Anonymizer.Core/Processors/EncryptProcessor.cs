@@ -40,7 +40,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
-            // Use runtime seed if available, otherwise use configuration seed
+            // Use runtime key if available, otherwise use configuration key
             var encryptFunction = GetEncryptFunction(context);
 
             try
@@ -95,12 +95,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
         private EncryptFunction GetEncryptFunction(ProcessContext context)
         {
-            // If runtime seeds are provided and contain an encrypt key, use it
-            if (context?.RuntimeSeeds?.EncryptKey != null)
+            // If runtime keys are provided and contain an encrypt key, use it
+            if (context?.RuntimeKeys?.EncryptKey != null)
             {
                 var runtimeSetting = new EncryptSetting
                 {
-                    EncryptKey = context.RuntimeSeeds.EncryptKey,
+                    EncryptKey = context.RuntimeKeys.EncryptKey,
                 };
                 return new EncryptFunction(runtimeSetting);
             }

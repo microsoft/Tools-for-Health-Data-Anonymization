@@ -19,8 +19,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
         public string SopInstanceUID { get; set; }
 
         /// <summary>
-        /// Gets or sets optional runtime seed settings that can override configuration-based seeds.
+        /// Gets or sets optional runtime key settings that can override configuration-based keys.
         /// </summary>
-        public RuntimeSeedSettings RuntimeSeeds { get; set; }
+        public RuntimeKeySettings RuntimeKeys { get; set; }
     }
 }
