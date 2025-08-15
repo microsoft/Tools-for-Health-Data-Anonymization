@@ -26,6 +26,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     public class DateShiftProcessor : IAnonymizerProcessor
     {
         private readonly DateShiftFunction _dateShiftFunction;
+        private readonly DateShiftSetting _dateShiftSetting;
         private readonly DateShiftScope _dateShiftScope = DateShiftScope.SopInstance;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<DateShiftProcessor>();
 
@@ -34,8 +35,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
             var settingFactory = new AnonymizerSettingsFactory();
-            var dateShiftSetting = settingFactory.CreateAnonymizerSetting<DateShiftSetting>(settingObject);
-            _dateShiftFunction = new DateShiftFunction(dateShiftSetting);
+            _dateShiftSetting = settingFactory.CreateAnonymizerSetting<DateShiftSetting>(settingObject);
+            _dateShiftFunction = new DateShiftFunction(_dateShiftSetting);
             if (settingObject.TryGetValue("DateShiftScope", StringComparison.OrdinalIgnoreCase, out JToken scope))
             {
                 _dateShiftScope = (DateShiftScope)Enum.Parse(typeof(DateShiftScope), scope.ToString(), true);
@@ -48,7 +49,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(item, nameof(item));
             EnsureArg.IsNotNull(context, nameof(context));
 
-            _dateShiftFunction.SetDateShiftPrefix(_dateShiftScope switch
+            // Use runtime seed if available, otherwise use configuration seed
+            var dateShiftFunction = GetDateShiftFunction(context);
+
+            dateShiftFunction.SetDateShiftPrefix(_dateShiftScope switch
             {
                 DateShiftScope.StudyInstance => context.StudyInstanceUID ?? string.Empty,
                 DateShiftScope.SeriesInstance => context.SeriesInstanceUID ?? string.Empty,
@@ -59,7 +63,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             {
                 var values = DicomUtility.ParseDicomDate((DicomDate)item)
                     .Where(x => !DateTimeUtility.IsAgeOverThreshold(x)) // Age over 89 will be redacted.
-                    .Select(_dateShiftFunction.Shift);
+                    .Select(dateShiftFunction.Shift);
 
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, values.Select(DicomUtility.GenerateDicomDateString).Where(x => x != null).ToArray());
             }
@@ -71,7 +75,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 {
                     if (!DateTimeUtility.IsAgeOverThreshold(dateObject.DateValue))
                     {
-                        dateObject.DateValue = _dateShiftFunction.Shift(dateObject.DateValue);
+                        dateObject.DateValue = dateShiftFunction.Shift(dateObject.DateValue);
                         results.Add(DicomUtility.GenerateDicomDateTimeString(dateObject));
                     }
                 }
@@ -91,6 +95,24 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(item, nameof(item));
 
             return DicomDataModel.DateShiftSupportedVR.Contains(item.ValueRepresentation);
+        }
+
+        private DateShiftFunction GetDateShiftFunction(ProcessContext context)
+        {
+            // If runtime seeds are provided and contain a date shift key, use it
+            if (context?.RuntimeSeeds?.DateShiftKey != null)
+            {
+                var runtimeSetting = new DateShiftSetting
+                {
+                    DateShiftKey = context.RuntimeSeeds.DateShiftKey,
+                    DateShiftRange = _dateShiftSetting.DateShiftRange,
+                    DateShiftKeyPrefix = _dateShiftSetting.DateShiftKeyPrefix,
+                };
+                return new DateShiftFunction(runtimeSetting);
+            }
+
+            // Fall back to configuration-based function
+            return _dateShiftFunction;
         }
     }
 }

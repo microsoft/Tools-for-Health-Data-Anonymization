@@ -26,6 +26,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     public class CryptoHashProcessor : IAnonymizerProcessor
     {
         private readonly CryptoHashFunction _cryptoHashFunction;
+        private readonly CryptoHashSetting _cryptoHashSetting;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<CryptoHashProcessor>();
 
         public CryptoHashProcessor(JObject settingObject)
@@ -33,8 +34,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
             var settingFactory = new AnonymizerSettingsFactory();
-            var cryptoHashSetting = settingFactory.CreateAnonymizerSetting<CryptoHashSetting>(settingObject);
-            _cryptoHashFunction = new CryptoHashFunction(cryptoHashSetting);
+            _cryptoHashSetting = settingFactory.CreateAnonymizerSetting<CryptoHashSetting>(settingObject);
+            _cryptoHashFunction = new CryptoHashFunction(_cryptoHashSetting);
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
@@ -42,15 +43,18 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
+            // Use runtime seed if available, otherwise use configuration seed
+            var cryptoHashFunction = GetCryptoHashFunction(context);
+
             if (item is DicomStringElement)
             {
-                var hashedValues = ((DicomStringElement)item).Get<string[]>().Select(GetCryptoHashString);
+                var hashedValues = ((DicomStringElement)item).Get<string[]>().Select(value => GetCryptoHashString(value, cryptoHashFunction));
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, hashedValues.ToArray());
             }
             else if (item is DicomOtherByte)
             {
                 var valueBytes = ((DicomOtherByte)item).Get<byte[]>();
-                var hashedBytes = _cryptoHashFunction.Hash(valueBytes);
+                var hashedBytes = cryptoHashFunction.Hash(valueBytes);
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, hashedBytes);
             }
             else if (item is DicomFragmentSequence)
@@ -61,7 +65,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
                 foreach (var fragment in (DicomFragmentSequence)item)
                 {
-                    element.Fragments.Add(new MemoryByteBuffer(_cryptoHashFunction.Hash(fragment.Data)));
+                    element.Fragments.Add(new MemoryByteBuffer(cryptoHashFunction.Hash(fragment.Data)));
                 }
 
                 dicomDataset.AddOrUpdate(element);
@@ -86,6 +90,31 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(input, nameof(input));
 
             return _cryptoHashFunction.Hash(input);
+        }
+
+        private CryptoHashFunction GetCryptoHashFunction(ProcessContext context)
+        {
+            // If runtime seeds are provided and contain a crypto hash key, use it
+            if (context?.RuntimeSeeds?.CryptoHashKey != null)
+            {
+                var runtimeSetting = new CryptoHashSetting
+                {
+                    CryptoHashKey = context.RuntimeSeeds.CryptoHashKey,
+                    CryptoHashType = _cryptoHashSetting.CryptoHashType,
+                    MatchInputStringLength = _cryptoHashSetting.MatchInputStringLength,
+                };
+                return new CryptoHashFunction(runtimeSetting);
+            }
+
+            // Fall back to configuration-based function
+            return _cryptoHashFunction;
+        }
+
+        private string GetCryptoHashString(string input, CryptoHashFunction cryptoHashFunction)
+        {
+            EnsureArg.IsNotNull(input, nameof(input));
+
+            return cryptoHashFunction.Hash(input);
         }
     }
 }

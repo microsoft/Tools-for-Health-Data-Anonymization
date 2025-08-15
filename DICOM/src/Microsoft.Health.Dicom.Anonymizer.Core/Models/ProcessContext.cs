@@ -17,5 +17,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
         public string SeriesInstanceUID { get; set; }
 
         public string SopInstanceUID { get; set; }
+
+        /// <summary>
+        /// Gets or sets optional runtime seed settings that can override configuration-based seeds.
+        /// </summary>
+        public RuntimeSeedSettings RuntimeSeeds { get; set; }
     }
 }
