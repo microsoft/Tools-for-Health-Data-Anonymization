@@ -34,7 +34,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeOperationExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ElementNodeVisitorExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\FhirPathSymbolExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ConfigurationExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\EmptyElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ProcessResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ProcessContext.cs" />
