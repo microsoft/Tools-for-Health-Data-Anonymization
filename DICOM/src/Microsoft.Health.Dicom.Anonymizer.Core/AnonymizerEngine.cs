@@ -36,6 +36,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public void AnonymizeDataset(DicomDataset dataset)
         {
+            AnonymizeDataset(dataset, null);
+        }
+
+        public void AnonymizeDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
+        {
             EnsureArg.IsNotNull(dataset, nameof(dataset));
 
             // Validate input dataset.
@@ -45,6 +50,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
 
             var context = InitContext(dataset);
+            context.RuntimeKeys = runtimeKeySettings;
             DicomUtility.DisableAutoValidation(dataset);
 
             foreach (var rule in _rules)
