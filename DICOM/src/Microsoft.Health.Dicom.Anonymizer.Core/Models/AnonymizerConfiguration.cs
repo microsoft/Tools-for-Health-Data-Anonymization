@@ -5,7 +5,6 @@
 
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
 {
@@ -13,12 +12,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
     public class AnonymizerConfiguration
     {
         [DataMember(Name = "rules")]
-        public JObject[] RuleContent { get; set; }
+        public AnonymizerRuleModel[] RuleContent { get; set; }
 
         [DataMember(Name = "defaultSettings")]
         public AnonymizerDefaultSettings DefaultSettings { get; set; }
 
         [DataMember(Name = "customSettings")]
-        public Dictionary<string, JObject> CustomSettings { get; set; }
+        public Dictionary<string, Dictionary<string, object>> CustomSettings { get; set; }
     }
 }
