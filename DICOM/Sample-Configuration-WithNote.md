@@ -306,7 +306,20 @@
         {"tag":"(0040,A027)", "method":"substitute"}, //Verifying Organization
         {"tag":"(0038,4000)", "method":"remove"}, //Visit Comments
         {"tag":"DA", "method":"dateshift"},
-        {"tag":"DT", "method":"dateshift"}
+        {"tag":"DT", "method":"dateshift"},
+        {"tag":"0001,xxxx", "method": "keep"}, //Odd group that should be retained
+        {"tag":"0003,xxxx", "method": "keep"}, //Odd group that should be retained
+        {"tag":"0005,xxxx", "method": "keep"}, //Odd group that should be retained
+        {"tag":"0007,xxxx", "method": "keep"}, //Odd group that should be retained
+        {"tag":"FFFF,xxxx", "method": "keep"}, //Odd group that should be retained
+        {"tag":"xxx1,xxxx", "method": "remove"}, //All other odd groups are private tags
+        {"tag":"xxx3,xxxx", "method": "remove"}, //All other odd groups are private tags
+        {"tag":"xxx5,xxxx", "method": "remove"}, //All other odd groups are private tags
+        {"tag":"xxx7,xxxx", "method": "remove"}, //All other odd groups are private tags
+        {"tag":"xxx9,xxxx", "method": "remove"}, //All other odd groups are private tags
+        {"tag":"xxxB,xxxx", "method": "remove"}, //All other odd groups are private tags
+        {"tag":"xxxD,xxxx", "method": "remove"}, //All other odd groups are private tags
+        {"tag":"xxxF,xxxx", "method": "remove"} //All other odd groups are private tags
     ],
 
     "profile": [
