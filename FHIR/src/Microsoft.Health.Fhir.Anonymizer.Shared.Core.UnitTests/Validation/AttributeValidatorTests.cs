@@ -58,9 +58,9 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core.UnitTests.Validation
         public void GivenAMissingAttribute_WhenValidateAResource_ThenValidationErrorsShouldBeReturned()
         {
             // Given a Task with intent field missing
-            var resource = new Task()
+            var resource = new Hl7.Fhir.Model.Task()
             {
-                Status = Task.TaskStatus.Accepted
+                Status = Hl7.Fhir.Model.Task.TaskStatus.Accepted
             };
 
             var validationErrors = _validator.Validate(resource).ToList();

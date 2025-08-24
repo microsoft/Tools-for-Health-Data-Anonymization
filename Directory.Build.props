@@ -1,0 +1,41 @@
+<Project>
+  
+  <!-- Import framework-specific configurations -->
+  <Import Project="Framework.props" />
+  
+  <PropertyGroup>
+    <!-- Define supported frameworks centrally -->
+    <SupportedTargetFrameworks>net6.0;net7.0;net8.0</SupportedTargetFrameworks>
+    
+    <!-- Common properties for all projects -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    
+    <!-- Package metadata for libraries -->
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Copyright © Microsoft Corporation. All rights reserved.</Copyright>
+    <Company>Microsoft Corporation</Company>
+    <Product>Microsoft Health Data Anonymization Tools</Product>
+    
+    <!-- Version information -->
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix Condition="'$(Configuration)' == 'Debug'">dev</VersionSuffix>
+  </PropertyGroup>
+
+  <!-- Framework-specific configurations -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <DefineConstants>$(DefineConstants);NET6_0_OR_GREATER</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net7.0'">
+    <DefineConstants>$(DefineConstants);NET7_0_OR_GREATER</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <DefineConstants>$(DefineConstants);NET8_0_OR_GREATER</DefineConstants>
+  </PropertyGroup>
+
+</Project>
