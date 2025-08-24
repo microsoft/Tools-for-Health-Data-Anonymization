@@ -290,3 +290,76 @@ Output validation only checks value for each DICOM tag, but does not check the c
 * We only support DICOM **metadata** anonymization. The anonymization is currently unavailable for image pixel data. 
 * For DICOM tag which is a Sequence of Items (SQ), we only support redact and remove methods on the entire sequence.
 * The constraints among tags are not considered in output validation for now. Customers should take care of the effect when changing the tag values.
+
+## Runtime Key Parameters
+
+The DICOM Anonymizer supports specifying key values as optional parameters when de-identifying a specific dataset, allowing you to override the configuration-based keys at runtime.
+
+### Usage Example
+
+```csharp
+using FellowOakDicom;
+using Microsoft.Health.Dicom.Anonymizer.Core;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
+
+// Create your DICOM dataset
+var dataset = new DicomDataset
+{
+    { DicomTag.PatientName, "John Doe" },
+    { DicomTag.PatientBirthDate, "19800101" },
+    { DicomTag.StudyInstanceUID, "1.2.3.4.5.6" },
+};
+
+// Initialize the anonymizer engine with your configuration
+var engine = new AnonymizerEngine("configuration.json");
+
+// Option 1: Use configuration-based keys (existing behavior)
+engine.AnonymizeDataset(dataset);
+
+// Option 2: Use runtime keys to override configuration
+var runtimeKeys = new RuntimeKeySettings
+{
+    CryptoHashKey = "my-runtime-crypto-key",
+    DateShiftKey = "my-runtime-date-key",
+    EncryptKey = "my-runtime-encrypt-key-1234567890123456", // Must be 16, 24, or 32 bytes
+};
+
+engine.AnonymizeDataset(dataset, runtimeKeys);
+```
+
+### Supported Runtime Keys
+
+- **CryptoHashKey**: Overrides the cryptographic hash key for `cryptoHash` anonymization method
+- **DateShiftKey**: Overrides the date shift key for `dateShift` anonymization method  
+- **EncryptKey**: Overrides the encryption key for `encrypt` anonymization method
+
+### Benefits
+
+1. **Per-dataset anonymization**: Different datasets can use different keys while sharing the same configuration
+2. **Dynamic key generation**: Keys can be generated programmatically based on external factors
+3. **Enhanced security**: Keys can be managed separately from configuration files
+4. **Backward compatibility**: Existing code continues to work unchanged
+
+### Configuration Example
+
+Your configuration file can still contain default keys:
+
+```json
+{
+  "rules": [
+    {"tag": "(0010,0010)", "method": "cryptoHash"},
+    {"tag": "(0010,0030)", "method": "dateShift"}
+  ],
+  "defaultSettings": {
+    "cryptoHash": {
+      "cryptoHashKey": "default-crypto-key"
+    },
+    "dateShift": {
+      "dateShiftKey": "default-date-key",
+      "dateShiftRange": 50
+    }
+  }
+}
+```
+
+When runtime keys are provided, they take precedence over the configuration defaults.
