@@ -3,8 +3,9 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
 {
@@ -12,35 +13,43 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
     public class AnonymizerDefaultSettings
     {
         [DataMember(Name = "perturb")]
-        public JObject PerturbDefaultSetting { get; set; }
+        public PerturbSettings PerturbDefaultSetting { get; set; }
 
         [DataMember(Name = "substitute")]
-        public JObject SubstituteDefaultSetting { get; set; }
+        public SubstituteSettings SubstituteDefaultSetting { get; set; }
 
         [DataMember(Name = "dateshift")]
-        public JObject DateShiftDefaultSetting { get; set; }
+        public DateShiftSettings DateShiftDefaultSetting { get; set; }
 
         [DataMember(Name = "encrypt")]
-        public JObject EncryptDefaultSetting { get; set; }
+        public EncryptSettings EncryptDefaultSetting { get; set; }
 
         [DataMember(Name = "cryptoHash")]
-        public JObject CryptoHashDefaultSetting { get; set; }
+        public CryptoHashSettings CryptoHashDefaultSetting { get; set; }
 
         [DataMember(Name = "redact")]
-        public JObject RedactDefaultSetting { get; set; }
+        public RedactSettings RedactDefaultSetting { get; set; }
 
-        public JObject GetDefaultSetting(string method)
+        public Dictionary<string, object> GetDefaultSetting(string method)
         {
             return method.ToLower() switch
             {
-                "perturb" => PerturbDefaultSetting,
-                "substitute" => SubstituteDefaultSetting,
-                "dateshift" => DateShiftDefaultSetting,
-                "encrypt" => EncryptDefaultSetting,
-                "cryptohash" => CryptoHashDefaultSetting,
-                "redact" => RedactDefaultSetting,
+                "perturb" => ConvertToDict(PerturbDefaultSetting),
+                "substitute" => ConvertToDict(SubstituteDefaultSetting),
+                "dateshift" => ConvertToDict(DateShiftDefaultSetting),
+                "encrypt" => ConvertToDict(EncryptDefaultSetting),
+                "cryptohash" => ConvertToDict(CryptoHashDefaultSetting),
+                "redact" => ConvertToDict(RedactDefaultSetting),
                 _ => null,
             };
+        }
+
+        private static Dictionary<string, object> ConvertToDict<T>(T settings)
+        {
+            if (settings == null) return null;
+            
+            var json = JsonConvert.SerializeObject(settings);
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
         }
     }
 }
