@@ -5,7 +5,7 @@
   
   <PropertyGroup>
     <!-- Define supported frameworks centrally -->
-    <SupportedTargetFrameworks>net6.0;net7.0;net8.0</SupportedTargetFrameworks>
+    <SupportedTargetFrameworks>net8.0;net9.0</SupportedTargetFrameworks>
     
     <!-- Common properties for all projects -->
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
@@ -26,16 +26,12 @@
   </PropertyGroup>
 
   <!-- Framework-specific configurations -->
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <DefineConstants>$(DefineConstants);NET6_0_OR_GREATER</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net7.0'">
-    <DefineConstants>$(DefineConstants);NET7_0_OR_GREATER</DefineConstants>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <DefineConstants>$(DefineConstants);NET8_0_OR_GREATER</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <DefineConstants>$(DefineConstants);NET9_0_OR_GREATER</DefineConstants>
   </PropertyGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 @echo off
 REM Multi-Target Build Script for Health Data Anonymization Tools
-REM Usage: build.bat [net6.0|net7.0|net8.0|all] [DICOM|FHIR|all] [Debug|Release]
+REM Usage: build.bat [net8.0|net9.0|all] [DICOM|FHIR|all] [Debug|Release]
 
 setlocal
 
@@ -68,7 +68,7 @@ echo.
 echo All builds completed successfully!
 echo.
 echo Usage Examples:
-echo   build.bat net6.0 DICOM Release
-echo   build.bat net8.0 FHIR Debug
+echo   build.bat net8.0 DICOM Release
+echo   build.bat net9.0 FHIR Debug
 echo   build.bat all all Release
 echo.

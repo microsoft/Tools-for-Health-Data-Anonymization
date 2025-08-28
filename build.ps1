@@ -2,7 +2,7 @@
 # This script allows building specific .NET Framework versions
 
 param(
-    [string]$Framework = "all",  # net6.0, net7.0, net8.0, or all
+    [string]$Framework = "all",  # net8.0, net9.0, or all
     [string]$Configuration = "Release",
     [string]$Project = "all",  # DICOM, FHIR, or all
     [switch]$Clean,     # Clean the output directories
@@ -11,7 +11,7 @@ param(
     [switch]$Pack       # Pack the project
 )
 
-$SupportedFrameworks = @("net6.0", "net7.0", "net8.0")
+$SupportedFrameworks = @("net8.0", "net9.0")
 $RootPath = $PSScriptRoot
 
 # Define project configurations to eliminate duplication
@@ -162,8 +162,8 @@ if ($Framework -eq "all") {
         Write-Host "https://dotnet.microsoft.com/download/dotnet/" -ForegroundColor Cyan
         Write-Host ""
         Write-Host "Alternatively, use one of the available frameworks:" -ForegroundColor Yellow
-        Write-Host "  .\build.ps1 -Framework net6.0" -ForegroundColor Gray
         Write-Host "  .\build.ps1 -Framework net8.0" -ForegroundColor Gray
+        Write-Host "  .\build.ps1 -Framework net9.0" -ForegroundColor Gray
         exit 1
     }
     $FrameworksToBuild = @($Framework)
@@ -203,7 +203,7 @@ foreach ($fw in $FrameworksToBuild) {
 
 Write-Host "`nBuild completed successfully!" -ForegroundColor Green
 Write-Host "`nUsage Examples:" -ForegroundColor Yellow
-Write-Host "  .\build.ps1 -Framework net6.0 -Project DICOM" -ForegroundColor Gray
-Write-Host "  .\build.ps1 -Framework net8.0 -Clean -Restore -Test" -ForegroundColor Gray
+Write-Host "  .\build.ps1 -Framework net8.0 -Project DICOM" -ForegroundColor Gray
+Write-Host "  .\build.ps1 -Framework net9.0 -Clean -Restore -Test" -ForegroundColor Gray
 Write-Host "  .\build.ps1 -Framework all -Pack" -ForegroundColor Gray
 Write-Host "  .\build.ps1 -Framework net8.0 -Configuration Debug" -ForegroundColor Gray

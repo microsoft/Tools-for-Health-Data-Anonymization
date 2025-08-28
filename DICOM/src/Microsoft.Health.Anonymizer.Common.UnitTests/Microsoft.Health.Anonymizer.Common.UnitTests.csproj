@@ -3,11 +3,6 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>$(SupportedTargetFrameworks)</TargetFrameworks>
-    
-    <!-- Suppress Microsoft.NET.Test.Sdk target framework warnings for .NET 6.0/7.0 -->
-    <!-- The Test SDK works fine with .NET 6.0/7.0 but shows warnings about "untested" support -->
-    <SuppressTfmSupportBuildErrors Condition="'$(TargetFramework)' == 'net6.0' OR '$(TargetFramework)' == 'net7.0'">true</SuppressTfmSupportBuildErrors>
-    <SuppressTfmSupportBuildWarnings Condition="'$(TargetFramework)' == 'net6.0' OR '$(TargetFramework)' == 'net7.0'">true</SuppressTfmSupportBuildWarnings>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 # Multi-Target Build Support
 
-This project now supports building for multiple .NET Framework versions: .NET 6.0, 7.0 and 8.0.
+This project now supports building for multiple .NET Framework versions: .NET 8.0 and 9.0.
 
 ## Quick Start
 
@@ -14,10 +14,10 @@ This project now supports building for multiple .NET Framework versions: .NET 6.
 .\build.ps1 -Framework net8.0
 
 # Build specific project (DICOM or FHIR)
-.\build.ps1 -Project DICOM -Framework net6.0
+.\build.ps1 -Project DICOM -Framework net8.0
 
 # Clean, restore, build, and test
-.\build.ps1 -Clean -Restore -Test -Framework net6.0
+.\build.ps1 -Clean -Restore -Test -Framework net8.0
 
 # Create NuGet packages (requires building all frameworks first)
 .\build.ps1 -Pack -Framework all
@@ -33,8 +33,8 @@ This project now supports building for multiple .NET Framework versions: .NET 6.
 build.bat
 
 # Build specific framework and project
-build.bat net6.0 DICOM Release
-build.bat net8.0 FHIR Debug
+build.bat net8.0 DICOM Release
+build.bat net9.0 FHIR Debug
 ```
 
 ### Using .NET CLI Directly
@@ -44,18 +44,17 @@ build.bat net8.0 FHIR Debug
 dotnet build DICOM/Dicom.Anonymizer.sln
 
 # Build for specific framework
-dotnet build DICOM/Dicom.Anonymizer.sln -f net6.0
-dotnet build FHIR/Fhir.Anonymizer.sln -f net8.0
+dotnet build DICOM/Dicom.Anonymizer.sln -f net8.0
+dotnet build FHIR/Fhir.Anonymizer.sln -f net9.0
 
 # Test specific framework
-dotnet test DICOM/Dicom.Anonymizer.sln -f net6.0
+dotnet test DICOM/Dicom.Anonymizer.sln -f net8.0
 ```
 
 ## Supported Frameworks
 
-- **.NET 6.0** (`net6.0`) - LTS version, stable and widely supported
-- **.NET 7.0** (`net7.0`) - Latest features and performance improvements
-- **.NET 8.0** (`net8.0`) - Latest LTS version with newest features
+- **.NET 8.0** (`net8.0`) - LTS version, stable and widely supported
+- **.NET 9.0** (`net9.0`) - Latest version with newest features and performance improvements
 
 ## Project Structure
 
@@ -77,7 +76,7 @@ Command-line tools currently target .NET 8.0 by default:
 ### Directory.Build.props (Root)
 
 - **Central configuration hub** that imports `Framework.props`
-- Defines `SupportedTargetFrameworks` globally (net6.0;net7.0;net8.0)
+- Defines `SupportedTargetFrameworks` globally (net8.0;net9.0)
 - Common properties for all projects (Nullable, ImplicitUsings, TreatWarningsAsErrors)
 - Package metadata for NuGet packages (license, copyright, version)
 - Framework-specific conditional compilation symbols (NET6_0_OR_GREATER, etc.)
@@ -100,43 +99,22 @@ Command-line tools currently target .NET 8.0 by default:
 
 ## Framework-Specific Features
 
-### .NET 6.0
-- Long Term Support (LTS) release
-- Full compatibility with all project types
-- **Note**: Some newer packages (9.0.x) show compatibility warnings but work correctly
-
-### .NET 7.0
-- **Warning**: End-of-life framework (NETSDK1138)
-- Included for compatibility testing
-- **Note**: Microsoft.NET.Test.Sdk and newer packages show "untested" warnings but function correctly
-- Test projects may show warnings about framework support - these are suppressed via `Framework.props`
-
 ### .NET 8.0
 - Current LTS release
 - Recommended for production use
 - Full compatibility with all packages and tooling
 
-## Common Warnings and Solutions
-
-### Test SDK Warnings (.NET 6.0/7.0)
-**Warning**: `Microsoft.NET.Test.Sdk doesn't support net7.0 and has not been tested with it`
-**Solution**: These warnings are automatically suppressed via `Framework.props`. The Test SDK works correctly despite the warnings.
-
-### Package Compatibility Warnings (.NET 6.0/7.0)
-**Warning**: Various Microsoft packages show ".NET 7.0 is untested" warnings
-**Solution**: These warnings are automatically suppressed and the packages function correctly.
-
-### End-of-Life Warnings (.NET 7.0)
-**Warning**: `NETSDK1138: The target framework 'net7.0' is out of support`
-**Solution**: This is informational only. .NET 7.0 support is provided for compatibility testing.
+### .NET 9.0
+- Latest release with newest features and performance improvements
+- Recommended for development and evaluation
 
 You can use conditional compilation to target specific framework features:
 
 ```csharp
-#if NET6_0_OR_GREATER
-    // Code for .NET 6.0 and later
-#elif NET8_0_OR_GREATER
+#if NET8_0_OR_GREATER
     // Code for .NET 8.0 and later
+#elif NET9_0_OR_GREATER
+    // Code for .NET 9.0 and later
 #endif
 ```
 
@@ -176,7 +154,7 @@ Only library projects with `<IsPackable>true</IsPackable>` create NuGet packages
 ### Package Contents
 
 Each `.nupkg` file contains:
-- **All target framework versions** (net6.0, net7.0, net8.0 DLLs)
+- **All target framework versions** (net8.0, net9.0 DLLs)
 - **Dependencies information** (package references)
 - **Metadata** (version, license, description)
 - **Documentation** (XML docs if available)
@@ -227,16 +205,16 @@ Ensure tests pass on all target frameworks, as behavior may differ between .NET 
 
 ## Examples
 
-### Building and Testing DICOM Anonymizer for .NET 6.0
+### Building and Testing DICOM Anonymizer for .NET 8.0
 
 ```powershell
-.\build.ps1 -Project DICOM -Framework net6.0 -Test
+.\build.ps1 -Project DICOM -Framework net8.0 -Test
 ```
 
-### Development Build for .NET 8.0 Only
+### Development Build for .NET 9.0 Only
 
 ```bash
-dotnet build -f net8.0 -c Debug
+dotnet build -f net9.0 -c Debug
 ```
 
 ## Known Issues
