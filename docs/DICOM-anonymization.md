@@ -81,14 +81,16 @@ Users can list anonymization rules for individual DICOM tag (by tag value or tag
     ]
 }
 ```
-Parameters in each rules:
+Parameters in each rule:
 
 |Fields|Description| Valid Value|Required|default value|
 |--|-----|-----|--|--|
-|tag|Used to define DICOM elements |1. Tag Value, e.g. (0010, 0010) or 0010,0010 or 00100010. <br>2. Tag Name. e.g. PatientName. <br> 3. Masked DICOM Tag. e.g. (0010, xxxx) or (xx10, xx10). <br> 4. DICOM VR. e.g. PN, DA.|True|null| 
+|tag|Used to define DICOM elements |1. Tag Value, e.g. (0010, 0010) or 0010,0010 or 00100010. <br>2. Tag Name. e.g. PatientName. <br> 3. Masked DICOM Tag (see note) <br> 4. DICOM VR. e.g. PN, DA.|True|null| 
 |method|anonymization method| keep, redact, perturb, dateshift, encrypt, cryptohash, substitute, refreshUID, remove.| True|null|
 |setting| Setting for anonymization method. Users can add custom settings in the field of "customSettings" and specify setting's name here. |valid setting's name |False|Default setting in the field of "defaultSettings"|
 |params|parameters override setting for anonymization methods.|valid parameters|False|null|
+
+> Masked tags follow the [DICOM convention](https://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_5.html). `x` in a group or element number, means any value from 0 through F inclusive.
 
 Each DICOM tag can only be anonymized once, if two rules have conflicts on one tag, only the former rule will be applied.
 

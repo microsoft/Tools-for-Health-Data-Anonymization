@@ -33,7 +33,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             await AnonymizerCliTool.Main(commands.Split());
             var dicomFile = await DicomFile.OpenAsync("I341.dcm");
             var expectedDicomFile = await DicomFile.OpenAsync("DicomResults/I341.dcm");
-            Assert.True(CompareDicomFileDataSet(expectedDicomFile.Dataset, dicomFile.Dataset));
+            Assert.Equal(expectedDicomFile.Dataset, dicomFile.Dataset);
             File.Delete("I341.dcm");
         }
 
@@ -51,7 +51,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             await AnonymizerCliTool.Main(commands.Split());
             var dicomFile = await DicomFile.OpenAsync("I341-newConfig.dcm");
             var expectedDicomFile = await DicomFile.OpenAsync("DicomResults/I341-newConfig.dcm");
-            Assert.True(CompareDicomFileDataSet(expectedDicomFile.Dataset, dicomFile.Dataset));
+            Assert.Equal(expectedDicomFile.Dataset, dicomFile.Dataset);
             File.Delete("I341-newConfig.dcm");
         }
 
@@ -70,30 +70,35 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 
             foreach (string file in Directory.EnumerateFiles("Output", "*.dcm", SearchOption.AllDirectories))
             {
-                Assert.True(CompareDicomFileDataSet(
-                    DicomFile.Open(file).Dataset,
-                    DicomFile.Open(Path.Combine("DicomResults", Path.GetFileName(file))).Dataset));
+                Assert.Equal(DicomFile.Open(file).Dataset, DicomFile.Open(Path.Combine("DicomResults", Path.GetFileName(file))).Dataset);
             }
 
             Directory.Delete("Output", true);
         }
 
-        private bool CompareDicomFileDataSet(DicomDataset dcm1, DicomDataset dcm2)
+        [Fact]
+        public async Task GivenOneDicomFileWithPrivateTags_WhenAnonymize_PrivateTagsWillBePresentAsync()
         {
-            foreach (var item in dcm1)
-            {
-                if (item.ValueRepresentation != DicomVR.UI && item is DicomElement)
-                {
-                    if (!string.Equals(
-                        dcm1.GetDicomItem<DicomElement>(item.Tag).Get<string>(),
-                        dcm2.GetDicomItem<DicomElement>(item.Tag).Get<string>()))
-                    {
-                        return false;
-                    }
-                }
-            }
+            string fileName = "privateTag.dcm";
+            var commands = $"-i DicomFiles/{fileName} -o {fileName}";
+            await AnonymizerCliTool.Main(commands.Split());
+            var dicomFile = await DicomFile.OpenAsync(fileName);
+            var expectedDicomFile = await DicomFile.OpenAsync("DicomResults/" + fileName);
+            Assert.Equal(expectedDicomFile.Dataset, dicomFile.Dataset);
+            File.Delete(fileName);
+        }
 
-            return true;
+        [Fact]
+        public async Task GivenOneDicomFileWithPrivateTagsAndConfigSet_WhenAnonymize_PrivateTagsWillBeRemovedAsync()
+        {
+            string fileName = "privateTag.dcm";
+            string outputFileName = "privateTagRemoved.dcm";
+            var commands = $"-i DicomFiles/{fileName} -o {outputFileName} -c TestConfigs/privateTagConfig.json";
+            await AnonymizerCliTool.Main(commands.Split());
+            var dicomFile = await DicomFile.OpenAsync(outputFileName);
+            var expectedDicomFile = await DicomFile.OpenAsync("DicomResults/" + outputFileName);
+            Assert.Equal(expectedDicomFile.Dataset, dicomFile.Dataset);
+            File.Delete(outputFileName);
         }
     }
 }
