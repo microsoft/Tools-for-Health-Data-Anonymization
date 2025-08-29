@@ -42,7 +42,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             
             // For compatibility, we'll convert the IConfiguration to AnonymizerConfiguration
             // This provides the IConfiguration interface while maintaining existing functionality
-            var config = ConvertFromIConfiguration(configuration);
+            var config = ToAnonymizerConfiguration(configuration);
             
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerEngineOptions();
             ruleFactory ??= new AnonymizerRuleFactory(config, processorFactory ?? new DicomProcessorFactory());
@@ -50,7 +50,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             _logger.LogDebug("Successfully initialized anonymizer engine.");
         }
 
-        private static AnonymizerConfiguration ConvertFromIConfiguration(IConfiguration configuration)
+        private static AnonymizerConfiguration ToAnonymizerConfiguration(IConfiguration configuration)
         {
             // Simple approach: rebuild the JSON structure from IConfiguration and deserialize
             var rules = new List<AnonymizerRuleModel>();
