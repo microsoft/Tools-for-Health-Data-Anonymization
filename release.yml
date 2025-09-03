@@ -33,12 +33,26 @@ stages:
         packageType: 'sdk'
         version: '9.0.x'
 
-    - task: PowerShell@2
-      displayName: 'Build and Test using build.ps1'
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
       inputs:
-        filePath: '$(Build.SourcesDirectory)/build.ps1'
-        arguments: '-Framework net8.0 -Configuration $(buildConfiguration) -Clean -Restore -Test'
-        workingDirectory: '$(Build.SourcesDirectory)'
+        command: 'restore'
+        projects: '$(solution)'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: 'build'
+        projects: '$(solution)'
+        arguments: '--configuration $(buildConfiguration) --no-restore --framework net8.0'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet test'
+      inputs:
+        command: 'test'
+        projects: '$(testProjects)'
+        arguments: '--configuration $(buildConfiguration) --no-build --framework net8.0'
+        publishTestResults: true
 
     
 - stage: Publish_Artifacts
@@ -60,12 +74,18 @@ stages:
         packageType: 'sdk'
         version: '9.0.x'
 
-    - task: PowerShell@2
-      displayName: 'Build for all frameworks using build.ps1'
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
       inputs:
-        filePath: '$(Build.SourcesDirectory)/build.ps1'
-        arguments: '-Framework all -Configuration $(buildConfiguration) -Restore'
-        workingDirectory: '$(Build.SourcesDirectory)'
+        command: 'restore'
+        projects: '$(solution)'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: 'build'
+        projects: '$(solution)'
+        arguments: '--configuration $(buildConfiguration) --no-restore'
 
     - task: ComponentGovernanceComponentDetection@0
       condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
@@ -94,17 +114,17 @@ stages:
         publishWebProjects: false
         zipAfterPublish: True
           
-    - task: PowerShell@2
-      displayName: 'Pack NuGet packages using build.ps1'
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet pack'
       inputs:
-        filePath: '$(Build.SourcesDirectory)/build.ps1'
-        arguments: '-Framework all -Configuration $(buildConfiguration) -Pack'
-        workingDirectory: '$(Build.SourcesDirectory)'
+        command: 'pack'
+        projects: '$(solution)'
+        arguments: '--configuration $(buildConfiguration) --no-build --output $(build.artifactStagingDirectory)/nupkgs'
 
     - task: CopyFiles@2
       displayName: 'Copy NuGet packages to staging'
       inputs:
-        SourceFolder: '$(Build.SourcesDirectory)/packages'
+        SourceFolder: '$(build.artifactStagingDirectory)/nupkgs'
         Contents: '**/*.nupkg'
         TargetFolder: '$(build.artifactStagingDirectory)/nupkgs'
 
