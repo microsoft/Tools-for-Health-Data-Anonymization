@@ -21,6 +21,14 @@ stages:
   jobs:
   - job: Build
     steps:
+    # .NET 8 runtime is required to execute tests targeting net8.0
+    # The .NET 9 SDK can build for .NET 8, but cannot run .NET 8 tests without the runtime
+    - task: UseDotNet@2
+      displayName: 'Use .NET 8 Runtime'
+      inputs:
+        packageType: 'runtime'
+        version: '8.0.x'
+        
     - task: UseDotNet@2
       displayName: 'Use .NET 9 SDK'
       inputs:
