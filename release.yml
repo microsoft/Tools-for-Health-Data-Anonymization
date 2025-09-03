@@ -56,7 +56,6 @@ stages:
   jobs:
   - job: Publish
     steps:
-
     - task: UseDotNet@2
       displayName: 'Use .NET 9 SDK'
       inputs:
