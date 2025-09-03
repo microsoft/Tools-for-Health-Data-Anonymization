@@ -10,7 +10,7 @@ variables:
   buildConfiguration: 'Release'
   major: 4
   minor: 2
-  patch: 2
+  patch: 3
   buildnum: $[counter(format('{0}.{1}.{2}',variables['major'],variables['minor'], variables['patch']), 1)]
   version: $(major).$(minor).$(patch).$(buildnum)
 
@@ -44,7 +44,7 @@ stages:
       inputs:
         command: 'build'
         projects: '$(solution)'
-        arguments: '--configuration $(buildConfiguration) --no-restore --framework net8.0'
+        arguments: '--configuration $(buildConfiguration) --no-restore --framework net8.0 /p:BUILD_VERSION=$(version)'
 
     - task: DotNetCoreCLI@2
       displayName: 'dotnet test'
@@ -85,7 +85,7 @@ stages:
       inputs:
         command: 'build'
         projects: '$(solution)'
-        arguments: '--configuration $(buildConfiguration) --no-restore'
+        arguments: '--configuration $(buildConfiguration) --no-restore /p:BUILD_VERSION=$(version)'
 
     - task: ComponentGovernanceComponentDetection@0
       condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
@@ -110,7 +110,7 @@ stages:
       inputs:
         command: 'publish'
         projects: '$(publishProject)'
-        arguments: '--configuration $(buildConfiguration) --framework net8.0 --no-restore --output $(Build.ArtifactStagingDirectory)'
+        arguments: '--configuration $(buildConfiguration) --framework net8.0 --no-restore --output $(Build.ArtifactStagingDirectory) /p:BUILD_VERSION=$(version)'
         publishWebProjects: false
         zipAfterPublish: True
           
@@ -119,7 +119,7 @@ stages:
       inputs:
         command: 'pack'
         projects: '$(solution)'
-        arguments: '--configuration $(buildConfiguration) --no-build --output $(build.artifactStagingDirectory)/nupkgs'
+        arguments: '--configuration $(buildConfiguration) --no-build --output $(build.artifactStagingDirectory)/nupkgs /p:BUILD_VERSION=$(version)'
 
     - task: CopyFiles@2
       displayName: 'Copy NuGet packages to staging'
