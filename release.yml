@@ -21,20 +21,6 @@ stages:
   jobs:
   - job: Build
     steps:
-    # .NET 8 runtime is required to execute tests targeting net8.0
-    # The .NET 9 SDK can build for .NET 8, but cannot run .NET 8 tests without the runtime
-    - task: UseDotNet@2
-      displayName: 'Use .NET 8 Runtime'
-      inputs:
-        packageType: 'runtime'
-        version: '8.0.x'
-        
-    - task: UseDotNet@2
-      displayName: 'Use .NET 9 SDK'
-      inputs:
-        packageType: 'sdk'
-        version: '9.0.x'
-
     - task: DotNetCoreCLI@2
       displayName: 'dotnet build'
       inputs:
@@ -57,19 +43,6 @@ stages:
   jobs:
   - job: Publish
     steps:
-    # Need both .NET 8 and 9 since projects are multi-targeting
-    - task: UseDotNet@2
-      displayName: 'Use .NET 8 SDK'
-      inputs:
-        packageType: 'sdk'
-        version: '8.0.x'
-        
-    - task: UseDotNet@2
-      displayName: 'Use .NET 9 SDK'
-      inputs:
-        packageType: 'sdk'
-        version: '9.0.x'
-
     - task: ComponentGovernanceComponentDetection@0
       condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
       displayName: 'component detection'
@@ -87,15 +60,6 @@ stages:
         downloadType: 'single'
         artifactName: 'NOTICE.txt'
         downloadPath: '$(Build.SourcesDirectory)/bin/notice'
-
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet publish'
-      inputs:
-        command: 'publish'
-        projects: '$(publishProject)'
-        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) --framework net8.0 /p:BUILD_VERSION=$(version)'
-        publishWebProjects: false
-        zipAfterPublish: True
           
     - task: DotNetCoreCLI@2
       displayName: 'dotnet pack nugets'
@@ -115,12 +79,6 @@ stages:
         BuildDropPath: '$(build.artifactStagingDirectory)'
 
     # Publish artifacts
-    - task: PublishBuildArtifacts@1
-      displayName: 'publish binary artifacts'
-      inputs:
-        pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-        artifactName: 'FhirAnonymizerBuild'
-        
     - task: PublishBuildArtifacts@1
       displayName: 'publish nuget artifacts'
       inputs:
