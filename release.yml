@@ -100,7 +100,7 @@ stages:
       inputs:
         command: 'publish'
         projects: '$(publishProject)'
-        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) --framework net8.0'
         publishWebProjects: false
         zipAfterPublish: True
           
