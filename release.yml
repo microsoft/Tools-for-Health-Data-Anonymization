@@ -95,17 +95,10 @@ stages:
 
     # Publish artifacts
     - task: PublishBuildArtifacts@1
-      displayName: 'publish binary artifacts'
+      displayName: 'publish build artifacts'
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
         artifactName: 'FhirAnonymizerBuild'
-        
-    - task: PublishBuildArtifacts@1
-      displayName: 'publish nuget artifacts'
-      inputs:
-        pathtoPublish: '$(build.artifactStagingDirectory)/nupkgs'
-        artifactName: 'nuget'
-        publishLocation: 'container'
 
 - stage: Release
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
