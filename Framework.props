@@ -1,0 +1,22 @@
+<Project>
+  
+  <!-- Framework-specific package references -->
+  
+  <!-- .NET 8.0 specific packages -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <!-- Add any .NET 8.0 specific package versions here -->
+  </ItemGroup>
+
+  <!-- .NET 9.0 specific packages -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <!-- Add any .NET 9.0 specific package versions here -->
+  </ItemGroup>
+
+  <!-- Framework version compatibility checks -->
+  <PropertyGroup>
+    <!-- Ensure Microsoft.Extensions.Logging compatibility -->
+    <MicrosoftExtensionsLoggingVersion Condition="'$(TargetFramework)' == 'net8.0'">8.0.0</MicrosoftExtensionsLoggingVersion>
+    <MicrosoftExtensionsLoggingVersion Condition="'$(TargetFramework)' == 'net9.0'">9.0.0</MicrosoftExtensionsLoggingVersion>
+  </PropertyGroup>
+  
+</Project>
