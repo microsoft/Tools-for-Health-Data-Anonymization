@@ -17,5 +17,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
         public string SeriesInstanceUID { get; set; }
 
         public string SopInstanceUID { get; set; }
+
+        /// <summary>
+        /// Gets or sets optional runtime key settings that can override configuration-based keys.
+        /// </summary>
+        public RuntimeKeySettings RuntimeKeys { get; set; }
     }
 }

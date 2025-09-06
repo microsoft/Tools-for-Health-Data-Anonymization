@@ -23,6 +23,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     public class EncryptProcessor : IAnonymizerProcessor
     {
         private readonly EncryptFunction _encryptFunction;
+        private readonly EncryptSetting _encryptSetting;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<EncryptProcessor>();
 
         public EncryptProcessor(JObject settingObject)
@@ -30,8 +31,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(settingObject, nameof(settingObject));
 
             var settingFactory = new AnonymizerSettingsFactory();
-            var encryptionSetting = settingFactory.CreateAnonymizerSetting<EncryptSetting>(settingObject);
-            _encryptFunction = new EncryptFunction(encryptionSetting);
+            _encryptSetting = settingFactory.CreateAnonymizerSetting<EncryptSetting>(settingObject);
+            _encryptFunction = new EncryptFunction(_encryptSetting);
         }
 
         public void Process(DicomDataset dicomDataset, DicomItem item, ProcessContext context = null)
@@ -39,11 +40,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
+            // Use runtime key if available, otherwise use configuration key
+            var encryptFunction = GetEncryptFunction(context);
+
             try
             {
                 if (item is DicomStringElement)
                 {
-                    var encryptedValues = ((DicomStringElement)item).Get<string[]>().Where(x => !string.IsNullOrEmpty(x)).Select(x => EncryptToBase64String(x));
+                    var encryptedValues = ((DicomStringElement)item).Get<string[]>().Where(x => !string.IsNullOrEmpty(x)).Select(x => EncryptToBase64String(x, encryptFunction));
                     if (encryptedValues.Count() != 0)
                     {
                         dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, encryptedValues.ToArray());
@@ -52,7 +56,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 else if (item is DicomOtherByte)
                 {
                     var valueBytes = ((DicomOtherByte)item).Get<byte[]>();
-                    var encryptesBytes = _encryptFunction.Encrypt(valueBytes);
+                    var encryptesBytes = encryptFunction.Encrypt(valueBytes);
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, encryptesBytes);
                 }
                 else if (item is DicomFragmentSequence)
@@ -63,7 +67,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
                     foreach (var fragment in (DicomFragmentSequence)item)
                     {
-                        element.Fragments.Add(new MemoryByteBuffer(_encryptFunction.Encrypt(fragment.Data)));
+                        element.Fragments.Add(new MemoryByteBuffer(encryptFunction.Encrypt(fragment.Data)));
                     }
 
                     dicomDataset.AddOrUpdate(element);
@@ -82,16 +86,32 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
         }
 
-        private string EncryptToBase64String(string plainString)
-        {
-            return Convert.ToBase64String(_encryptFunction.Encrypt(DicomEncoding.Default.GetBytes(plainString)));
-        }
-
         public bool IsSupported(DicomItem item)
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
             return DicomDataModel.EncryptSupportedVR.Contains(item.ValueRepresentation) || item is DicomFragmentSequence;
+        }
+
+        private EncryptFunction GetEncryptFunction(ProcessContext context)
+        {
+            // If runtime keys are provided and contain an encrypt key, use it
+            if (context?.RuntimeKeys?.EncryptKey != null)
+            {
+                var runtimeSetting = new EncryptSetting
+                {
+                    EncryptKey = context.RuntimeKeys.EncryptKey,
+                };
+                return new EncryptFunction(runtimeSetting);
+            }
+
+            // Fall back to configuration-based function
+            return _encryptFunction;
+        }
+
+        private string EncryptToBase64String(string plainString, EncryptFunction encryptFunction)
+        {
+            return Convert.ToBase64String(encryptFunction.Encrypt(DicomEncoding.Default.GetBytes(plainString)));
         }
     }
 }
