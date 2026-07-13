@@ -157,17 +157,17 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
             if (_usesCryptoHash && string.IsNullOrWhiteSpace(runtimeKeySettings?.CryptoHashKey))
             {
-                throw new AnonymizerOperationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Runtime cryptoHashKey is required when requireRuntimeKeys is enabled and a cryptoHash method is configured.");
+                throw new AnonymizerOperationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Runtime CryptoHashKey is required when requireRuntimeKeys is enabled and a cryptoHash method is configured.");
             }
 
             if (_usesDateShift && string.IsNullOrWhiteSpace(runtimeKeySettings?.DateShiftKey))
             {
-                throw new AnonymizerOperationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Runtime dateShiftKey is required when requireRuntimeKeys is enabled and a dateShift method is configured.");
+                throw new AnonymizerOperationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Runtime DateShiftKey is required when requireRuntimeKeys is enabled and a dateShift method is configured.");
             }
 
             if (_usesEncrypt && string.IsNullOrWhiteSpace(runtimeKeySettings?.EncryptKey))
             {
-                throw new AnonymizerOperationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Runtime encryptKey is required when requireRuntimeKeys is enabled and an encrypt method is configured.");
+                throw new AnonymizerOperationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "Runtime EncryptKey is required when requireRuntimeKeys is enabled and an encrypt method is configured.");
             }
         }
     }
