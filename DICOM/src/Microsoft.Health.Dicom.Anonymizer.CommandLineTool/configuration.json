@@ -304,7 +304,20 @@
         {"tag":"(0040,A027)", "method":"substitute"}, 
         {"tag":"(0038,4000)", "method":"remove"}, 
         {"tag":"DA", "method":"dateshift"},
-        {"tag":"DT", "method":"dateshift"}
+        {"tag":"DT", "method":"dateshift"},
+        {"tag":"0001,xxxx", "method": "keep"},
+        {"tag":"0003,xxxx", "method": "keep"},
+        {"tag":"0005,xxxx", "method": "keep"},
+        {"tag":"0007,xxxx", "method": "keep"},
+        {"tag":"FFFF,xxxx", "method": "keep"},
+        {"tag":"xxx1,xxxx", "method": "remove"},
+        {"tag":"xxx3,xxxx", "method": "remove"},
+        {"tag":"xxx5,xxxx", "method": "remove"},
+        {"tag":"xxx7,xxxx", "method": "remove"},
+        {"tag":"xxx9,xxxx", "method": "remove"},
+        {"tag":"xxxB,xxxx", "method": "remove"},
+        {"tag":"xxxD,xxxx", "method": "remove"},
+        {"tag":"xxxF,xxxx", "method": "remove"}
     ],
     "defaultSettings": {
         "perturb": {

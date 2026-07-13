@@ -1,0 +1,11 @@
+<Project>
+  
+  <!-- Import root Directory.Build.props first -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..'))" />
+  
+  <PropertyGroup>
+    <!-- Default target frameworks for FHIR projects -->
+    <DefaultTargetFrameworks>$(SupportedTargetFrameworks)</DefaultTargetFrameworks>
+  </PropertyGroup>
+  
+</Project>

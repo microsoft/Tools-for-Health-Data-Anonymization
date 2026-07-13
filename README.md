@@ -35,3 +35,14 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 FHIR® is the registered trademark of HL7 and is used with the permission of HL7.
+
+## Quick Start Commands
+
+The following commands help you get started building and testing the anonymization tools quickly.
+
+- Build all: `dotnet build DICOM\Dicom.Anonymizer.sln && dotnet build FHIR\Fhir.Anonymizer.sln`
+- Build DICOM only: `dotnet build DICOM\Dicom.Anonymizer.sln`
+- Build FHIR only: `dotnet build FHIR\Fhir.Anonymizer.sln`
+- Build specific framework: `dotnet build DICOM\Dicom.Anonymizer.sln -f net8.0`
+- Run tests: `dotnet test DICOM\Dicom.Anonymizer.sln && dotnet test FHIR\Fhir.Anonymizer.sln`
+- Create packages: `dotnet pack DICOM\Dicom.Anonymizer.sln -o packages && dotnet pack FHIR\Fhir.Anonymizer.sln -o packages`
