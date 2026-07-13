@@ -4,7 +4,6 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
-using System.Linq;
 using FellowOakDicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
@@ -26,20 +25,38 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         private readonly bool _usesDateShift;
         private readonly bool _usesEncrypt;
 
-        public AnonymizerEngine(string configFilePath = "configuration.json", AnonymizerEngineOptions anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null, IAnonymizerProcessorFactory processorFactory = null, bool requireRuntimeKeys = false)
+        public AnonymizerEngine(string configFilePath = "configuration.json", AnonymizerEngineOptions anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null, IAnonymizerProcessorFactory processorFactory = null)
+            : this(configFilePath, anonymizerSettings, ruleFactory, processorFactory, false)
+        {
+        }
+
+        public AnonymizerEngine(string configFilePath, bool requireRuntimeKeys)
+            : this(configFilePath, null, null, null, requireRuntimeKeys)
+        {
+        }
+
+        public AnonymizerEngine(string configFilePath, AnonymizerEngineOptions anonymizerSettings, IAnonymizerRuleFactory ruleFactory, IAnonymizerProcessorFactory processorFactory, bool requireRuntimeKeys)
             : this(AnonymizerConfigurationManager.CreateFromJsonFile(configFilePath), anonymizerSettings, ruleFactory, processorFactory, requireRuntimeKeys)
         {
         }
 
-        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, AnonymizerEngineOptions anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null, IAnonymizerProcessorFactory processorFactory = null, bool requireRuntimeKeys = false)
+        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, AnonymizerEngineOptions anonymizerSettings = null, IAnonymizerRuleFactory ruleFactory = null, IAnonymizerProcessorFactory processorFactory = null)
+            : this(configurationManager, anonymizerSettings, ruleFactory, processorFactory, false)
+        {
+        }
+
+        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, bool requireRuntimeKeys)
+            : this(configurationManager, null, null, null, requireRuntimeKeys)
+        {
+        }
+
+        public AnonymizerEngine(AnonymizerConfigurationManager configurationManager, AnonymizerEngineOptions anonymizerSettings, IAnonymizerRuleFactory ruleFactory, IAnonymizerProcessorFactory processorFactory, bool requireRuntimeKeys)
         {
             EnsureArg.IsNotNull(configurationManager, nameof(configurationManager));
 
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerEngineOptions();
             _requireRuntimeKeys = requireRuntimeKeys;
-            _usesCryptoHash = UsesMethod(configurationManager.Configuration.RuleContent, nameof(AnonymizerMethod.CryptoHash));
-            _usesDateShift = UsesMethod(configurationManager.Configuration.RuleContent, nameof(AnonymizerMethod.DateShift));
-            _usesEncrypt = UsesMethod(configurationManager.Configuration.RuleContent, nameof(AnonymizerMethod.Encrypt));
+            (_usesCryptoHash, _usesDateShift, _usesEncrypt) = GetConfiguredKeyedMethods(configurationManager.Configuration.RuleContent);
 
             ruleFactory ??= new AnonymizerRuleFactory(configurationManager.Configuration, processorFactory ?? new DicomProcessorFactory());
             _rules = ruleFactory.CreateDicomAnonymizationRules(configurationManager.Configuration.RuleContent);
@@ -91,12 +108,44 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             return context;
         }
 
-        private static bool UsesMethod(JObject[] ruleContents, string method)
+        private static (bool UsesCryptoHash, bool UsesDateShift, bool UsesEncrypt) GetConfiguredKeyedMethods(JObject[] ruleContents)
         {
-            return ruleContents?.Any(
-                ruleContent => ruleContent != null
-                    && ruleContent.TryGetValue(Constants.MethodKey, StringComparison.OrdinalIgnoreCase, out JToken methodToken)
-                    && string.Equals(methodToken?.ToString(), method, StringComparison.OrdinalIgnoreCase)) == true;
+            var usesCryptoHash = false;
+            var usesDateShift = false;
+            var usesEncrypt = false;
+
+            if (ruleContents == null)
+            {
+                return (usesCryptoHash, usesDateShift, usesEncrypt);
+            }
+
+            foreach (var ruleContent in ruleContents)
+            {
+                if (ruleContent == null || !ruleContent.TryGetValue(Constants.MethodKey, StringComparison.OrdinalIgnoreCase, out JToken methodToken))
+                {
+                    continue;
+                }
+
+                if (string.Equals(methodToken?.ToString(), nameof(AnonymizerMethod.CryptoHash), StringComparison.OrdinalIgnoreCase))
+                {
+                    usesCryptoHash = true;
+                }
+                else if (string.Equals(methodToken?.ToString(), nameof(AnonymizerMethod.DateShift), StringComparison.OrdinalIgnoreCase))
+                {
+                    usesDateShift = true;
+                }
+                else if (string.Equals(methodToken?.ToString(), nameof(AnonymizerMethod.Encrypt), StringComparison.OrdinalIgnoreCase))
+                {
+                    usesEncrypt = true;
+                }
+
+                if (usesCryptoHash && usesDateShift && usesEncrypt)
+                {
+                    break;
+                }
+            }
+
+            return (usesCryptoHash, usesDateShift, usesEncrypt);
         }
 
         private void ValidateRequiredRuntimeKeys(RuntimeKeySettings runtimeKeySettings)
