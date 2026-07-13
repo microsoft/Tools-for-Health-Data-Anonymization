@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using FellowOakDicom;
+using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Newtonsoft.Json.Linq;
 using Xunit;
@@ -138,6 +139,31 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.NotEqual(result1, result2);
             Assert.NotEqual("20000101", result1); // Should be shifted
             Assert.NotEqual("20000101", result2); // Should be shifted
+        }
+
+        [Fact]
+        public void GivenCryptoHashProcessor_WithoutRuntimeKey_WithRequireRuntimeKeys_ShouldThrow()
+        {
+            // Arrange
+            var dataset1 = new DicomDataset
+            {
+                { DicomTag.PatientName, "John Doe" },
+            };
+
+            var dataset2 = new DicomDataset
+            {
+                { DicomTag.PatientName, "John Doe" },
+            };
+
+            var config = CreateTestConfiguration();
+            var engine = new AnonymizerEngine(config, requireRuntimeKeys: true);
+
+            // Act & Assert
+            var exceptionWithoutRuntimeKey = Assert.Throws<AnonymizerOperationException>(() => engine.AnonymizeDataset(dataset1));
+            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, exceptionWithoutRuntimeKey.DicomAnonymizerErrorCode);
+
+            var exceptionWithNullRuntimeKeyField = Assert.Throws<AnonymizerOperationException>(() => engine.AnonymizeDataset(dataset2, new RuntimeKeySettings()));
+            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, exceptionWithNullRuntimeKeyField.DicomAnonymizerErrorCode);
         }
 
         private static AnonymizerConfigurationManager CreateTestConfiguration()
