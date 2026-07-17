@@ -85,31 +85,3 @@ stages:
         pathtoPublish: '$(build.artifactStagingDirectory)/nupkgs'
         artifactName: 'nuget'
         publishLocation: 'container'
-
-- stage: Release
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
-  jobs:
-  - job: Release
-    pool:
-        vmImage: 'windows-latest'
-    steps:
-    - checkout: none #skip checking out the default repository resource
-    - task: DownloadBuildArtifacts@0
-      displayName: 'Download Artifacts'
-      inputs:
-        artifactName: FhirAnonymizerBuild
-        downloadPath: $(System.DefaultWorkingDirectory)
-
-    - task: GithubRelease@1 
-      displayName: 'Create GitHub Release'      
-      inputs:
-        gitHubConnection: microsoft
-        repositoryName: microsoft/Tools-for-Health-Data-Anonymization
-        action: create
-        title: v$(major).$(minor).$(patch)
-        tagSource: userSpecifiedTag
-        tag: v$(major).$(minor).$(patch)    
-        assets: |
-          $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.R4.CommandLineTool.zip
-          $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Fhir.Anonymizer.Stu3.CommandLineTool.zip
-          $(System.DefaultWorkingDirectory)/FhirAnonymizerBuild/Microsoft.Health.Dicom.Anonymizer.CommandLineTool.zip
