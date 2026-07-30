@@ -25,7 +25,7 @@
     {"path": "HealthcareService.availabilityExceptions", "method": "redact"},    
     {"path": "HealthcareService.extraDetails", "method": "redact"},   
     {"path": "HealthcareService.eligibility.comment", "method": "redact"},   
-    {"path": "HealthcareService.notAvaliable.description", "method": "redact"},
+    {"path": "HealthcareService.notAvailable.description", "method": "redact"},
     {"path": "Endpoint.name", "method": "redact"},
     {"path": "Endpoint.address", "method": "redact"},
     {"path": "Location.name", "method": "redact"},
