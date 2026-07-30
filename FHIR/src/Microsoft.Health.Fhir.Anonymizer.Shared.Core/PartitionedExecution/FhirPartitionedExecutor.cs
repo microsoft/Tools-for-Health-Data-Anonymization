@@ -112,7 +112,7 @@ namespace Microsoft.Health.Fhir.Anonymizer.Core
                     }
 
                     TResult anonymizedResult = await AnonymizerFunctionAsync(content);
-                    if (EmptyElement.IsEmptyElement(anonymizedResult))
+                    if (EmptyElement.IsEmptyElement(anonymizedResult) || anonymizedResult.ToString() == string.Empty)
                     {
                         batchAnonymizeProgressDetail.ProcessSkipped++;
                     }

@@ -253,8 +253,9 @@ Since _AnonymizationProcessingException_ may caused by a specific FHIR resource,
 
 |processingErrors|Description|
 |----|----|
-|raise|Raise _AnonymizationProcessingException_ with program failed and stopped.|
-|skip| Skip _AnonymizationProcessingException_ and return an empty FHIR resource with program continued. |
+|raise|Raise _AnonymizerProcessingException_ with program failed and stopped.|
+|skip| Skip _AnonymizerProcessingException_ and return an empty FHIR resource with program continued. |
+|ignoreinvalid| Skip both _AnonymizerProcessingException_ and _InvalidInputException_ errors, and return an empty FHIR resource with program continued. |
 
 Here is the structure of empty FHIR resource for patient:
 ```

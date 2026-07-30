@@ -18,6 +18,14 @@ namespace Microsoft.Health.Fhir.Anonymizer.FunctionalTests
             Assert.Equal(Standardize(targetContent), Standardize(resultAfterAnonymize));
         } 
 
+        public static void VerifyEmptyStringFromFile(AnonymizerEngine engine, string testFile)
+        {
+            Console.WriteLine($"VerifyEmptyStringFromFile. TestFile: {testFile}");
+            string testContent = File.ReadAllText(testFile);
+            string resultAfterAnonymize = engine.AnonymizeJson(testContent);
+            Assert.Equal(string.Empty, resultAfterAnonymize);
+        }
+
         private static string Standardize(string jsonContent)
         {
             var resource = new FhirJsonParser().Parse<Resource>(jsonContent);
