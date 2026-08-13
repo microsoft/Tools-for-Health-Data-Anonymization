@@ -122,7 +122,10 @@ namespace Microsoft.Health.Anonymizer.Common
             BigInteger lowerBound = BigInteger.Pow(10, input.Length - 1);
             BigInteger range = lowerBound * 9;
             int rangeByteLength = range.ToByteArray(isUnsigned: true, isBigEndian: true).Length;
-            int requiredBytes = Math.Max(hash.Length, rangeByteLength * 2);
+            const int entropyExpansionFactor = 2;
+
+            // Use additional deterministic hash bytes so modulo-to-range skew is reduced for non-power-of-two ranges.
+            int requiredBytes = Math.Max(hash.Length, rangeByteLength * entropyExpansionFactor);
             byte[] expandedHash = ExpandHash(hash, requiredBytes);
             BigInteger randomValue = new BigInteger(expandedHash, isUnsigned: true, isBigEndian: true);
             BigInteger hashBigInteger = lowerBound + (randomValue % range);

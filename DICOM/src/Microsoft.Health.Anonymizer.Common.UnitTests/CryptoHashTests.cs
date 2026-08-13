@@ -98,6 +98,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
 
         public static IEnumerable<object[]> GetMatchInputLengthBoundaryData()
         {
+            yield return new object[] { "9" };
             yield return new object[] { new string('9', 18) };
             yield return new object[] { new string('9', 19) };
             yield return new object[] { new string('9', 40) };
