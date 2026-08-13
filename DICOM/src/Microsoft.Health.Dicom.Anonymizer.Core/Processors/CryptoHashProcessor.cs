@@ -183,7 +183,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 var hexValue = character >= '0' && character <= '9'
                     ? character - '0'
                     : char.ToLowerInvariant(character) - 'a' + 10;
-                digits.Append((char)('0' + (((hexValue % 10) + 10) % 10)));
+                digits.Append((char)('0' + (hexValue % 10)));
             }
 
             if (digits.Length > 0 && digits[0] == '0')
