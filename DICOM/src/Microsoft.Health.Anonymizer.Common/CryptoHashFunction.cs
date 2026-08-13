@@ -4,8 +4,10 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
@@ -96,18 +98,61 @@ namespace Microsoft.Health.Anonymizer.Common
         /// </summary>
         private static string GenerateOutputOfSameLength(byte[] hash, string input)
         {
-            var hashFloat = BitConverter.ToUInt32(hash, 0) / (float)uint.MaxValue;
-
-            long orderOfMagnitude = (long)Math.Pow(10, input.Length - 1);
-            if (orderOfMagnitude == 1)
+            if (input.Length == 0)
             {
-                orderOfMagnitude = 0;
+                return string.Empty;
             }
-            long maxNumberGivenDigits = long.Parse(new string('9', input.Length));
 
-            long hashLong = (long)(hashFloat * (maxNumberGivenDigits - orderOfMagnitude)) + orderOfMagnitude;
+            if (input.Length <= 18)
+            {
+                var hashFloat = BitConverter.ToUInt32(hash, 0) / (float)uint.MaxValue;
 
-            return hashLong.ToString();
+                long orderOfMagnitude = (long)Math.Pow(10, input.Length - 1);
+                if (orderOfMagnitude == 1)
+                {
+                    orderOfMagnitude = 0;
+                }
+
+                long maxNumberGivenDigits = long.Parse(new string('9', input.Length), CultureInfo.InvariantCulture);
+                long hashLong = (long)(hashFloat * (maxNumberGivenDigits - orderOfMagnitude)) + orderOfMagnitude;
+
+                return hashLong.ToString(CultureInfo.InvariantCulture);
+            }
+
+            BigInteger lowerBound = BigInteger.Pow(10, input.Length - 1);
+            BigInteger range = lowerBound * 9;
+            int requiredBytes = range.ToByteArray(isUnsigned: true, isBigEndian: true).Length;
+            byte[] expandedHash = ExpandHash(hash, requiredBytes);
+            BigInteger randomValue = new BigInteger(expandedHash, isUnsigned: true, isBigEndian: true);
+            BigInteger hashBigInteger = lowerBound + (randomValue % range);
+
+            return hashBigInteger.ToString(CultureInfo.InvariantCulture);
+        }
+
+        private static byte[] ExpandHash(byte[] hash, int requiredBytes)
+        {
+            if (hash.Length >= requiredBytes)
+            {
+                return hash.Take(requiredBytes).ToArray();
+            }
+
+            var output = new byte[requiredBytes];
+            int copiedBytes = 0;
+            byte[] currentBlock = hash;
+
+            while (copiedBytes < requiredBytes)
+            {
+                int bytesToCopy = Math.Min(currentBlock.Length, requiredBytes - copiedBytes);
+                Buffer.BlockCopy(currentBlock, 0, output, copiedBytes, bytesToCopy);
+                copiedBytes += bytesToCopy;
+
+                if (copiedBytes < requiredBytes)
+                {
+                    currentBlock = SHA512.HashData(currentBlock);
+                }
+            }
+
+            return output;
         }
     }
 }

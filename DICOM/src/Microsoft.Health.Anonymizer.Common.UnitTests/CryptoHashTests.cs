@@ -96,6 +96,13 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
             };
         }
 
+        public static IEnumerable<object[]> GetMatchInputLengthBoundaryData()
+        {
+            yield return new object[] { new string('9', 18) };
+            yield return new object[] { new string('9', 19) };
+            yield return new object[] { new string('9', 40) };
+        }
+
         [Theory]
         [MemberData(nameof(GetHmac512HashStringData))]
         public void GivenAString_WhenComputeHmac512_CorrectHashShouldBeReturned(string input, string expectedHash)
@@ -144,6 +151,18 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         {
             var hashData = _function.Hash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMatchInputLengthBoundaryData))]
+        public void GivenInputLengthBoundary_WhenMatchingInputLength_OutputShouldBeDeterministicNumericAndMatchInputLength(string input)
+        {
+            var firstOutput = CryptoHashFunction.Hash(input, new HMACSHA256(Encoding.UTF8.GetBytes(TestHashKey)), matchInputLength: true);
+            var secondOutput = CryptoHashFunction.Hash(input, new HMACSHA256(Encoding.UTF8.GetBytes(TestHashKey)), matchInputLength: true);
+
+            Assert.Equal(input.Length, firstOutput.Length);
+            Assert.Equal(firstOutput, secondOutput);
+            Assert.Matches("^[0-9]+$", firstOutput);
         }
     }
 }
