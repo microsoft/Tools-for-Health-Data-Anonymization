@@ -207,7 +207,19 @@ Here is a sample rule using dateShift method on DICOM tags with VR in DA. The da
 ```
 
 ### CryptoHash
-This function use HMAC-SHA256 algorithm and outputs a Hex encoded representation (for example, a3c024f01cccb3b63457d848b0d2f89c1f744a3d). The length of output string is 64 bytes. You should pay attention to the length limitation of output DICOM file.
+This function use HMAC-SHA256 algorithm and outputs a Hex encoded representation (for example, a3c024f01cccb3b63457d848b0d2f89c1f744a3d). The hash output is constrained to the value representation (VR) of the target DICOM tag, so that the anonymized value stays DICOM conformant:
+
+- The output is truncated to the maximum length of the VR, e.g. 16 characters for SH, AE, CS and DS, and 64 for UI, LO and PN. For IS the output is limited to 9 digits: the VR allows up to 12 characters, but 9 digits is the largest number of digits that always fits in a 32-bit signed integer. VRs without a length limit (e.g. UC, UT, UR) keep the full 64 character output.
+- The output is mapped to the character repertoire of the VR, e.g. digits only for DS, IS and UI, and uppercase characters for CS.
+
+Hashing remains deterministic: the same input value, key and target VR always produce the same output.
+
+> **[NOTE]**
+> Truncation reduces the collision resistance of the hash to the number of retained characters (for example, 16 hex characters retain 64 bits of the digest). This is a deliberate tradeoff to produce values that DICOM parsers accept.
+
+> **[NOTE]**
+> For VRs with a fixed structure (AS, DA, DT and TM) no conformant value can be generated from a hash. An anonymizer error is returned for these VRs when the output is validated, use another method (e.g. dateShift or redact) for these tags instead.
+
 In cryptoHash setting, you can set cryptoHash key in setting.
 
 |Parameters|Description|Valid Values|Required|default value|

@@ -46,16 +46,23 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { DicomTag.Pixel​Data​Provider​URL, "http://test", "4983fd14ec2878e50c454764a0d02654ae76fe1001557847b031435100acc9a1" }; // LT
         }
 
-        public static IEnumerable<object[]> GetSupportedVRItemForCryptoHashButOutputExceedLengthLimitation()
+        public static IEnumerable<object[]> GetSupportedVRItemForCryptoHashWithLengthLimitation()
         {
-            // Invalid output length limitation
-            yield return new object[] { DicomTag.RetrieveAETitle, "TEST", "2e7acefff0307262cef6f503fa7019257f3f9d47fc987fb2c5a31ae4f4d3c022" }; // AE
-            yield return new object[] { DicomTag.PatientAge, "100Y", "0329e399cd57ed8b21172ede4ae295f549c3d6ece0d292c01a707531d133936e" }; // AS
-            yield return new object[] { DicomTag.Query​Retrieve​Level, "0", "976feb2c9f52ff3c8114901e9913be50063f50b1683ea556f1fe47d449cc5583" }; // CS
-            yield return new object[] { DicomTag.Event​Elapsed​Times, "1234.5", "92b95e021c40596706b243f79fe0f45394de785be64866f6b46fcacd0839ac43" }; // DS
-            yield return new object[] { DicomTag.Stage​Number, "1234", "c1771ad95972ef1ab887140489863ede4faad7458441a3a8a4781454e368b52d" }; // IS
-            yield return new object[] { DicomTag.Patient​Telephone​Numbers, "TEST", "2e7acefff0307262cef6f503fa7019257f3f9d47fc987fb2c5a31ae4f4d3c022" }; // SH
-            yield return new object[] { DicomTag.SOP​Classes​In​Study, "12345", "81c7be73b3eaeca31695a744fbc6d3abb5a37ffc10498d0fcb4111c7944b28a0" }; // UI
+            // Output is constrained to the maximum length and the character repertoire of the value representation
+            yield return new object[] { DicomTag.RetrieveAETitle, "TEST", "2e7acefff0307262" }; // AE, 16 characters
+            yield return new object[] { DicomTag.Query​Retrieve​Level, "0", "976FEB2C9F52FF3C" }; // CS, 16 uppercase characters
+            yield return new object[] { DicomTag.Event​Elapsed​Times, "1234.5", "9219540212405967" }; // DS, 16 digits
+            yield return new object[] { DicomTag.Stage​Number, "1234", "217710395" }; // IS, 9 digits
+            yield return new object[] { DicomTag.Patient​Telephone​Numbers, "TEST", "2e7acefff0307262" }; // SH, 16 characters
+            yield return new object[] { DicomTag.SOP​Classes​In​Study, "12345", "8127147313404203169507445126330115037552104983052141112794412800" }; // UI, 64 digits
+        }
+
+        public static IEnumerable<object[]> GetFixedFormatVRItemForCryptoHash()
+        {
+            yield return new object[] { DicomTag.PatientAge, "100Y" }; // AS
+            yield return new object[] { DicomTag.PatientBirthDate, "20210101" }; // DA
+            yield return new object[] { DicomTag.AcquisitionDateTime, "20210101120000" }; // DT
+            yield return new object[] { DicomTag.StudyTime, "120000" }; // TM
         }
 
         [Theory]
@@ -72,7 +79,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 
         [Theory]
         [MemberData(nameof(GetSupportedVRItemForCryptoHash))]
-        [MemberData(nameof(GetSupportedVRItemForCryptoHashButOutputExceedLengthLimitation))]
+        [MemberData(nameof(GetSupportedVRItemForCryptoHashWithLengthLimitation))]
         public void GivenSupportedVRForCryptoHash_WhenCheckVRIsSupported_ResultWillBeTrue(DicomTag tag, string value, string expectedValue)
         {
             var dataset = new DicomDataset
@@ -97,29 +104,69 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
         }
 
         [Theory]
-        [MemberData(nameof(GetSupportedVRItemForCryptoHashButOutputExceedLengthLimitation))]
-        public void GivenADataSetWithSupportedVRForCryptoHash_WhenCryptoHashWithAutoValidation_IfOutputExceedLengthLimitation_ExceptionWillBeThrown(DicomTag tag, string value, string result)
+        [MemberData(nameof(GetSupportedVRItemForCryptoHashWithLengthLimitation))]
+        public void GivenADataSetWithSupportedVRForCryptoHash_WhenCryptoHash_OutputWillConformToValueRepresentation(DicomTag tag, string value, string result)
         {
             var dataset = new DicomDataset
             {
                 { tag, value },
             };
 
-            Assert.Throws<DicomValidationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
-            Assert.NotNull(result);
+            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
+            var hashedValue = dataset.GetDicomItem<DicomElement>(tag).Get<string>();
+            Assert.Equal(result, hashedValue);
+            Assert.True(tag.DictionaryEntry.ValueRepresentations[0].MaximumLength == 0 || hashedValue.Length <= tag.DictionaryEntry.ValueRepresentations[0].MaximumLength);
+        }
+
+        [Fact]
+        public void GivenADataSetWithSHValueForCryptoHash_WhenCryptoHash_OutputWillNotExceedSixteenCharacters()
+        {
+            var tag = DicomTag.PatientTelephoneNumbers; // SH
+            var dataset = new DicomDataset
+            {
+                { tag, "1234567890123456" },
+            };
+
+            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
+            var hashedValue = dataset.GetDicomItem<DicomElement>(tag).Get<string>();
+            Assert.Equal(16, hashedValue.Length);
+        }
+
+        [Fact]
+        public void GivenADataSetWithSHValueForCryptoHash_WhenCryptoHashTwice_OutputWillBeDeterministic()
+        {
+            var tag = DicomTag.PatientTelephoneNumbers; // SH
+            var firstDataset = new DicomDataset { { tag, "TEST" } };
+            var secondDataset = new DicomDataset { { tag, "TEST" } };
+
+            Processor.Process(firstDataset, firstDataset.GetDicomItem<DicomElement>(tag));
+            Processor.Process(secondDataset, secondDataset.GetDicomItem<DicomElement>(tag));
+
+            Assert.Equal(firstDataset.GetDicomItem<DicomElement>(tag).Get<string>(), secondDataset.GetDicomItem<DicomElement>(tag).Get<string>());
+        }
+
+        [Fact]
+        public void GivenADataSetWithSHValueForCryptoHash_WhenCryptoHashWithMatchInputStringLength_OutputWillMatchInputLength()
+        {
+            var processor = new CryptoHashProcessor(JObject.Parse("{\"cryptoHashKey\": \"123\", \"matchInputStringLength\": true}"));
+            var tag = DicomTag.PatientTelephoneNumbers; // SH
+            var dataset = new DicomDataset { { tag, "1234567890123456" } };
+
+            processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
+            Assert.Equal(16, dataset.GetDicomItem<DicomElement>(tag).Get<string>().Length);
         }
 
         [Theory]
-        [MemberData(nameof(GetSupportedVRItemForCryptoHashButOutputExceedLengthLimitation))]
-        public void GivenADataSetWithSupportedVRForCryptoHash_WhenCryptoHashWithoutAutoValidation_IfOutputExceedLengthLimitation_ResultWillBeReturned(DicomTag tag, string value, string result)
+        [MemberData(nameof(GetFixedFormatVRItemForCryptoHash))]
+        public void GivenADataSetWithFixedFormatVRForCryptoHash_WhenCryptoHash_ExceptionWillBeThrown(DicomTag tag, string value)
         {
             var dataset = new DicomDataset
             {
                 { tag, value },
             };
-            DicomUtility.DisableAutoValidation(dataset);
-            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
-            Assert.Equal(result, dataset.GetDicomItem<DicomElement>(tag).Get<string>());
+
+            var exception = Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
+            Assert.DoesNotContain(value, exception.Message, StringComparison.Ordinal);
         }
 
         [Theory]
