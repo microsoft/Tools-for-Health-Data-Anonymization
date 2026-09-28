@@ -56,7 +56,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 {
                     throw new AnonymizerOperationException(
                         DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod,
-                        $"Configured method is not supported for tag {item.Tag} with VR {item.ValueRepresentation}.");
+                        $"Configured method is not supported for tag {DicomUtility.FormatTag(item.Tag)} with VR {item.ValueRepresentation}.");
                 }
             }
         }

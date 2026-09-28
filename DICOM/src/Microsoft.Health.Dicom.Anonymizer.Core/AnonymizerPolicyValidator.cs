@@ -58,30 +58,49 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 return;
             }
 
+            var exactTagSelectors = new Dictionary<DicomTag, int>();
             var selectors = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
             for (var index = 0; index < rules.Length; index++)
             {
                 var rule = rules[index];
-                var selector = GetSelector(rule);
-                if (selectors.TryGetValue(selector, out var previousIndex))
+                int previousIndex;
+                if (rule is AnonymizerTagRule tagRule)
                 {
-                    throw new AnonymizerConfigurationException(
-                        DicomAnonymizationErrorCode.InvalidConfigurationValues,
-                        $"Policy validation failed: duplicate selector at rules {previousIndex} and {index}.");
+                    if (exactTagSelectors.TryGetValue(tagRule.Tag, out previousIndex))
+                    {
+                        ThrowDuplicateSelector(previousIndex, index);
+                    }
+
+                    exactTagSelectors.Add(tagRule.Tag, index);
+                }
+                else
+                {
+                    var selector = GetSelector(rule);
+                    if (selectors.TryGetValue(selector, out previousIndex))
+                    {
+                        ThrowDuplicateSelector(previousIndex, index);
+                    }
+
+                    selectors.Add(selector, index);
                 }
 
-                selectors.Add(selector, index);
                 ValidateBroadRule(rule, index);
                 ValidateCryptoHashRule(rule, index);
             }
+        }
+
+        private static void ThrowDuplicateSelector(int previousIndex, int index)
+        {
+            throw new AnonymizerConfigurationException(
+                DicomAnonymizationErrorCode.InvalidConfigurationValues,
+                $"Policy validation failed: duplicate selector at rules {previousIndex} and {index}.");
         }
 
         private static string GetSelector(AnonymizerRule rule)
         {
             return rule switch
             {
-                AnonymizerTagRule tagRule => $"tag:{tagRule.Tag.Group:X4}{tagRule.Tag.Element:X4}",
                 AnonymizerMaskedTagRule maskedRule => $"mask:{maskedRule.MaskedTag}",
                 AnonymizerVRRule vrRule => $"vr:{vrRule.VR.Code}",
                 _ => $"rule:{rule.GetType().Name}:{rule.Description}",

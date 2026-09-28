@@ -336,5 +336,53 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 
             Assert.Equal("PRIVATE", dataset.GetString(privateTag));
         }
+
+        [Fact]
+        public void GivenSamePrivateTagWithDistinctCreators_WhenAnonymizing_RulesRemainIndependent()
+        {
+            const string creatorA = "SYNTHETIC-CREATOR-A";
+            const string creatorB = "SYNTHETIC-CREATOR-B";
+            var tagA = DicomTag.Parse($"(0011,1001:{creatorA})");
+            var tagB = DicomTag.Parse($"(0011,1001:{creatorB})");
+            var manager = AnonymizerConfigurationManager.CreateFromJson(
+                $"{{\"rules\":[{{\"tag\":\"(0011,1001:{creatorA})\",\"method\":\"keep\"}},{{\"tag\":\"(0011,1001:{creatorB})\",\"method\":\"remove\"}}]}}");
+            var dataset = new DicomDataset();
+            dataset.AddOrUpdate(DicomVR.LO, tagA, "KEEP");
+            dataset.AddOrUpdate(DicomVR.LO, tagB, "REMOVE");
+            var engine = new AnonymizerEngine(manager);
+
+            engine.AnonymizeDataset(dataset);
+
+            Assert.Equal("KEEP", dataset.GetString(tagA));
+            Assert.Null(dataset.GetDicomItem<DicomItem>(tagB));
+        }
+
+        [Fact]
+        public void GivenEquivalentPrivateBlockAliases_WhenConstructingEngine_RejectsDuplicateSelector()
+        {
+            const string creator = "SYNTHETIC-CREATOR-ALIAS-SENTINEL";
+            Assert.Equal(DicomTag.Parse($"(0011,1001:{creator})"), DicomTag.Parse($"(0011,1101:{creator})"));
+            var manager = AnonymizerConfigurationManager.CreateFromJson(
+                $"{{\"rules\":[{{\"tag\":\"(0011,1001:{creator})\",\"method\":\"keep\"}},{{\"tag\":\"(0011,1101:{creator})\",\"method\":\"remove\"}}]}}");
+
+            var exception = Assert.Throws<AnonymizerConfigurationException>(() => new AnonymizerEngine(manager));
+
+            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, exception.DicomAnonymizerErrorCode);
+            Assert.DoesNotContain(creator, exception.ToString(), StringComparison.Ordinal);
+        }
+
+        [Fact]
+        public void GivenPrivateCreatorsDifferingOnlyByCase_WhenConstructingEngine_AcceptsDistinctSelectors()
+        {
+            var upperTag = DicomTag.Parse("(0011,1001:SYNTHETIC-CREATOR-CASE)");
+            var lowerTag = DicomTag.Parse("(0011,1001:synthetic-creator-case)");
+            Assert.NotEqual(upperTag, lowerTag);
+            var manager = AnonymizerConfigurationManager.CreateFromJson(
+                "{\"rules\":[{\"tag\":\"(0011,1001:SYNTHETIC-CREATOR-CASE)\",\"method\":\"keep\"},{\"tag\":\"(0011,1001:synthetic-creator-case)\",\"method\":\"remove\"}]}");
+
+            var engine = new AnonymizerEngine(manager);
+
+            Assert.NotNull(engine);
+        }
     }
 }

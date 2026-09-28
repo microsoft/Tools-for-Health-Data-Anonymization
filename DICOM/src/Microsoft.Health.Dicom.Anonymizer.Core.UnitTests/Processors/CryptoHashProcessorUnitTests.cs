@@ -4,11 +4,13 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FellowOakDicom;
 using FellowOakDicom.IO.Buffer;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
@@ -249,6 +251,99 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             dataset.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2));
 
             Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence)));
+        }
+
+        [Fact]
+        public void GivenPrivateItem_WhenCryptoHashCompletes_LogUsesNumericTagOnly()
+        {
+            const string creator = "SYNTHETIC-CREATOR-PRIVACY-SENTINEL";
+            var provider = new CapturingLoggerProvider();
+            using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug).AddProvider(provider));
+            var originalLoggerFactory = AnonymizerLogging.LoggerFactory;
+            AnonymizerLogging.LoggerFactory = loggerFactory;
+
+            try
+            {
+                var processor = new CryptoHashProcessor(JObject.Parse("{\"cryptoHashKey\":\"123\"}"));
+                var tag = DicomTag.Parse($"(0011,1001:{creator})");
+                var dataset = new DicomDataset();
+                dataset.AddOrUpdate(DicomVR.LO, tag, "PRIVATE");
+
+                processor.Process(dataset, dataset.GetDicomItem<DicomItem>(tag));
+
+                var entry = Assert.Single(
+                    provider.Entries.Where(
+                        entry => entry.Category.EndsWith(nameof(CryptoHashProcessor), StringComparison.Ordinal) &&
+                            entry.State.Any(pair => pair.Key == "Tag" && pair.Value?.ToString().Contains("0011,1001", StringComparison.Ordinal) == true)));
+                Assert.DoesNotContain(creator, entry.Message);
+                Assert.DoesNotContain(entry.State, pair => pair.Value?.ToString().Contains(creator, StringComparison.Ordinal) == true);
+                Assert.Contains(entry.State, pair => pair.Key == "Tag" && pair.Value?.ToString() == "(0011,1001)");
+            }
+            finally
+            {
+                AnonymizerLogging.LoggerFactory = originalLoggerFactory;
+            }
+        }
+
+        private sealed class CapturingLoggerProvider : ILoggerProvider
+        {
+            public ConcurrentQueue<LogEntry> Entries { get; } = new ConcurrentQueue<LogEntry>();
+
+            public ILogger CreateLogger(string categoryName)
+            {
+                return new CapturingLogger(categoryName, Entries);
+            }
+
+            public void Dispose()
+            {
+            }
+        }
+
+        private sealed class CapturingLogger : ILogger
+        {
+            private readonly ConcurrentQueue<LogEntry> _entries;
+
+            private readonly string _category;
+
+            public CapturingLogger(string category, ConcurrentQueue<LogEntry> entries)
+            {
+                _category = category;
+                _entries = entries;
+            }
+
+            public IDisposable BeginScope<TState>(TState state)
+            {
+                return null;
+            }
+
+            public bool IsEnabled(LogLevel logLevel)
+            {
+                return true;
+            }
+
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+            {
+                var values = state is IEnumerable<KeyValuePair<string, object>> structuredState
+                    ? structuredState.ToArray()
+                    : Array.Empty<KeyValuePair<string, object>>();
+                _entries.Enqueue(new LogEntry(_category, formatter(state, exception), values));
+            }
+        }
+
+        private sealed class LogEntry
+        {
+            public LogEntry(string category, string message, IReadOnlyList<KeyValuePair<string, object>> state)
+            {
+                Category = category;
+                Message = message;
+                State = state;
+            }
+
+            public string Category { get; }
+
+            public string Message { get; }
+
+            public IReadOnlyList<KeyValuePair<string, object>> State { get; }
         }
     }
 }

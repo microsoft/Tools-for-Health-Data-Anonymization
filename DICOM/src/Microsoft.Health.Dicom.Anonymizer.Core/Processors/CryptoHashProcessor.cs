@@ -81,7 +81,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"CryptoHash is not supported for {item.ValueRepresentation}.");
             }
 
-            _logger.LogDebug("CryptoHash completed for tag {Tag} with VR {VR}.", item.Tag, item.ValueRepresentation);
+            _logger.LogDebug("CryptoHash completed for tag {Tag} with VR {VR}.", DicomUtility.FormatTag(item.Tag), item.ValueRepresentation);
         }
 
         public bool IsSupported(DicomItem item)
