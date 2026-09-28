@@ -3,7 +3,9 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System;
 using FellowOakDicom;
+using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Xunit;
@@ -48,8 +50,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [Fact]
         public void GivenDicomDataSet_SetValidateOutput_WhenAnonymizeWithInvalidOutput_ExceptionWillBeThrown()
         {
-            var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerEngineOptions(validateOutput: true));
-            Assert.Throws<DicomValidationException>(() => engine.AnonymizeDataset(Dataset));
+            Assert.Throws<AnonymizerConfigurationException>(
+                () => new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerEngineOptions(validateOutput: true)));
         }
 
         [Fact]
@@ -57,7 +59,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         {
             DicomUtility.DisableAutoValidation(Dataset);
             Dataset.AddOrUpdate(DicomTag.PatientAge, "invalid");
-            var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerEngineOptions(validateInput: true));
+            var engine = new AnonymizerEngine("./TestConfigurations/configuration-test-engine.json", new AnonymizerEngineOptions(validateInput: true));
             Assert.Throws<DicomValidationException>(() => engine.AnonymizeDataset(Dataset));
         }
 
@@ -93,13 +95,77 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [Fact]
         public void GivenDicomDataSet_SetValidationOutputFalse_WhenAnonymizeWithInvalidOutput_InvalidDicomDatasetWillBeReturned()
         {
-            var engine = new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerEngineOptions(false, false));
-            engine.AnonymizeDataset(Dataset);
-            var dicomFile = DicomFile.Open("DicomResults/Invalid-String-Format.dcm");
-            foreach (var item in Dataset)
-            {
-                Assert.Equal(((DicomElement)item).Get<string>(), dicomFile.Dataset.GetString(item.Tag));
-            }
+            Assert.Throws<AnonymizerConfigurationException>(
+                () => new AnonymizerEngine("./TestConfigurations/configuration-invalid-string-output.json", new AnonymizerEngineOptions(false, false)));
+        }
+
+        [Theory]
+        [InlineData("{\"rules\":[{\"tag\":\"PatientWeight\",\"method\":\"keep\"},{\"tag\":\"(0010,1030)\",\"method\":\"remove\"}]}")]
+        [InlineData("{\"rules\":[{\"tag\":\"UI\",\"method\":\"refreshUID\"}]}")]
+        [InlineData("{\"rules\":[{\"tag\":\"SQ\",\"method\":\"remove\"}]}")]
+        [InlineData("{\"rules\":[{\"tag\":\"StudyDate\",\"method\":\"cryptoHash\"}],\"defaultSettings\":{\"cryptoHash\":{\"cryptoHashKey\":\"key\"}}}")]
+        [InlineData("{\"rules\":[{\"tag\":\"PatientID\",\"method\":\"keep\",\"unexpected\":true}]}")]
+        public void GivenUnsafeOrAmbiguousPolicy_WhenConstructingEngine_FailsBeforeDatasetMutation(string json)
+        {
+            var manager = AnonymizerConfigurationManager.CreateFromJson(json);
+
+            var exception = Assert.Throws<AnonymizerConfigurationException>(() => new AnonymizerEngine(manager));
+
+            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, exception.DicomAnonymizerErrorCode);
+            Assert.DoesNotContain("PatientWeight", exception.Message, StringComparison.Ordinal);
+            Assert.DoesNotContain("StudyDate", exception.Message, StringComparison.Ordinal);
+        }
+
+        [Fact]
+        public void GivenUnknownTopLevelField_WhenParsingPolicy_FailsClosed()
+        {
+            var exception = Assert.Throws<AnonymizerConfigurationException>(
+                () => AnonymizerConfigurationManager.CreateFromJson("{\"rules\":[],\"unexpected\":true}"));
+
+            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, exception.DicomAnonymizerErrorCode);
+        }
+
+        [Fact]
+        public void GivenUnambiguousSpecificAndBroadRules_WhenConstructingEngine_PreservesRulePrecedence()
+        {
+            var manager = AnonymizerConfigurationManager.CreateFromJson(
+                "{\"rules\":[{\"tag\":\"PatientName\",\"method\":\"keep\"},{\"tag\":\"PN\",\"method\":\"redact\"}],\"defaultSettings\":{\"redact\":{}}}");
+            var dataset = new DicomDataset { { DicomTag.PatientName, "PRIVATE" }, { DicomTag.ReferringPhysicianName, "REMOVE" } };
+            var engine = new AnonymizerEngine(manager);
+
+            engine.AnonymizeDataset(dataset);
+
+            Assert.Equal("PRIVATE", dataset.GetString(DicomTag.PatientName));
+            Assert.Null(dataset.GetString(DicomTag.ReferringPhysicianName));
+        }
+
+        [Fact]
+        public void GivenSharedDefaultSettings_WhenRuleParametersAreMerged_SettingsDoNotBleedBetweenRules()
+        {
+            var manager = AnonymizerConfigurationManager.CreateFromJson(
+                "{\"rules\":[{\"tag\":\"PatientID\",\"method\":\"cryptoHash\",\"params\":{\"matchInputStringLength\":true}},{\"tag\":\"IssuerOfPatientID\",\"method\":\"cryptoHash\"}],\"defaultSettings\":{\"cryptoHash\":{\"cryptoHashKey\":\"key\",\"matchInputStringLength\":false}}}");
+            var dataset = new DicomDataset { { DicomTag.PatientID, "ABCD" }, { DicomTag.IssuerOfPatientID, "EFGH" } };
+            var engine = new AnonymizerEngine(manager);
+
+            engine.AnonymizeDataset(dataset);
+
+            Assert.Equal(4, dataset.GetString(DicomTag.PatientID).Length);
+            Assert.Equal(64, dataset.GetString(DicomTag.IssuerOfPatientID).Length);
+        }
+
+        [Fact]
+        public void GivenSpecificPrivateRuleBeforeMaskedRule_WhenAnonymizing_SpecificRuleKeepsPrecedence()
+        {
+            var privateTag = new DicomTag(0x0011, 0x1010);
+            var manager = AnonymizerConfigurationManager.CreateFromJson(
+                "{\"rules\":[{\"tag\":\"(0011,1010)\",\"method\":\"keep\"},{\"tag\":\"(0011,10xx)\",\"method\":\"redact\"}],\"defaultSettings\":{\"redact\":{}}}");
+            var dataset = new DicomDataset();
+            dataset.AddOrUpdate(DicomVR.LO, privateTag, "PRIVATE");
+            var engine = new AnonymizerEngine(manager);
+
+            engine.AnonymizeDataset(dataset);
+
+            Assert.Equal("PRIVATE", dataset.GetString(privateTag));
         }
     }
 }

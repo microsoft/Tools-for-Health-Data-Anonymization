@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Health.Anonymizer.Common.Settings;
 using Xunit;
 
@@ -144,6 +145,39 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         {
             var hashData = _function.Hash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
+        }
+
+        [Theory]
+        [InlineData(19)]
+        [InlineData(64)]
+        [InlineData(4096)]
+        public void GivenOverflowBoundaryInput_WhenMatchingLength_OutputIsDeterministicNumericAndDoesNotOverflow(int length)
+        {
+            var function = new CryptoHashFunction(new CryptoHashSetting
+            {
+                CryptoHashKey = TestHashKey,
+                MatchInputStringLength = true,
+            });
+            var input = new string('9', length);
+
+            var first = function.Hash(input);
+            var second = function.Hash(input);
+
+            Assert.Equal(input.Length, first.Length);
+            Assert.Equal(first, second);
+            Assert.All(first, value => Assert.InRange(value, '0', '9'));
+        }
+
+        [Fact]
+        public async Task GivenConcurrentOperations_WhenHashing_ResultsRemainDeterministic()
+        {
+            var expected = _function.Hash("concurrent-value");
+            var tasks = Enumerable.Range(0, 100)
+                .Select(_ => Task.Run(() => _function.Hash("concurrent-value")));
+
+            var results = await Task.WhenAll(tasks);
+
+            Assert.All(results, result => Assert.Equal(expected, result));
         }
     }
 }

@@ -28,6 +28,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 
         public static IEnumerable<object[]> GetUnsupportedVRItemForCryptoHash()
         {
+            yield return new object[] { DicomTag.PatientAge, "100Y" }; // AS
+            yield return new object[] { DicomTag.StudyDate, "20240101" }; // DA
+            yield return new object[] { DicomTag.AcquisitionDateTime, "20240101120000" }; // DT
+            yield return new object[] { DicomTag.StudyTime, "120000" }; // TM
             yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345" }; // FD
             yield return new object[] { DicomTag.Examined​Body​Thickness, "12345" }; // FL
             yield return new object[] { DicomTag.Doppler​Sample​Volume​X​Position, "12345" }; // SL
@@ -50,7 +54,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
         {
             // Invalid output length limitation
             yield return new object[] { DicomTag.RetrieveAETitle, "TEST", "2e7acefff0307262cef6f503fa7019257f3f9d47fc987fb2c5a31ae4f4d3c022" }; // AE
-            yield return new object[] { DicomTag.PatientAge, "100Y", "0329e399cd57ed8b21172ede4ae295f549c3d6ece0d292c01a707531d133936e" }; // AS
             yield return new object[] { DicomTag.Query​Retrieve​Level, "0", "976feb2c9f52ff3c8114901e9913be50063f50b1683ea556f1fe47d449cc5583" }; // CS
             yield return new object[] { DicomTag.Event​Elapsed​Times, "1234.5", "92b95e021c40596706b243f79fe0f45394de785be64866f6b46fcacd0839ac43" }; // DS
             yield return new object[] { DicomTag.Stage​Number, "1234", "c1771ad95972ef1ab887140489863ede4faad7458441a3a8a4781454e368b52d" }; // IS
@@ -105,7 +108,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
                 { tag, value },
             };
 
-            Assert.Throws<DicomValidationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
+            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
+            dataset.Validate();
+            Assert.True(dataset.GetString(tag).Length <= tag.DictionaryEntry.ValueRepresentations[0].MaximumLength);
             Assert.NotNull(result);
         }
 
@@ -119,7 +124,41 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             };
             DicomUtility.DisableAutoValidation(dataset);
             Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
-            Assert.Equal(result, dataset.GetDicomItem<DicomElement>(tag).Get<string>());
+            Assert.True(dataset.GetString(tag).Length <= tag.DictionaryEntry.ValueRepresentations[0].MaximumLength);
+            Assert.NotNull(result);
+        }
+
+        [Theory]
+        [InlineData("RetrieveAETitle", 16)]
+        [InlineData("PatientTelephoneNumbers", 16)]
+        [InlineData("EventTimerNames", 64)]
+        public void GivenLengthLimitedTextVR_WhenCryptoHash_OutputConformsToMaximumLength(string tagName, int maximumLength)
+        {
+            var tag = (DicomTag)typeof(DicomTag).GetField(tagName).GetValue(null);
+            var dataset = new DicomDataset { { tag, "TEST" } };
+
+            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
+
+            var output = dataset.GetString(tag);
+            Assert.Equal(maximumLength, output.Length);
+            Assert.Matches("^[0-9a-f]+$", output);
+            dataset.Validate();
+        }
+
+        [Fact]
+        public void GivenMultiValuePersonName_WhenCryptoHash_EachValueIsHashedDeterministically()
+        {
+            var dataset = new DicomDataset { { DicomTag.ConsultingPhysicianName, "First^Person", "Second^Person" } };
+
+            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(DicomTag.ConsultingPhysicianName));
+            var first = dataset.GetValues<string>(DicomTag.ConsultingPhysicianName);
+
+            var repeatedDataset = new DicomDataset { { DicomTag.ConsultingPhysicianName, "First^Person", "Second^Person" } };
+            Processor.Process(repeatedDataset, repeatedDataset.GetDicomItem<DicomElement>(DicomTag.ConsultingPhysicianName));
+
+            Assert.Equal(2, first.Length);
+            Assert.Equal(first, repeatedDataset.GetValues<string>(DicomTag.ConsultingPhysicianName));
+            Assert.All(first, value => Assert.Matches("^[0-9a-f]{64}$", value));
         }
 
         [Theory]

@@ -109,7 +109,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 parameters = ruleContent[Constants.Parameters].ToObject<JObject>();
             }
 
-            JObject ruleSetting = _defaultSettings.GetDefaultSetting(method);
+            JObject ruleSetting = (JObject)_defaultSettings?.GetDefaultSetting(method)?.DeepClone();
             if (ruleContent.ContainsKey(Constants.RuleSetting))
             {
                 if (_customSettings == null || !_customSettings.ContainsKey(ruleContent[Constants.RuleSetting].ToString()))
@@ -117,7 +117,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                     throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingRuleSettings, $"Customized setting {ruleContent[Constants.RuleSetting]} not defined.");
                 }
 
-                ruleSetting = _customSettings[ruleContent[Constants.RuleSetting].ToString()];
+                ruleSetting = (JObject)_customSettings[ruleContent[Constants.RuleSetting].ToString()].DeepClone();
             }
 
             if (ruleSetting == null)

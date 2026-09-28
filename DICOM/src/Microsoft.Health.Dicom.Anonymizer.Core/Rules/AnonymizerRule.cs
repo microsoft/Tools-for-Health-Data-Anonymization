@@ -24,6 +24,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             EnsureArg.IsNotNull(processorFactory, nameof(processorFactory));
 
             Description = description;
+            Method = method;
             processorFactory ??= new DicomProcessorFactory();
             _processor = processorFactory.CreateProcessor(method, ruleSetting);
 
@@ -34,6 +35,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
         }
 
         public string Description { get; set; }
+
+        public string Method { get; }
 
         public void Handle(DicomDataset dataset, ProcessContext context)
         {
@@ -51,7 +54,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 }
                 else
                 {
-                    throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"Rule {Description} is not supported for the item with VR {item.ValueRepresentation}.");
+                    throw new AnonymizerOperationException(
+                        DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod,
+                        $"Configured method is not supported for tag {item.Tag} with VR {item.ValueRepresentation}.");
                 }
             }
         }

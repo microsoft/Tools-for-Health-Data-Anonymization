@@ -17,36 +17,78 @@ namespace Microsoft.Health.Anonymizer.Common
 {
     public class CryptoHashFunction
     {
-        private readonly HMAC _hmac;
-        private readonly CryptoHashSetting _cryptoHashSetting;
+        private readonly byte[] _key;
+        private readonly HashAlgorithmType _hashType;
+        private readonly bool _matchInputStringLength;
 
         public CryptoHashFunction(CryptoHashSetting cryptoHashSetting)
         {
             EnsureArg.IsNotNull(cryptoHashSetting, nameof(cryptoHashSetting));
 
-            byte[] byteKey = cryptoHashSetting.GetCryptoHashByteKey();
-            _hmac = cryptoHashSetting.CryptoHashType switch
-            {
-                HashAlgorithmType.Sha256 => new HMACSHA256(byteKey),
-                HashAlgorithmType.Sha512 => new HMACSHA512(byteKey),
-                HashAlgorithmType.Sha384 => new HMACSHA384(byteKey),
-                _ => throw new AnonymizerException(AnonymizerErrorCode.CryptoHashFailed, "Hash function not supported."),
-            };
-            _cryptoHashSetting = cryptoHashSetting;
+            _key = cryptoHashSetting.GetCryptoHashByteKey();
+            _hashType = cryptoHashSetting.CryptoHashType;
+            _matchInputStringLength = cryptoHashSetting.MatchInputStringLength;
+            using var hmac = CreateHmac();
         }
+
+        public bool MatchInputStringLength => _matchInputStringLength;
 
         public byte[] Hash(byte[] input)
         {
             EnsureArg.IsNotNull(input, nameof(input));
 
-            return Hash(input, _hmac);
+            using var hmac = CreateHmac();
+            return Hash(input, hmac);
         }
 
         public byte[] Hash(Stream input)
         {
             EnsureArg.IsNotNull(input, nameof(input));
 
-            return Hash(input, _hmac);
+            using var hmac = CreateHmac();
+            return Hash(input, hmac);
+        }
+
+        public string Hash(string input, Encoding encoding = null)
+        {
+            EnsureArg.IsNotNull(input, nameof(input));
+
+            using var hmac = CreateHmac();
+            return Hash(input, hmac, encoding, _matchInputStringLength);
+        }
+
+        public string HashToAlphabet(string input, string alphabet, int outputLength, Encoding encoding = null)
+        {
+            EnsureArg.IsNotNull(input, nameof(input));
+            EnsureArg.IsNotNullOrEmpty(alphabet, nameof(alphabet));
+
+            if (outputLength < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(outputLength));
+            }
+
+            encoding ??= Encoding.UTF8;
+            var inputBytes = encoding.GetBytes(input);
+            var result = new StringBuilder(outputLength);
+            var counter = 0;
+            while (result.Length < outputLength)
+            {
+                var counterBytes = BitConverter.GetBytes(counter++);
+                var blockInput = new byte[inputBytes.Length + counterBytes.Length];
+                Buffer.BlockCopy(inputBytes, 0, blockInput, 0, inputBytes.Length);
+                Buffer.BlockCopy(counterBytes, 0, blockInput, inputBytes.Length, counterBytes.Length);
+                var block = Hash(blockInput);
+                foreach (var value in block)
+                {
+                    result.Append(alphabet[value % alphabet.Length]);
+                    if (result.Length == outputLength)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return result.ToString();
         }
 
         public static byte[] Hash(byte[] input, HMAC hashAlgorithm)
@@ -63,13 +105,6 @@ namespace Microsoft.Health.Anonymizer.Common
             EnsureArg.IsNotNull(hashAlgorithm, nameof(hashAlgorithm));
 
             return hashAlgorithm.ComputeHash(input);
-        }
-
-        public string Hash(string input, Encoding encoding = null)
-        {
-            EnsureArg.IsNotNull(input, nameof(input));
-
-            return Hash(input, _hmac, encoding, _cryptoHashSetting.MatchInputStringLength);
         }
 
         public static string Hash(string input, HMAC hashAlgorithm, Encoding encoding = null, bool matchInputLength = false)
@@ -91,23 +126,31 @@ namespace Microsoft.Health.Anonymizer.Common
             }
         }
 
-        /// <summary>
-        /// Generates a string numeric-only output of the same length as the input string.
-        /// </summary>
         private static string GenerateOutputOfSameLength(byte[] hash, string input)
         {
-            var hashFloat = BitConverter.ToUInt32(hash, 0) / (float)uint.MaxValue;
-
-            long orderOfMagnitude = (long)Math.Pow(10, input.Length - 1);
-            if (orderOfMagnitude == 1)
+            if (input.Length == 0)
             {
-                orderOfMagnitude = 0;
+                return string.Empty;
             }
-            long maxNumberGivenDigits = long.Parse(new string('9', input.Length));
 
-            long hashLong = (long)(hashFloat * (maxNumberGivenDigits - orderOfMagnitude)) + orderOfMagnitude;
+            var result = new StringBuilder(input.Length);
+            for (var index = 0; index < input.Length; index++)
+            {
+                result.Append((char)('0' + (hash[index % hash.Length] % 10)));
+            }
 
-            return hashLong.ToString();
+            return result.ToString();
+        }
+
+        private HMAC CreateHmac()
+        {
+            return _hashType switch
+            {
+                HashAlgorithmType.Sha256 => new HMACSHA256(_key),
+                HashAlgorithmType.Sha512 => new HMACSHA512(_key),
+                HashAlgorithmType.Sha384 => new HMACSHA384(_key),
+                _ => throw new AnonymizerException(AnonymizerErrorCode.CryptoHashFailed, "Hash function not supported."),
+            };
         }
     }
 }

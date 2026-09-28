@@ -13,15 +13,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         public static HashSet<DicomVR> CryptoHashSupportedVR { get; } = new HashSet<DicomVR>()
         {
             DicomVR.AE,
-            DicomVR.AS,
             DicomVR.CS,
             DicomVR.UI,
             DicomVR.DS,
             DicomVR.IS,
             DicomVR.SH,
-            DicomVR.DA,
-            DicomVR.DT,
-            DicomVR.TM,
             DicomVR.PN,
             DicomVR.UC,
             DicomVR.LO,

@@ -56,10 +56,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerEngineOptions();
             _requireRuntimeKeys = requireRuntimeKeys;
+            AnonymizerPolicyValidator.ValidateRuleFields(configurationManager.Configuration.RuleContent);
             (_usesCryptoHash, _usesDateShift, _usesEncrypt) = GetConfiguredKeyedMethods(configurationManager.Configuration.RuleContent);
 
             ruleFactory ??= new AnonymizerRuleFactory(configurationManager.Configuration, processorFactory ?? new DicomProcessorFactory());
             _rules = ruleFactory.CreateDicomAnonymizationRules(configurationManager.Configuration.RuleContent);
+            AnonymizerPolicyValidator.ValidateRules(_rules);
             _logger.LogDebug("Successfully initialized anonymizer engine.");
         }
 
@@ -84,10 +86,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             context.RuntimeKeys = runtimeKeySettings;
             DicomUtility.DisableAutoValidation(dataset);
 
-            foreach (var rule in _rules)
+            for (var ruleIndex = 0; ruleIndex < _rules.Length; ruleIndex++)
             {
+                var rule = _rules[ruleIndex];
                 rule.Handle(dataset, context);
-                _logger.LogDebug($"Successfully handled rule {rule.Description}.");
+                _logger.LogDebug("Successfully handled rule {RuleIndex}.", ruleIndex);
             }
 
             // Validate output dataset.

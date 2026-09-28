@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using FellowOakDicom;
 using FellowOakDicom.IO.Buffer;
@@ -43,12 +44,17 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             EnsureArg.IsNotNull(dicomDataset, nameof(dicomDataset));
             EnsureArg.IsNotNull(item, nameof(item));
 
+            if (!IsSupported(item))
+            {
+                throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"CryptoHash is not supported for VR {item.ValueRepresentation}.");
+            }
+
             // Use runtime key if available, otherwise use configuration key
             var cryptoHashFunction = GetCryptoHashFunction(context);
 
             if (item is DicomStringElement)
             {
-                var hashedValues = ((DicomStringElement)item).Get<string[]>().Select(value => GetCryptoHashString(value, cryptoHashFunction));
+                var hashedValues = ((DicomStringElement)item).Get<string[]>().Select(value => GetCryptoHashString(value, item.ValueRepresentation, cryptoHashFunction));
                 dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, hashedValues.ToArray());
             }
             else if (item is DicomOtherByte)
@@ -75,7 +81,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"CryptoHash is not supported for {item.ValueRepresentation}.");
             }
 
-            _logger.LogDebug($"The value of DICOM item '{item}' is cryptoHashed.");
+            _logger.LogDebug("CryptoHash completed for tag {Tag} with VR {VR}.", item.Tag, item.ValueRepresentation);
         }
 
         public bool IsSupported(DicomItem item)
@@ -110,11 +116,38 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             return _cryptoHashFunction;
         }
 
-        private string GetCryptoHashString(string input, CryptoHashFunction cryptoHashFunction)
+        private static string GetCryptoHashString(string input, DicomVR vr, CryptoHashFunction cryptoHashFunction)
         {
             EnsureArg.IsNotNull(input, nameof(input));
 
-            return cryptoHashFunction.Hash(input);
+            if (input.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            if (vr == DicomVR.UI)
+            {
+                var hash = cryptoHashFunction.Hash(Encoding.UTF8.GetBytes(input));
+                var uidNumber = new BigInteger(hash.Take(16).Concat(new byte[] { 0 }).ToArray());
+                return $"2.25.{uidNumber}";
+            }
+
+            var maximumLength = vr == DicomVR.AE || vr == DicomVR.CS || vr == DicomVR.SH ? 16 :
+                vr == DicomVR.IS ? 9 :
+                vr == DicomVR.DS ? 16 :
+                vr == DicomVR.LO ? 64 :
+                64;
+            var outputLength = cryptoHashFunction.MatchInputStringLength ? Math.Min(input.Length, maximumLength) : maximumLength;
+            var alphabet = vr == DicomVR.CS ? "0123456789ABCDEF" :
+                vr == DicomVR.IS || vr == DicomVR.DS ? "0123456789" :
+                "0123456789abcdef";
+
+            if (!cryptoHashFunction.MatchInputStringLength && alphabet == "0123456789abcdef")
+            {
+                return cryptoHashFunction.Hash(input).Substring(0, outputLength);
+            }
+
+            return cryptoHashFunction.HashToAlphabet(input, alphabet, outputLength);
         }
     }
 }

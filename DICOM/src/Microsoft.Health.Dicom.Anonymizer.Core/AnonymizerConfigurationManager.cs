@@ -9,6 +9,7 @@ using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
@@ -28,7 +29,19 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             EnsureArg.IsNotNull(json, nameof(json));
             try
             {
-                var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(json);
+                var root = JObject.Parse(json);
+                var allowedFields = new[] { "rules", "defaultSettings", "customSettings" };
+                foreach (var property in root.Properties())
+                {
+                    if (!System.Array.Exists(allowedFields, field => string.Equals(field, property.Name, System.StringComparison.OrdinalIgnoreCase)))
+                    {
+                        throw new AnonymizerConfigurationException(
+                            DicomAnonymizationErrorCode.InvalidConfigurationValues,
+                            "Policy validation failed: unknown top-level field.");
+                    }
+                }
+
+                var configuration = root.ToObject<AnonymizerConfiguration>();
                 return new AnonymizerConfigurationManager(configuration);
             }
             catch (JsonException innerException)
