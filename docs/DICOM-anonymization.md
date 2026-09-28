@@ -19,6 +19,7 @@ You can prepare your own DICOM files as input, or use sample DICOM files in fold
 - [Anonymize DICOM data: using the command line tool](#anonymize-dicom-data-using-the-command-line-tool)
 - [Customize configuration file](#customize-configuration-file)
 - [Data anonymization algorithms](#data-anonymization-algorithms)
+- [Unsupported embedded documents](#unsupported-embedded-documents)
 - [Output validation](#output-validation)
 
 
@@ -48,6 +49,14 @@ The command-line tool can be used to anonymize one DICOM file or a folder contai
 
 > **[NOTE]**
 > To anonymize one DICOM file, inputFile and outputFile are required. To anonymize a DICOM folder, inputFolder and outputFolder are required.
+
+## Unsupported embedded documents
+
+Embedded PDF and CDA documents are not supported. The anonymizer rejects the Encapsulated PDF Storage and Encapsulated CDA Storage SOP Classes, as well as any dataset containing the Encapsulated Document `(0042,0011)` element.
+
+Rejected inputs return `DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload` (`1201`) before anonymization rules are applied. The command-line tool creates no output for the rejected input and preserves an existing destination. The error message contains only the detected document type and DICOM tag numbers.
+
+Callers should use error `1201` to route unsupported content to an appropriate document-processing workflow.
 
 Example usage to anonymize DICOM files in a folder:
 ```
@@ -92,7 +101,32 @@ Parameters in each rule:
 
 > Masked tags follow the [DICOM convention](https://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_5.html). `x` in a group or element number, means any value from 0 through F inclusive.
 
-Each DICOM tag can only be anonymized once, if two rules have conflicts on one tag, only the former rule will be applied.
+Exact duplicate selectors are rejected when the engine is constructed. Distinct selectors may overlap, such as a specific tag followed by a broader masked-tag or VR rule; for those overlaps, the first matching rule remains authoritative. Broad `UI` transformations and broad removal of all `SQ` elements are rejected because they can alter invariant UIDs or remove every sequence.
+
+Unknown top-level configuration fields and unknown rule fields are rejected. Duplicate JSON properties, including properties that differ only by letter casing, are also rejected. This is a fail-closed compatibility change: misspelled or ambiguous fields that were previously ignored or overwritten now prevent engine construction. Validation diagnostics identify rule positions, selectors, tags, VRs, and error categories only; they do not include DICOM values, keys, filenames, full rules, settings, or serialized policies.
+
+### UID safety and compatibility notes
+
+- The command-line tool validates File Meta SOP Class/Instance identities against
+  their Dataset counterparts before processing. After a Dataset SOP Instance UID is
+  refreshed, `MediaStorageSOPInstanceUID` is synchronized before output. Missing or
+  stale identities fail closed with an error code and tags only; UID values and
+  filenames are not included. File processing uses a copy, so failure does not
+  mutate the caller's file or write a partial output. The returned file owns its
+  data buffers and remains readable and saveable after anonymization completes.
+- SOP Class UID, Media Storage SOP Class UID, and Transfer Syntax UID are invariants.
+  Rules that can mutate these selectors, including broad `UI` or masked selectors,
+  are rejected during engine construction. SOP Instance and reference UIDs can still
+  use `refreshUID` and retain consistent remapping.
+- Exact `refreshUID` tag rules are also applied to matching UID elements nested in
+  sequences without removing the surrounding sequence structure. Existing rule
+  order is preserved: an earlier matching rule prevents a later exact `refreshUID`
+  rule from changing the nested item. Sequence nesting is limited to 64 item levels;
+  deeper input fails before anonymization begins.
+
+Configurations that intentionally transform SOP Class UID, Media Storage SOP Class
+UID, or Transfer Syntax UID must be changed to `keep` those identifiers before
+engine construction succeeds.
 
 ### How to set settings
 _defaultSettings_ and _customSettings_ are used to config anonymization method. (Detailed parameters are defined in [Anonymization algorithm](#data-anonymization-algorithms). _defaultSettings_ are used when user does not specify settings in rule. As for _customSettings_, users need to add the setting with unique name. This setting can be used in "rules" by name.
@@ -207,7 +241,9 @@ Here is a sample rule using dateShift method on DICOM tags with VR in DA. The da
 ```
 
 ### CryptoHash
-This function use HMAC-SHA256 algorithm and outputs a Hex encoded representation (for example, a3c024f01cccb3b63457d848b0d2f89c1f744a3d). The length of output string is 64 bytes. You should pay attention to the length limitation of output DICOM file.
+This function uses HMAC and emits a deterministic representation that conforms to the target DICOM VR alphabet and maximum length. `UI` values use the `2.25` UUID-derived decimal form, numeric string VRs use digits, and length-limited text VRs are capped automatically. CryptoHash rules support `AE`, `CS`, `UI`, `DS`, `IS`, `SH`, `PN`, `UC`, `LO`, `UT`, `ST`, `LT`, `UR`, `OB`, and `UN`. Other VRs require a format-aware anonymization method.
+
+Masked selectors, unknown exact tags, and exact tags that may use any unsupported VR are rejected when the engine is constructed, before a dataset is changed. `OW` fragment sequences remain supported when encountered as fragments at runtime, but broad `OW` rules are rejected because a selector cannot prove that every matching item is a fragment sequence.
 In cryptoHash setting, you can set cryptoHash key in setting.
 
 |Parameters|Description|Valid Values|Required|default value|

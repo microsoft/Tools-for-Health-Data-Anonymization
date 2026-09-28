@@ -163,5 +163,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             dataset.AutoValidate = false;
 #pragma warning restore CS0618 // Type or member is obsolete
         }
+
+        internal static string FormatTag(DicomTag tag)
+        {
+            EnsureArg.IsNotNull(tag, nameof(tag));
+
+            return string.Format(CultureInfo.InvariantCulture, "({0:X4},{1:X4})", tag.Group, tag.Element);
+        }
     }
 }

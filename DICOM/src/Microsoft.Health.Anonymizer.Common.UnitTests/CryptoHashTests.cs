@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Health.Anonymizer.Common.Settings;
 using Xunit;
 
@@ -144,6 +145,69 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         {
             var hashData = _function.Hash(input);
             Assert.Equal(expectedHash, hashData == null ? null : string.Concat(hashData.Select(b => b.ToString("x2"))));
+        }
+
+        [Theory]
+        [InlineData(19, "f497b5ec6b8aba24571b8788135b8e4f90dd9209ef2928f7a8cb599f2ae46a4e")]
+        [InlineData(64, "044fc3b038df1ee644098fb572d3b346a01e985dd85558d35fc0b0d0747a5e00")]
+        [InlineData(4096, "a12fe21cf018c5957a661316c9ff73c12a8c211dd7de2336ad94b057b58ea793")]
+        public void GivenOverflowBoundaryInput_WhenMatchingLength_OutputIsStableNumericAndDoesNotOverflow(int length, string expectedOutputHash)
+        {
+            var function = new CryptoHashFunction(new CryptoHashSetting
+            {
+                CryptoHashKey = TestHashKey,
+                MatchInputStringLength = true,
+            });
+            var input = new string('9', length);
+
+            var first = function.Hash(input);
+            var second = function.Hash(input);
+
+            Assert.Equal(input.Length, first.Length);
+            Assert.Equal(first, second);
+            Assert.All(first, value => Assert.InRange(value, '0', '9'));
+            Assert.Equal(expectedOutputHash, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(first))).ToLowerInvariant());
+        }
+
+        [Theory]
+        [InlineData(19, "f497b5ec6b8aba24571b8788135b8e4f90dd9209ef2928f7a8cb599f2ae46a4e")]
+        [InlineData(64, "044fc3b038df1ee644098fb572d3b346a01e985dd85558d35fc0b0d0747a5e00")]
+        [InlineData(4096, "a12fe21cf018c5957a661316c9ff73c12a8c211dd7de2336ad94b057b58ea793")]
+        public void GivenStaticMatchLengthHash_WhenHashing_OutputIsStableNumericAndExactLength(int length, string expectedOutputHash)
+        {
+            var input = new string('9', length);
+            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(TestHashKey));
+
+            var output = CryptoHashFunction.Hash(input, hmac, matchInputLength: true);
+
+            Assert.Equal(length, output.Length);
+            Assert.All(output, value => Assert.InRange(value, '0', '9'));
+            Assert.Equal(expectedOutputHash, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(output))).ToLowerInvariant());
+        }
+
+        [Fact]
+        public async Task GivenConcurrentOperations_WhenHashing_ResultsRemainDeterministic()
+        {
+            var expected = _function.Hash("concurrent-value");
+            var tasks = Enumerable.Range(0, 100)
+                .Select(_ => Task.Run(() => _function.Hash("concurrent-value")));
+
+            var results = await Task.WhenAll(tasks);
+
+            Assert.All(results, result => Assert.Equal(expected, result));
+        }
+
+        [Fact]
+        public void GivenNonPowerOfTwoAlphabet_WhenHashing_OutputIsDeterministicAndConstrained()
+        {
+            const string alphabet = "0123456789";
+
+            var first = _function.HashToAlphabet("alphabet-input", alphabet, 32);
+            var second = _function.HashToAlphabet("alphabet-input", alphabet, 32);
+
+            Assert.Equal("91464668237566287822220487066907", first);
+            Assert.Equal(first, second);
+            Assert.All(first, value => Assert.Contains(value, alphabet));
         }
     }
 }

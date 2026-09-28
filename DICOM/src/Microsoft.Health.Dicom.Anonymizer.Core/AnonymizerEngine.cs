@@ -4,6 +4,9 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using FellowOakDicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
@@ -17,6 +20,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
     public class AnonymizerEngine
     {
+        internal const int MaximumSequenceDepth = 64;
+        private const string EncapsulatedPdfStorageUid = "1.2.840.10008.5.1.4.1.1.104.1";
+        private const string EncapsulatedCdaStorageUid = "1.2.840.10008.5.1.4.1.1.104.2";
+
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly AnonymizerEngineOptions _anonymizerSettings;
         private readonly bool _requireRuntimeKeys;
@@ -56,10 +63,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerEngineOptions();
             _requireRuntimeKeys = requireRuntimeKeys;
+            AnonymizerPolicyValidator.ValidateRuleFields(configurationManager.Configuration.RuleContent);
             (_usesCryptoHash, _usesDateShift, _usesEncrypt) = GetConfiguredKeyedMethods(configurationManager.Configuration.RuleContent);
 
             ruleFactory ??= new AnonymizerRuleFactory(configurationManager.Configuration, processorFactory ?? new DicomProcessorFactory());
             _rules = ruleFactory.CreateDicomAnonymizationRules(configurationManager.Configuration.RuleContent);
+            AnonymizerPolicyValidator.ValidateRules(_rules);
             _logger.LogDebug("Successfully initialized anonymizer engine.");
         }
 
@@ -72,7 +81,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             EnsureArg.IsNotNull(dataset, nameof(dataset));
 
+            RejectUnsupportedEmbeddedPayload(dataset);
             ValidateRequiredRuntimeKeys(runtimeKeySettings);
+
+            ValidateSequenceDepth(dataset);
 
             // Validate input dataset.
             if (_anonymizerSettings.ValidateInput)
@@ -80,20 +92,88 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 dataset.Validate();
             }
 
-            var context = InitContext(dataset);
-            context.RuntimeKeys = runtimeKeySettings;
-            DicomUtility.DisableAutoValidation(dataset);
-
-            foreach (var rule in _rules)
-            {
-                rule.Handle(dataset, context);
-                _logger.LogDebug($"Successfully handled rule {rule.Description}.");
-            }
+            ProcessDataset(dataset, runtimeKeySettings);
+            ProcessNestedUidReferences(dataset, runtimeKeySettings);
 
             // Validate output dataset.
             if (_anonymizerSettings.ValidateOutput)
             {
                 dataset.Validate();
+            }
+        }
+
+        public DicomFile AnonymizeFile(DicomFile dicomFile)
+        {
+            return AnonymizeFile(dicomFile, null);
+        }
+
+        public DicomFile AnonymizeFile(DicomFile dicomFile, RuntimeKeySettings runtimeKeySettings)
+        {
+            EnsureArg.IsNotNull(dicomFile, nameof(dicomFile));
+
+            RejectUnsupportedEmbeddedPayload(dicomFile.Dataset);
+            ValidateSequenceDepth(dicomFile.Dataset);
+            ValidateFileMetaIdentity(dicomFile);
+
+            var cloneSource = new DicomFile(dicomFile.Dataset.Clone());
+            cloneSource.FileMetaInfo.Clear();
+            cloneSource.FileMetaInfo.Add(new DicomFileMetaInformation(dicomFile.FileMetaInfo));
+            using var stream = new MemoryStream();
+            cloneSource.Save(stream);
+            stream.Position = 0;
+            var output = DicomFile.Open(stream, FileReadOption.ReadAll);
+
+            ValidateFileMetaIdentity(output);
+            var transferSyntax = output.FileMetaInfo.TransferSyntax;
+            AnonymizeDataset(output.Dataset, runtimeKeySettings);
+
+            var (_, sopInstanceUid) = GetRequiredDatasetIdentity(output.Dataset);
+            output.FileMetaInfo.MediaStorageSOPInstanceUID = sopInstanceUid;
+            output.FileMetaInfo.TransferSyntax = transferSyntax;
+            ValidateFileMetaIdentity(output);
+            return output;
+        }
+
+        private static void RejectUnsupportedEmbeddedPayload(DicomDataset dataset)
+        {
+            var datasets = new Stack<DicomDataset>();
+            datasets.Push(dataset);
+
+            while (datasets.Count > 0)
+            {
+                DicomDataset current = datasets.Pop();
+                if (current.Contains(DicomTag.EncapsulatedDocument))
+                {
+                    throw new AnonymizerOperationException(
+                        DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload,
+                        "Unsupported embedded payload rejected. ErrorCode=1201; PayloadTypes=EncapsulatedDocument; DetectedTags=(0042,0011).");
+                }
+
+                foreach (DicomItem item in current)
+                {
+                    if (item is DicomSequence sequence)
+                    {
+                        foreach (DicomDataset nestedDataset in sequence.Items)
+                        {
+                            datasets.Push(nestedDataset);
+                        }
+                    }
+                }
+            }
+
+            string sopClassUid = dataset.GetSingleValueOrDefault(DicomTag.SOPClassUID, string.Empty);
+            if (string.Equals(sopClassUid, EncapsulatedPdfStorageUid, StringComparison.Ordinal))
+            {
+                throw new AnonymizerOperationException(
+                    DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload,
+                    "Unsupported embedded payload rejected. ErrorCode=1201; PayloadTypes=EncapsulatedPDF; DetectedTags=(0008,0016).");
+            }
+
+            if (string.Equals(sopClassUid, EncapsulatedCdaStorageUid, StringComparison.Ordinal))
+            {
+                throw new AnonymizerOperationException(
+                    DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload,
+                    "Unsupported embedded payload rejected. ErrorCode=1201; PayloadTypes=EncapsulatedCDA; DetectedTags=(0008,0016).");
             }
         }
 
@@ -106,6 +186,133 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 SeriesInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.SeriesInstanceUID, string.Empty),
             };
             return context;
+        }
+
+        private void ProcessDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
+        {
+            DicomUtility.DisableAutoValidation(dataset);
+
+            var context = InitContext(dataset);
+            context.RuntimeKeys = runtimeKeySettings;
+            for (var index = 0; index < _rules.Length; index++)
+            {
+                var rule = _rules[index];
+                rule.Handle(dataset, context);
+                _logger.LogDebug("Successfully handled rule {RuleIndex} ({RuleType}).", index, rule.GetType().Name);
+            }
+        }
+
+        private void ProcessNestedUidReferences(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
+        {
+            var exactUidRules = _rules
+                .OfType<AnonymizerTagRule>()
+                .Where(rule => string.Equals(rule.Method, nameof(AnonymizerMethod.RefreshUID), StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            var datasets = new Stack<DicomDataset>();
+            PushNestedDatasets(dataset, datasets);
+            while (datasets.Count > 0)
+            {
+                var nestedDataset = datasets.Pop();
+                DicomUtility.DisableAutoValidation(nestedDataset);
+                var context = InitContext(nestedDataset);
+                context.RuntimeKeys = runtimeKeySettings;
+                foreach (var exactUidRule in exactUidRules)
+                {
+                    var candidate = nestedDataset.GetDicomItem<DicomItem>(exactUidRule.Tag);
+                    if (candidate != null && ReferenceEquals(FindFirstMatchingRule(nestedDataset, candidate), exactUidRule))
+                    {
+                        exactUidRule.Handle(nestedDataset, context);
+                    }
+                }
+
+                PushNestedDatasets(nestedDataset, datasets);
+            }
+        }
+
+        private AnonymizerRule FindFirstMatchingRule(DicomDataset dataset, DicomItem candidate)
+        {
+            foreach (var rule in _rules)
+            {
+                var matchContext = new ProcessContext();
+                if (rule.LocateDicomTag(dataset, matchContext).Any(item => ReferenceEquals(item, candidate)))
+                {
+                    return rule;
+                }
+            }
+
+            return null;
+        }
+
+        private static void ValidateSequenceDepth(DicomDataset dataset)
+        {
+            var datasets = new Stack<(DicomDataset Dataset, int Depth)>();
+            datasets.Push((dataset, 0));
+            while (datasets.Count > 0)
+            {
+                var current = datasets.Pop();
+                foreach (var sequence in current.Dataset.Where(item => item.ValueRepresentation == DicomVR.SQ).OfType<DicomSequence>())
+                {
+                    foreach (var nestedDataset in sequence.Items)
+                    {
+                        var depth = current.Depth + 1;
+                        if (depth > MaximumSequenceDepth)
+                        {
+                            throw new AnonymizerOperationException(
+                                DicomAnonymizationErrorCode.SequenceDepthLimitExceeded,
+                                $"Nested sequence depth exceeds the supported limit of {MaximumSequenceDepth}.");
+                        }
+
+                        datasets.Push((nestedDataset, depth));
+                    }
+                }
+            }
+        }
+
+        private static void PushNestedDatasets(DicomDataset dataset, Stack<DicomDataset> datasets)
+        {
+            foreach (var sequence in dataset.Where(item => item.ValueRepresentation == DicomVR.SQ).OfType<DicomSequence>())
+            {
+                foreach (var nestedDataset in sequence.Items)
+                {
+                    datasets.Push(nestedDataset);
+                }
+            }
+        }
+
+        private static void ValidateFileMetaIdentity(DicomFile dicomFile)
+        {
+            var (datasetSopClass, datasetSopInstance) = GetRequiredDatasetIdentity(dicomFile.Dataset);
+            if (dicomFile.FileMetaInfo == null ||
+                !dicomFile.FileMetaInfo.TryGetSingleValue(DicomTag.MediaStorageSOPClassUID, out DicomUID mediaStorageSopClass) ||
+                !dicomFile.FileMetaInfo.TryGetSingleValue(DicomTag.MediaStorageSOPInstanceUID, out DicomUID mediaStorageSopInstance) ||
+                mediaStorageSopClass == null ||
+                mediaStorageSopInstance == null ||
+                mediaStorageSopClass != datasetSopClass ||
+                mediaStorageSopInstance != datasetSopInstance)
+            {
+                throw CreateFileMetaIdentityMismatchException();
+            }
+        }
+
+        private static (DicomUID SopClass, DicomUID SopInstance) GetRequiredDatasetIdentity(DicomDataset dataset)
+        {
+            if (!dataset.TryGetSingleValue(DicomTag.SOPClassUID, out DicomUID sopClass) ||
+                !dataset.TryGetSingleValue(DicomTag.SOPInstanceUID, out DicomUID sopInstance) ||
+                sopClass == null ||
+                sopInstance == null)
+            {
+                throw CreateFileMetaIdentityMismatchException();
+            }
+
+            return (sopClass, sopInstance);
+        }
+
+        private static AnonymizerOperationException CreateFileMetaIdentityMismatchException()
+        {
+            return new AnonymizerOperationException(
+                DicomAnonymizationErrorCode.FileMetaIdentityMismatch,
+                "File Meta and Dataset SOP identities are missing or inconsistent.");
         }
 
         private static (bool UsesCryptoHash, bool UsesDateShift, bool UsesEncrypt) GetConfiguredKeyedMethods(JObject[] ruleContents)
