@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FellowOakDicom;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
+using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 using Newtonsoft.Json.Linq;
 
@@ -130,11 +131,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 _ => Array.Empty<DicomVR>(),
             };
 
-            if (valueRepresentations.Any(vr => vr == DicomVR.DA || vr == DicomVR.DT || vr == DicomVR.TM || vr == DicomVR.AS))
+            if (!valueRepresentations.Any() || valueRepresentations.Any(vr => !DicomDataModel.IsCryptoHashSupported(vr)))
             {
                 throw new AnonymizerConfigurationException(
                     DicomAnonymizationErrorCode.InvalidConfigurationValues,
-                    $"Policy validation failed for rule {index}: cryptoHash does not support fixed-format VR.");
+                    $"Policy validation failed for rule {index}: cryptoHash compatibility cannot be proven.");
             }
         }
     }

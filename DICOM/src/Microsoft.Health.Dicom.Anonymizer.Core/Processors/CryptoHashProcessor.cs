@@ -88,7 +88,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            return DicomDataModel.CryptoHashSupportedVR.Contains(item.ValueRepresentation) || item is DicomFragmentSequence;
+            return DicomDataModel.IsCryptoHashSupported(item.ValueRepresentation) || item is DicomFragmentSequence;
         }
 
         public string GetCryptoHashString(string input)

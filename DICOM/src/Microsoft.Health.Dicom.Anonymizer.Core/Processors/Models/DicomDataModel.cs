@@ -10,7 +10,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     public class DicomDataModel
     {
-        public static HashSet<DicomVR> CryptoHashSupportedVR { get; } = new HashSet<DicomVR>()
+        private static readonly HashSet<DicomVR> CryptoHashSupportedVRValues = new HashSet<DicomVR>()
         {
             DicomVR.AE,
             DicomVR.CS,
@@ -28,6 +28,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             DicomVR.OB,
             DicomVR.UN,
         };
+
+        public static HashSet<DicomVR> CryptoHashSupportedVR => new HashSet<DicomVR>(CryptoHashSupportedVRValues);
+
+        public static bool IsCryptoHashSupported(DicomVR valueRepresentation)
+        {
+            return CryptoHashSupportedVRValues.Contains(valueRepresentation);
+        }
 
         public static HashSet<DicomVR> EncryptSupportedVR { get; } = new HashSet<DicomVR>()
         {

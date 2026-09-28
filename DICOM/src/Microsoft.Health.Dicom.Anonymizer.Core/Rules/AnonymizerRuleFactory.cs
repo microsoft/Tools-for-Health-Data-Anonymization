@@ -53,7 +53,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             var method = ruleContent[Constants.MethodKey].ToString();
             if (!Constants.BuiltInMethods.Contains(method) && !GetCustomMethods().Contains(method))
             {
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationRule, $"Anonymization method '{method}' is not supported.");
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationRule, "The configured anonymization method is not supported.");
             }
 
             // Parse and validate settings.
@@ -81,7 +81,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                     }
                 }
 
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, $"Invalid tag '{tagContent}' in rule config.");
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, "The configured rule tag is invalid.");
             }
             else
             {
@@ -114,7 +114,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             {
                 if (_customSettings == null || !_customSettings.ContainsKey(ruleContent[Constants.RuleSetting].ToString()))
                 {
-                    throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingRuleSettings, $"Customized setting {ruleContent[Constants.RuleSetting]} not defined.");
+                    throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingRuleSettings, "The configured custom rule setting is not defined.");
                 }
 
                 ruleSetting = (JObject)_customSettings[ruleContent[Constants.RuleSetting].ToString()].DeepClone();

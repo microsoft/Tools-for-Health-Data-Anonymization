@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using FellowOakDicom;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
@@ -46,6 +47,51 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         public DicomDataset Dataset { get; set; }
+
+        public static IEnumerable<object[]> GetUnsupportedCryptoHashVrSelectors()
+        {
+            foreach (var vr in new[] { "AS", "AT", "DA", "DT", "FD", "FL", "OD", "OF", "OL", "OV", "OW", "SL", "SQ", "SS", "SV", "TM", "UL", "US", "UV" })
+            {
+                yield return new object[] { vr };
+            }
+        }
+
+        public static IEnumerable<object[]> GetUnsupportedCryptoHashTagSelectors()
+        {
+            foreach (var tag in new[]
+            {
+                "(0072,005F)",
+                "(0400,0020)",
+                "(0020,3403)",
+                "(0400,0105)",
+                "(3002,0106)",
+                "(300C,0115)",
+                "(0070,150D)",
+                "(0064,0009)",
+                "(006A,0011)",
+                "(7FE0,0001)",
+                "(0028,1200)",
+                "(0040,A162)",
+                "(3002,0030)",
+                "(0028,0071)",
+                "(0072,0082)",
+                "(0020,3405)",
+                "(0000,0000)",
+                "(0000,0100)",
+                "(7FE0,0003)",
+            })
+            {
+                yield return new object[] { tag };
+            }
+        }
+
+        public static IEnumerable<object[]> GetSupportedCryptoHashSelectors()
+        {
+            foreach (var selector in new[] { "AE", "CS", "DS", "IS", "SH", "PN", "UC", "LO", "UT", "ST", "LT", "UR", "OB", "UN", "InstanceCreatorUID" })
+            {
+                yield return new object[] { selector };
+            }
+        }
 
         [Fact]
         public void GivenDicomDataSet_SetValidateOutput_WhenAnonymizeWithInvalidOutput_ExceptionWillBeThrown()
@@ -129,6 +175,71 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal(originalValue, dataset.GetString(DicomTag.StudyDate));
         }
 
+        [Theory]
+        [MemberData(nameof(GetUnsupportedCryptoHashVrSelectors))]
+        public void GivenUnsupportedCryptoHashVrRule_WhenConstructingEngine_FailsClosed(string selector)
+        {
+            var json = $"{{\"rules\":[{{\"tag\":\"{selector}\",\"method\":\"cryptoHash\"}}],\"defaultSettings\":{{\"cryptoHash\":{{\"cryptoHashKey\":\"key\"}}}}}}";
+
+            var exception = Assert.Throws<AnonymizerConfigurationException>(
+                () => new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromJson(json)));
+
+            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, exception.DicomAnonymizerErrorCode);
+            Assert.DoesNotContain(selector, exception.ToString(), StringComparison.Ordinal);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetUnsupportedCryptoHashTagSelectors))]
+        public void GivenUnsupportedCryptoHashExactTagRule_WhenConstructingEngine_FailsClosed(string selector)
+        {
+            var json = $"{{\"rules\":[{{\"tag\":\"{selector}\",\"method\":\"cryptoHash\"}}],\"defaultSettings\":{{\"cryptoHash\":{{\"cryptoHashKey\":\"key\"}}}}}}";
+
+            var exception = Assert.Throws<AnonymizerConfigurationException>(
+                () => new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromJson(json)));
+
+            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, exception.DicomAnonymizerErrorCode);
+            Assert.DoesNotContain(selector, exception.ToString(), StringComparison.Ordinal);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSupportedCryptoHashSelectors))]
+        public void GivenSupportedCryptoHashSelector_WhenConstructingEngine_Succeeds(string selector)
+        {
+            var json = $"{{\"rules\":[{{\"tag\":\"{selector}\",\"method\":\"cryptoHash\"}}],\"defaultSettings\":{{\"cryptoHash\":{{\"cryptoHashKey\":\"key\"}}}}}}";
+
+            var engine = new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromJson(json));
+
+            Assert.NotNull(engine);
+        }
+
+        [Fact]
+        public void GivenPartiallySupportedMultiVrCryptoHashTag_WhenConstructingEngine_FailsClosed()
+        {
+            Assert.Contains(DicomVR.OB, DicomTag.PixelData.DictionaryEntry.ValueRepresentations);
+            Assert.Contains(DicomVR.OW, DicomTag.PixelData.DictionaryEntry.ValueRepresentations);
+            var json = "{\"rules\":[{\"tag\":\"PixelData\",\"method\":\"cryptoHash\"}],\"defaultSettings\":{\"cryptoHash\":{\"cryptoHashKey\":\"key\"}}}";
+
+            var exception = Assert.Throws<AnonymizerConfigurationException>(
+                () => new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromJson(json)));
+
+            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, exception.DicomAnonymizerErrorCode);
+        }
+
+        [Fact]
+        public void GivenEarlierRuleAndUnsupportedCryptoHashRule_WhenConstructingEngine_DatasetRemainsUnchanged()
+        {
+            var json = "{\"rules\":[{\"tag\":\"PatientName\",\"method\":\"redact\"},{\"tag\":\"FD\",\"method\":\"cryptoHash\"}],\"defaultSettings\":{\"redact\":{},\"cryptoHash\":{\"cryptoHashKey\":\"key\"}}}";
+            var dataset = new DicomDataset
+            {
+                { DicomTag.PatientName, "PRIVATE" },
+                { DicomTag.LongitudinalTemporalOffsetFromEvent, 1.0 },
+            };
+
+            Assert.Throws<AnonymizerConfigurationException>(
+                () => new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromJson(json)));
+            Assert.Equal("PRIVATE", dataset.GetString(DicomTag.PatientName));
+        }
+
         [Fact]
         public void GivenUnknownTopLevelField_WhenParsingPolicy_FailsClosed()
         {
@@ -166,6 +277,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal(originalValue, dataset.GetString(DicomTag.PatientName));
             Assert.DoesNotContain("PatientName", exception.ToString(), StringComparison.Ordinal);
             Assert.DoesNotContain("PatientID", exception.ToString(), StringComparison.Ordinal);
+        }
+
+        [Theory]
+        [InlineData("{\"rules\":\"PRIVATE-CONFIG-SENTINEL\"}", DicomAnonymizationErrorCode.ParsingJsonConfigurationFailed)]
+        [InlineData("{\"rules\":[{\"tag\":\"PatientName\",\"method\":\"PRIVATE-CONFIG-SENTINEL\"}]}", DicomAnonymizationErrorCode.UnsupportedAnonymizationRule)]
+        [InlineData("{\"rules\":[{\"tag\":\"PRIVATE-CONFIG-SENTINEL\",\"method\":\"keep\"}]}", DicomAnonymizationErrorCode.InvalidConfigurationValues)]
+        [InlineData("{\"rules\":[{\"tag\":\"PatientName\",\"method\":\"redact\",\"setting\":\"PRIVATE-CONFIG-SENTINEL\"}]}", DicomAnonymizationErrorCode.MissingRuleSettings)]
+        public void GivenInvalidPolicyValue_WhenConstructingEngine_DiagnosticDoesNotExposeValue(string json, DicomAnonymizationErrorCode expectedErrorCode)
+        {
+            var exception = Assert.Throws<AnonymizerConfigurationException>(
+                () => new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromJson(json)));
+
+            Assert.Equal(expectedErrorCode, exception.DicomAnonymizerErrorCode);
+            Assert.DoesNotContain("PRIVATE-CONFIG-SENTINEL", exception.Message, StringComparison.Ordinal);
+            Assert.DoesNotContain("PRIVATE-CONFIG-SENTINEL", exception.ToString(), StringComparison.Ordinal);
         }
 
         [Fact]

@@ -209,7 +209,9 @@ Here is a sample rule using dateShift method on DICOM tags with VR in DA. The da
 ```
 
 ### CryptoHash
-This function uses HMAC and emits a deterministic representation that conforms to the target DICOM VR alphabet and maximum length. `UI` values use the `2.25` UUID-derived decimal form, numeric string VRs use digits, and length-limited text VRs are capped automatically. Generic hashing is rejected for fixed-format `DA`, `DT`, `TM`, and `AS` values; use a format-aware method such as `dateShift`, `redact`, or `perturb` instead. Unsupported combinations fail when the engine is constructed, before a dataset is changed.
+This function uses HMAC and emits a deterministic representation that conforms to the target DICOM VR alphabet and maximum length. `UI` values use the `2.25` UUID-derived decimal form, numeric string VRs use digits, and length-limited text VRs are capped automatically. CryptoHash rules support `AE`, `CS`, `UI`, `DS`, `IS`, `SH`, `PN`, `UC`, `LO`, `UT`, `ST`, `LT`, `UR`, `OB`, and `UN`. Other VRs require a format-aware anonymization method.
+
+Masked selectors, unknown exact tags, and exact tags that may use any unsupported VR are rejected when the engine is constructed, before a dataset is changed. `OW` fragment sequences remain supported when encountered as fragments at runtime, but broad `OW` rules are rejected because a selector cannot prove that every matching item is a fragment sequence.
 In cryptoHash setting, you can set cryptoHash key in setting.
 
 |Parameters|Description|Valid Values|Required|default value|
