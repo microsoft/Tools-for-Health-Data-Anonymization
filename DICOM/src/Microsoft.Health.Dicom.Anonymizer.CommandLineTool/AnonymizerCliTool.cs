@@ -6,6 +6,7 @@
 using System;
 using System.Threading.Tasks;
 using CommandLine;
+using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 
 namespace Microsoft.Health.Dicom.Anonymizer.CommandLineTool
 {
@@ -17,6 +18,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.CommandLineTool
             {
                 await ExecuteCommandsAsync(args);
                 return 0;
+            }
+            catch (DicomAnonymizationException ex)
+            {
+                Console.Error.WriteLine($"Process failed with error code {(int)ex.DicomAnonymizerErrorCode}: {ex.Message}");
+                return -1;
             }
             catch (Exception ex)
             {

@@ -24,6 +24,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             EnsureArg.IsNotNull(processorFactory, nameof(processorFactory));
 
             Description = description;
+            Method = method;
             processorFactory ??= new DicomProcessorFactory();
             _processor = processorFactory.CreateProcessor(method, ruleSetting);
 
@@ -34,6 +35,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
         }
 
         public string Description { get; set; }
+
+        public string Method { get; }
 
         public void Handle(DicomDataset dataset, ProcessContext context)
         {

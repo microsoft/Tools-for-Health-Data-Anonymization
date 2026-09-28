@@ -45,14 +45,115 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public async Task GivenOneDicomFile_WhenAnonymizeWithNewConfig_ResultWillBeReturnedAsync()
+        public async Task GivenOneDicomFile_WhenAnonymizeWithUnsafeBroadConfig_ConfigurationWillBeRejectedAsync()
         {
-            var commands = "-i DicomFiles/I341.dcm -o I341-newConfig.dcm -c TestConfigs/newConfig.json";
-            await AnonymizerCliTool.Main(commands.Split());
-            var dicomFile = await DicomFile.OpenAsync("I341-newConfig.dcm");
-            var expectedDicomFile = await DicomFile.OpenAsync("DicomResults/I341-newConfig.dcm");
-            Assert.Equal(expectedDicomFile.Dataset, dicomFile.Dataset);
-            File.Delete("I341-newConfig.dcm");
+            const string outputFile = "I341-newConfig.dcm";
+            var commands = $"-i DicomFiles/I341.dcm -o {outputFile} -c TestConfigs/newConfig.json";
+
+            await Assert.ThrowsAsync<AnonymizerConfigurationException>(
+                async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
+
+            Assert.False(File.Exists(outputFile));
+        }
+
+        [Fact]
+        public async Task GivenStaleFileMetaIdentity_WhenAnonymize_NoPartialOutputWillBeWrittenAsync()
+        {
+            var inputFile = $"stale-{Guid.NewGuid():N}.dcm";
+            var outputFile = $"stale-output-{Guid.NewGuid():N}.dcm";
+            var dicomFile = await DicomFile.OpenAsync("DicomFiles/I341.dcm");
+            var originalUid = dicomFile.Dataset.GetString(DicomTag.SOPInstanceUID);
+            const string staleUid = "2.25.999";
+            dicomFile.FileMetaInfo.MediaStorageSOPInstanceUID = new DicomUID(staleUid, "Synthetic", DicomUidType.SOPInstance);
+            dicomFile.Save(inputFile);
+
+            try
+            {
+                var commands = $"-i {inputFile} -o {outputFile}";
+                var exception = await Assert.ThrowsAsync<AnonymizerOperationException>(
+                    async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
+
+                Assert.Equal(DicomAnonymizationErrorCode.FileMetaIdentityMismatch, exception.DicomAnonymizerErrorCode);
+                Assert.DoesNotContain(originalUid, exception.Message);
+                Assert.DoesNotContain(staleUid, exception.Message);
+                Assert.False(File.Exists(outputFile));
+            }
+            finally
+            {
+                File.Delete(inputFile);
+                File.Delete(outputFile);
+            }
+        }
+
+        [Fact]
+        public async Task GivenSequenceDepthAboveLimit_WhenAnonymize_NoPartialOutputWillBeWrittenAsync()
+        {
+            var inputFile = $"deep-{Guid.NewGuid():N}.dcm";
+            var outputFile = $"deep-output-{Guid.NewGuid():N}.dcm";
+            var dicomFile = await DicomFile.OpenAsync("DicomFiles/I341.dcm");
+            var current = dicomFile.Dataset;
+            for (var index = 0; index < 65; index++)
+            {
+                var nested = new DicomDataset();
+                current.Add(new DicomSequence(DicomTag.RequestAttributesSequence, nested));
+                current = nested;
+            }
+
+            current.Add(DicomTag.ReferencedSOPInstanceUID, "2.25.999");
+            dicomFile.Save(inputFile);
+
+            try
+            {
+                var commands = $"-i {inputFile} -o {outputFile}";
+                var exception = await Assert.ThrowsAsync<AnonymizerOperationException>(
+                    async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
+
+                Assert.Equal(DicomAnonymizationErrorCode.SequenceDepthLimitExceeded, exception.DicomAnonymizerErrorCode);
+                Assert.DoesNotContain("2.25.999", exception.Message);
+                Assert.DoesNotContain(inputFile, exception.Message);
+                Assert.DoesNotContain(outputFile, exception.Message);
+                Assert.False(File.Exists(outputFile));
+            }
+            finally
+            {
+                File.Delete(inputFile);
+                File.Delete(outputFile);
+            }
+        }
+
+        [Theory]
+        [InlineData("remove")]
+        [InlineData("redact")]
+        public async Task GivenRequiredSopInstanceUidIsRemovedOrCleared_WhenAnonymize_NoPartialOutputWillBeWrittenAsync(string method)
+        {
+            var inputFile = $"required-identity-{Guid.NewGuid():N}.dcm";
+            var outputFile = $"required-identity-output-{Guid.NewGuid():N}.dcm";
+            var configFile = $"required-identity-config-{Guid.NewGuid():N}.json";
+            var dicomFile = await DicomFile.OpenAsync("DicomFiles/I341.dcm");
+            var originalUid = dicomFile.Dataset.GetString(DicomTag.SOPInstanceUID);
+            dicomFile.Save(inputFile);
+            await File.WriteAllTextAsync(
+                configFile,
+                $"{{\"rules\":[{{\"tag\":\"SOPInstanceUID\",\"method\":\"{method}\",\"params\":{{}}}}],\"defaultSettings\":{{}},\"customSettings\":{{}}}}");
+
+            try
+            {
+                var commands = $"-i {inputFile} -o {outputFile} -c {configFile}";
+                var exception = await Assert.ThrowsAsync<AnonymizerOperationException>(
+                    async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
+
+                Assert.Equal(DicomAnonymizationErrorCode.FileMetaIdentityMismatch, exception.DicomAnonymizerErrorCode);
+                Assert.DoesNotContain(originalUid, exception.Message);
+                Assert.DoesNotContain(inputFile, exception.Message);
+                Assert.DoesNotContain(outputFile, exception.Message);
+                Assert.False(File.Exists(outputFile));
+            }
+            finally
+            {
+                File.Delete(inputFile);
+                File.Delete(outputFile);
+                File.Delete(configFile);
+            }
         }
 
         [Theory]

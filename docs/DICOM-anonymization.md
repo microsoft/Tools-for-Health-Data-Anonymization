@@ -94,6 +94,29 @@ Parameters in each rule:
 
 Each DICOM tag can only be anonymized once, if two rules have conflicts on one tag, only the former rule will be applied.
 
+### UID safety and compatibility notes
+
+- The command-line tool validates File Meta SOP Class/Instance identities against
+  their Dataset counterparts before processing. After a Dataset SOP Instance UID is
+  refreshed, `MediaStorageSOPInstanceUID` is synchronized before output. Missing or
+  stale identities fail closed with an error code and tags only; UID values and
+  filenames are not included. File processing uses a copy, so failure does not
+  mutate the caller's file or write a partial output. The returned file owns its
+  data buffers and remains readable and saveable after anonymization completes.
+- SOP Class UID, Media Storage SOP Class UID, and Transfer Syntax UID are invariants.
+  Rules that can mutate these selectors, including broad `UI` or masked selectors,
+  are rejected during engine construction. SOP Instance and reference UIDs can still
+  use `refreshUID` and retain consistent remapping.
+- Exact `refreshUID` tag rules are also applied to matching UID elements nested in
+  sequences without removing the surrounding sequence structure. Existing rule
+  order is preserved: an earlier matching rule prevents a later exact `refreshUID`
+  rule from changing the nested item. Sequence nesting is limited to 64 item levels;
+  deeper input fails before anonymization begins.
+
+Configurations that intentionally transform SOP Class UID, Media Storage SOP Class
+UID, or Transfer Syntax UID must be changed to `keep` those identifiers before
+engine construction succeeds.
+
 ### How to set settings
 _defaultSettings_ and _customSettings_ are used to config anonymization method. (Detailed parameters are defined in [Anonymization algorithm](#data-anonymization-algorithms). _defaultSettings_ are used when user does not specify settings in rule. As for _customSettings_, users need to add the setting with unique name. This setting can be used in "rules" by name.
 

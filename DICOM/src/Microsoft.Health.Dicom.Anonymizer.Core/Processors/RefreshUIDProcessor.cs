@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System.Collections.Concurrent;
+using System.Linq;
 using FellowOakDicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
@@ -29,13 +30,25 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             if (item.ValueRepresentation == DicomVR.UI)
             {
-                var oldUIDValue = ((DicomElement)item).Get<string>();
+                if (IsInvariantUid(item.Tag))
+                {
+                    throw new AnonymizerOperationException(
+                        DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod,
+                        $"RefreshUID is not supported for invariant tag {item.Tag} with VR {item.ValueRepresentation}.");
+                }
 
-                DicomUID newUID = ReplacedUIDs.GetOrAdd(oldUIDValue, DicomUIDGenerator.GenerateDerivedFromUUID());
-                var newItem = new DicomUniqueIdentifier(item.Tag, newUID);
+                var oldUIDValues = ((DicomElement)item).Get<string[]>();
+                var newUIDValues = oldUIDValues
+                    .Select(value => ReplacedUIDs.GetOrAdd(value, _ => DicomUIDGenerator.GenerateDerivedFromUUID()))
+                    .ToArray();
+                var newItem = new DicomUniqueIdentifier(item.Tag, newUIDValues);
                 dicomDataset.AddOrUpdate(newItem);
 
-                _logger.LogDebug($"The UID value of DICOM item '{item}' is refreshed.");
+                _logger.LogDebug(
+                    "The UID value for tag ({Group:X4},{Element:X4}) with VR {VR} is refreshed.",
+                    item.Tag.Group,
+                    item.Tag.Element,
+                    item.ValueRepresentation.Code);
             }
             else
             {
@@ -47,7 +60,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            return DicomDataModel.RefreshUIDSupportedVR.Contains(item.ValueRepresentation);
+            return DicomDataModel.RefreshUIDSupportedVR.Contains(item.ValueRepresentation) && !IsInvariantUid(item.Tag);
+        }
+
+        private static bool IsInvariantUid(DicomTag tag)
+        {
+            return tag == DicomTag.SOPClassUID ||
+                tag == DicomTag.MediaStorageSOPClassUID ||
+                tag == DicomTag.TransferSyntaxUID;
         }
     }
 }
