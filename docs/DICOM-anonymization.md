@@ -19,6 +19,7 @@ You can prepare your own DICOM files as input, or use sample DICOM files in fold
 - [Anonymize DICOM data: using the command line tool](#anonymize-dicom-data-using-the-command-line-tool)
 - [Customize configuration file](#customize-configuration-file)
 - [Data anonymization algorithms](#data-anonymization-algorithms)
+- [Unsupported embedded documents](#unsupported-embedded-documents)
 - [Output validation](#output-validation)
 
 
@@ -48,6 +49,14 @@ The command-line tool can be used to anonymize one DICOM file or a folder contai
 
 > **[NOTE]**
 > To anonymize one DICOM file, inputFile and outputFile are required. To anonymize a DICOM folder, inputFolder and outputFolder are required.
+
+## Unsupported embedded documents
+
+Embedded PDF and CDA documents are not supported. The anonymizer rejects the Encapsulated PDF Storage and Encapsulated CDA Storage SOP Classes, as well as any dataset containing the Encapsulated Document `(0042,0011)` element.
+
+Rejected inputs return `DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload` (`1201`) before anonymization rules are applied. The command-line tool creates no output for the rejected input and preserves an existing destination. The error message contains only the detected document type and DICOM tag numbers.
+
+Callers should use error `1201` to route unsupported content to an appropriate document-processing workflow.
 
 Example usage to anonymize DICOM files in a folder:
 ```

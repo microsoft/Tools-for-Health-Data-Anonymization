@@ -16,5 +16,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Exceptions
 
         UnsupportedAnonymizationMethod = 1101,
         AddCustomProcessorFailed = 1102,
+
+        UnsupportedEmbeddedPayload = 1201,
     }
 }
