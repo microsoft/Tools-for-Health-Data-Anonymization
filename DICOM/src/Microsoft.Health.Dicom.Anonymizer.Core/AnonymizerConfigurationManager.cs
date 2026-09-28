@@ -3,6 +3,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using EnsureThat;
@@ -29,10 +30,23 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             EnsureArg.IsNotNull(json, nameof(json));
             try
             {
-                var root = JObject.Parse(json);
+                var root = JObject.Parse(
+                    json,
+                    new JsonLoadSettings
+                    {
+                        DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error,
+                    });
                 var allowedFields = new[] { "rules", "defaultSettings", "customSettings" };
+                var observedFields = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
                 foreach (var property in root.Properties())
                 {
+                    if (!observedFields.Add(property.Name))
+                    {
+                        throw new AnonymizerConfigurationException(
+                            DicomAnonymizationErrorCode.InvalidConfigurationValues,
+                            "Policy validation failed: duplicate top-level field.");
+                    }
+
                     if (!System.Array.Exists(allowedFields, field => string.Equals(field, property.Name, System.StringComparison.OrdinalIgnoreCase)))
                     {
                         throw new AnonymizerConfigurationException(
@@ -44,9 +58,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 var configuration = root.ToObject<AnonymizerConfiguration>();
                 return new AnonymizerConfigurationManager(configuration);
             }
+            catch (JsonReaderException)
+            {
+                throw new AnonymizerConfigurationException(
+                    DicomAnonymizationErrorCode.ParsingJsonConfigurationFailed,
+                    "Failed to parse configuration file.");
+            }
             catch (JsonException innerException)
             {
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.ParsingJsonConfigurationFailed, $"Failed to parse configuration file", innerException);
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.ParsingJsonConfigurationFailed, "Failed to parse configuration file.", innerException);
             }
         }
 

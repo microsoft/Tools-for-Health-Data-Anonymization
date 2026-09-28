@@ -33,6 +33,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             for (var index = 0; index < ruleContents.Length; index++)
             {
                 var rule = ruleContents[index];
+                var observedFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                if (rule != null && rule.Properties().Any(property => !observedFields.Add(property.Name)))
+                {
+                    throw new AnonymizerConfigurationException(
+                        DicomAnonymizationErrorCode.InvalidConfigurationValues,
+                        $"Policy validation failed for rule {index}: duplicate field.");
+                }
+
                 if (rule == null || rule.Properties().Any(property => !RuleFields.Contains(property.Name)))
                 {
                     throw new AnonymizerConfigurationException(

@@ -138,6 +138,36 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, exception.DicomAnonymizerErrorCode);
         }
 
+        [Theory]
+        [InlineData("{\"rules\":[],\"rules\":[]}")]
+        [InlineData("{\"rules\":[{\"tag\":\"PatientName\",\"tag\":\"PatientID\",\"method\":\"keep\"}]}")]
+        public void GivenExactDuplicateJsonField_WhenParsingPolicy_ReturnsParsingConfigurationError(string json)
+        {
+            var exception = Assert.Throws<AnonymizerConfigurationException>(
+                () => AnonymizerConfigurationManager.CreateFromJson(json));
+
+            Assert.Equal(DicomAnonymizationErrorCode.ParsingJsonConfigurationFailed, exception.DicomAnonymizerErrorCode);
+            Assert.DoesNotContain("PatientName", exception.ToString(), StringComparison.Ordinal);
+            Assert.DoesNotContain("PatientID", exception.ToString(), StringComparison.Ordinal);
+        }
+
+        [Theory]
+        [InlineData("{\"rules\":[],\"Rules\":[]}")]
+        [InlineData("{\"rules\":[{\"tag\":\"PatientName\",\"Tag\":\"PatientID\",\"method\":\"keep\"}]}")]
+        public void GivenCaseVariantDuplicateJsonField_WhenConstructingEngine_FailsBeforeDatasetMutation(string json)
+        {
+            var dataset = new DicomDataset { { DicomTag.PatientName, "PRIVATE" } };
+            var originalValue = dataset.GetString(DicomTag.PatientName);
+
+            var exception = Assert.Throws<AnonymizerConfigurationException>(
+                () => new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromJson(json)));
+
+            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, exception.DicomAnonymizerErrorCode);
+            Assert.Equal(originalValue, dataset.GetString(DicomTag.PatientName));
+            Assert.DoesNotContain("PatientName", exception.ToString(), StringComparison.Ordinal);
+            Assert.DoesNotContain("PatientID", exception.ToString(), StringComparison.Ordinal);
+        }
+
         [Fact]
         public void GivenUnambiguousSpecificAndBroadRules_WhenConstructingEngine_PreservesRulePrecedence()
         {

@@ -94,7 +94,7 @@ Parameters in each rule:
 
 Exact duplicate selectors are rejected when the engine is constructed. Distinct selectors may overlap, such as a specific tag followed by a broader masked-tag or VR rule; for those overlaps, the first matching rule remains authoritative. Broad `UI` transformations and broad removal of all `SQ` elements are rejected because they can alter invariant UIDs or remove every sequence.
 
-Unknown top-level configuration fields and unknown rule fields are rejected. This is a fail-closed compatibility change: misspelled fields that were previously ignored now prevent engine construction. Validation diagnostics identify rule positions, selectors, tags, VRs, and error categories only; they do not include DICOM values, keys, filenames, full rules, settings, or serialized policies.
+Unknown top-level configuration fields and unknown rule fields are rejected. Duplicate JSON properties, including properties that differ only by letter casing, are also rejected. This is a fail-closed compatibility change: misspelled or ambiguous fields that were previously ignored or overwritten now prevent engine construction. Validation diagnostics identify rule positions, selectors, tags, VRs, and error categories only; they do not include DICOM values, keys, filenames, full rules, settings, or serialized policies.
 
 ### How to set settings
 _defaultSettings_ and _customSettings_ are used to config anonymization method. (Detailed parameters are defined in [Anonymization algorithm](#data-anonymization-algorithms). _defaultSettings_ are used when user does not specify settings in rule. As for _customSettings_, users need to add the setting with unique name. This setting can be used in "rules" by name.
