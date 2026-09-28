@@ -101,9 +101,15 @@ Parameters in each rule:
 
 > Masked tags follow the [DICOM convention](https://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_5.html). `x` in a group or element number, means any value from 0 through F inclusive.
 
-Exact duplicate selectors are rejected when the engine is constructed. Distinct selectors may overlap, such as a specific tag followed by a broader masked-tag or VR rule; for those overlaps, the first matching rule remains authoritative. Broad `UI` transformations and broad removal of all `SQ` elements are rejected because they can alter invariant UIDs or remove every sequence.
+Exact duplicate selectors are rejected when the engine is constructed. Distinct selectors may overlap, such as a specific tag followed by a broader masked-tag or VR rule; for those overlaps, the first matching rule remains authoritative. Broad `UI` and `SQ` transformations are rejected because they can alter invariant UIDs or remove or empty every sequence.
 
 Unknown top-level configuration fields and unknown rule fields are rejected. Duplicate JSON properties, including properties that differ only by letter casing, are also rejected. This is a fail-closed compatibility change: misspelled or ambiguous fields that were previously ignored or overwritten now prevent engine construction. Validation diagnostics identify rule positions, selectors, tags, VRs, and error categories only; they do not include DICOM values, keys, filenames, full rules, settings, or serialized policies.
+
+Case-insensitive duplicate setting fields are rejected in default method settings,
+individual custom settings, and rule parameters before settings are merged.
+Custom-setting names and private creators retain their case-sensitive identity.
+Malformed setting errors do not include setting values or value-bearing inner
+exceptions.
 
 ### UID safety and compatibility notes
 
@@ -114,19 +120,65 @@ Unknown top-level configuration fields and unknown rule fields are rejected. Dup
   filenames are not included. File processing uses a copy, so failure does not
   mutate the caller's file or write a partial output. The returned file owns its
   data buffers and remains readable and saveable after anonymization completes.
-- SOP Class UID, Media Storage SOP Class UID, and Transfer Syntax UID are invariants.
+- SOP Class UID, Media Storage SOP Class UID, Transfer Syntax UID, Referenced SOP
+  Class UID, and SOP Classes in Study are invariants.
   Rules that can mutate these selectors, including broad `UI` or masked selectors,
   are rejected during engine construction. SOP Instance and reference UIDs can still
   use `refreshUID` and retain consistent remapping.
-- Exact `refreshUID` tag rules are also applied to matching UID elements nested in
-  sequences without removing the surrounding sequence structure. Existing rule
-  order is preserved: an earlier matching rule prevents a later exact `refreshUID`
-  rule from changing the nested item. Sequence nesting is limited to 64 item levels;
-  deeper input fails before anonymization begins.
+- Exact `refreshUID` tag rules also apply to matching nested instance/reference
+  UIDs. The existing UID map is shared in-process; these changes do not provide
+  job or tenant isolation.
+- Sequence nesting is limited to 64 item levels; deeper input fails before
+  anonymization begins.
 
 Configurations that intentionally transform SOP Class UID, Media Storage SOP Class
-UID, or Transfer Syntax UID must be changed to `keep` those identifiers before
-engine construction succeeds.
+UID, Transfer Syntax UID, Referenced SOP Class UID, or SOP Classes in Study must
+be changed to `keep` those identifiers before engine construction succeeds.
+
+### Selected nested rules
+
+Exact tag rules also apply inside sequences for supported string `cryptoHash`,
+non-invariant `UI` `refreshUID`, and scalar `remove`/`redact`. Exact nested
+`substitute` requires a single-valued string element and a nonempty replacement
+that validates for its actual VR. Hashing retains VR and value multiplicity.
+Removal deliberately removes an element; redaction deliberately clears or
+partially redacts it using its settings. Neither is a substitute for a policy
+that must retain a required nonempty value.
+
+Rule ordering still applies to each element. An earlier matching `keep` prevents
+a later transformation of that element. Keeping a sequence retains its structure
+but does not exempt its descendants from selected exact rules. A selected exact
+sequence `remove` discards its subtree; sequence `redact` empties its items.
+Descendant actions do not resurrect that discarded content.
+
+Masked-tag and VR-wide transformations are not newly applied recursively.
+An exact nested candidate whose first matching non-keep rule cannot safely run
+there is rejected with `UnsupportedAnonymizationMethod` (`1101`) before root
+processing. This includes exact nested `dateShift`, encryption, perturbation,
+custom processors, unsupported bulk shapes, and invalid nested substitutions.
+Previously such exact rules could be silently skipped inside sequences; this
+new rejection is an intentional compatibility change. Actual root method/item
+compatibility is also checked before processing.
+
+These checks do not infer IOD-specific Type 1/1C requirements or certify clinical
+conformance. Policies must choose valid nonempty substitutions when required and
+must not remove required sequence structures.
+
+### File ownership and streaming
+
+`AnonymizeFile` returns an independently owned copy and leaves the supplied file
+unchanged on failure. Its copy is materialized in memory.
+
+`AnonymizeFileInPlace(DicomFile, RuntimeKeySettings)` (or its overload without
+runtime keys) validates and synchronizes File Meta identity without cloning,
+serializing, or reopening the file. Kept bulk buffers are not replaced or read
+by metadata processing. The caller retains ownership of the file and any source
+stream and must keep that stream open until saving is complete.
+
+Preflight rejection does not apply anonymization rules. A later processor or
+output-validation failure can leave an in-place file partially modified: discard
+it and do not save or publish it. This API does not provide rollback, atomic
+saves, or transactional folder output.
 
 ### How to set settings
 _defaultSettings_ and _customSettings_ are used to config anonymization method. (Detailed parameters are defined in [Anonymization algorithm](#data-anonymization-algorithms). _defaultSettings_ are used when user does not specify settings in rule. As for _customSettings_, users need to add the setting with unique name. This setting can be used in "rules" by name.

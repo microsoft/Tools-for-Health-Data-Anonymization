@@ -828,19 +828,19 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         {
             var nestedDataset = new DicomDataset
             {
-                { DicomTag.SOPClassesInStudy, "2.25.100", "2.25.200", "2.25.100" },
+                { DicomTag.FailedSOPInstanceUIDList, "2.25.100", "2.25.200", "2.25.100" },
             };
             var dataset = new DicomDataset
             {
-                { DicomTag.SOPClassesInStudy, "2.25.100", "2.25.200", "2.25.100" },
+                { DicomTag.FailedSOPInstanceUIDList, "2.25.100", "2.25.200", "2.25.100" },
                 new DicomSequence(DicomTag.RequestAttributesSequence, nestedDataset),
             };
-            var engine = CreateEngine(new JObject { ["tag"] = "SOPClassesInStudy", ["method"] = "refreshUID" });
+            var engine = CreateEngine(new JObject { ["tag"] = "FailedSOPInstanceUIDList", ["method"] = "refreshUID" });
 
             engine.AnonymizeDataset(dataset);
 
-            var rootValues = dataset.GetValues<string>(DicomTag.SOPClassesInStudy);
-            var nestedValues = nestedDataset.GetValues<string>(DicomTag.SOPClassesInStudy);
+            var rootValues = dataset.GetValues<string>(DicomTag.FailedSOPInstanceUIDList);
+            var nestedValues = nestedDataset.GetValues<string>(DicomTag.FailedSOPInstanceUIDList);
             Assert.Equal(3, rootValues.Length);
             Assert.Equal(rootValues, nestedValues);
             Assert.Equal(rootValues[0], rootValues[2]);

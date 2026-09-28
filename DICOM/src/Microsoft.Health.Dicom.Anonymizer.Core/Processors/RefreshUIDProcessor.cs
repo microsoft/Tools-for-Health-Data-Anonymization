@@ -30,7 +30,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             if (item.ValueRepresentation == DicomVR.UI)
             {
-                if (IsInvariantUid(item.Tag))
+                if (DicomUtility.IsInvariantUid(item.Tag))
                 {
                     throw new AnonymizerOperationException(
                         DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod,
@@ -60,14 +60,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            return DicomDataModel.RefreshUIDSupportedVR.Contains(item.ValueRepresentation) && !IsInvariantUid(item.Tag);
-        }
-
-        private static bool IsInvariantUid(DicomTag tag)
-        {
-            return tag == DicomTag.SOPClassUID ||
-                tag == DicomTag.MediaStorageSOPClassUID ||
-                tag == DicomTag.TransferSyntaxUID;
+            return DicomDataModel.RefreshUIDSupportedVR.Contains(item.ValueRepresentation) && !DicomUtility.IsInvariantUid(item.Tag);
         }
     }
 }

@@ -31,6 +31,20 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         private const int AgeStringLength = 3;
         private const int MaxAgeValue = 999;
 
+        internal static IReadOnlyList<DicomTag> InvariantUidTags { get; } = Array.AsReadOnly(new[]
+        {
+            DicomTag.SOPClassUID,
+            DicomTag.MediaStorageSOPClassUID,
+            DicomTag.TransferSyntaxUID,
+            DicomTag.ReferencedSOPClassUID,
+            DicomTag.SOPClassesInStudy,
+        });
+
+        internal static bool IsInvariantUid(DicomTag tag)
+        {
+            return InvariantUidTags.Contains(tag);
+        }
+
         public static DateTimeOffset[] ParseDicomDate(DicomDate item)
         {
             EnsureArg.IsNotNull(item, nameof(item));

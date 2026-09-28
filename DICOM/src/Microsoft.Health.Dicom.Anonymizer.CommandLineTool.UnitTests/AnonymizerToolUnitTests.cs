@@ -162,6 +162,55 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task GivenUnsupportedNestedAction_WhenAnonymize_SourceAndDestinationArePreservedAsync(bool existingDestination)
+        {
+            var inputFile = $"nested-input-{Guid.NewGuid():N}.dcm";
+            var outputFile = $"nested-output-{Guid.NewGuid():N}.dcm";
+            var configFile = $"nested-config-{Guid.NewGuid():N}.json";
+            var destinationBytes = Encoding.UTF8.GetBytes("EXISTING DESTINATION");
+            var file = await DicomFile.OpenAsync("DicomFiles/I341.dcm");
+            file.Dataset.AddOrUpdate(new DicomSequence(
+                DicomTag.RequestAttributesSequence,
+                new DicomDataset { { DicomTag.StudyDate, "20250509" } }));
+            file.Save(inputFile);
+            var inputBytes = await File.ReadAllBytesAsync(inputFile);
+            await File.WriteAllTextAsync(
+                configFile,
+                "{\"rules\":[{\"tag\":\"PatientID\",\"method\":\"cryptoHash\"},{\"tag\":\"StudyDate\",\"method\":\"dateShift\"}],\"defaultSettings\":{\"cryptoHash\":{\"cryptoHashKey\":\"synthetic-key\"},\"dateshift\":{\"dateShiftKey\":\"synthetic-key\"}}}");
+            if (existingDestination)
+            {
+                await File.WriteAllBytesAsync(outputFile, destinationBytes);
+            }
+
+            try
+            {
+                var error = await Assert.ThrowsAsync<AnonymizerOperationException>(() =>
+                    AnonymizerCliTool.ExecuteCommandsAsync(new[] { "-i", inputFile, "-o", outputFile, "-c", configFile }));
+
+                Assert.Equal(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, error.DicomAnonymizerErrorCode);
+                Assert.DoesNotContain("20250509", error.Message);
+                Assert.DoesNotContain(inputFile, error.Message);
+                Assert.Equal(inputBytes, await File.ReadAllBytesAsync(inputFile));
+                if (existingDestination)
+                {
+                    Assert.Equal(destinationBytes, await File.ReadAllBytesAsync(outputFile));
+                }
+                else
+                {
+                    Assert.False(File.Exists(outputFile));
+                }
+            }
+            finally
+            {
+                File.Delete(inputFile);
+                File.Delete(outputFile);
+                File.Delete(configFile);
+            }
+        }
+
+        [Theory]
         [MemberData(nameof(GetInvalidCommandLine))]
         public async Task GivenOneDicomFile_WhenAnonymizeWithInvalidCommandLine_ExceptionWillBeThrownAsync(string commands)
         {

@@ -63,7 +63,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                     dicomDataset.AddOrUpdate(item.ValueRepresentation, item.Tag, _replaceString);
                 }
 
-                _logger.LogDebug($"The value of DICOM item '{item}' is substituted.");
+                _logger.LogDebug("Substituted tag {Tag} with VR {VR}.", DicomUtility.FormatTag(item.Tag), item.ValueRepresentation);
             }
             catch (Exception ex)
             {
@@ -79,6 +79,27 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             }
 
             return true;
+        }
+
+        internal bool IsValidNestedReplacement(DicomItem item)
+        {
+            if (item is not DicomStringElement element || element.Count != 1 || string.IsNullOrWhiteSpace(_replaceString))
+            {
+                return false;
+            }
+
+            try
+            {
+                var replacement = new DicomDataset();
+                replacement.Add(item.ValueRepresentation, item.Tag, _replaceString);
+                replacement.Validate();
+                var value = replacement.GetDicomItem<DicomStringElement>(item.Tag);
+                return value.Count == 1 && !string.IsNullOrWhiteSpace(value.Get<string>());
+            }
+            catch (DicomValidationException)
+            {
+                return false;
+            }
         }
     }
 }

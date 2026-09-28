@@ -24,7 +24,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             dicomDataset.Remove(item.Tag);
 
-            _logger.LogDebug($"The DICOM item '{item}' is removed.");
+            _logger.LogDebug("Removed tag {Tag} with VR {VR}.", DicomUtility.FormatTag(item.Tag), item.ValueRepresentation);
         }
 
         public bool IsSupported(DicomItem item)

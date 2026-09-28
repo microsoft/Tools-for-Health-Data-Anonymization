@@ -61,7 +61,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { DicomTag.Event​Elapsed​Times, "1234.5", "92b95e021c40596706b243f79fe0f45394de785be64866f6b46fcacd0839ac43" }; // DS
             yield return new object[] { DicomTag.Stage​Number, "1234", "c1771ad95972ef1ab887140489863ede4faad7458441a3a8a4781454e368b52d" }; // IS
             yield return new object[] { DicomTag.Patient​Telephone​Numbers, "TEST", "2e7acefff0307262cef6f503fa7019257f3f9d47fc987fb2c5a31ae4f4d3c022" }; // SH
-            yield return new object[] { DicomTag.SOP​Classes​In​Study, "12345", "81c7be73b3eaeca31695a744fbc6d3abb5a37ffc10498d0fcb4111c7944b28a0" }; // UI
+            yield return new object[] { DicomTag.FailedSOPInstanceUIDList, "12345", "81c7be73b3eaeca31695a744fbc6d3abb5a37ffc10498d0fcb4111c7944b28a0" }; // UI
         }
 
         [Theory]
@@ -279,6 +279,41 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
                 Assert.DoesNotContain(creator, entry.Message);
                 Assert.DoesNotContain(entry.State, pair => pair.Value?.ToString().Contains(creator, StringComparison.Ordinal) == true);
                 Assert.Contains(entry.State, pair => pair.Key == "Tag" && pair.Value?.ToString() == "(0011,1001)");
+            }
+            finally
+            {
+                AnonymizerLogging.LoggerFactory = originalLoggerFactory;
+            }
+        }
+
+        [Theory]
+        [InlineData("remove")]
+        [InlineData("redact")]
+        [InlineData("substitute")]
+        public void GivenPrivateItem_WhenScalarProcessorCompletes_LogUsesNumericTagOnly(string method)
+        {
+            const string creator = "SYNTHETIC-CREATOR-PRIVACY-SENTINEL";
+            var provider = new CapturingLoggerProvider();
+            using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug).AddProvider(provider));
+            var originalLoggerFactory = AnonymizerLogging.LoggerFactory;
+            AnonymizerLogging.LoggerFactory = loggerFactory;
+
+            try
+            {
+                var processor = new DicomProcessorFactory().CreateProcessor(method, new JObject { ["replaceWith"] = "ANONYMOUS" });
+                var tag = DicomTag.Parse($"(7777,1042:{creator})");
+                var dataset = new DicomDataset();
+                dataset.AddOrUpdate(DicomVR.LO, tag, "SYNTHETIC-VALUE");
+
+                processor.Process(dataset, dataset.GetDicomItem<DicomItem>(tag), null);
+
+                var entry = Assert.Single(provider.Entries.Where(log =>
+                    log.Category.EndsWith(processor.GetType().Name, StringComparison.Ordinal) &&
+                    log.State.Any(pair => pair.Key == "Tag" && pair.Value?.ToString() == "(7777,1042)")));
+                Assert.DoesNotContain(creator, entry.Message);
+                Assert.DoesNotContain("SYNTHETIC-VALUE", entry.Message);
+                Assert.DoesNotContain(entry.State, pair => pair.Value?.ToString().Contains(creator, StringComparison.Ordinal) == true);
+                Assert.Contains(entry.State, pair => pair.Key == "Tag" && pair.Value?.ToString() == "(7777,1042)");
             }
             finally
             {

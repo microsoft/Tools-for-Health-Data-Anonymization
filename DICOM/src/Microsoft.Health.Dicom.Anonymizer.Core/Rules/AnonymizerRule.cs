@@ -38,6 +38,41 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
         public string Method { get; }
 
+        internal bool KeepsValue => _processor.GetType() == typeof(KeepProcessor);
+
+        internal bool DiscardsSequenceItems => _processor.GetType() == typeof(RemoveProcessor) || _processor.GetType() == typeof(RedactProcessor);
+
+        internal void ValidateItem(DicomItem item, bool nested)
+        {
+            if (!_processor.IsSupported(item) || (DicomUtility.IsInvariantUid(item.Tag) && !KeepsValue))
+            {
+                throw CreateUnsupportedItemException(item);
+            }
+
+            if (!nested || KeepsValue)
+            {
+                return;
+            }
+
+            var processorType = _processor.GetType();
+            var supported = GetType() == typeof(AnonymizerTagRule) &&
+                ((processorType == typeof(CryptoHashProcessor) && item is DicomStringElement) ||
+                processorType == typeof(RefreshUIDProcessor) ||
+                (DiscardsSequenceItems && (DicomDataModel.IsScalar(item) || item is DicomSequence)) ||
+                (processorType == typeof(SubstituteProcessor) && ((SubstituteProcessor)_processor).IsValidNestedReplacement(item)));
+            if (!supported)
+            {
+                throw CreateUnsupportedItemException(item);
+            }
+        }
+
+        internal static AnonymizerOperationException CreateUnsupportedItemException(DicomItem item)
+        {
+            return new AnonymizerOperationException(
+                DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod,
+                $"Configured method is not supported for tag {DicomUtility.FormatTag(item.Tag)} with VR {item.ValueRepresentation}.");
+        }
+
         public void Handle(DicomDataset dataset, ProcessContext context)
         {
             EnsureArg.IsNotNull(dataset, nameof(dataset));
@@ -54,9 +89,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                 }
                 else
                 {
-                    throw new AnonymizerOperationException(
-                        DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod,
-                        $"Configured method is not supported for tag {DicomUtility.FormatTag(item.Tag)} with VR {item.ValueRepresentation}.");
+                    throw CreateUnsupportedItemException(item);
                 }
             }
         }

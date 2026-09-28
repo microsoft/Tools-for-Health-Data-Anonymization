@@ -89,5 +89,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             return CryptoHashSupportedVRValues.Contains(valueRepresentation);
         }
+
+        internal static bool IsScalar(DicomItem item)
+        {
+            var vr = item.ValueRepresentation;
+            return item is DicomStringElement ||
+                vr == DicomVR.AT || vr == DicomVR.FL || vr == DicomVR.FD ||
+                vr == DicomVR.SL || vr == DicomVR.SS || vr == DicomVR.UL ||
+                vr == DicomVR.US || vr == DicomVR.SV || vr == DicomVR.UV;
+        }
     }
 }

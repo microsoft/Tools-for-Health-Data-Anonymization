@@ -59,6 +59,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                     }
                 }
 
+                if (root.GetValue("defaultSettings", StringComparison.OrdinalIgnoreCase) is JObject defaultSettings)
+                {
+                    AnonymizerPolicyValidator.ValidateSettingFields(defaultSettings);
+                }
+
                 var configuration = root.ToObject<AnonymizerConfiguration>();
                 return new AnonymizerConfigurationManager(configuration);
             }
@@ -80,6 +85,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         private static void ValidateConfiguration(AnonymizerConfiguration configuration)
         {
+            AnonymizerPolicyValidator.ValidateSettingFields(configuration);
+
             if (configuration.RuleContent == null)
             {
                 return;
@@ -98,7 +105,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
                 if (IsInvariantUidSelector(selector))
                 {
-                    throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, $"Invariant UID selector '{selector}' at rule index {index} may only use keep.");
+                    throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidConfigurationValues, $"Policy validation failed for rule {index}: invariant UID selectors may only use keep.");
                 }
             }
         }
@@ -119,9 +126,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             try
             {
                 var maskedTag = DicomMaskedTag.Parse(selector);
-                if (maskedTag.IsMatch(DicomTag.SOPClassUID) ||
-                    maskedTag.IsMatch(DicomTag.MediaStorageSOPClassUID) ||
-                    maskedTag.IsMatch(DicomTag.TransferSyntaxUID))
+                if (DicomUtility.InvariantUidTags.Any(maskedTag.IsMatch))
                 {
                     return true;
                 }
@@ -130,12 +135,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             {
             }
 
-            return string.Equals(normalized, "SOPClassUID", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(normalized, "MediaStorageSOPClassUID", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(normalized, "TransferSyntaxUID", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(normalized, "00080016", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(normalized, "00020002", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(normalized, "00020010", StringComparison.OrdinalIgnoreCase);
+            return DicomUtility.InvariantUidTags.Any(tag =>
+                string.Equals(normalized, tag.DictionaryEntry.Keyword, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(normalized, $"{tag.Group:X4}{tag.Element:X4}", StringComparison.OrdinalIgnoreCase));
         }
 
         private static string NormalizeTagCharacters(string selector)

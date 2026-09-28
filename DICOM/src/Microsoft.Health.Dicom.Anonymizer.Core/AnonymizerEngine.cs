@@ -92,8 +92,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 dataset.Validate();
             }
 
+            var nestedOperations = ValidateProcessing(dataset);
             ProcessDataset(dataset, runtimeKeySettings);
-            ProcessNestedUidReferences(dataset, runtimeKeySettings);
+            foreach (var (nestedDataset, rule) in nestedOperations)
+            {
+                DicomUtility.DisableAutoValidation(nestedDataset);
+                var context = InitContext(nestedDataset);
+                context.RuntimeKeys = runtimeKeySettings;
+                rule.Handle(nestedDataset, context);
+            }
 
             // Validate output dataset.
             if (_anonymizerSettings.ValidateOutput)
@@ -123,15 +130,30 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             stream.Position = 0;
             var output = DicomFile.Open(stream, FileReadOption.ReadAll);
 
-            ValidateFileMetaIdentity(output);
-            var transferSyntax = output.FileMetaInfo.TransferSyntax;
-            AnonymizeDataset(output.Dataset, runtimeKeySettings);
-
-            var (_, sopInstanceUid) = GetRequiredDatasetIdentity(output.Dataset);
-            output.FileMetaInfo.MediaStorageSOPInstanceUID = sopInstanceUid;
-            output.FileMetaInfo.TransferSyntax = transferSyntax;
-            ValidateFileMetaIdentity(output);
+            AnonymizeFileInPlace(output, runtimeKeySettings);
             return output;
+        }
+
+        public void AnonymizeFileInPlace(DicomFile dicomFile)
+        {
+            AnonymizeFileInPlace(dicomFile, null);
+        }
+
+        public void AnonymizeFileInPlace(DicomFile dicomFile, RuntimeKeySettings runtimeKeySettings)
+        {
+            EnsureArg.IsNotNull(dicomFile, nameof(dicomFile));
+
+            RejectUnsupportedEmbeddedPayload(dicomFile.Dataset);
+            ValidateSequenceDepth(dicomFile.Dataset);
+            ValidateFileMetaIdentity(dicomFile);
+
+            var transferSyntax = dicomFile.FileMetaInfo.TransferSyntax;
+            AnonymizeDataset(dicomFile.Dataset, runtimeKeySettings);
+
+            var (_, sopInstanceUid) = GetRequiredDatasetIdentity(dicomFile.Dataset);
+            dicomFile.FileMetaInfo.MediaStorageSOPInstanceUID = sopInstanceUid;
+            dicomFile.FileMetaInfo.TransferSyntax = transferSyntax;
+            ValidateFileMetaIdentity(dicomFile);
         }
 
         private static void RejectUnsupportedEmbeddedPayload(DicomDataset dataset)
@@ -202,40 +224,64 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        private void ProcessNestedUidReferences(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
+        private List<(DicomDataset Dataset, AnonymizerRule Rule)> ValidateProcessing(DicomDataset dataset)
         {
-            var exactUidRules = _rules
-                .OfType<AnonymizerTagRule>()
-                .Where(rule => string.Equals(rule.Method, nameof(AnonymizerMethod.RefreshUID), StringComparison.OrdinalIgnoreCase))
-                .ToArray();
-
-            var datasets = new Stack<DicomDataset>();
-            PushNestedDatasets(dataset, datasets);
+            var exactRules = _rules.OfType<AnonymizerTagRule>().ToArray();
+            var operations = new List<(DicomDataset Dataset, AnonymizerRule Rule)>();
+            var visited = new HashSet<DicomDataset>(ReferenceEqualityComparer.Instance);
+            var datasets = new Stack<(DicomDataset Dataset, bool Root)>();
+            datasets.Push((dataset, true));
             while (datasets.Count > 0)
             {
-                var nestedDataset = datasets.Pop();
-                DicomUtility.DisableAutoValidation(nestedDataset);
-                var context = InitContext(nestedDataset);
-                context.RuntimeKeys = runtimeKeySettings;
-                foreach (var exactUidRule in exactUidRules)
+                var current = datasets.Pop();
+                if (!visited.Add(current.Dataset))
                 {
-                    var candidate = nestedDataset.GetDicomItem<DicomItem>(exactUidRule.Tag);
-                    if (candidate != null && ReferenceEquals(FindFirstMatchingRule(nestedDataset, candidate), exactUidRule))
-                    {
-                        exactUidRule.Handle(nestedDataset, context);
-                    }
+                    continue;
                 }
 
-                PushNestedDatasets(nestedDataset, datasets);
+                foreach (var item in current.Dataset)
+                {
+                    var rule = FindFirstMatchingRule(current.Dataset, item);
+                    var selected = current.Root || exactRules.Any(exact =>
+                        ReferenceEquals(current.Dataset.GetDicomItem<DicomItem>(exact.Tag), item));
+
+                    if (selected && rule != null)
+                    {
+                        rule.ValidateItem(item, !current.Root);
+                        if (!current.Root && !rule.KeepsValue)
+                        {
+                            operations.Add((current.Dataset, rule));
+                        }
+                    }
+
+                    if (item is DicomSequence sequence && !(selected && rule?.DiscardsSequenceItems == true))
+                    {
+                        foreach (var nestedDataset in sequence.Items)
+                        {
+                            datasets.Push((nestedDataset, false));
+                        }
+                    }
+                }
             }
+
+            return operations;
         }
 
-        private AnonymizerRule FindFirstMatchingRule(DicomDataset dataset, DicomItem candidate)
+        private AnonymizerRule? FindFirstMatchingRule(DicomDataset dataset, DicomItem candidate)
         {
             foreach (var rule in _rules)
             {
-                var matchContext = new ProcessContext();
-                if (rule.LocateDicomTag(dataset, matchContext).Any(item => ReferenceEquals(item, candidate)))
+                var matches = rule switch
+                {
+                    AnonymizerTagRule exact when rule.GetType() == typeof(AnonymizerTagRule) =>
+                        ReferenceEquals(dataset.GetDicomItem<DicomItem>(exact.Tag), candidate),
+                    AnonymizerMaskedTagRule masked when rule.GetType() == typeof(AnonymizerMaskedTagRule) =>
+                        masked.MaskedTag.IsMatch(candidate.Tag),
+                    AnonymizerVRRule vr when rule.GetType() == typeof(AnonymizerVRRule) =>
+                        vr.VR == candidate.ValueRepresentation,
+                    _ => rule.LocateDicomTag(dataset, new ProcessContext()).Any(item => ReferenceEquals(item, candidate)),
+                };
+                if (matches)
                 {
                     return rule;
                 }
@@ -265,17 +311,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
                         datasets.Push((nestedDataset, depth));
                     }
-                }
-            }
-        }
-
-        private static void PushNestedDatasets(DicomDataset dataset, Stack<DicomDataset> datasets)
-        {
-            foreach (var sequence in dataset.Where(item => item.ValueRepresentation == DicomVR.SQ).OfType<DicomSequence>())
-            {
-                foreach (var nestedDataset in sequence.Items)
-                {
-                    datasets.Push(nestedDataset);
                 }
             }
         }

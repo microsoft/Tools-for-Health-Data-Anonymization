@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FellowOakDicom;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
+using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 using Newtonsoft.Json.Linq;
@@ -85,8 +86,51 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                     selectors.Add(selector, index);
                 }
 
-                ValidateBroadRule(rule, index);
                 ValidateCryptoHashRule(rule, index);
+                ValidateBroadRule(rule, index);
+            }
+        }
+
+        internal static void ValidateSettingFields(AnonymizerConfiguration configuration)
+        {
+            foreach (var method in Constants.BuiltInMethods)
+            {
+                ValidateSettingFields(configuration.DefaultSettings?.GetDefaultSetting(method));
+            }
+
+            if (configuration.CustomSettings != null)
+            {
+                foreach (var setting in configuration.CustomSettings.Values)
+                {
+                    ValidateSettingFields(setting);
+                }
+            }
+
+            if (configuration.RuleContent != null)
+            {
+                foreach (var rule in configuration.RuleContent)
+                {
+                    if (rule?.GetValue(Constants.Parameters, StringComparison.OrdinalIgnoreCase) is JObject parameters)
+                    {
+                        ValidateSettingFields(parameters);
+                    }
+                }
+            }
+        }
+
+        internal static void ValidateSettingFields(JObject? setting)
+        {
+            if (setting == null)
+            {
+                return;
+            }
+
+            var observedFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (setting.Properties().Any(property => !observedFields.Add(property.Name)))
+            {
+                throw new AnonymizerConfigurationException(
+                    DicomAnonymizationErrorCode.InvalidConfigurationValues,
+                    "Policy validation failed: duplicate setting field.");
             }
         }
 
@@ -121,11 +165,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                     $"Policy validation failed for rule {index}: broad UI transformation is unsafe.");
             }
 
-            if (vrRule.VR == DicomVR.SQ && string.Equals(rule.Method, "remove", StringComparison.OrdinalIgnoreCase))
+            if (vrRule.VR == DicomVR.SQ && !string.Equals(rule.Method, "keep", StringComparison.OrdinalIgnoreCase))
             {
                 throw new AnonymizerConfigurationException(
                     DicomAnonymizationErrorCode.InvalidConfigurationValues,
-                    $"Policy validation failed for rule {index}: broad SQ removal is unsafe.");
+                    $"Policy validation failed for rule {index}: broad SQ transformation is unsafe.");
             }
         }
 

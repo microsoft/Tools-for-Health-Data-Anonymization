@@ -42,12 +42,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { DicomTag.Referenced​Content​Item​Identifier, "12345" }; // UL
             yield return new object[] { DicomTag.Referenced​Waveform​Channels, "12345\\1234" }; // US
             yield return new object[] { DicomTag.SOP​Class​UID, "1234567890" }; // invariant UI
+            yield return new object[] { DicomTag.ReferencedSOPClassUID, "1234567890" };
+            yield return new object[] { DicomTag.SOPClassesInStudy, "1234567890" };
         }
 
         public static IEnumerable<object[]> GetUIDItemForRefreshUID()
         {
             yield return new object[] { DicomTag.Instance​Creator​UID, "1234567890" }; // UI
-            yield return new object[] { DicomTag.SOP​Classes​In​Study, "1234567890" }; // UI
+            yield return new object[] { DicomTag.FailedSOPInstanceUIDList, "1234567890" }; // UI
         }
 
         [Theory]
@@ -120,12 +122,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
         {
             var dataset = new DicomDataset
             {
-                { DicomTag.SOPClassesInStudy, "2.25.100", "2.25.200", "2.25.100" },
+                { DicomTag.FailedSOPInstanceUIDList, "2.25.100", "2.25.200", "2.25.100" },
             };
 
-            Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.SOPClassesInStudy));
+            Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.FailedSOPInstanceUIDList));
 
-            var refreshed = dataset.GetValues<string>(DicomTag.SOPClassesInStudy);
+            var refreshed = dataset.GetValues<string>(DicomTag.FailedSOPInstanceUIDList);
             Assert.Equal(3, refreshed.Length);
             Assert.NotEqual("2.25.100", refreshed[0]);
             Assert.NotEqual("2.25.200", refreshed[1]);

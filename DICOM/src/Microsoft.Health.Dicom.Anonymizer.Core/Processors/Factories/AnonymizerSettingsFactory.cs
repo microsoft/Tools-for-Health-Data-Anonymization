@@ -3,9 +3,9 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
-using System;
 using EnsureThat;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
@@ -20,9 +20,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
             {
                 return settings.ToObject<T>();
             }
-            catch (Exception ex)
+            catch (JsonException)
             {
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidRuleSettings, $"Failed to parse rule setting: [{settings}]", ex);
+                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.InvalidRuleSettings, "Failed to parse rule setting.");
             }
         }
     }
