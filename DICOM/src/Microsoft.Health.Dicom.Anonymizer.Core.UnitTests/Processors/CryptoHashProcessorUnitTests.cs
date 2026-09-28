@@ -18,6 +18,7 @@ using Xunit;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 {
+    [Collection("Anonymizer logging state")]
     public class CryptoHashProcessorUnitTests
     {
         public CryptoHashProcessorUnitTests()
