@@ -148,10 +148,10 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         }
 
         [Theory]
-        [InlineData(19)]
-        [InlineData(64)]
-        [InlineData(4096)]
-        public void GivenOverflowBoundaryInput_WhenMatchingLength_OutputIsDeterministicNumericAndDoesNotOverflow(int length)
+        [InlineData(19, "f497b5ec6b8aba24571b8788135b8e4f90dd9209ef2928f7a8cb599f2ae46a4e")]
+        [InlineData(64, "044fc3b038df1ee644098fb572d3b346a01e985dd85558d35fc0b0d0747a5e00")]
+        [InlineData(4096, "a12fe21cf018c5957a661316c9ff73c12a8c211dd7de2336ad94b057b58ea793")]
+        public void GivenOverflowBoundaryInput_WhenMatchingLength_OutputIsStableNumericAndDoesNotOverflow(int length, string expectedOutputHash)
         {
             var function = new CryptoHashFunction(new CryptoHashSetting
             {
@@ -166,6 +166,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
             Assert.Equal(input.Length, first.Length);
             Assert.Equal(first, second);
             Assert.All(first, value => Assert.InRange(value, '0', '9'));
+            Assert.Equal(expectedOutputHash, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(first))).ToLowerInvariant());
         }
 
         [Fact]
@@ -185,11 +186,11 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
         {
             const string alphabet = "0123456789";
 
-            var first = _function.HashToAlphabet("alphabet-input", alphabet, 4096);
-            var second = _function.HashToAlphabet("alphabet-input", alphabet, 4096);
+            var first = _function.HashToAlphabet("alphabet-input", alphabet, 32);
+            var second = _function.HashToAlphabet("alphabet-input", alphabet, 32);
 
+            Assert.Equal("91464668237566287822220487066907", first);
             Assert.Equal(first, second);
-            Assert.Equal(4096, first.Length);
             Assert.All(first, value => Assert.Contains(value, alphabet));
         }
     }

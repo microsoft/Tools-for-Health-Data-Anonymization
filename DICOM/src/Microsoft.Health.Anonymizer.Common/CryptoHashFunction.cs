@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 using System.Security.Authentication;
@@ -53,8 +54,13 @@ namespace Microsoft.Health.Anonymizer.Common
         {
             EnsureArg.IsNotNull(input, nameof(input));
 
+            if (_matchInputStringLength)
+            {
+                return HashToAlphabet(input, "0123456789", input.Length, encoding);
+            }
+
             using var hmac = CreateHmac();
-            return Hash(input, hmac, encoding, _matchInputStringLength);
+            return Hash(input, hmac, encoding);
         }
 
         public string HashToAlphabet(string input, string alphabet, int outputLength, Encoding encoding = null)
@@ -79,7 +85,8 @@ namespace Microsoft.Health.Anonymizer.Common
             var counter = 0;
             while (result.Length < outputLength)
             {
-                var counterBytes = BitConverter.GetBytes(counter++);
+                var counterBytes = new byte[sizeof(int)];
+                BinaryPrimitives.WriteInt32LittleEndian(counterBytes, counter++);
                 var blockInput = new byte[inputBytes.Length + counterBytes.Length];
                 Buffer.BlockCopy(inputBytes, 0, blockInput, 0, inputBytes.Length);
                 Buffer.BlockCopy(counterBytes, 0, blockInput, inputBytes.Length, counterBytes.Length);
