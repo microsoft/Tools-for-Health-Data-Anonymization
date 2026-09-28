@@ -179,5 +179,18 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
 
             Assert.All(results, result => Assert.Equal(expected, result));
         }
+
+        [Fact]
+        public void GivenNonPowerOfTwoAlphabet_WhenHashing_OutputIsDeterministicAndConstrained()
+        {
+            const string alphabet = "0123456789";
+
+            var first = _function.HashToAlphabet("alphabet-input", alphabet, 4096);
+            var second = _function.HashToAlphabet("alphabet-input", alphabet, 4096);
+
+            Assert.Equal(first, second);
+            Assert.Equal(4096, first.Length);
+            Assert.All(first, value => Assert.Contains(value, alphabet));
+        }
     }
 }

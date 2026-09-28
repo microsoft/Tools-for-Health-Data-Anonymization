@@ -67,9 +67,15 @@ namespace Microsoft.Health.Anonymizer.Common
                 throw new ArgumentOutOfRangeException(nameof(outputLength));
             }
 
+            if (alphabet.Length > byte.MaxValue + 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(alphabet));
+            }
+
             encoding ??= Encoding.UTF8;
             var inputBytes = encoding.GetBytes(input);
             var result = new StringBuilder(outputLength);
+            var acceptanceLimit = (byte.MaxValue + 1) - ((byte.MaxValue + 1) % alphabet.Length);
             var counter = 0;
             while (result.Length < outputLength)
             {
@@ -80,6 +86,11 @@ namespace Microsoft.Health.Anonymizer.Common
                 var block = Hash(blockInput);
                 foreach (var value in block)
                 {
+                    if (value >= acceptanceLimit)
+                    {
+                        continue;
+                    }
+
                     result.Append(alphabet[value % alphabet.Length]);
                     if (result.Length == outputLength)
                     {

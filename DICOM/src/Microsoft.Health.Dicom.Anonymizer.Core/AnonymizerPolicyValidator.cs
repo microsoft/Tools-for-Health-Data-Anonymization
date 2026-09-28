@@ -108,6 +108,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 return;
             }
 
+            if (rule is AnonymizerMaskedTagRule)
+            {
+                throw new AnonymizerConfigurationException(
+                    DicomAnonymizationErrorCode.InvalidConfigurationValues,
+                    $"Policy validation failed for rule {index}: cryptoHash compatibility cannot be proven for a masked selector.");
+            }
+
             IEnumerable<DicomVR> valueRepresentations = rule switch
             {
                 AnonymizerVRRule vrRule => new[] { vrRule.VR },

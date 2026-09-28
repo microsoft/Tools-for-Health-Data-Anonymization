@@ -92,7 +92,7 @@ Parameters in each rule:
 
 > Masked tags follow the [DICOM convention](https://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_5.html). `x` in a group or element number, means any value from 0 through F inclusive.
 
-Each DICOM tag can only be anonymized once. Exact duplicate selectors are rejected when the engine is constructed. A specific tag rule may safely precede a broader masked-tag or VR rule; the first matching rule remains authoritative. Broad `UI` transformations and broad removal of all `SQ` elements are rejected because they can alter invariant UIDs or remove every sequence.
+Exact duplicate selectors are rejected when the engine is constructed. Distinct selectors may overlap, such as a specific tag followed by a broader masked-tag or VR rule; for those overlaps, the first matching rule remains authoritative. Broad `UI` transformations and broad removal of all `SQ` elements are rejected because they can alter invariant UIDs or remove every sequence.
 
 Unknown top-level configuration fields and unknown rule fields are rejected. This is a fail-closed compatibility change: misspelled fields that were previously ignored now prevent engine construction. Validation diagnostics identify rule positions, selectors, tags, VRs, and error categories only; they do not include DICOM values, keys, filenames, full rules, settings, or serialized policies.
 

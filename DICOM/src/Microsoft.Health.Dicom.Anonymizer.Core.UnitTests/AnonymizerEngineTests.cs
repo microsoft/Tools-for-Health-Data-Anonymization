@@ -104,6 +104,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [InlineData("{\"rules\":[{\"tag\":\"UI\",\"method\":\"refreshUID\"}]}")]
         [InlineData("{\"rules\":[{\"tag\":\"SQ\",\"method\":\"remove\"}]}")]
         [InlineData("{\"rules\":[{\"tag\":\"StudyDate\",\"method\":\"cryptoHash\"}],\"defaultSettings\":{\"cryptoHash\":{\"cryptoHashKey\":\"key\"}}}")]
+        [InlineData("{\"rules\":[{\"tag\":\"(0008,00xx)\",\"method\":\"cryptoHash\"}],\"defaultSettings\":{\"cryptoHash\":{\"cryptoHashKey\":\"key\"}}}")]
         [InlineData("{\"rules\":[{\"tag\":\"PatientID\",\"method\":\"keep\",\"unexpected\":true}]}")]
         public void GivenUnsafeOrAmbiguousPolicy_WhenConstructingEngine_FailsBeforeDatasetMutation(string json)
         {
@@ -114,6 +115,18 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, exception.DicomAnonymizerErrorCode);
             Assert.DoesNotContain("PatientWeight", exception.Message, StringComparison.Ordinal);
             Assert.DoesNotContain("StudyDate", exception.Message, StringComparison.Ordinal);
+        }
+
+        [Fact]
+        public void GivenMaskedCryptoHashRule_WhenConstructingEngine_FailsBeforeDatasetMutation()
+        {
+            var manager = AnonymizerConfigurationManager.CreateFromJson(
+                "{\"rules\":[{\"tag\":\"(0008,00xx)\",\"method\":\"cryptoHash\"}],\"defaultSettings\":{\"cryptoHash\":{\"cryptoHashKey\":\"key\"}}}");
+            var dataset = new DicomDataset { { DicomTag.StudyDate, "20240101" } };
+            var originalValue = dataset.GetString(DicomTag.StudyDate);
+
+            Assert.Throws<AnonymizerConfigurationException>(() => new AnonymizerEngine(manager));
+            Assert.Equal(originalValue, dataset.GetString(DicomTag.StudyDate));
         }
 
         [Fact]
