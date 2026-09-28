@@ -169,6 +169,22 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
             Assert.Equal(expectedOutputHash, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(first))).ToLowerInvariant());
         }
 
+        [Theory]
+        [InlineData(19, "f497b5ec6b8aba24571b8788135b8e4f90dd9209ef2928f7a8cb599f2ae46a4e")]
+        [InlineData(64, "044fc3b038df1ee644098fb572d3b346a01e985dd85558d35fc0b0d0747a5e00")]
+        [InlineData(4096, "a12fe21cf018c5957a661316c9ff73c12a8c211dd7de2336ad94b057b58ea793")]
+        public void GivenStaticMatchLengthHash_WhenHashing_OutputIsStableNumericAndExactLength(int length, string expectedOutputHash)
+        {
+            var input = new string('9', length);
+            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(TestHashKey));
+
+            var output = CryptoHashFunction.Hash(input, hmac, matchInputLength: true);
+
+            Assert.Equal(length, output.Length);
+            Assert.All(output, value => Assert.InRange(value, '0', '9'));
+            Assert.Equal(expectedOutputHash, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(output))).ToLowerInvariant());
+        }
+
         [Fact]
         public async Task GivenConcurrentOperations_WhenHashing_ResultsRemainDeterministic()
         {

@@ -68,45 +68,8 @@ namespace Microsoft.Health.Anonymizer.Common
             EnsureArg.IsNotNull(input, nameof(input));
             EnsureArg.IsNotNullOrEmpty(alphabet, nameof(alphabet));
 
-            if (outputLength < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(outputLength));
-            }
-
-            if (alphabet.Length > byte.MaxValue + 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(alphabet));
-            }
-
             encoding ??= Encoding.UTF8;
-            var inputBytes = encoding.GetBytes(input);
-            var result = new StringBuilder(outputLength);
-            var acceptanceLimit = (byte.MaxValue + 1) - ((byte.MaxValue + 1) % alphabet.Length);
-            var counter = 0;
-            while (result.Length < outputLength)
-            {
-                var counterBytes = new byte[sizeof(int)];
-                BinaryPrimitives.WriteInt32LittleEndian(counterBytes, counter++);
-                var blockInput = new byte[inputBytes.Length + counterBytes.Length];
-                Buffer.BlockCopy(inputBytes, 0, blockInput, 0, inputBytes.Length);
-                Buffer.BlockCopy(counterBytes, 0, blockInput, inputBytes.Length, counterBytes.Length);
-                var block = Hash(blockInput);
-                foreach (var value in block)
-                {
-                    if (value >= acceptanceLimit)
-                    {
-                        continue;
-                    }
-
-                    result.Append(alphabet[value % alphabet.Length]);
-                    if (result.Length == outputLength)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return result.ToString();
+            return GenerateOutputFromAlphabet(encoding.GetBytes(input), alphabet, outputLength, Hash);
         }
 
         public static byte[] Hash(byte[] input, HMAC hashAlgorithm)
@@ -132,29 +95,56 @@ namespace Microsoft.Health.Anonymizer.Common
 
             encoding ??= Encoding.UTF8;
 
-            var hash = hashAlgorithm.ComputeHash(encoding.GetBytes(input));
-
             if (matchInputLength)
             {
-                return GenerateOutputOfSameLength(hash, input);
+                return GenerateOutputFromAlphabet(
+                    encoding.GetBytes(input),
+                    "0123456789",
+                    input.Length,
+                    hashAlgorithm.ComputeHash);
             }
             else
             {
+                var hash = hashAlgorithm.ComputeHash(encoding.GetBytes(input));
                 return string.Concat(hash.Select(b => b.ToString("x2")));
             }
         }
 
-        private static string GenerateOutputOfSameLength(byte[] hash, string input)
+        private static string GenerateOutputFromAlphabet(byte[] input, string alphabet, int outputLength, Func<byte[], byte[]> hash)
         {
-            if (input.Length == 0)
+            if (outputLength < 0)
             {
-                return string.Empty;
+                throw new ArgumentOutOfRangeException(nameof(outputLength));
             }
 
-            var result = new StringBuilder(input.Length);
-            for (var index = 0; index < input.Length; index++)
+            if (alphabet.Length == 0 || alphabet.Length > byte.MaxValue + 1)
             {
-                result.Append((char)('0' + (hash[index % hash.Length] % 10)));
+                throw new ArgumentOutOfRangeException(nameof(alphabet));
+            }
+
+            var result = new StringBuilder(outputLength);
+            var acceptanceLimit = (byte.MaxValue + 1) - ((byte.MaxValue + 1) % alphabet.Length);
+            var counter = 0;
+            while (result.Length < outputLength)
+            {
+                var counterBytes = new byte[sizeof(int)];
+                BinaryPrimitives.WriteInt32LittleEndian(counterBytes, counter++);
+                var blockInput = new byte[input.Length + counterBytes.Length];
+                Buffer.BlockCopy(input, 0, blockInput, 0, input.Length);
+                Buffer.BlockCopy(counterBytes, 0, blockInput, input.Length, counterBytes.Length);
+                foreach (var value in hash(blockInput))
+                {
+                    if (value >= acceptanceLimit)
+                    {
+                        continue;
+                    }
+
+                    result.Append(alphabet[value % alphabet.Length]);
+                    if (result.Length == outputLength)
+                    {
+                        break;
+                    }
+                }
             }
 
             return result.ToString();
