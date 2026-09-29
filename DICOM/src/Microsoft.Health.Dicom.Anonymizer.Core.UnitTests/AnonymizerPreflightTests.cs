@@ -533,6 +533,57 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal(0, buffer.ReadAttempts);
         }
 
+        [Theory]
+        [MemberData(nameof(GetEntryPointAndBooleanCases))]
+        public async Task GivenCyclicSequence_WhenAnonymizing_DepthRejectionTerminatesWithoutMutationAsync(string mode, bool indirectCycle)
+        {
+            var buffer = new UnreadableBuffer();
+            var file = CreateFile(new DicomLongString(DicomTag.PatientID, "UNCHANGED"));
+            file.Dataset.AddOrUpdate(new DicomOtherByte(DicomTag.PixelData, buffer));
+            var child = indirectCycle ? new DicomDataset() : file.Dataset;
+            if (indirectCycle)
+            {
+                child.Add(new DicomSequence(DicomTag.ContentSequence, file.Dataset));
+            }
+
+            file.Dataset.Add(new DicomSequence(DicomTag.RequestAttributesSequence, child));
+            var engine = CreateEngine(Rule("PatientID", "cryptoHash"));
+
+            var error = await AssertCyclicInputRejectedAsync(engine, file, mode);
+
+            Assert.Equal(DicomAnonymizationErrorCode.SequenceDepthLimitExceeded, error.DicomAnonymizerErrorCode);
+            Assert.Equal("UNCHANGED", file.Dataset.GetString(DicomTag.PatientID));
+            Assert.Equal("2.25.100", file.Dataset.GetString(DicomTag.SOPInstanceUID));
+            Assert.Equal("2.25.100", file.FileMetaInfo.MediaStorageSOPInstanceUID.UID);
+            Assert.Same(child, Assert.Single(file.Dataset.GetSequence(DicomTag.RequestAttributesSequence).Items));
+            Assert.Same(buffer, file.Dataset.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer);
+            Assert.Equal(0, buffer.ReadAttempts);
+        }
+
+        [Theory]
+        [InlineData("dataset")]
+        [InlineData("inplace")]
+        [InlineData("clone")]
+        public async Task GivenCyclicSequenceAndReachableEmbeddedDocument_WhenAnonymizing_DocumentRejectionKeepsPrecedenceAsync(string mode)
+        {
+            var buffer = new UnreadableBuffer();
+            var file = CreateFile(new DicomLongString(DicomTag.PatientID, "UNCHANGED"));
+            file.Dataset.AddOrUpdate(new DicomOtherByte(DicomTag.PixelData, buffer));
+            var payload = new DicomDataset(new DicomOtherByte(DicomTag.EncapsulatedDocument, new byte[] { 1, 2 }));
+            file.Dataset.Add(new DicomSequence(DicomTag.RequestAttributesSequence, payload, file.Dataset));
+            file.FileMetaInfo.MediaStorageSOPInstanceUID = DicomUID.Parse("2.25.999");
+            var engine = CreateEngine(Rule("PatientID", "cryptoHash"));
+
+            var error = await AssertCyclicInputRejectedAsync(engine, file, mode);
+
+            Assert.Equal(DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload, error.DicomAnonymizerErrorCode);
+            Assert.Equal("UNCHANGED", file.Dataset.GetString(DicomTag.PatientID));
+            Assert.Equal("2.25.999", file.FileMetaInfo.MediaStorageSOPInstanceUID.UID);
+            Assert.Equal(2, file.Dataset.GetSequence(DicomTag.RequestAttributesSequence).Items.Count);
+            Assert.True(payload.Contains(DicomTag.EncapsulatedDocument));
+            Assert.Equal(0, buffer.ReadAttempts);
+        }
+
         [Fact]
         public void GivenLateInPlaceOutputFailure_WhenAnonymizing_CallerMustDiscardModifiedFile()
         {
@@ -1015,6 +1066,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.False(nested.Contains(upper));
             Assert.Equal("SYNTHETIC-PRIVATE-IDENTIFIER", nested.GetString(lower));
             Assert.Equal("synthetic-creator", nested.GetString(new DicomTag(0x0011, 0x0010)));
+        }
+
+        private static async Task<AnonymizerOperationException> AssertCyclicInputRejectedAsync(AnonymizerEngine engine, DicomFile file, string mode)
+        {
+            var operation = Task.Run(() => Assert.Throws<AnonymizerOperationException>(() => AnonymizeUsingMode(engine, file, mode)));
+            var completed = await Task.WhenAny(operation, Task.Delay(TimeSpan.FromSeconds(5)));
+            Assert.Same(operation, completed);
+            return await operation;
         }
 
         private static DicomDataset AnonymizeUsingMode(AnonymizerEngine engine, DicomFile file, string mode, RuntimeKeySettings? runtimeKeys = null)

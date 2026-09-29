@@ -155,12 +155,18 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         private static void RejectUnsupportedEmbeddedPayload(DicomDataset dataset)
         {
+            var visited = new HashSet<DicomDataset>(ReferenceEqualityComparer.Instance);
             var datasets = new Stack<DicomDataset>();
             datasets.Push(dataset);
 
             while (datasets.Count > 0)
             {
                 DicomDataset current = datasets.Pop();
+                if (!visited.Add(current))
+                {
+                    continue;
+                }
+
                 if (current.Contains(DicomTag.EncapsulatedDocument))
                 {
                     throw new AnonymizerOperationException(

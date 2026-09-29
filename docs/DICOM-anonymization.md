@@ -140,7 +140,8 @@ safeguards described below.
   UIDs. The existing UID map is shared in-process; these changes do not provide
   job or tenant isolation.
 - Sequence nesting is limited to 64 item levels; deeper input fails before
-  anonymization begins.
+  anonymization begins. The embedded-document scan tracks dataset references so
+  cyclic in-memory graphs reach the depth check instead of looping indefinitely.
 
 Broad `UI` and `SQ` rules can be configured. Their effect depends on the actual
 input and first matching rule: a compatible UID can be refreshed, and a sequence
