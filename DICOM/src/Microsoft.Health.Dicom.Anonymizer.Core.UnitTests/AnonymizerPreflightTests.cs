@@ -230,7 +230,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             var nested = new DicomDataset { { DicomTag.PatientID, "UNCHANGED" } };
             var engine = CreateEngine(
                 new AnonymizerEngineOptions(),
-                new ReplacingHashFactory(processor),
+                new ReplacingBuiltInFactory(processor),
                 Rule("PatientID", "cryptoHash"));
 
             Assert.Throws<AnonymizerOperationException>(() =>
@@ -315,10 +315,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public void GivenLaterUnsupportedRootMethod_WhenAnonymizing_EarlierRootRuleIsNotApplied()
+        public void GivenDataDependentMaskedRootMethod_WhenAnonymizing_EarlierRootRuleIsNotApplied()
         {
             var dataset = new DicomDataset { { DicomTag.PatientName, "Root^Person" }, { DicomTag.PatientID, "IDENTIFIER" } };
-            var engine = CreateEngine(Rule("PatientName", "cryptoHash"), Rule("PatientID", "refreshUID"));
+            var engine = CreateEngine(Rule("PatientName", "cryptoHash"), Rule("(0010,00xx)", "refreshUID"));
 
             var error = Assert.Throws<AnonymizerOperationException>(() => engine.AnonymizeDataset(dataset));
 
@@ -518,6 +518,136 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal("ANONYMOUS", nested.GetString(lower));
         }
 
+        [Theory]
+        [InlineData("dataset")]
+        [InlineData("inplace")]
+        [InlineData("clone")]
+        public void GivenPrivateDataRuleBeforeCreatorRemoval_WhenAnonymizing_RootAndNestedRulesKeepDeclaredOrder(string mode)
+        {
+            const string relativeSelector = "(0011,0001:SYNTHETIC-CREATOR)";
+            var tag = DicomTag.Parse(relativeSelector);
+            var scalar = CreateRelativePrivateDataset(tag);
+            var nested = CreateRelativePrivateDataset(tag);
+            var root = CreateRelativePrivateDataset(tag);
+            root.Add(DicomTag.SOPClassUID, DicomUID.CTImageStorage);
+            root.Add(DicomTag.SOPInstanceUID, "2.25.100");
+            root.Add(new DicomSequence(DicomTag.RequestAttributesSequence, nested));
+            var engine = CreateEngine(Rule(relativeSelector, "remove"), Rule("(0011,0010)", "remove"));
+
+            engine.AnonymizeDataset(scalar);
+            DicomDataset output;
+            if (mode == "clone")
+            {
+                output = engine.AnonymizeFile(new DicomFile(root)).Dataset;
+                Assert.Contains(root, item => item.Tag.Group == 0x0011 && item.Tag.Element == 0x1001);
+                Assert.Contains(nested, item => item.Tag.Group == 0x0011 && item.Tag.Element == 0x1001);
+            }
+            else
+            {
+                if (mode == "inplace")
+                {
+                    engine.AnonymizeFileInPlace(new DicomFile(root));
+                }
+                else
+                {
+                    engine.AnonymizeDataset(root);
+                }
+
+                output = root;
+            }
+
+            var outputNested = Assert.Single(output.GetSequence(DicomTag.RequestAttributesSequence).Items);
+            Assert.DoesNotContain(scalar, item => item.Tag.IsPrivate);
+            Assert.DoesNotContain(output, item => item.Tag.IsPrivate);
+            Assert.DoesNotContain(outputNested, item => item.Tag.IsPrivate);
+            Assert.Equal("UNCHANGED", scalar.GetString(DicomTag.Manufacturer));
+            Assert.Equal("UNCHANGED", output.GetString(DicomTag.Manufacturer));
+            Assert.Equal("UNCHANGED", outputNested.GetString(DicomTag.Manufacturer));
+        }
+
+        [Theory]
+        [InlineData("PatientID", "refreshUID")]
+        [InlineData("(0010,0020)", "refreshUID")]
+        [InlineData("LO", "refreshUID")]
+        [InlineData("PatientName", "dateShift")]
+        [InlineData("PN", "dateShift")]
+        [InlineData("PatientName", "perturb")]
+        [InlineData("PN", "perturb")]
+        [InlineData("Rows", "encrypt")]
+        [InlineData("US", "encrypt")]
+        [InlineData("EncapsulatedDocument", "substitute")]
+        [InlineData("OB", "substitute")]
+        [InlineData("ContentSequence", "substitute")]
+        public void GivenStaticallyIncompatibleBuiltInSelector_WhenConstructingEngine_PolicyIsRejected(string selector, string method)
+        {
+            var error = Assert.Throws<AnonymizerConfigurationException>(() => CreateEngine(
+                Rule(selector, method, new JObject { ["encryptKey"] = "0123456789ABCDEF" })));
+
+            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, error.DicomAnonymizerErrorCode);
+            Assert.DoesNotContain("0123456789ABCDEF", error.ToString());
+        }
+
+        [Theory]
+        [InlineData("PatientID", "redact")]
+        [InlineData("LO", "redact")]
+        [InlineData("InstanceCreatorUID", "refreshUID")]
+        [InlineData("StudyDate", "dateShift")]
+        [InlineData("DA", "dateShift")]
+        [InlineData("Rows", "perturb")]
+        [InlineData("US", "perturb")]
+        [InlineData("PatientName", "encrypt")]
+        [InlineData("PN", "encrypt")]
+        [InlineData("ContentSequence", "remove")]
+        [InlineData("ContentSequence", "redact")]
+        [InlineData("PixelData", "substitute")]
+        [InlineData("PixelData", "encrypt")]
+        public void GivenCompatibleOrDataDependentBuiltInSelector_WhenConstructingEngine_PolicyIsAccepted(string selector, string method)
+        {
+            var engine = CreateEngine(Rule(selector, method, new JObject { ["encryptKey"] = "0123456789ABCDEF" }));
+
+            Assert.NotNull(engine);
+        }
+
+        [Fact]
+        public void GivenUnknownExactTag_WhenConstructingEngine_ActualVrIsCheckedAtRuntime()
+        {
+            var tag = new DicomTag(0x7776, 0x1010);
+            Assert.Same(DicomDictionary.UnknownTag, tag.DictionaryEntry);
+            var engine = CreateEngine(Rule("(7776,1010)", "refreshUID"));
+            var supported = new DicomDataset { new DicomUniqueIdentifier(tag, "2.25.700") };
+
+            engine.AnonymizeDataset(supported);
+
+            Assert.NotEqual("2.25.700", supported.GetString(tag));
+            var unsupported = new DicomDataset { new DicomLongString(tag, "UNCHANGED") };
+            var error = Assert.Throws<AnonymizerOperationException>(() => engine.AnonymizeDataset(unsupported));
+            Assert.Equal(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, error.DicomAnonymizerErrorCode);
+            Assert.Equal("UNCHANGED", unsupported.GetString(tag));
+        }
+
+        [Fact]
+        public void GivenCustomProcessorUsingBuiltInName_WhenConstructingEngine_BuiltInCapabilitiesAreNotAssumed()
+        {
+            var processor = new TrackingProcessor();
+            var engine = CreateEngine(
+                new AnonymizerEngineOptions(),
+                new ReplacingBuiltInFactory(processor, "refreshUID"),
+                Rule("PatientID", "refreshUID"));
+
+            engine.AnonymizeDataset(new DicomDataset { { DicomTag.PatientID, "UNCHANGED" } });
+
+            Assert.Equal(1, processor.Calls);
+        }
+
+        private static DicomDataset CreateRelativePrivateDataset(DicomTag tag)
+        {
+            var dataset = new DicomDataset { { DicomTag.Manufacturer, "UNCHANGED" } };
+            dataset.AddOrUpdate(DicomVR.LO, tag, "SYNTHETIC-PRIVATE-IDENTIFIER");
+            Assert.Contains(dataset, item => item.Tag.Group == 0x0011 && item.Tag.Element == 0x1001);
+            Assert.Contains(dataset, item => item.Tag.Group == 0x0011 && item.Tag.Element == 0x0010);
+            return dataset;
+        }
+
         private static JObject Rule(string selector, string method, JObject? parameters = null)
         {
             var rule = new JObject { ["tag"] = selector, ["method"] = method };
@@ -576,18 +706,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             }
         }
 
-        private sealed class ReplacingHashFactory : DicomProcessorFactory
+        private sealed class ReplacingBuiltInFactory : DicomProcessorFactory
         {
             private readonly IAnonymizerProcessor _processor;
 
-            public ReplacingHashFactory(IAnonymizerProcessor processor)
+            private readonly string _method;
+
+            public ReplacingBuiltInFactory(IAnonymizerProcessor processor, string method = "cryptoHash")
             {
                 _processor = processor;
+                _method = method;
             }
 
             public override IAnonymizerProcessor CreateProcessor(string method, JObject? settingObject = null)
             {
-                if (method == "cryptoHash")
+                if (method == _method)
                 {
                     return _processor;
                 }

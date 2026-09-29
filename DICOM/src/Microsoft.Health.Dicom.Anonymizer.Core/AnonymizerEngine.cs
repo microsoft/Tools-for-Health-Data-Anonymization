@@ -239,6 +239,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                     continue;
                 }
 
+                var selectedRules = new HashSet<AnonymizerRule>(ReferenceEqualityComparer.Instance);
                 foreach (var item in current.Dataset)
                 {
                     var rule = FindFirstMatchingRule(current.Dataset, item);
@@ -250,7 +251,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                         rule.ValidateItem(item, !current.Root);
                         if (!current.Root && !rule.KeepsValue)
                         {
-                            operations.Add((current.Dataset, rule));
+                            selectedRules.Add(rule);
                         }
                     }
 
@@ -260,6 +261,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                         {
                             datasets.Push((nestedDataset, false));
                         }
+                    }
+                }
+
+                foreach (var rule in _rules)
+                {
+                    if (selectedRules.Contains(rule))
+                    {
+                        operations.Add((current.Dataset, rule));
                     }
                 }
             }

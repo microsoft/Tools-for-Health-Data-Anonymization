@@ -88,6 +88,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
                 ValidateCryptoHashRule(rule, index);
                 ValidateBroadRule(rule, index);
+                ValidateKnownValueRepresentations(rule, index);
             }
         }
 
@@ -131,6 +132,31 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 throw new AnonymizerConfigurationException(
                     DicomAnonymizationErrorCode.InvalidConfigurationValues,
                     "Policy validation failed: duplicate setting field.");
+            }
+        }
+
+        private static void ValidateKnownValueRepresentations(AnonymizerRule rule, int index)
+        {
+            var valueRepresentations = Array.Empty<DicomVR>();
+            if (rule.GetType() == typeof(AnonymizerVRRule))
+            {
+                valueRepresentations = new[] { ((AnonymizerVRRule)rule).VR };
+            }
+            else if (rule.GetType() == typeof(AnonymizerTagRule))
+            {
+                var entry = ((AnonymizerTagRule)rule).Tag.DictionaryEntry;
+                if (entry != null && !ReferenceEquals(entry, DicomDictionary.UnknownTag))
+                {
+                    valueRepresentations = entry.ValueRepresentations;
+                }
+            }
+
+            if (valueRepresentations.Length > 0 &&
+                valueRepresentations.All(vr => rule.CanSupportValueRepresentation(vr) == false))
+            {
+                throw new AnonymizerConfigurationException(
+                    DicomAnonymizationErrorCode.InvalidConfigurationValues,
+                    $"Policy validation failed for rule {index}: the method is incompatible with the selector's known VRs.");
             }
         }
 

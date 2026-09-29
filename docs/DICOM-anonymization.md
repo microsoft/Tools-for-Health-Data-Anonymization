@@ -111,6 +111,13 @@ Custom-setting names and private creators retain their case-sensitive identity.
 Malformed setting errors do not include setting values or value-bearing inner
 exceptions.
 
+Built-in methods are rejected at construction when none of an exact selector's
+known dictionary VRs, or its explicit VR selector, can be supported. This uses
+the actual built-in processor, not a custom processor's method name. Unknown
+dictionary entries, masked selectors, custom implementations, and genuinely
+data-dependent shapes still require runtime preflight. The stricter CryptoHash
+compatibility rules below remain applicable.
+
 ### UID safety and compatibility notes
 
 - The command-line tool validates File Meta SOP Class/Instance identities against
@@ -146,7 +153,9 @@ partially redacts it using its settings. Neither is a substitute for a policy
 that must retain a required nonempty value.
 
 Rule ordering still applies to each element. An earlier matching `keep` prevents
-a later transformation of that element. Keeping a sequence retains its structure
+a later transformation of that element. Selected rules execute in declared order
+within each dataset, including dependencies between private data and its creator.
+Keeping a sequence retains its structure
 but does not exempt its descendants from selected exact rules. A selected exact
 sequence `remove` discards its subtree; sequence `redact` empties its items.
 Descendant actions do not resurrect that discarded content.

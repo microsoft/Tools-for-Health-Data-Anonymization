@@ -42,6 +42,47 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
         internal bool DiscardsSequenceItems => _processor.GetType() == typeof(RemoveProcessor) || _processor.GetType() == typeof(RedactProcessor);
 
+        internal bool? CanSupportValueRepresentation(DicomVR vr)
+        {
+            var processorType = _processor.GetType();
+            if (KeepsValue || DiscardsSequenceItems)
+            {
+                return true;
+            }
+
+            if (processorType == typeof(DateShiftProcessor))
+            {
+                return DicomDataModel.DateShiftSupportedVR.Contains(vr);
+            }
+
+            if (processorType == typeof(RefreshUIDProcessor))
+            {
+                return DicomDataModel.RefreshUIDSupportedVR.Contains(vr);
+            }
+
+            if (processorType == typeof(PerturbProcessor))
+            {
+                return DicomDataModel.PerturbSupportedVR.Contains(vr);
+            }
+
+            if (processorType == typeof(CryptoHashProcessor))
+            {
+                return vr == DicomVR.OW ? null : DicomDataModel.IsCryptoHashSupported(vr);
+            }
+
+            if (processorType == typeof(EncryptProcessor))
+            {
+                return vr == DicomVR.OW ? null : DicomDataModel.EncryptSupportedVR.Contains(vr);
+            }
+
+            if (processorType == typeof(SubstituteProcessor))
+            {
+                return vr != DicomVR.OB && vr != DicomVR.UN && vr != DicomVR.SQ;
+            }
+
+            return null;
+        }
+
         internal void ValidateItem(DicomItem item, bool nested)
         {
             if (!_processor.IsSupported(item) || (DicomUtility.IsInvariantUid(item.Tag) && !KeepsValue))

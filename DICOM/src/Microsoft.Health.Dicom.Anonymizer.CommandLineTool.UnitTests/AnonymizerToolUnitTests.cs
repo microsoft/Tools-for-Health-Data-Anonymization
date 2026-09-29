@@ -43,10 +43,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public async Task GivenOneDicomFile_WhenAnonymizeWithInvalidOutput_IfValidateOutput_ExceptionWillBeThrownAsync()
+        public async Task GivenOneDicomFile_WhenAnonymizeWithStaticallyIncompatibleConfig_ConfigurationIsRejectedAsync()
         {
             var commands = "-i DicomFiles/I341.dcm -o I341-invalid.dcm -c TestConfigs/invalidOutputConfig.json";
-            await Assert.ThrowsAsync<AnonymizerOperationException>(async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
+            var error = await Assert.ThrowsAsync<AnonymizerConfigurationException>(async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
+
+            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, error.DicomAnonymizerErrorCode);
+            Assert.False(File.Exists("I341-invalid.dcm"));
         }
 
         [Fact]
