@@ -14,6 +14,7 @@ using FellowOakDicom.IO.Buffer;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
+using Microsoft.Health.Dicom.Anonymizer.Core.Rules;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
@@ -639,6 +640,165 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal(1, processor.Calls);
         }
 
+        [Theory]
+        [InlineData("dataset", false)]
+        [InlineData("inplace", false)]
+        [InlineData("clone", false)]
+        [InlineData("dataset", true)]
+        [InlineData("inplace", true)]
+        [InlineData("clone", true)]
+        public void GivenPrivateRootSelectorWithoutNestedCreator_WhenAnonymizing_OnlyPresentCandidatesAreMatched(string mode, bool nestedExactCandidate)
+        {
+            const string selector = "(0011,0001:SYNTHETIC-ROOT-CREATOR)";
+            var tag = DicomTag.Parse(selector);
+            var nested = new DicomDataset { { DicomTag.Manufacturer, "NESTED-UNCHANGED" } };
+            if (nestedExactCandidate)
+            {
+                nested.Add(DicomTag.PatientID, "NESTED-IDENTIFIER");
+            }
+
+            var file = CreateFile(new DicomSequence(DicomTag.RequestAttributesSequence, nested));
+            file.Dataset.AddOrUpdate(DicomVR.LO, tag, "SYNTHETIC-ROOT-PRIVATE-VALUE");
+            var engine = CreateEngine(
+                Rule(selector, "remove"),
+                Rule("(0011,0010)", "remove"),
+                Rule("PatientID", "substitute", new JObject { ["replaceWith"] = "ANONYMOUS" }));
+
+            var output = AnonymizeUsingMode(engine, file, mode);
+
+            Assert.DoesNotContain(output, item => item.Tag.IsPrivate);
+            var outputNested = Assert.Single(output.GetSequence(DicomTag.RequestAttributesSequence).Items);
+            Assert.DoesNotContain(outputNested, item => item.Tag.IsPrivate);
+            Assert.Equal("NESTED-UNCHANGED", outputNested.GetString(DicomTag.Manufacturer));
+            Assert.Equal(new byte[] { 1, 2, 3, 4 }, output.GetValues<byte>(DicomTag.PixelData));
+            if (nestedExactCandidate)
+            {
+                Assert.Equal("ANONYMOUS", outputNested.GetString(DicomTag.PatientID));
+            }
+            else
+            {
+                Assert.False(outputNested.Contains(DicomTag.PatientID));
+            }
+
+            if (mode == "clone")
+            {
+                Assert.Equal("SYNTHETIC-ROOT-PRIVATE-VALUE", file.Dataset.GetString(tag));
+                Assert.Equal(nestedExactCandidate, nested.Contains(DicomTag.PatientID));
+                if (nestedExactCandidate)
+                {
+                    Assert.Equal("NESTED-IDENTIFIER", nested.GetString(DicomTag.PatientID));
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData("dataset", false)]
+        [InlineData("inplace", false)]
+        [InlineData("clone", false)]
+        [InlineData("dataset", true)]
+        [InlineData("inplace", true)]
+        [InlineData("clone", true)]
+        public void GivenRootOnlyCustomRule_WhenNoExactNestedCandidateExists_CustomSelectorIsNotInvokedOnNestedData(string mode, bool unmatchedExactRule)
+        {
+            var custom = new RootOnlyRule();
+            var rules = new List<AnonymizerRule> { custom };
+            if (unmatchedExactRule)
+            {
+                rules.Add(new AnonymizerTagRule(DicomTag.StudyDescription, "keep", "Root description", new DicomProcessorFactory()));
+            }
+
+            var manager = new AnonymizerConfigurationManager(new AnonymizerConfiguration { RuleContent = Array.Empty<JObject>() });
+            var engine = new AnonymizerEngine(manager, ruleFactory: new SuppliedRuleFactory(rules.ToArray()));
+            var nested = new DicomDataset { { DicomTag.PatientID, "NESTED-UNCHANGED" } };
+            var file = CreateFile(new DicomSequence(DicomTag.RequestAttributesSequence, nested));
+            file.Dataset.Add(DicomTag.PatientName, "SYNTHETIC^ROOT");
+            file.Dataset.Add(DicomTag.StudyDescription, "ROOT-UNCHANGED");
+
+            var output = AnonymizeUsingMode(engine, file, mode);
+
+            Assert.True(custom.RootCalls > 0);
+            Assert.Equal(0, custom.NestedCalls);
+            Assert.Equal("SYNTHETIC^ROOT", output.GetString(DicomTag.PatientName));
+            Assert.Equal("ROOT-UNCHANGED", output.GetString(DicomTag.StudyDescription));
+            Assert.Equal("NESTED-UNCHANGED", Assert.Single(output.GetSequence(DicomTag.RequestAttributesSequence).Items).GetString(DicomTag.PatientID));
+        }
+
+        [Theory]
+        [InlineData("dataset")]
+        [InlineData("inplace")]
+        [InlineData("clone")]
+        public void GivenPrivateTargetBelowUnselectedContainers_WhenAnonymizing_TraversalStillReachesAndProcessesIt(string mode)
+        {
+            const string selector = "(0011,0001:SYNTHETIC-CREATOR)";
+            var tag = DicomTag.Parse(selector);
+            var target = CreateRelativePrivateDataset(tag);
+            var middle = new DicomDataset
+            {
+                { DicomTag.Manufacturer, "MIDDLE-UNCHANGED" },
+                new DicomSequence(DicomTag.ContentSequence, target),
+            };
+            var unrelated = new DicomDataset { { DicomTag.Manufacturer, "SIBLING-UNCHANGED" } };
+            var file = CreateFile(new DicomSequence(DicomTag.RequestAttributesSequence, middle, unrelated));
+            file.Dataset.AddOrUpdate(DicomVR.LO, tag, "ROOT-PRIVATE");
+            var engine = CreateEngine(Rule(selector, "remove"), Rule("(0011,0010)", "remove"));
+
+            var output = AnonymizeUsingMode(engine, file, mode);
+
+            Assert.DoesNotContain(output, item => item.Tag.IsPrivate);
+            var items = output.GetSequence(DicomTag.RequestAttributesSequence).Items;
+            Assert.Equal(2, items.Count);
+            Assert.Equal("MIDDLE-UNCHANGED", items[0].GetString(DicomTag.Manufacturer));
+            Assert.Equal("SIBLING-UNCHANGED", items[1].GetString(DicomTag.Manufacturer));
+            var outputTarget = Assert.Single(items[0].GetSequence(DicomTag.ContentSequence).Items);
+            Assert.DoesNotContain(outputTarget, item => item.Tag.IsPrivate);
+            Assert.Equal("UNCHANGED", outputTarget.GetString(DicomTag.Manufacturer));
+            if (mode == "clone")
+            {
+                Assert.Equal("ROOT-PRIVATE", file.Dataset.GetString(tag));
+                Assert.Equal("SYNTHETIC-PRIVATE-IDENTIFIER", target.GetString(tag));
+            }
+        }
+
+        [Fact]
+        public void GivenNestedPrivateCreatorWithDifferentCase_WhenAnonymizing_AbsentSelectorDoesNotMatchNumericBlock()
+        {
+            const string upperSelector = "(0011,0001:SYNTHETIC-CREATOR)";
+            const string lowerSelector = "(0011,0001:synthetic-creator)";
+            var upper = DicomTag.Parse(upperSelector);
+            var lower = DicomTag.Parse(lowerSelector);
+            var nested = CreateRelativePrivateDataset(lower);
+            var file = CreateFile(new DicomSequence(DicomTag.RequestAttributesSequence, nested));
+            file.Dataset.AddOrUpdate(DicomVR.LO, upper, "ROOT-PRIVATE");
+            var engine = CreateEngine(Rule(upperSelector, "remove"), Rule("LO", "keep"));
+
+            engine.AnonymizeFileInPlace(file);
+
+            Assert.False(file.Dataset.Contains(upper));
+            Assert.False(nested.Contains(upper));
+            Assert.Equal("SYNTHETIC-PRIVATE-IDENTIFIER", nested.GetString(lower));
+            Assert.Equal("synthetic-creator", nested.GetString(new DicomTag(0x0011, 0x0010)));
+        }
+
+        private static DicomDataset AnonymizeUsingMode(AnonymizerEngine engine, DicomFile file, string mode)
+        {
+            if (mode == "clone")
+            {
+                return engine.AnonymizeFile(file).Dataset;
+            }
+
+            if (mode == "inplace")
+            {
+                engine.AnonymizeFileInPlace(file);
+            }
+            else
+            {
+                Assert.Equal("dataset", mode);
+                engine.AnonymizeDataset(file.Dataset);
+            }
+
+            return file.Dataset;
+        }
+
         private static DicomDataset CreateRelativePrivateDataset(DicomTag tag)
         {
             var dataset = new DicomDataset { { DicomTag.Manufacturer, "UNCHANGED" } };
@@ -692,6 +852,45 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             };
             dataset.Add(items);
             return new DicomFile(dataset);
+        }
+
+        private sealed class RootOnlyRule : AnonymizerRule
+        {
+            public RootOnlyRule()
+                : base("keep", "Root-only selection", new DicomProcessorFactory())
+            {
+            }
+
+            public int RootCalls { get; private set; }
+
+            public int NestedCalls { get; private set; }
+
+            public override List<DicomItem> LocateDicomTag(DicomDataset dataset, ProcessContext context)
+            {
+                if (!dataset.Contains(DicomTag.SOPClassUID))
+                {
+                    NestedCalls++;
+                    throw new InvalidOperationException("Root-only selector invoked on a nested dataset.");
+                }
+
+                RootCalls++;
+                var item = dataset.GetDicomItem<DicomItem>(DicomTag.PatientName);
+                return item == null ? new List<DicomItem>() : new List<DicomItem> { item };
+            }
+        }
+
+        private sealed class SuppliedRuleFactory : IAnonymizerRuleFactory
+        {
+            private readonly AnonymizerRule[] _rules;
+
+            public SuppliedRuleFactory(AnonymizerRule[] rules)
+            {
+                _rules = rules;
+            }
+
+            public AnonymizerRule[] CreateDicomAnonymizationRules(JObject[] content) => _rules;
+
+            public AnonymizerRule CreateDicomAnonymizationRule(JObject content) => throw new NotSupportedException();
         }
 
         private sealed class TrackingProcessor : IAnonymizerProcessor

@@ -242,9 +242,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 var selectedRules = new HashSet<AnonymizerRule>(ReferenceEqualityComparer.Instance);
                 foreach (var item in current.Dataset)
                 {
-                    var rule = FindFirstMatchingRule(current.Dataset, item);
                     var selected = current.Root || exactRules.Any(exact =>
-                        ReferenceEquals(current.Dataset.GetDicomItem<DicomItem>(exact.Tag), item));
+                        MatchesExactTag(current.Dataset, exact.Tag, item));
+                    var rule = selected ? FindFirstMatchingRule(current.Dataset, item) : null;
 
                     if (selected && rule != null)
                     {
@@ -283,7 +283,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 var matches = rule switch
                 {
                     AnonymizerTagRule exact when rule.GetType() == typeof(AnonymizerTagRule) =>
-                        ReferenceEquals(dataset.GetDicomItem<DicomItem>(exact.Tag), candidate),
+                        MatchesExactTag(dataset, exact.Tag, candidate),
                     AnonymizerMaskedTagRule masked when rule.GetType() == typeof(AnonymizerMaskedTagRule) =>
                         masked.MaskedTag.IsMatch(candidate.Tag),
                     AnonymizerVRRule vr when rule.GetType() == typeof(AnonymizerVRRule) =>
@@ -297,6 +297,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
 
             return null;
+        }
+
+        private static bool MatchesExactTag(DicomDataset dataset, DicomTag tag, DicomItem candidate)
+        {
+            return dataset.Contains(tag) && ReferenceEquals(dataset.GetDicomItem<DicomItem>(tag), candidate);
         }
 
         private static void ValidateSequenceDepth(DicomDataset dataset)

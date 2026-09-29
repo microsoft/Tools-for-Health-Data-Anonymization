@@ -160,6 +160,11 @@ but does not exempt its descendants from selected exact rules. A selected exact
 sequence `remove` discards its subtree; sequence `redact` empties its items.
 Descendant actions do not resurrect that discarded content.
 
+Nested rule resolution is limited to actual exact-tag candidates. An absent
+creator-bound private selector does not match unrelated nested data, and custom
+selectors are not invoked there solely to inspect noncandidate elements.
+Unselected sequence containers are still traversed to find targeted descendants.
+
 Masked-tag and VR-wide transformations are not newly applied recursively.
 An exact nested candidate whose first matching non-keep rule cannot safely run
 there is rejected with `UnsupportedAnonymizationMethod` (`1101`) before root
