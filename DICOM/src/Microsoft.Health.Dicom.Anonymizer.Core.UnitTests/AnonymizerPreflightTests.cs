@@ -22,6 +22,133 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 {
     public class AnonymizerPreflightTests
     {
+        public static IEnumerable<object[]> GetContextSelectionCases()
+        {
+            foreach (var mode in new[] { "dataset", "inplace", "clone" })
+            {
+                foreach (var requirement in new[] { "study", "series", "instance", "runtime-keys", "visited-earlier-rule", "no-runtime-keys" })
+                {
+                    yield return new object[] { mode, requirement };
+                }
+            }
+        }
+
+        public static IEnumerable<object[]> GetEntryPointAndBooleanCases()
+        {
+            foreach (var mode in new[] { "dataset", "inplace", "clone" })
+            {
+                yield return new object[] { mode, false };
+                yield return new object[] { mode, true };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetContextSelectionCases))]
+        public void GivenContextualKeepBeforeUnsupportedFallback_WhenAnonymizing_ContextPreservesFirstMatch(string mode, string requirement)
+        {
+            var keys = requirement == "no-runtime-keys" ? null : new RuntimeKeySettings
+            {
+                CryptoHashKey = "synthetic-hash-key",
+                DateShiftKey = "synthetic-date-key",
+                EncryptKey = "synthetic-encrypt-key",
+            };
+            var keep = new ContextualKeepRule(requirement, keys);
+            var engine = CreateCustomRuleEngine(
+                new AnonymizerTagRule(DicomTag.PatientName, "keep", "Earlier name keep", new DicomProcessorFactory()),
+                keep,
+                new AnonymizerTagRule(DicomTag.PatientID, "refreshUID", "Unselected fallback", new DicomProcessorFactory()));
+            var file = CreateContextFile();
+            var sourceName = file.Dataset.GetString(DicomTag.PatientName);
+
+            var output = AnonymizeUsingMode(engine, file, mode, keys);
+
+            Assert.Equal("ROOT-IDENTIFIER", output.GetString(DicomTag.PatientID));
+            var nested = Assert.Single(output.GetSequence(DicomTag.RequestAttributesSequence).Items);
+            Assert.Equal("NESTED-IDENTIFIER", nested.GetString(DicomTag.PatientID));
+            Assert.Equal(0, keep.MissingContexts);
+            Assert.Contains(output, keep.MatchedDatasets);
+            Assert.Contains(nested, keep.MatchedDatasets);
+            Assert.Equal(sourceName, output.GetString(DicomTag.PatientName));
+            Assert.Equal("2.25.100", output.GetString(DicomTag.SOPInstanceUID));
+            Assert.Equal("2.25.2103", nested.GetString(DicomTag.SOPInstanceUID));
+            Assert.Equal("2.25.100", file.FileMetaInfo.MediaStorageSOPInstanceUID.UID);
+            Assert.Equal(new byte[] { 1, 2, 3, 4 }, output.GetValues<byte>(DicomTag.PixelData));
+            Assert.Equal("ROOT-IDENTIFIER", file.Dataset.GetString(DicomTag.PatientID));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetEntryPointAndBooleanCases))]
+        public void GivenNonmatchingRuntimeContext_WhenAnonymizing_UnsupportedFallbackRejectsBeforeMutation(string mode, bool supplyDifferentKeys)
+        {
+            var expectedKeys = new RuntimeKeySettings { CryptoHashKey = "synthetic-expected-key" };
+            var suppliedKeys = supplyDifferentKeys
+                ? new RuntimeKeySettings { CryptoHashKey = "synthetic-supplied-key" }
+                : null;
+            var keep = new ContextualKeepRule("runtime-keys", expectedKeys);
+            var engine = CreateCustomRuleEngine(
+                new AnonymizerTagRule(
+                    DicomTag.PatientName,
+                    "cryptoHash",
+                    "Earlier transformation",
+                    new DicomProcessorFactory(),
+                    new JObject { ["cryptoHashKey"] = "synthetic-configured-key" }),
+                keep,
+                new AnonymizerTagRule(DicomTag.PatientID, "refreshUID", "Selected fallback", new DicomProcessorFactory()));
+            var file = CreateContextFile();
+            var originalName = file.Dataset.GetString(DicomTag.PatientName);
+
+            var error = Assert.Throws<AnonymizerOperationException>(() => AnonymizeUsingMode(engine, file, mode, suppliedKeys));
+
+            Assert.Equal(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, error.DicomAnonymizerErrorCode);
+            Assert.True(keep.MissingContexts > 0);
+            Assert.Empty(keep.MatchedDatasets);
+            Assert.Equal(originalName, file.Dataset.GetString(DicomTag.PatientName));
+            Assert.Equal("ROOT-IDENTIFIER", file.Dataset.GetString(DicomTag.PatientID));
+            Assert.Equal("NESTED-IDENTIFIER", Assert.Single(file.Dataset.GetSequence(DicomTag.RequestAttributesSequence).Items).GetString(DicomTag.PatientID));
+            Assert.Equal("2.25.100", file.FileMetaInfo.MediaStorageSOPInstanceUID.UID);
+            Assert.Equal(new byte[] { 1, 2, 3, 4 }, file.Dataset.GetValues<byte>(DicomTag.PixelData));
+            Assert.DoesNotContain("synthetic-expected-key", error.ToString());
+            Assert.DoesNotContain("synthetic-supplied-key", error.ToString());
+            Assert.DoesNotContain("synthetic-configured-key", error.ToString());
+            Assert.DoesNotContain("ROOT-IDENTIFIER", error.ToString());
+        }
+
+        [Theory]
+        [MemberData(nameof(GetEntryPointAndBooleanCases))]
+        public void GivenVisitationDependentSelection_WhenAnonymizing_OnlyEarlierDeclaredRulesProvideVisits(string mode, bool earlierKeep)
+        {
+            var keep = new ContextualKeepRule("visited-earlier-rule", null, DicomTag.PatientWeight);
+            var weightRule = new AnonymizerTagRule(DicomTag.PatientWeight, "keep", "Weight keep", new DicomProcessorFactory());
+            var fallback = new AnonymizerTagRule(DicomTag.PatientID, "refreshUID", "Context fallback", new DicomProcessorFactory());
+            var engine = earlierKeep
+                ? CreateCustomRuleEngine(weightRule, keep, fallback)
+                : CreateCustomRuleEngine(keep, weightRule, fallback);
+            var file = CreateContextFile();
+
+            if (earlierKeep)
+            {
+                var output = AnonymizeUsingMode(engine, file, mode);
+
+                Assert.Equal("ROOT-IDENTIFIER", output.GetString(DicomTag.PatientID));
+                var nested = Assert.Single(output.GetSequence(DicomTag.RequestAttributesSequence).Items);
+                Assert.Equal("NESTED-IDENTIFIER", nested.GetString(DicomTag.PatientID));
+                Assert.Equal(0, keep.MissingContexts);
+                Assert.Contains(output, keep.MatchedDatasets);
+                Assert.Contains(nested, keep.MatchedDatasets);
+            }
+            else
+            {
+                var error = Assert.Throws<AnonymizerOperationException>(() => AnonymizeUsingMode(engine, file, mode));
+
+                Assert.Equal(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, error.DicomAnonymizerErrorCode);
+                Assert.True(keep.MissingContexts > 0);
+                Assert.Empty(keep.MatchedDatasets);
+                Assert.Equal("ROOT-IDENTIFIER", file.Dataset.GetString(DicomTag.PatientID));
+            }
+
+            Assert.Equal("42", file.Dataset.GetString(DicomTag.PatientWeight));
+        }
+
         [Theory]
         [InlineData("0062,0002", "0062,0005")]
         [InlineData("0040,B020", "0070,0006")]
@@ -890,24 +1017,66 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal("synthetic-creator", nested.GetString(new DicomTag(0x0011, 0x0010)));
         }
 
-        private static DicomDataset AnonymizeUsingMode(AnonymizerEngine engine, DicomFile file, string mode)
+        private static DicomDataset AnonymizeUsingMode(AnonymizerEngine engine, DicomFile file, string mode, RuntimeKeySettings? runtimeKeys = null)
         {
             if (mode == "clone")
             {
-                return engine.AnonymizeFile(file).Dataset;
+                return runtimeKeys == null
+                    ? engine.AnonymizeFile(file).Dataset
+                    : engine.AnonymizeFile(file, runtimeKeys).Dataset;
             }
 
             if (mode == "inplace")
             {
-                engine.AnonymizeFileInPlace(file);
+                if (runtimeKeys == null)
+                {
+                    engine.AnonymizeFileInPlace(file);
+                }
+                else
+                {
+                    engine.AnonymizeFileInPlace(file, runtimeKeys);
+                }
             }
             else
             {
                 Assert.Equal("dataset", mode);
-                engine.AnonymizeDataset(file.Dataset);
+                if (runtimeKeys == null)
+                {
+                    engine.AnonymizeDataset(file.Dataset);
+                }
+                else
+                {
+                    engine.AnonymizeDataset(file.Dataset, runtimeKeys);
+                }
             }
 
             return file.Dataset;
+        }
+
+        private static AnonymizerEngine CreateCustomRuleEngine(params AnonymizerRule[] rules)
+        {
+            var configuration = new AnonymizerConfigurationManager(new AnonymizerConfiguration { RuleContent = Array.Empty<JObject>() });
+            return new AnonymizerEngine(configuration, ruleFactory: new SuppliedRuleFactory(rules));
+        }
+
+        private static DicomFile CreateContextFile()
+        {
+            var nested = new DicomDataset
+            {
+                { DicomTag.StudyInstanceUID, "2.25.2101" },
+                { DicomTag.SeriesInstanceUID, "2.25.2102" },
+                { DicomTag.SOPInstanceUID, "2.25.2103" },
+                { DicomTag.PatientName, "Synthetic^Nested" },
+                { DicomTag.PatientID, "NESTED-IDENTIFIER" },
+                { DicomTag.PatientWeight, "21" },
+            };
+            var file = CreateFile(new DicomSequence(DicomTag.RequestAttributesSequence, nested));
+            file.Dataset.Add(DicomTag.StudyInstanceUID, "2.25.1101");
+            file.Dataset.Add(DicomTag.SeriesInstanceUID, "2.25.1102");
+            file.Dataset.Add(DicomTag.PatientName, "Synthetic^Root");
+            file.Dataset.Add(DicomTag.PatientID, "ROOT-IDENTIFIER");
+            file.Dataset.Add(DicomTag.PatientWeight, "42");
+            return file;
         }
 
         private static DicomDataset CreateRelativePrivateDataset(DicomTag tag)
@@ -963,6 +1132,53 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             };
             dataset.Add(items);
             return new DicomFile(dataset);
+        }
+
+        private sealed class ContextualKeepRule : AnonymizerRule
+        {
+            private readonly string _requirement;
+            private readonly RuntimeKeySettings? _expectedKeys;
+            private readonly DicomTag _visitedTag;
+
+            public ContextualKeepRule(string requirement, RuntimeKeySettings? expectedKeys, DicomTag? visitedTag = null)
+                : base("keep", "Contextual keep", new DicomProcessorFactory())
+            {
+                _requirement = requirement;
+                _expectedKeys = expectedKeys;
+                _visitedTag = visitedTag ?? DicomTag.PatientName;
+            }
+
+            public int MissingContexts { get; private set; }
+
+            public HashSet<DicomDataset> MatchedDatasets { get; } = new HashSet<DicomDataset>(ReferenceEqualityComparer.Instance);
+
+            public override List<DicomItem> LocateDicomTag(DicomDataset dataset, ProcessContext context)
+            {
+                var matches = _requirement switch
+                {
+                    "study" => context.StudyInstanceUID == dataset.GetString(DicomTag.StudyInstanceUID),
+                    "series" => context.SeriesInstanceUID == dataset.GetString(DicomTag.SeriesInstanceUID),
+                    "instance" => context.SopInstanceUID == dataset.GetString(DicomTag.SOPInstanceUID),
+                    "runtime-keys" => ReferenceEquals(context.RuntimeKeys, _expectedKeys),
+                    "visited-earlier-rule" => context.VisitedNodes.Contains(dataset.GetDicomItem<DicomItem>(_visitedTag).ToString()),
+                    "no-runtime-keys" => context.RuntimeKeys == null &&
+                        context.StudyInstanceUID == dataset.GetString(DicomTag.StudyInstanceUID) &&
+                        context.SeriesInstanceUID == dataset.GetString(DicomTag.SeriesInstanceUID) &&
+                        context.SopInstanceUID == dataset.GetString(DicomTag.SOPInstanceUID),
+                    _ => throw new InvalidOperationException("Unknown context test requirement."),
+                };
+                if (!matches)
+                {
+                    MissingContexts++;
+                    return new List<DicomItem>();
+                }
+
+                MatchedDatasets.Add(dataset);
+                var item = dataset.GetDicomItem<DicomItem>(DicomTag.PatientID);
+                return item == null || context.VisitedNodes.Contains(item.ToString())
+                    ? new List<DicomItem>()
+                    : new List<DicomItem> { item };
+            }
         }
 
         private sealed class RootOnlyRule : AnonymizerRule

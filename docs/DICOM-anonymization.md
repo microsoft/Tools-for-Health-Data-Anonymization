@@ -160,6 +160,9 @@ that must retain a required nonempty value.
 Rule ordering still applies to each element. An earlier matching `keep` prevents
 a later transformation of that element. Selected rules execute in declared order
 within each dataset, including dependencies between private data and its creator.
+Actual-item preflight supplies custom selectors with that dataset's identifiers,
+the supplied runtime keys, and prospective visitation by earlier rules. It does
+not apply processors, mutate input values, or simulate processor side effects.
 Keeping a sequence retains its structure
 but does not exempt its descendants from selected exact rules. A selected exact
 sequence `remove` discards its subtree; sequence `redact` empties its items.

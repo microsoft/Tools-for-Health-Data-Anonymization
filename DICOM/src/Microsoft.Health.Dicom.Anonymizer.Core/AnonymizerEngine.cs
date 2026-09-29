@@ -90,13 +90,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 dataset.Validate();
             }
 
-            var nestedOperations = ValidateProcessing(dataset);
+            var nestedOperations = ValidateProcessing(dataset, runtimeKeySettings);
             ProcessDataset(dataset, runtimeKeySettings);
             foreach (var (nestedDataset, rule) in nestedOperations)
             {
                 DicomUtility.DisableAutoValidation(nestedDataset);
-                var context = InitContext(nestedDataset);
-                context.RuntimeKeys = runtimeKeySettings;
+                var context = InitContext(nestedDataset, runtimeKeySettings);
                 rule.Handle(nestedDataset, context);
             }
 
@@ -197,13 +196,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        private ProcessContext InitContext(DicomDataset dataset)
+        private ProcessContext InitContext(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
         {
             var context = new ProcessContext
             {
                 StudyInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.StudyInstanceUID, string.Empty),
                 SopInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.SOPInstanceUID, string.Empty),
                 SeriesInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.SeriesInstanceUID, string.Empty),
+                RuntimeKeys = runtimeKeySettings,
             };
             return context;
         }
@@ -212,8 +212,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             DicomUtility.DisableAutoValidation(dataset);
 
-            var context = InitContext(dataset);
-            context.RuntimeKeys = runtimeKeySettings;
+            var context = InitContext(dataset, runtimeKeySettings);
             for (var index = 0; index < _rules.Length; index++)
             {
                 var rule = _rules[index];
@@ -222,7 +221,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        private List<(DicomDataset Dataset, AnonymizerRule Rule)> ValidateProcessing(DicomDataset dataset)
+        private List<(DicomDataset Dataset, AnonymizerRule Rule)> ValidateProcessing(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
         {
             var exactRules = _rules.OfType<AnonymizerTagRule>().ToArray();
             var operations = new List<(DicomDataset Dataset, AnonymizerRule Rule)>();
@@ -237,23 +236,64 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                     continue;
                 }
 
-                var selectedRules = new HashSet<AnonymizerRule>(ReferenceEqualityComparer.Instance);
-                foreach (var item in current.Dataset)
+                var candidates = new HashSet<DicomItem>(
+                    current.Dataset.Where(item => current.Root || exactRules.Any(exact =>
+                        MatchesExactTag(current.Dataset, exact.Tag, item))),
+                    ReferenceEqualityComparer.Instance);
+                var visitedNodes = new HashSet<string>();
+                var discardedSequences = new HashSet<DicomSequence>(ReferenceEqualityComparer.Instance);
+                ProcessContext? context = null;
+                foreach (var rule in _rules)
                 {
-                    var selected = current.Root || exactRules.Any(exact =>
-                        MatchesExactTag(current.Dataset, exact.Tag, item));
-                    var rule = selected ? FindFirstMatchingRule(current.Dataset, item) : null;
+                    if (candidates.Count == 0)
+                    {
+                        break;
+                    }
 
-                    if (selected && rule != null)
+                    IEnumerable<DicomItem> matches;
+                    switch (rule)
+                    {
+                        case AnonymizerTagRule exact when rule.GetType() == typeof(AnonymizerTagRule):
+                            matches = candidates.Where(item => MatchesExactTag(current.Dataset, exact.Tag, item));
+                            break;
+                        case AnonymizerMaskedTagRule masked when rule.GetType() == typeof(AnonymizerMaskedTagRule):
+                            matches = candidates.Where(item => masked.MaskedTag.IsMatch(item.Tag));
+                            break;
+                        case AnonymizerVRRule vr when rule.GetType() == typeof(AnonymizerVRRule):
+                            matches = candidates.Where(item => vr.VR == item.ValueRepresentation);
+                            break;
+                        default:
+                            if (context == null)
+                            {
+                                context = InitContext(current.Dataset, runtimeKeySettings);
+                                context.VisitedNodes = visitedNodes;
+                            }
+
+                            matches = rule.LocateDicomTag(current.Dataset, context).Where(candidates.Contains);
+                            break;
+                    }
+
+                    var selectedItems = matches.ToArray();
+                    foreach (var item in selectedItems)
                     {
                         rule.ValidateItem(item, !current.Root);
-                        if (!current.Root && !rule.KeepsValue)
+                        candidates.Remove(item);
+                        visitedNodes.Add(item.ToString());
+                        if (item is DicomSequence sequence && rule.DiscardsSequenceItems)
                         {
-                            selectedRules.Add(rule);
+                            discardedSequences.Add(sequence);
                         }
                     }
 
-                    if (item is DicomSequence sequence && !(selected && rule?.DiscardsSequenceItems == true))
+                    if (!current.Root && selectedItems.Length > 0 && !rule.KeepsValue)
+                    {
+                        operations.Add((current.Dataset, rule));
+                    }
+                }
+
+                foreach (var sequence in current.Dataset.OfType<DicomSequence>())
+                {
+                    if (!discardedSequences.Contains(sequence))
                     {
                         foreach (var nestedDataset in sequence.Items)
                         {
@@ -261,40 +301,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                         }
                     }
                 }
-
-                foreach (var rule in _rules)
-                {
-                    if (selectedRules.Contains(rule))
-                    {
-                        operations.Add((current.Dataset, rule));
-                    }
-                }
             }
 
             return operations;
-        }
-
-        private AnonymizerRule? FindFirstMatchingRule(DicomDataset dataset, DicomItem candidate)
-        {
-            foreach (var rule in _rules)
-            {
-                var matches = rule switch
-                {
-                    AnonymizerTagRule exact when rule.GetType() == typeof(AnonymizerTagRule) =>
-                        MatchesExactTag(dataset, exact.Tag, candidate),
-                    AnonymizerMaskedTagRule masked when rule.GetType() == typeof(AnonymizerMaskedTagRule) =>
-                        masked.MaskedTag.IsMatch(candidate.Tag),
-                    AnonymizerVRRule vr when rule.GetType() == typeof(AnonymizerVRRule) =>
-                        vr.VR == candidate.ValueRepresentation,
-                    _ => rule.LocateDicomTag(dataset, new ProcessContext()).Any(item => ReferenceEquals(item, candidate)),
-                };
-                if (matches)
-                {
-                    return rule;
-                }
-            }
-
-            return null;
         }
 
         private static bool MatchesExactTag(DicomDataset dataset, DicomTag tag, DicomItem candidate)
