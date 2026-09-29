@@ -101,22 +101,24 @@ Parameters in each rule:
 
 > Masked tags follow the [DICOM convention](https://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_5.html). `x` in a group or element number, means any value from 0 through F inclusive.
 
-Exact duplicate selectors are rejected when the engine is constructed. Distinct selectors may overlap, such as a specific tag followed by a broader masked-tag or VR rule; for those overlaps, the first matching rule remains authoritative. Broad `UI` and `SQ` transformations are rejected because they can alter invariant UIDs or remove or empty every sequence.
+Rules retain first-match behavior, including duplicate exact selectors and
+overlapping exact, masked-tag, or VR selectors. A later rule does not override
+an earlier rule that has already handled the same element.
 
-Unknown top-level configuration fields and unknown rule fields are rejected. Duplicate JSON properties, including properties that differ only by letter casing, are also rejected. This is a fail-closed compatibility change: misspelled or ambiguous fields that were previously ignored or overwritten now prevent engine construction. Validation diagnostics identify rule positions, selectors, tags, VRs, and error categories only; they do not include DICOM values, keys, filenames, full rules, settings, or serialized policies.
+Configuration loading retains the repository's JSON deserialization behavior:
+annotation fields are not subject to a strict field whitelist, and duplicate
+JSON properties use the serializer's existing handling. Rule fields, tag and
+method parsing, and required processor settings still have their ordinary error
+checks; malformed JSON and unknown processors are not silently accepted.
+Settings are copied before per-rule overrides are applied, so one rule's
+parameters do not change another rule's defaults. Updated parsing diagnostics
+do not include setting values or value-bearing inner exceptions.
 
-Case-insensitive duplicate setting fields are rejected in default method settings,
-individual custom settings, and rule parameters before settings are merged.
-Custom-setting names and private creators retain their case-sensitive identity.
-Malformed setting errors do not include setting values or value-bearing inner
-exceptions.
-
-Built-in methods are rejected at construction when none of an exact selector's
-known dictionary VRs, or its explicit VR selector, can be supported. This uses
-the actual built-in processor, not a custom processor's method name. Unknown
-dictionary entries, masked selectors, custom implementations, and genuinely
-data-dependent shapes still require runtime preflight. The stricter CryptoHash
-compatibility rules below remain applicable.
+Constructing an engine is not a guarantee that every dataset can be processed.
+Selectors are not rejected solely because they are broad, masked, duplicated,
+unknown to the tag dictionary, or associated with multiple possible VRs.
+Processing checks the actual selected items and retains the input/output
+safeguards described below.
 
 ### UID safety and compatibility notes
 
@@ -129,18 +131,21 @@ compatibility rules below remain applicable.
   data buffers and remains readable and saveable after anonymization completes.
 - SOP Class UID, Media Storage SOP Class UID, Transfer Syntax UID, Referenced SOP
   Class UID, and SOP Classes in Study are invariants.
-  Rules that can mutate these selectors, including broad `UI` or masked selectors,
-  are rejected during engine construction. SOP Instance and reference UIDs can still
-  use `refreshUID` and retain consistent remapping.
+  If a selected operation would transform an actual invariant element, processing
+  fails with `UnsupportedAnonymizationMethod` (`1101`) before applying rules.
+  An earlier matching `keep` can preserve an invariant while a later broad rule
+  handles compatible instance UIDs. SOP Instance and reference UIDs can still use
+  `refreshUID` and retain consistent remapping.
 - Exact `refreshUID` tag rules also apply to matching nested instance/reference
   UIDs. The existing UID map is shared in-process; these changes do not provide
   job or tenant isolation.
 - Sequence nesting is limited to 64 item levels; deeper input fails before
   anonymization begins.
 
-Configurations that intentionally transform SOP Class UID, Media Storage SOP Class
-UID, Transfer Syntax UID, Referenced SOP Class UID, or SOP Classes in Study must
-be changed to `keep` those identifiers before engine construction succeeds.
+Broad `UI` and `SQ` rules can be configured. Their effect depends on the actual
+input and first matching rule: a compatible UID can be refreshed, and a sequence
+can be removed or emptied. These operations do not imply that arbitrary inputs,
+invariant UIDs, or required sequence structures can safely be transformed.
 
 ### Selected nested rules
 
@@ -309,7 +314,12 @@ Here is a sample rule using dateShift method on DICOM tags with VR in DA. The da
 ### CryptoHash
 This function uses HMAC and emits a deterministic representation that conforms to the target DICOM VR alphabet and maximum length. `UI` values use the `2.25` UUID-derived decimal form, numeric string VRs use digits, and length-limited text VRs are capped automatically. CryptoHash rules support `AE`, `CS`, `UI`, `DS`, `IS`, `SH`, `PN`, `UC`, `LO`, `UT`, `ST`, `LT`, `UR`, `OB`, and `UN`. Other VRs require a format-aware anonymization method.
 
-Masked selectors, unknown exact tags, and exact tags that may use any unsupported VR are rejected when the engine is constructed, before a dataset is changed. `OW` fragment sequences remain supported when encountered as fragments at runtime, but broad `OW` rules are rejected because a selector cannot prove that every matching item is a fragment sequence.
+CryptoHash support is checked against the actual selected item, not the
+selector's dictionary possibilities during construction. Masked and unknown
+exact selectors can therefore process supported runtime representations.
+`OW` fragment sequences remain supported when encountered as fragments; ordinary
+nonfragment `OW` values are unsupported and fail processing rather than being
+silently changed. The selected nested-rule restrictions above still apply.
 In cryptoHash setting, you can set cryptoHash key in setting.
 
 |Parameters|Description|Valid Values|Required|default value|

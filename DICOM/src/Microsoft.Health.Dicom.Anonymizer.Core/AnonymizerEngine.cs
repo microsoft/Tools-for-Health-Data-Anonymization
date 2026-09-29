@@ -63,12 +63,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
             _anonymizerSettings = anonymizerSettings ?? new AnonymizerEngineOptions();
             _requireRuntimeKeys = requireRuntimeKeys;
-            AnonymizerPolicyValidator.ValidateRuleFields(configurationManager.Configuration.RuleContent);
             (_usesCryptoHash, _usesDateShift, _usesEncrypt) = GetConfiguredKeyedMethods(configurationManager.Configuration.RuleContent);
 
             ruleFactory ??= new AnonymizerRuleFactory(configurationManager.Configuration, processorFactory ?? new DicomProcessorFactory());
             _rules = ruleFactory.CreateDicomAnonymizationRules(configurationManager.Configuration.RuleContent);
-            AnonymizerPolicyValidator.ValidateRules(_rules);
             _logger.LogDebug("Successfully initialized anonymizer engine.");
         }
 

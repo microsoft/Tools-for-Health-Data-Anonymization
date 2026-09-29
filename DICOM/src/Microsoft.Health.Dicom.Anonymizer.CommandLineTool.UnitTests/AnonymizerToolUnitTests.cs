@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FellowOakDicom;
 using Microsoft.Health.Dicom.Anonymizer.CommandLineTool;
+using Microsoft.Health.Dicom.Anonymizer.Core;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Xunit;
 
@@ -43,24 +44,30 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Fact]
-        public async Task GivenOneDicomFile_WhenAnonymizeWithStaticallyIncompatibleConfig_ConfigurationIsRejectedAsync()
+        public async Task GivenOneDicomFile_WhenAnonymizeWithUnsupportedActualItem_OperationIsRejectedAsync()
         {
+            var engine = new AnonymizerEngine("TestConfigs/invalidOutputConfig.json");
+            Assert.NotNull(engine);
             var commands = "-i DicomFiles/I341.dcm -o I341-invalid.dcm -c TestConfigs/invalidOutputConfig.json";
-            var error = await Assert.ThrowsAsync<AnonymizerConfigurationException>(async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
+            var error = await Assert.ThrowsAsync<AnonymizerOperationException>(async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
 
-            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, error.DicomAnonymizerErrorCode);
+            Assert.Equal(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, error.DicomAnonymizerErrorCode);
             Assert.False(File.Exists("I341-invalid.dcm"));
         }
 
         [Fact]
-        public async Task GivenOneDicomFile_WhenAnonymizeWithUnsafeBroadConfig_ConfigurationWillBeRejectedAsync()
+        public async Task GivenOneDicomFile_WhenBroadRuleSelectsInvariantUid_InputWillBeRejectedAsync()
         {
             const string outputFile = "I341-newConfig.dcm";
             var commands = $"-i DicomFiles/I341.dcm -o {outputFile} -c TestConfigs/newConfig.json";
 
-            await Assert.ThrowsAsync<AnonymizerConfigurationException>(
+            var engine = new AnonymizerEngine("TestConfigs/newConfig.json");
+            Assert.NotNull(engine);
+
+            var error = await Assert.ThrowsAsync<AnonymizerOperationException>(
                 async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
 
+            Assert.Equal(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, error.DicomAnonymizerErrorCode);
             Assert.False(File.Exists(outputFile));
         }
 

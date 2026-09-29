@@ -422,16 +422,22 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Theory]
-        [InlineData("ReferencedSOPClassUID")]
-        [InlineData("SOPClassesInStudy")]
-        [InlineData("(0008,1150)")]
-        [InlineData("00080062")]
-        [InlineData("(0008,11xx)")]
-        public void GivenClassUidSelector_WhenConstructingEngine_TransformationIsRejected(string selector)
+        [InlineData("ReferencedSOPClassUID", "ReferencedSOPClassUID")]
+        [InlineData("SOPClassesInStudy", "SOPClassesInStudy")]
+        [InlineData("(0008,1150)", "ReferencedSOPClassUID")]
+        [InlineData("00080062", "SOPClassesInStudy")]
+        [InlineData("(0008,11xx)", "ReferencedSOPClassUID")]
+        public void GivenClassUidSelector_WhenAnonymizingAnInvariantValue_PreflightRejectsBeforeMutation(string selector, string tagName)
         {
-            var error = Assert.Throws<AnonymizerConfigurationException>(() => CreateEngine(Rule(selector, "refreshUID")));
+            var tag = Assert.IsType<DicomTag>(typeof(DicomTag).GetField(tagName)?.GetValue(null));
+            var dataset = new DicomDataset { { tag, DicomUID.CTImageStorage }, { DicomTag.PatientID, "UNCHANGED" } };
+            var engine = CreateEngine(Rule("PatientID", "cryptoHash"), Rule(selector, "refreshUID"));
 
-            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, error.DicomAnonymizerErrorCode);
+            var error = Assert.Throws<AnonymizerOperationException>(() => engine.AnonymizeDataset(dataset));
+
+            Assert.Equal(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, error.DicomAnonymizerErrorCode);
+            Assert.Equal(DicomUID.CTImageStorage.UID, dataset.GetString(tag));
+            Assert.Equal("UNCHANGED", dataset.GetString(DicomTag.PatientID));
         }
 
         [Theory]
@@ -439,13 +445,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [InlineData("{\"rules\":[],\"defaultSettings\":{\"cryptoHash\":{\"cryptoHashKey\":\"SYNTHETIC-KEY\",\"CryptoHashKey\":\"SECOND\"}}}")]
         [InlineData("{\"rules\":[],\"customSettings\":{\"A\":{\"replaceWith\":\"FIRST\",\"ReplaceWith\":\"SECOND\"}}}")]
         [InlineData("{\"rules\":[{\"tag\":\"PatientID\",\"method\":\"cryptoHash\",\"params\":{\"cryptoHashKey\":\"SYNTHETIC-KEY\",\"CryptoHashKey\":\"SECOND\"}}]}")]
-        public void GivenCaseDuplicateSemanticSettingFields_WhenParsing_ConfigurationIsRejectedWithoutValues(string json)
+        public void GivenCaseVariantSettingFields_WhenParsing_ExistingSerializerBehaviorIsAllowed(string json)
         {
-            var error = Assert.Throws<AnonymizerConfigurationException>(() => AnonymizerConfigurationManager.CreateFromJson(json));
+            var manager = AnonymizerConfigurationManager.CreateFromJson(json);
 
-            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, error.DicomAnonymizerErrorCode);
-            Assert.DoesNotContain("SYNTHETIC-KEY", error.ToString());
-            Assert.DoesNotContain("SECOND", error.ToString());
+            Assert.NotNull(new AnonymizerEngine(manager));
         }
 
         [Fact]
@@ -472,12 +476,118 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Null(error.InnerException);
         }
 
-        [Fact]
-        public void GivenBroadSequenceRedaction_WhenConstructingEngine_PolicyIsRejected()
+        [Theory]
+        [InlineData("remove")]
+        [InlineData("redact")]
+        public void GivenInvariantKeepsAndBroadRules_WhenAnonymizing_CompatibleItemsRespectFirstMatch(string sequenceMethod)
         {
-            var error = Assert.Throws<AnonymizerConfigurationException>(() => CreateEngine(Rule("SQ", "redact")));
+            var removedChild = new DicomDataset { { DicomTag.PatientID, "DISCARD" } };
+            var keptChild = new DicomDataset { { DicomTag.Manufacturer, "UNCHANGED" } };
+            var file = CreateFile(
+                new DicomSequence(DicomTag.ContentSequence, removedChild),
+                new DicomSequence(DicomTag.RequestAttributesSequence, keptChild));
+            file.Dataset.Add(DicomTag.SOPClassesInStudy, DicomUID.CTImageStorage);
+            file.Dataset.Add(DicomTag.ReferencedSOPClassUID, DicomUID.CTImageStorage);
+            file.Dataset.Add(DicomTag.InstanceCreatorUID, "2.25.200");
+            var originalSyntax = file.FileMetaInfo.TransferSyntax;
+            var engine = CreateEngine(
+                Rule("SOPClassUID", "keep"),
+                Rule("SOPClassesInStudy", "keep"),
+                Rule("ReferencedSOPClassUID", "keep"),
+                Rule("RequestAttributesSequence", "keep"),
+                Rule("UI", "refreshUID"),
+                Rule("SQ", sequenceMethod));
 
-            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, error.DicomAnonymizerErrorCode);
+            var output = engine.AnonymizeFile(file);
+
+            Assert.Equal(DicomUID.CTImageStorage, output.Dataset.GetSingleValue<DicomUID>(DicomTag.SOPClassUID));
+            Assert.Equal(DicomUID.CTImageStorage.UID, output.Dataset.GetString(DicomTag.SOPClassesInStudy));
+            Assert.Equal(DicomUID.CTImageStorage.UID, output.Dataset.GetString(DicomTag.ReferencedSOPClassUID));
+            Assert.NotEqual("2.25.100", output.Dataset.GetString(DicomTag.SOPInstanceUID));
+            Assert.NotEqual("2.25.200", output.Dataset.GetString(DicomTag.InstanceCreatorUID));
+            Assert.Equal(output.Dataset.GetString(DicomTag.SOPInstanceUID), output.FileMetaInfo.MediaStorageSOPInstanceUID.UID);
+            Assert.Equal(originalSyntax, output.FileMetaInfo.TransferSyntax);
+            Assert.Equal("UNCHANGED", Assert.Single(output.Dataset.GetSequence(DicomTag.RequestAttributesSequence).Items).GetString(DicomTag.Manufacturer));
+            if (sequenceMethod == "remove")
+            {
+                Assert.False(output.Dataset.Contains(DicomTag.ContentSequence));
+            }
+            else
+            {
+                Assert.Empty(output.Dataset.GetSequence(DicomTag.ContentSequence).Items);
+            }
+
+            Assert.Equal(new byte[] { 1, 2, 3, 4 }, output.Dataset.GetValues<byte>(DicomTag.PixelData));
+            Assert.Equal("2.25.100", file.Dataset.GetString(DicomTag.SOPInstanceUID));
+            Assert.Equal("DISCARD", Assert.Single(file.Dataset.GetSequence(DicomTag.ContentSequence).Items).GetString(DicomTag.PatientID));
+        }
+
+        [Fact]
+        public void GivenMaskedHashWithEarlierExactKeep_WhenAnonymizing_ActualSupportedValuesAreProcessed()
+        {
+            var dataset = new DicomDataset
+            {
+                { DicomTag.PatientName, "UNCHANGED" },
+                { DicomTag.PatientID, "TRANSFORM" },
+            };
+            var engine = CreateEngine(Rule("PatientName", "keep"), Rule("(0010,00xx)", "cryptoHash"));
+
+            engine.AnonymizeDataset(dataset);
+
+            Assert.Equal("UNCHANGED", dataset.GetString(DicomTag.PatientName));
+            Assert.Matches("^[0-9a-f]{64}$", dataset.GetString(DicomTag.PatientID));
+            dataset.Validate();
+        }
+
+        [Fact]
+        public void GivenUnknownExactHashTag_WhenAnonymizing_ActualStringRepresentationIsSupported()
+        {
+            var tag = new DicomTag(0x7776, 0x1010);
+            var dataset = new DicomDataset { new DicomLongString(tag, "TRANSFORM") };
+            var engine = CreateEngine(Rule("(7776,1010)", "cryptoHash"));
+
+            engine.AnonymizeDataset(dataset);
+
+            Assert.Equal(DicomVR.LO, dataset.GetDicomItem<DicomItem>(tag).ValueRepresentation);
+            Assert.Matches("^[0-9a-f]{64}$", dataset.GetString(tag));
+        }
+
+        [Fact]
+        public void GivenDuplicateExactSubstitutions_WhenAnonymizing_RootAndNestedUseOnlyFirstRule()
+        {
+            var nested = new DicomDataset { { DicomTag.PatientID, "NESTED" } };
+            var dataset = new DicomDataset
+            {
+                { DicomTag.PatientID, "ROOT" },
+                new DicomSequence(DicomTag.RequestAttributesSequence, nested),
+            };
+            var engine = CreateEngine(
+                Rule("PatientID", "substitute", new JObject { ["replaceWith"] = "FIRST" }),
+                Rule("(0010,0020)", "substitute", new JObject { ["replaceWith"] = "SECOND" }));
+
+            engine.AnonymizeDataset(dataset);
+
+            Assert.Equal("FIRST", dataset.GetString(DicomTag.PatientID));
+            Assert.Equal("FIRST", nested.GetString(DicomTag.PatientID));
+        }
+
+        [Theory]
+        [InlineData("PatientID")]
+        [InlineData("LO")]
+        public void GivenUnsupportedActualUidRefreshItem_WhenAnonymizing_PreflightStillPreservesInput(string selector)
+        {
+            var dataset = new DicomDataset
+            {
+                { DicomTag.PatientName, "UNCHANGED" },
+                { DicomTag.PatientID, "NOT-A-UID" },
+            };
+            var engine = CreateEngine(Rule("PatientName", "cryptoHash"), Rule(selector, "refreshUID"));
+
+            var error = Assert.Throws<AnonymizerOperationException>(() => engine.AnonymizeDataset(dataset));
+
+            Assert.Equal(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, error.DicomAnonymizerErrorCode);
+            Assert.Equal("UNCHANGED", dataset.GetString(DicomTag.PatientName));
+            Assert.Equal("NOT-A-UID", dataset.GetString(DicomTag.PatientID));
         }
 
         [Fact]
@@ -579,13 +689,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [InlineData("EncapsulatedDocument", "substitute")]
         [InlineData("OB", "substitute")]
         [InlineData("ContentSequence", "substitute")]
-        public void GivenStaticallyIncompatibleBuiltInSelector_WhenConstructingEngine_PolicyIsRejected(string selector, string method)
+        public void GivenBuiltInSelector_WhenNoMatchingDataExists_ConstructionAndProcessingDoNotRejectTheConfiguration(string selector, string method)
         {
-            var error = Assert.Throws<AnonymizerConfigurationException>(() => CreateEngine(
-                Rule(selector, method, new JObject { ["encryptKey"] = "0123456789ABCDEF" })));
+            var engine = CreateEngine(Rule(selector, method, new JObject { ["encryptKey"] = "0123456789ABCDEF" }));
+            var dataset = new DicomDataset();
 
-            Assert.Equal(DicomAnonymizationErrorCode.InvalidConfigurationValues, error.DicomAnonymizerErrorCode);
-            Assert.DoesNotContain("0123456789ABCDEF", error.ToString());
+            engine.AnonymizeDataset(dataset);
+
+            Assert.Empty(dataset);
         }
 
         [Theory]
