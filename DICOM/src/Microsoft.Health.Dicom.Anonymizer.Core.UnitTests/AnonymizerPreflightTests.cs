@@ -510,24 +510,32 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal(expected, DicomFile.Open(saved, FileReadOption.ReadAll).Dataset.GetValues<byte>(DicomTag.PixelData));
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void GivenInPlacePreflightFailure_WhenAnonymizing_FileAndKeptBufferAreUnchanged(bool embedded)
+        [Fact]
+        public void GivenAnonymizationErrors_WhenReadingCodes_ExistingNumericValuesArePreserved()
+        {
+            Assert.Equal(1001, (int)DicomAnonymizationErrorCode.ParsingJsonConfigurationFailed);
+            Assert.Equal(1002, (int)DicomAnonymizationErrorCode.MissingConfigurationFields);
+            Assert.Equal(1003, (int)DicomAnonymizationErrorCode.InvalidConfigurationValues);
+            Assert.Equal(1004, (int)DicomAnonymizationErrorCode.UnsupportedAnonymizationRule);
+            Assert.Equal(1005, (int)DicomAnonymizationErrorCode.MissingRuleSettings);
+            Assert.Equal(1006, (int)DicomAnonymizationErrorCode.InvalidRuleSettings);
+            Assert.Equal(1101, (int)DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod);
+            Assert.Equal(1102, (int)DicomAnonymizationErrorCode.AddCustomProcessorFailed);
+            Assert.Equal(1103, (int)DicomAnonymizationErrorCode.FileMetaIdentityMismatch);
+            Assert.Equal(1104, (int)DicomAnonymizationErrorCode.SequenceDepthLimitExceeded);
+        }
+
+        [Fact]
+        public void GivenInPlacePreflightFailure_WhenAnonymizing_FileAndKeptBufferAreUnchanged()
         {
             var buffer = new UnreadableBuffer();
             var file = CreateFile();
             file.Dataset.AddOrUpdate(new DicomOtherByte(DicomTag.PixelData, buffer));
             file.FileMetaInfo.MediaStorageSOPInstanceUID = DicomUID.Parse("2.25.999");
-            if (embedded)
-            {
-                file.Dataset.Add(new DicomSequence(DicomTag.ContentSequence, new DicomDataset(new DicomOtherByte(DicomTag.EncapsulatedDocument, new byte[] { 1, 2 }))));
-            }
-
             var error = Assert.Throws<AnonymizerOperationException>(() =>
                 CreateEngine(Rule("SOPInstanceUID", "refreshUID")).AnonymizeFileInPlace(file));
 
-            Assert.Equal(embedded ? DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload : DicomAnonymizationErrorCode.FileMetaIdentityMismatch, error.DicomAnonymizerErrorCode);
+            Assert.Equal(DicomAnonymizationErrorCode.FileMetaIdentityMismatch, error.DicomAnonymizerErrorCode);
             Assert.Equal("2.25.100", file.Dataset.GetString(DicomTag.SOPInstanceUID));
             Assert.Equal("2.25.999", file.FileMetaInfo.MediaStorageSOPInstanceUID.UID);
             Assert.Equal(0, buffer.ReadAttempts);
@@ -557,30 +565,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal("2.25.100", file.FileMetaInfo.MediaStorageSOPInstanceUID.UID);
             Assert.Same(child, Assert.Single(file.Dataset.GetSequence(DicomTag.RequestAttributesSequence).Items));
             Assert.Same(buffer, file.Dataset.GetDicomItem<DicomElement>(DicomTag.PixelData).Buffer);
-            Assert.Equal(0, buffer.ReadAttempts);
-        }
-
-        [Theory]
-        [InlineData("dataset")]
-        [InlineData("inplace")]
-        [InlineData("clone")]
-        public async Task GivenCyclicSequenceAndReachableEmbeddedDocument_WhenAnonymizing_DocumentRejectionKeepsPrecedenceAsync(string mode)
-        {
-            var buffer = new UnreadableBuffer();
-            var file = CreateFile(new DicomLongString(DicomTag.PatientID, "UNCHANGED"));
-            file.Dataset.AddOrUpdate(new DicomOtherByte(DicomTag.PixelData, buffer));
-            var payload = new DicomDataset(new DicomOtherByte(DicomTag.EncapsulatedDocument, new byte[] { 1, 2 }));
-            file.Dataset.Add(new DicomSequence(DicomTag.RequestAttributesSequence, payload, file.Dataset));
-            file.FileMetaInfo.MediaStorageSOPInstanceUID = DicomUID.Parse("2.25.999");
-            var engine = CreateEngine(Rule("PatientID", "cryptoHash"));
-
-            var error = await AssertCyclicInputRejectedAsync(engine, file, mode);
-
-            Assert.Equal(DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload, error.DicomAnonymizerErrorCode);
-            Assert.Equal("UNCHANGED", file.Dataset.GetString(DicomTag.PatientID));
-            Assert.Equal("2.25.999", file.FileMetaInfo.MediaStorageSOPInstanceUID.UID);
-            Assert.Equal(2, file.Dataset.GetSequence(DicomTag.RequestAttributesSequence).Items.Count);
-            Assert.True(payload.Contains(DicomTag.EncapsulatedDocument));
             Assert.Equal(0, buffer.ReadAttempts);
         }
 
@@ -864,7 +848,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [InlineData("PN", "perturb")]
         [InlineData("Rows", "encrypt")]
         [InlineData("US", "encrypt")]
-        [InlineData("EncapsulatedDocument", "substitute")]
+        [InlineData("FileMetaInformationVersion", "substitute")]
         [InlineData("OB", "substitute")]
         [InlineData("ContentSequence", "substitute")]
         public void GivenBuiltInSelector_WhenNoMatchingDataExists_ConstructionAndProcessingDoNotRejectTheConfiguration(string selector, string method)

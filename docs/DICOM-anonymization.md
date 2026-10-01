@@ -14,12 +14,15 @@ Use the .Net Core SDK to build DICOM Anonymization Tool. If you don't have .Net 
 ### Prepare DICOM Data
 You can prepare your own DICOM files as input, or use sample DICOM files in folder $SOURCE\DICOM\samples of the project.
 
+The tool applies configured metadata transformations; it does not inspect or
+sanitize unselected payload contents. Calling applications determine which
+input content types are acceptable.
+
 ### Table of Contents
 
 - [Anonymize DICOM data: using the command line tool](#anonymize-dicom-data-using-the-command-line-tool)
 - [Customize configuration file](#customize-configuration-file)
 - [Data anonymization algorithms](#data-anonymization-algorithms)
-- [Unsupported embedded documents](#unsupported-embedded-documents)
 - [Output validation](#output-validation)
 
 
@@ -49,14 +52,6 @@ The command-line tool can be used to anonymize one DICOM file or a folder contai
 
 > **[NOTE]**
 > To anonymize one DICOM file, inputFile and outputFile are required. To anonymize a DICOM folder, inputFolder and outputFolder are required.
-
-## Unsupported embedded documents
-
-Embedded PDF and CDA documents are not supported. The anonymizer rejects the Encapsulated PDF Storage and Encapsulated CDA Storage SOP Classes, as well as any dataset containing the Encapsulated Document `(0042,0011)` element.
-
-Rejected inputs return `DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload` (`1201`) before anonymization rules are applied. The command-line tool creates no output for the rejected input and preserves an existing destination. The error message contains only the detected document type and DICOM tag numbers.
-
-Callers should use error `1201` to route unsupported content to an appropriate document-processing workflow.
 
 Example usage to anonymize DICOM files in a folder:
 ```
@@ -140,8 +135,8 @@ safeguards described below.
   UIDs. The existing UID map is shared in-process; these changes do not provide
   job or tenant isolation.
 - Sequence nesting is limited to 64 item levels; deeper input fails before
-  anonymization begins. The embedded-document scan tracks dataset references so
-  cyclic in-memory graphs reach the depth check instead of looping indefinitely.
+  anonymization begins. Cyclic in-memory graphs are also rejected by this depth
+  check before recursive validation or processing.
 
 Broad `UI` and `SQ` rules can be configured. Their effect depends on the actual
 input and first matching rule: a compatible UID can be refreshed, and a sequence
@@ -168,6 +163,8 @@ Keeping a sequence retains its structure
 but does not exempt its descendants from selected exact rules. A selected exact
 sequence `remove` discards its subtree; sequence `redact` empties its items.
 Descendant actions do not resurrect that discarded content.
+No additional descendant transformations are required for a sequence selected
+for removal or emptying. This does not implicitly discard other sequences.
 
 Nested rule resolution is limited to actual exact-tag candidates. An absent
 creator-bound private selector does not match unrelated nested data, and custom
@@ -317,6 +314,12 @@ Here is a sample rule using dateShift method on DICOM tags with VR in DA. The da
 
 ### CryptoHash
 This function uses HMAC and emits a deterministic representation that conforms to the target DICOM VR alphabet and maximum length. `UI` values use the `2.25` UUID-derived decimal form, numeric string VRs use digits, and length-limited text VRs are capped automatically. CryptoHash rules support `AE`, `CS`, `UI`, `DS`, `IS`, `SH`, `PN`, `UC`, `LO`, `UT`, `ST`, `LT`, `UR`, `OB`, and `UN`. Other VRs require a format-aware anonymization method.
+
+Hash representations can change between implementation versions. In particular,
+`SH` output uses a hexadecimal alphabet even with `matchInputStringLength`
+enabled, rather than the historical numeric-only length-matched representation.
+Use a consistent key, settings, and implementation version when stable values
+are required within a batch; cross-version output equality is not guaranteed.
 
 CryptoHash support is checked against the actual selected item, not the
 selector's dictionary possibilities during construction. Masked and unknown

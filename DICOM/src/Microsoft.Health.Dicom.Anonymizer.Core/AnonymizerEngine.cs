@@ -21,8 +21,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
     public class AnonymizerEngine
     {
         internal const int MaximumSequenceDepth = 64;
-        private const string EncapsulatedPdfStorageUid = "1.2.840.10008.5.1.4.1.1.104.1";
-        private const string EncapsulatedCdaStorageUid = "1.2.840.10008.5.1.4.1.1.104.2";
 
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly AnonymizerEngineOptions _anonymizerSettings;
@@ -79,7 +77,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             EnsureArg.IsNotNull(dataset, nameof(dataset));
 
-            RejectUnsupportedEmbeddedPayload(dataset);
             ValidateRequiredRuntimeKeys(runtimeKeySettings);
 
             ValidateSequenceDepth(dataset);
@@ -115,7 +112,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             EnsureArg.IsNotNull(dicomFile, nameof(dicomFile));
 
-            RejectUnsupportedEmbeddedPayload(dicomFile.Dataset);
             ValidateSequenceDepth(dicomFile.Dataset);
             ValidateFileMetaIdentity(dicomFile);
 
@@ -140,7 +136,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             EnsureArg.IsNotNull(dicomFile, nameof(dicomFile));
 
-            RejectUnsupportedEmbeddedPayload(dicomFile.Dataset);
             ValidateSequenceDepth(dicomFile.Dataset);
             ValidateFileMetaIdentity(dicomFile);
 
@@ -151,55 +146,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             dicomFile.FileMetaInfo.MediaStorageSOPInstanceUID = sopInstanceUid;
             dicomFile.FileMetaInfo.TransferSyntax = transferSyntax;
             ValidateFileMetaIdentity(dicomFile);
-        }
-
-        private static void RejectUnsupportedEmbeddedPayload(DicomDataset dataset)
-        {
-            var visited = new HashSet<DicomDataset>(ReferenceEqualityComparer.Instance);
-            var datasets = new Stack<DicomDataset>();
-            datasets.Push(dataset);
-
-            while (datasets.Count > 0)
-            {
-                DicomDataset current = datasets.Pop();
-                if (!visited.Add(current))
-                {
-                    continue;
-                }
-
-                if (current.Contains(DicomTag.EncapsulatedDocument))
-                {
-                    throw new AnonymizerOperationException(
-                        DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload,
-                        "Unsupported embedded payload rejected. ErrorCode=1201; PayloadTypes=EncapsulatedDocument; DetectedTags=(0042,0011).");
-                }
-
-                foreach (DicomItem item in current)
-                {
-                    if (item is DicomSequence sequence)
-                    {
-                        foreach (DicomDataset nestedDataset in sequence.Items)
-                        {
-                            datasets.Push(nestedDataset);
-                        }
-                    }
-                }
-            }
-
-            string sopClassUid = dataset.GetSingleValueOrDefault(DicomTag.SOPClassUID, string.Empty);
-            if (string.Equals(sopClassUid, EncapsulatedPdfStorageUid, StringComparison.Ordinal))
-            {
-                throw new AnonymizerOperationException(
-                    DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload,
-                    "Unsupported embedded payload rejected. ErrorCode=1201; PayloadTypes=EncapsulatedPDF; DetectedTags=(0008,0016).");
-            }
-
-            if (string.Equals(sopClassUid, EncapsulatedCdaStorageUid, StringComparison.Ordinal))
-            {
-                throw new AnonymizerOperationException(
-                    DicomAnonymizationErrorCode.UnsupportedEmbeddedPayload,
-                    "Unsupported embedded payload rejected. ErrorCode=1201; PayloadTypes=EncapsulatedCDA; DetectedTags=(0008,0016).");
-            }
         }
 
         private ProcessContext InitContext(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)

@@ -18,6 +18,5 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Exceptions
         AddCustomProcessorFailed = 1102,
         FileMetaIdentityMismatch = 1103,
         SequenceDepthLimitExceeded = 1104,
-        UnsupportedEmbeddedPayload = 1201,
     }
 }
