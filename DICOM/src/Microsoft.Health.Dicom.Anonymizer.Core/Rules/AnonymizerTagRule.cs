@@ -29,7 +29,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
             EnsureArg.IsNotNull(dataset, nameof(dataset));
             EnsureArg.IsNotNull(context, nameof(context));
 
-            var item = dataset.GetDicomItem<DicomItem>(Tag);
+            var item = dataset.Contains(Tag) ? dataset.GetDicomItem<DicomItem>(Tag) : null;
             var result = new List<DicomItem>();
             if (item != null && !context.VisitedNodes.Contains(item.ToString()))
             {

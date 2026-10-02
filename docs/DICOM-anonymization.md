@@ -187,8 +187,9 @@ No additional descendant transformations are required for a sequence selected
 for removal or emptying. This does not implicitly discard other sequences.
 
 Nested rule resolution is limited to actual exact-tag candidates. An absent
-creator-bound private selector does not match unrelated nested data, and custom
-selectors are not invoked there solely to inspect noncandidate elements.
+creator-bound private selector is a non-match at the root and in child datasets,
+without allocating a private creator block or matching unrelated data. Custom
+selectors are not invoked in nested datasets solely to inspect noncandidate elements.
 Unselected sequence containers are still traversed to find targeted descendants.
 
 Masked-tag and VR-wide transformations are not newly applied recursively.
