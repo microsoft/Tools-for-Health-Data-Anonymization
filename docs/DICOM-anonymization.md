@@ -346,6 +346,27 @@ enabled, rather than the historical numeric-only length-matched representation.
 Use a consistent key, settings, and implementation version when stable values
 are required within a batch; cross-version output equality is not guaranteed.
 
+The public Common `CryptoHashFunction` utility limits requested alphabet-expanded
+or length-matched output to 4,096 characters per value and at most 1,024 HMAC
+blocks, including rejection-sampling attempts. Exceeding either limit raises an
+explicit `CryptoHashFailed` error; output is not truncated or replaced with a
+fallback. The existing input-plus-little-endian-counter framing and accepted
+output bytes are unchanged. The input/counter buffer is reused within each
+operation; this is bounded expansion, not an unbounded linear-time
+length-matching algorithm. Use ordinary fixed-length hashing for longer text.
+There is no new input-length limit for fixed or capped output, byte-array hashes,
+or stream hashes.
+The processor's public string-only `GetCryptoHashString` helper delegates to
+the Common utility and shares its length-matched output limit.
+
+Normal DICOM processing already caps string hash output to at most 64 characters
+after applying the VR-specific limit, even for long `UT` and `UC` input with
+length matching enabled. Those inputs remain accepted with the same output;
+the Common expansion limit is not a new DICOM input or configuration-admission
+rule. Rejection-sampling budget exhaustion is a runtime algorithm failure, not
+something item preflight predicts; in-place callers must discard modified
+objects after such a failure.
+
 CryptoHash support is checked against the actual selected item, not the
 selector's dictionary possibilities during construction. Masked and unknown
 exact selectors can therefore process supported runtime representations.

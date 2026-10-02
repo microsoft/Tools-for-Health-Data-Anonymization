@@ -11,6 +11,7 @@ using System.Text;
 using FellowOakDicom;
 using FellowOakDicom.IO.Buffer;
 using Microsoft.Extensions.Logging;
+using Microsoft.Health.Anonymizer.Common.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
@@ -162,6 +163,41 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             Assert.Equal(2, first.Length);
             Assert.Equal(first, repeatedDataset.GetValues<string>(DicomTag.ConsultingPhysicianName));
             Assert.All(first, value => Assert.Matches("^[0-9a-f]{64}$", value));
+        }
+
+        [Theory]
+        [InlineData("ACC-123", false, "3e8f116463b99545")]
+        [InlineData("ACC-123", true, "20236d1")]
+        [InlineData("ACCESSION-123456", false, "e8d248f617143c55")]
+        [InlineData("ACCESSION-123456", true, "0640002ecf9c6b6e")]
+        public void GivenShortStringLengthMatching_WhenHashing_PreviousOutputBytesAreUnchanged(string input, bool match, string expected)
+        {
+            var processor = new CryptoHashProcessor(new JObject { ["cryptoHashKey"] = "123", ["matchInputStringLength"] = match });
+            var dataset = new DicomDataset { { DicomTag.AccessionNumber, input } };
+
+            processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.AccessionNumber));
+
+            Assert.Equal(expected, dataset.GetString(DicomTag.AccessionNumber));
+            Assert.Equal(DicomVR.SH, dataset.GetDicomItem<DicomItem>(DicomTag.AccessionNumber).ValueRepresentation);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void GivenPublicStringOnlyHelper_WhenHashingLongInput_OnlyLengthMatchingUsesExpansionLimit(bool match)
+        {
+            var processor = new CryptoHashProcessor(new JObject { ["cryptoHashKey"] = "123", ["matchInputStringLength"] = match });
+            var input = new string('Z', 8192);
+
+            if (match)
+            {
+                var error = Assert.Throws<AnonymizerException>(() => processor.GetCryptoHashString(input));
+                Assert.Equal(AnonymizerErrorCode.CryptoHashFailed, error.AnonymizerErrorCode);
+            }
+            else
+            {
+                Assert.Equal(64, processor.GetCryptoHashString(input).Length);
+            }
         }
 
         [Theory]

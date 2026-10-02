@@ -3,12 +3,17 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Health.Anonymizer.Common.Exceptions;
 using Microsoft.Health.Anonymizer.Common.Settings;
 using Xunit;
 
@@ -208,6 +213,251 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
             Assert.Equal("91464668237566287822220487066907", first);
             Assert.Equal(first, second);
             Assert.All(first, value => Assert.Contains(value, alphabet));
+        }
+
+        [Theory]
+        [InlineData(HashAlgorithmType.Sha256, 0, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")]
+        [InlineData(HashAlgorithmType.Sha256, 1, "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451")]
+        [InlineData(HashAlgorithmType.Sha256, 16, "b9858c51db1170748c9e068382c852a68a187fa3def1628b90c1e4231ffb6a28")]
+        [InlineData(HashAlgorithmType.Sha256, 64, "044fc3b038df1ee644098fb572d3b346a01e985dd85558d35fc0b0d0747a5e00")]
+        [InlineData(HashAlgorithmType.Sha256, 4095, "14f0c4283d47ec0519e8ce2d125a85fbd5af7162b4d4119587d9f942bcd560b4")]
+        [InlineData(HashAlgorithmType.Sha256, 4096, "a12fe21cf018c5957a661316c9ff73c12a8c211dd7de2336ad94b057b58ea793")]
+        [InlineData(HashAlgorithmType.Sha384, 0, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")]
+        [InlineData(HashAlgorithmType.Sha384, 1, "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce")]
+        [InlineData(HashAlgorithmType.Sha384, 16, "c075fae3970fcc9e72433fa8d51ec1131377b7007dcbdb7d8f707adf1a87f6bb")]
+        [InlineData(HashAlgorithmType.Sha384, 64, "01197d74ecc9126b04c5cd415c537ce92165500851e9710bc26e21204a4fa7b2")]
+        [InlineData(HashAlgorithmType.Sha384, 4095, "f67019b18f631248528697c02fe74d7a5c309bd579feb275b7c4b263172a2f4a")]
+        [InlineData(HashAlgorithmType.Sha384, 4096, "012df9b0ef83c63dc3fcf96c2bdd81e3ee4d4cf32616729e1906306b0cdc8a0e")]
+        [InlineData(HashAlgorithmType.Sha512, 0, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")]
+        [InlineData(HashAlgorithmType.Sha512, 1, "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35")]
+        [InlineData(HashAlgorithmType.Sha512, 16, "247e02ce238e3312213bef6127192e2caf54f1549c5d48adbda862aac8de06ed")]
+        [InlineData(HashAlgorithmType.Sha512, 64, "54a250ebcc5e609e9de8cbe999cc4625ae0c230207c537b4f9274de078ed8fec")]
+        [InlineData(HashAlgorithmType.Sha512, 4095, "fca969919d78e9480b5f4aa5d303a36b72738d3050d9161d4d107fe5427bfa6e")]
+        [InlineData(HashAlgorithmType.Sha512, 4096, "89078446ac450872bc004b16b0fc8370590034000802c44c63be48f942635375")]
+        public void GivenBoundedExpansion_WhenMatchingLength_PreviousOutputBytesArePreserved(HashAlgorithmType algorithm, int length, string expectedOutputHash)
+        {
+            var function = new CryptoHashFunction(new CryptoHashSetting
+            {
+                CryptoHashKey = TestHashKey,
+                CryptoHashType = algorithm,
+                MatchInputStringLength = true,
+            });
+            using var hmac = CreateHmac(algorithm);
+            var input = new string('9', length);
+
+            var instanceOutput = function.Hash(input);
+            var staticOutput = CryptoHashFunction.Hash(input, hmac, matchInputLength: true);
+
+            Assert.Equal(instanceOutput, staticOutput);
+            Assert.Equal(length, instanceOutput.Length);
+            Assert.Equal(expectedOutputHash, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(instanceOutput))).ToLowerInvariant());
+        }
+
+        [Theory]
+        [InlineData("instance")]
+        [InlineData("static")]
+        [InlineData("alphabet")]
+        public void GivenOversizedExpansion_WhenHashing_ExplicitValueSafeErrorIsThrown(string mode)
+        {
+            var input = new string('9', 4097);
+            var function = new CryptoHashFunction(new CryptoHashSetting { CryptoHashKey = TestHashKey, MatchInputStringLength = true });
+            using var hmac = CreateHmac(HashAlgorithmType.Sha256);
+            Action action = mode switch
+            {
+                "instance" => () => function.Hash(input),
+                "static" => () => CryptoHashFunction.Hash(input, hmac, matchInputLength: true),
+                _ => () => function.HashToAlphabet(input, "0123456789", 4097),
+            };
+
+            var error = Assert.Throws<AnonymizerException>(action);
+
+            Assert.Equal(AnonymizerErrorCode.CryptoHashFailed, error.AnonymizerErrorCode);
+            Assert.Equal("Hash output length exceeds the supported limit of 4096 characters.", error.Message);
+            Assert.Null(error.InnerException);
+        }
+
+        [Fact]
+        public void GivenOversizedExpansion_WhenGeneratingOutput_NoHashWorkOccurs()
+        {
+            var calls = 0;
+            var invocation = Assert.Throws<TargetInvocationException>(() =>
+                InvokeExpansion(Encoding.UTF8.GetBytes("SYNTHETIC"), "0123456789abcdef", 4097, _ =>
+                {
+                    calls++;
+                    return new byte[32];
+                }));
+            var error = Assert.IsType<AnonymizerException>(invocation.InnerException);
+
+            Assert.Equal(AnonymizerErrorCode.CryptoHashFailed, error.AnonymizerErrorCode);
+            Assert.Equal(0, calls);
+        }
+
+        [Fact]
+        public void GivenLongInputWithFixedOutput_WhenHashing_InputIsNotSubjectToExpansionLimit()
+        {
+            var input = new string('Z', 16384);
+            using var hmac = CreateHmac(HashAlgorithmType.Sha256);
+            var expectedBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(input));
+            var expectedHex = Convert.ToHexString(expectedBytes).ToLowerInvariant();
+
+            Assert.Equal(expectedHex, _function.Hash(input));
+            Assert.Equal(expectedBytes, _function.Hash(Encoding.UTF8.GetBytes(input)));
+            Assert.Equal(expectedBytes, _function.Hash(new MemoryStream(Encoding.UTF8.GetBytes(input))));
+            Assert.Equal("750c273ecdb4bc4ab4d14dcae50b38f48f98597415134be8f3dbbc9f67a0c81c", _function.HashToAlphabet(input, "0123456789abcdef", 64));
+        }
+
+        [Theory]
+        [InlineData(HashAlgorithmType.Sha256)]
+        [InlineData(HashAlgorithmType.Sha384)]
+        [InlineData(HashAlgorithmType.Sha512)]
+        public void GivenLeastAcceptingValidAlphabet_WhenExpanding_MaximumOutputCompletesWithinBudget(HashAlgorithmType algorithm)
+        {
+            var alphabet = new string(Enumerable.Range(0, 129).Select(value => (char)value).ToArray());
+            var minimumAcceptance = Enumerable.Range(1, 256).Min(length => 256 - (256 % length));
+            var calls = 0;
+            using var hmac = CreateHmac(algorithm);
+            Func<byte[], byte[]> hash = bytes =>
+            {
+                calls++;
+                return hmac.ComputeHash(bytes);
+            };
+
+            var output = InvokeExpansion(Encoding.UTF8.GetBytes("alphabet-input"), alphabet, 4096, hash);
+
+            Assert.Equal(129, minimumAcceptance);
+            Assert.Equal(4096, output.Length);
+            Assert.All(output, value => Assert.Contains(value, alphabet));
+            Assert.InRange(calls, 1, 1024);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void GivenRejectionSamplingWithoutEnoughProgress_WhenExpanding_BlockBudgetFailsWithoutPartialOutput(bool partialProgress)
+        {
+            var calls = 0;
+            Func<byte[], byte[]> hash = _ =>
+            {
+                if (++calls > 1024)
+                {
+                    throw new InvalidOperationException("Controlled test operation budget exceeded.");
+                }
+
+                return Enumerable.Repeat(partialProgress && calls == 1 ? (byte)0 : byte.MaxValue, 32).ToArray();
+            };
+
+            var invocation = Assert.Throws<TargetInvocationException>(() =>
+                InvokeExpansion(Encoding.UTF8.GetBytes("SYNTHETIC-INPUT-SENTINEL"), "0123456789", 64, hash));
+            var error = Assert.IsType<AnonymizerException>(invocation.InnerException);
+
+            Assert.Equal(1024, calls);
+            Assert.Equal(AnonymizerErrorCode.CryptoHashFailed, error.AnonymizerErrorCode);
+            Assert.Equal("Hash output expansion exceeds the supported limit of 1024 HMAC blocks.", error.Message);
+            Assert.Null(error.InnerException);
+        }
+
+        [Theory]
+        [InlineData(1024)]
+        [InlineData(1025)]
+        public void GivenExpansionAtBlockBudgetBoundary_WhenGeneratingOutput_ExactBudgetIsAllowed(int length)
+        {
+            var calls = 0;
+            Func<byte[], byte[]> hash = _ =>
+            {
+                if (++calls > 1025)
+                {
+                    throw new InvalidOperationException("Controlled test operation budget exceeded.");
+                }
+
+                return new[] { (byte)0 };
+            };
+
+            if (length == 1024)
+            {
+                Assert.Equal(new string('0', length), InvokeExpansion(Array.Empty<byte>(), "0123456789", length, hash));
+            }
+            else
+            {
+                var invocation = Assert.Throws<TargetInvocationException>(() =>
+                    InvokeExpansion(Array.Empty<byte>(), "0123456789", length, hash));
+                var error = Assert.IsType<AnonymizerException>(invocation.InnerException);
+                Assert.Equal(AnonymizerErrorCode.CryptoHashFailed, error.AnonymizerErrorCode);
+            }
+
+            Assert.Equal(1024, calls);
+        }
+
+        [Fact]
+        public void GivenExpansionAcrossSeveralBlocks_WhenHashing_OneBufferPreservesInputAndCounterFraming()
+        {
+            var input = Encoding.UTF8.GetBytes("SYNTHETIC");
+            var firstBuffer = Array.Empty<byte>();
+            var counters = new List<int>();
+            using var hmac = CreateHmac(HashAlgorithmType.Sha256);
+            Func<byte[], byte[]> hash = block =>
+            {
+                if (counters.Count == 0)
+                {
+                    firstBuffer = block;
+                }
+
+                Assert.Same(firstBuffer, block);
+                Assert.Equal(input, block.Take(input.Length));
+                Assert.Equal(input.Length + sizeof(int), block.Length);
+                counters.Add(BinaryPrimitives.ReadInt32LittleEndian(block.AsSpan(input.Length)));
+                return hmac.ComputeHash(block);
+            };
+
+            var output = InvokeExpansion(input, "0123456789abcdef", 128, hash);
+
+            Assert.Equal(new[] { 0, 1, 2, 3 }, counters);
+            Assert.Equal(_function.HashToAlphabet("SYNTHETIC", "0123456789abcdef", 128), output);
+            Assert.Equal(Encoding.UTF8.GetBytes("SYNTHETIC"), input);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(257)]
+        public void GivenInvalidAlphabet_WhenExpanding_NoHashWorkOccurs(int alphabetLength)
+        {
+            var calls = 0;
+            var invocation = Assert.Throws<TargetInvocationException>(() =>
+                InvokeExpansion(Array.Empty<byte>(), new string('A', alphabetLength), 1, _ =>
+                {
+                    calls++;
+                    return new byte[32];
+                }));
+
+            Assert.IsType<ArgumentOutOfRangeException>(invocation.InnerException);
+            Assert.Equal(0, calls);
+        }
+
+        [Fact]
+        public async Task GivenConcurrentExpansions_WhenHashing_BuffersAndBudgetsArePerOperation()
+        {
+            var expected = _function.HashToAlphabet("concurrent-value", "0123456789", 4096);
+            var tasks = Enumerable.Range(0, 100).Select(_ => Task.Run(() =>
+                _function.HashToAlphabet("concurrent-value", "0123456789", 4096)));
+
+            Assert.All(await Task.WhenAll(tasks), result => Assert.Equal(expected, result));
+        }
+
+        private static string InvokeExpansion(byte[] input, string alphabet, int length, Func<byte[], byte[]> hash)
+        {
+            var method = typeof(CryptoHashFunction).GetMethod("GenerateOutputFromAlphabet", BindingFlags.NonPublic | BindingFlags.Static);
+            return (string)method.Invoke(null, new object[] { input, alphabet, length, hash });
+        }
+
+        private static HMAC CreateHmac(HashAlgorithmType algorithm)
+        {
+            var key = Encoding.UTF8.GetBytes(TestHashKey);
+            return algorithm switch
+            {
+                HashAlgorithmType.Sha256 => new HMACSHA256(key),
+                HashAlgorithmType.Sha384 => new HMACSHA384(key),
+                HashAlgorithmType.Sha512 => new HMACSHA512(key),
+                _ => throw new ArgumentOutOfRangeException(nameof(algorithm)),
+            };
         }
     }
 }

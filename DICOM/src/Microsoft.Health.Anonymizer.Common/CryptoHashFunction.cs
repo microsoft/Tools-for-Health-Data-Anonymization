@@ -18,6 +18,9 @@ namespace Microsoft.Health.Anonymizer.Common
 {
     public class CryptoHashFunction
     {
+        private const int MaximumExpandedOutputLength = 4096;
+        private const int MaximumExpansionBlocks = 1024;
+
         private readonly byte[] _key;
         private readonly HashAlgorithmType _hashType;
         private readonly bool _matchInputStringLength;
@@ -67,6 +70,7 @@ namespace Microsoft.Health.Anonymizer.Common
         {
             EnsureArg.IsNotNull(input, nameof(input));
             EnsureArg.IsNotNullOrEmpty(alphabet, nameof(alphabet));
+            ValidateExpandedOutputLength(outputLength);
 
             encoding ??= Encoding.UTF8;
             return GenerateOutputFromAlphabet(encoding.GetBytes(input), alphabet, outputLength, Hash);
@@ -97,6 +101,7 @@ namespace Microsoft.Health.Anonymizer.Common
 
             if (matchInputLength)
             {
+                ValidateExpandedOutputLength(input.Length);
                 return GenerateOutputFromAlphabet(
                     encoding.GetBytes(input),
                     "0123456789",
@@ -112,26 +117,33 @@ namespace Microsoft.Health.Anonymizer.Common
 
         private static string GenerateOutputFromAlphabet(byte[] input, string alphabet, int outputLength, Func<byte[], byte[]> hash)
         {
-            if (outputLength < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(outputLength));
-            }
+            ValidateExpandedOutputLength(outputLength);
 
             if (alphabet.Length == 0 || alphabet.Length > byte.MaxValue + 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(alphabet));
             }
 
+            if (outputLength == 0)
+            {
+                return string.Empty;
+            }
+
             var result = new StringBuilder(outputLength);
             var acceptanceLimit = (byte.MaxValue + 1) - ((byte.MaxValue + 1) % alphabet.Length);
+            var blockInput = new byte[input.Length + sizeof(int)];
+            Buffer.BlockCopy(input, 0, blockInput, 0, input.Length);
             var counter = 0;
             while (result.Length < outputLength)
             {
-                var counterBytes = new byte[sizeof(int)];
-                BinaryPrimitives.WriteInt32LittleEndian(counterBytes, counter++);
-                var blockInput = new byte[input.Length + counterBytes.Length];
-                Buffer.BlockCopy(input, 0, blockInput, 0, input.Length);
-                Buffer.BlockCopy(counterBytes, 0, blockInput, input.Length, counterBytes.Length);
+                if (counter == MaximumExpansionBlocks)
+                {
+                    throw new AnonymizerException(
+                        AnonymizerErrorCode.CryptoHashFailed,
+                        $"Hash output expansion exceeds the supported limit of {MaximumExpansionBlocks} HMAC blocks.");
+                }
+
+                BinaryPrimitives.WriteInt32LittleEndian(blockInput.AsSpan(input.Length), counter++);
                 foreach (var value in hash(blockInput))
                 {
                     if (value >= acceptanceLimit)
@@ -148,6 +160,21 @@ namespace Microsoft.Health.Anonymizer.Common
             }
 
             return result.ToString();
+        }
+
+        private static void ValidateExpandedOutputLength(int outputLength)
+        {
+            if (outputLength < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(outputLength));
+            }
+
+            if (outputLength > MaximumExpandedOutputLength)
+            {
+                throw new AnonymizerException(
+                    AnonymizerErrorCode.CryptoHashFailed,
+                    $"Hash output length exceeds the supported limit of {MaximumExpandedOutputLength} characters.");
+            }
         }
 
         private HMAC CreateHmac()

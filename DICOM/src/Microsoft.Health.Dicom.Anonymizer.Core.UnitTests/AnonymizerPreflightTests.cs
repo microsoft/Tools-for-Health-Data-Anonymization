@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FellowOakDicom;
@@ -39,6 +41,48 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             {
                 yield return new object[] { mode, false };
                 yield return new object[] { mode, true };
+            }
+        }
+
+        public static IEnumerable<object[]> GetLongTextHashCases()
+        {
+            foreach (var mode in new[] { "dataset", "inplace", "clone" })
+            {
+                foreach (var tag in new[] { "LongCodeValue", "StrainAdditionalInformation" })
+                {
+                    yield return new object[] { mode, tag, 8192, "89024a7886bb0d706720a0fde6ba1b381310d7e39c764837c596db5dc8b2457b" };
+                    yield return new object[] { mode, tag, 16384, "750c273ecdb4bc4ab4d14dcae50b38f48f98597415134be8f3dbbc9f67a0c81c" };
+                }
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetLongTextHashCases))]
+        public void GivenLongTextWithCappedHashOutput_WhenAnonymizing_PreviousAcceptanceAndOutputArePreserved(string mode, string tagName, int length, string expected)
+        {
+            var tag = Assert.IsType<DicomTag>(typeof(DicomTag).GetField(tagName)?.GetValue(null));
+            var input = new string('Z', length);
+            var file = CreateFile();
+            file.Dataset.Add(tag, input);
+            file.Dataset.Add(DicomTag.PatientName, "SYNTHETIC^NAME");
+            var vr = file.Dataset.GetDicomItem<DicomItem>(tag).ValueRepresentation;
+            var engine = CreateEngine(
+                Rule("PatientName", "cryptoHash"),
+                Rule(tagName, "cryptoHash", new JObject { ["cryptoHashKey"] = "123", ["matchInputStringLength"] = true }));
+
+            var result = AnonymizeUsingMode(engine, file, mode);
+
+            Assert.Equal(expected, result.GetString(tag));
+            Assert.Equal(64, result.GetString(tag).Length);
+            Assert.Equal(vr, result.GetDicomItem<DicomItem>(tag).ValueRepresentation);
+            var expectedName = HMACSHA256.HashData(Encoding.UTF8.GetBytes("synthetic-key"), Encoding.UTF8.GetBytes("SYNTHETIC^NAME"));
+            Assert.Equal(Convert.ToHexString(expectedName).ToLowerInvariant(), result.GetString(DicomTag.PatientName));
+            Assert.Equal(new byte[] { 1, 2, 3, 4 }, result.GetValues<byte>(DicomTag.PixelData));
+            Assert.Equal(result.GetString(DicomTag.SOPInstanceUID), file.FileMetaInfo.MediaStorageSOPInstanceUID.UID);
+            if (mode == "clone")
+            {
+                Assert.Equal(input, file.Dataset.GetString(tag));
+                Assert.Equal("SYNTHETIC^NAME", file.Dataset.GetString(DicomTag.PatientName));
             }
         }
 
