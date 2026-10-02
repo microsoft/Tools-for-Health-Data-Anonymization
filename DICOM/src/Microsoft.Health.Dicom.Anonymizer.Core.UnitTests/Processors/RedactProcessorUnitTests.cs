@@ -43,7 +43,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             }
 
             Assert.Equal("20210101000000.000000+0800", dataset.GetDicomItem<DicomElement>(tag1).Get<string>());
-            Assert.Equal(@"20210101000000.000000+0800\20210101120000.000000\20210101000000.000000+1400", dataset.GetDicomItem<DicomElement>(tag2).Get<string>());
+            Assert.Equal(@"20210101000000.000000+0800\20210101000000.000000\20210101000000.000000+1400", dataset.GetDicomItem<DicomElement>(tag2).Get<string>());
         }
 
         [Fact]

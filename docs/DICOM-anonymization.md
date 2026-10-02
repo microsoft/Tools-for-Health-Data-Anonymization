@@ -315,6 +315,15 @@ Here is a sample rule using perturb method and using _perturbCustomerSetting_ as
 
 ### DateShift
 
+For supported full timestamps, shifting changes the calendar date while
+preserving time of day, the supplied fractional second digits, explicit UTC
+offset (including its absence), and 24-hour formatting. Scope prefixes are
+isolated per call when an engine is shared. Keys, ranges, scope selection,
+age filtering, multiplicity filtering and existing nested-rule restrictions
+are unchanged. This does not add reduced-precision or leap-second support.
+The shared formatter also corrects timezone-free partial-redaction midnight
+from `12` to `00`; partial redaction retains its six-zero fractional output.
+
 With this method, the input date or dateTime value will be shifted within a specific range. Dateshift function can only be used for date (DA) and date time (DT) types. In configuration, customers can define dateShiftRange, dateShiftKey and dateShiftScope. 
 
 |Parameters|Description|Valid Value|Required|default value|

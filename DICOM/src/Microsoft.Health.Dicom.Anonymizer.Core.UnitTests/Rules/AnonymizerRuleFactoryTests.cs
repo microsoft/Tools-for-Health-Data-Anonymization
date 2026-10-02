@@ -290,10 +290,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
             Assert.Equal(expectedVR, ((AnonymizerVRRule)rule).VR);
             Assert.Equal(expectedProcessor.GetType(), processor.GetType());
 
-            var expectedFunction = expectedProcessor.GetType().GetField("_dateShiftFunction", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(expectedProcessor);
-            var expectedSetting = expectedFunction.GetType().GetField("_dateShiftSetting", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(expectedFunction);
-            var outputFunction = processor.GetType().GetField("_dateShiftFunction", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(processor);
-            var outputSetting = outputFunction.GetType().GetField("_dateShiftSetting", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(outputFunction);
+            var expectedSetting = expectedProcessor.GetType().GetField("_dateShiftSetting", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(expectedProcessor);
+            var outputSetting = processor.GetType().GetField("_dateShiftSetting", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(processor);
 
             foreach (var prop in outputSetting.GetType().GetProperties())
             {

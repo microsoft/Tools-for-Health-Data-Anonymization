@@ -11,6 +11,8 @@ namespace Microsoft.Health.Anonymizer.Common.Models
     {
         public DateTimeOffset DateValue { get; set; }
 
+        public int FractionalSecondDigits { get; set; }
+
         public bool? HasTimeZone { get; set; } = null;
 
         public bool? HasMilliSecond { get; set; } = null;

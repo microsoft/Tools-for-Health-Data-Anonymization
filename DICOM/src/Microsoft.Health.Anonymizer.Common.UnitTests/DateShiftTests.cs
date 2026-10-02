@@ -78,7 +78,7 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
             var processResult = dateShiftFunction.Shift(dateTime, AnonymizerValueTypes.DateTime);
 
             Assert.True(minExpectedDateTime <= DateTimeOffset.Parse(processResult));
-            Assert.True(maxExpectedDateTime >= DateTimeOffset.Parse(processResult));
+            Assert.True(maxExpectedDateTime.Add(DateTimeOffset.Parse(dateTime).TimeOfDay) >= DateTimeOffset.Parse(processResult));
         }
 
         [Theory]
@@ -89,7 +89,9 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
             var processResult = dateShiftFunction.Shift(dateTime);
 
             Assert.True(minExpectedDateTime <= processResult);
-            Assert.True(maxExpectedDateTime >= processResult);
+            Assert.True(maxExpectedDateTime.Add(dateTime.TimeOfDay) >= processResult);
+            Assert.Equal(dateTime.TimeOfDay, processResult.TimeOfDay);
+            Assert.Equal(dateTime.Offset, processResult.Offset);
         }
     }
 }

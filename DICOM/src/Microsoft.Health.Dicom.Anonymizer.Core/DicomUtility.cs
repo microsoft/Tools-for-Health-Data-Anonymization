@@ -82,7 +82,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             var matches = dateTimeRegex.Matches(dateTime);
             if (matches.Count != 1)
             {
-                throw new DicomDataException($"Invalid datetime value [{dateTime}]. The valid format is YYYYMMDDHHMMSS.FFFFFF&ZZXX.");
+                throw new DicomDataException("Invalid datetime value. The supported format is YYYYMMDDHHMMSS.FFFFFF&ZZXX.");
             }
 
             var groups = matches[0].Groups;
@@ -93,7 +93,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             int hour = groups["hour"].Success ? int.Parse(groups["hour"].Value) : 0;
             int minute = groups["minute"].Success ? int.Parse(groups["minute"].Value) : 0;
             int second = groups["second"].Success ? int.Parse(groups["second"].Value) : 0;
-            int millisecond = groups["microsecond"].Success ? int.Parse(groups["microsecond"].Value) / 1000 : 0;
+            string fraction = groups["microsecond"].Value;
+            int fractionalTicks = fraction.Length == 0 ? 0 : int.Parse(fraction.PadRight(7, '0'), CultureInfo.InvariantCulture);
 
             if (groups["timeZone"].Success)
             {
@@ -102,16 +103,18 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 int timeZoneMinute = int.Parse(groups["timeZoneMinute"].Value) * sign;
                 return new DateTimeObject()
                 {
-                    DateValue = new DateTimeOffset(year, month, day, hour, minute, second, millisecond, new TimeSpan(timeZoneHour, timeZoneMinute, 0)),
+                    DateValue = new DateTimeOffset(year, month, day, hour, minute, second, new TimeSpan(timeZoneHour, timeZoneMinute, 0)).AddTicks(fractionalTicks),
                     HasTimeZone = true,
+                    FractionalSecondDigits = fraction.Length,
                 };
             }
             else
             {
                 return new DateTimeObject()
                 {
-                    DateValue = new DateTimeOffset(year, month, day, hour, minute, second, millisecond, default),
+                    DateValue = new DateTimeOffset(year, month, day, hour, minute, second, default(TimeSpan)).AddTicks(fractionalTicks),
                     HasTimeZone = false,
+                    FractionalSecondDigits = fraction.Length,
                 };
             }
         }
@@ -123,11 +126,31 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public static string GenerateDicomDateTimeString(DateTimeObject date)
         {
+            return GenerateDicomDateTimeString(date, false);
+        }
+
+        internal static string GenerateDicomDateTimeString(DateTimeObject date, bool preserveFractionalPrecision)
+        {
             EnsureArg.IsNotNull(date, nameof(date));
 
-            return date.HasTimeZone == true
-                ? date.DateValue.ToString("yyyyMMddHHmmss.ffffffzzz", CultureInfo.InvariantCulture).Replace(":", string.Empty)
-                : date.DateValue.ToString("yyyyMMddhhmmss.ffffff", CultureInfo.InvariantCulture);
+            int digits = preserveFractionalPrecision ? date.FractionalSecondDigits : 6;
+            if (digits < 0 || digits > 6)
+            {
+                throw new DicomDataException("Fractional second precision must be between zero and six digits.");
+            }
+
+            string result = date.DateValue.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+            if (digits != 0)
+            {
+                result += "." + date.DateValue.ToString("ffffff", CultureInfo.InvariantCulture).Substring(0, digits);
+            }
+
+            if (date.HasTimeZone == true)
+            {
+                result += date.DateValue.ToString("zzz", CultureInfo.InvariantCulture).Replace(":", string.Empty);
+            }
+
+            return result;
         }
 
         public static AgeObject ParseAge(string age)

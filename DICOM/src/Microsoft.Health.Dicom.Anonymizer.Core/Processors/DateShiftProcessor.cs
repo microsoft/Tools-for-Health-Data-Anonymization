@@ -25,7 +25,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
     /// </summary>
     public class DateShiftProcessor : IAnonymizerProcessor
     {
-        private readonly DateShiftFunction _dateShiftFunction;
         private readonly DateShiftSetting _dateShiftSetting;
         private readonly DateShiftScope _dateShiftScope = DateShiftScope.SopInstance;
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<DateShiftProcessor>();
@@ -36,7 +35,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             var settingFactory = new AnonymizerSettingsFactory();
             _dateShiftSetting = settingFactory.CreateAnonymizerSetting<DateShiftSetting>(settingObject);
-            _dateShiftFunction = new DateShiftFunction(_dateShiftSetting);
             if (settingObject.TryGetValue("DateShiftScope", StringComparison.OrdinalIgnoreCase, out JToken scope))
             {
                 _dateShiftScope = (DateShiftScope)Enum.Parse(typeof(DateShiftScope), scope.ToString(), true);
@@ -76,7 +74,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                     if (!DateTimeUtility.IsAgeOverThreshold(dateObject.DateValue))
                     {
                         dateObject.DateValue = dateShiftFunction.Shift(dateObject.DateValue);
-                        results.Add(DicomUtility.GenerateDicomDateTimeString(dateObject));
+                        results.Add(DicomUtility.GenerateDicomDateTimeString(dateObject, preserveFractionalPrecision: true));
                     }
                 }
 
@@ -87,7 +85,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 throw new AnonymizerOperationException(DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod, $"DateShift is not supported for {item.ValueRepresentation}.");
             }
 
-            _logger.LogDebug($"The value of DICOM item '{item}' is shifted.");
+            _logger.LogDebug("Shifted tag {Tag} with VR {VR}.", DicomUtility.FormatTag(item.Tag), item.ValueRepresentation);
         }
 
         public bool IsSupported(DicomItem item)
@@ -99,20 +97,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
         private DateShiftFunction GetDateShiftFunction(ProcessContext context)
         {
-            // If runtime keys are provided and contain a date shift key, use it
-            if (context?.RuntimeKeys?.DateShiftKey != null)
+            // A call owns its mutable scope prefix even when using the configuration key.
+            var setting = new DateShiftSetting
             {
-                var runtimeSetting = new DateShiftSetting
-                {
-                    DateShiftKey = context.RuntimeKeys.DateShiftKey,
-                    DateShiftRange = _dateShiftSetting.DateShiftRange,
-                    DateShiftKeyPrefix = _dateShiftSetting.DateShiftKeyPrefix,
-                };
-                return new DateShiftFunction(runtimeSetting);
-            }
-
-            // Fall back to configuration-based function
-            return _dateShiftFunction;
+                DateShiftKey = context?.RuntimeKeys?.DateShiftKey ?? _dateShiftSetting.DateShiftKey,
+                DateShiftRange = _dateShiftSetting.DateShiftRange,
+                DateShiftKeyPrefix = _dateShiftSetting.DateShiftKeyPrefix,
+            };
+            return new DateShiftFunction(setting);
         }
     }
 }
