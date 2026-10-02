@@ -73,7 +73,8 @@ namespace Microsoft.Health.Anonymizer.Common
             ValidateExpandedOutputLength(outputLength);
 
             encoding ??= Encoding.UTF8;
-            return GenerateOutputFromAlphabet(encoding.GetBytes(input), alphabet, outputLength, Hash);
+            using var hmac = CreateHmac();
+            return GenerateOutputFromAlphabet(encoding.GetBytes(input), alphabet, outputLength, bytes => Hash(bytes, hmac));
         }
 
         public static byte[] Hash(byte[] input, HMAC hashAlgorithm)
