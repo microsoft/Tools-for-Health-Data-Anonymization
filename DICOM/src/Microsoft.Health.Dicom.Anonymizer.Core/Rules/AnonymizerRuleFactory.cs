@@ -117,7 +117,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
                     throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.MissingRuleSettings, "The configured custom rule setting is not defined.");
                 }
 
-                ruleSetting = (JObject)_customSettings[ruleContent[Constants.RuleSetting].ToString()].DeepClone();
+                ruleSetting = (JObject)_customSettings[ruleContent[Constants.RuleSetting].ToString()]?.DeepClone();
             }
 
             if (ruleSetting == null)

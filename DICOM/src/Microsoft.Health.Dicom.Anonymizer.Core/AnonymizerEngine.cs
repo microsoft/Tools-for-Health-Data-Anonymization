@@ -21,6 +21,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
     public class AnonymizerEngine
     {
         internal const int MaximumSequenceDepth = 64;
+        internal const int MaximumAdditionalSequenceOccurrences = 65536;
 
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly AnonymizerEngineOptions _anonymizerSettings;
@@ -79,28 +80,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
             ValidateRequiredRuntimeKeys(runtimeKeySettings);
 
-            ValidateSequenceDepth(dataset);
-
-            // Validate input dataset.
-            if (_anonymizerSettings.ValidateInput)
-            {
-                dataset.Validate();
-            }
-
-            var nestedOperations = ValidateProcessing(dataset, runtimeKeySettings);
-            ProcessDataset(dataset, runtimeKeySettings);
-            foreach (var (nestedDataset, rule) in nestedOperations)
-            {
-                DicomUtility.DisableAutoValidation(nestedDataset);
-                var context = InitContext(nestedDataset, runtimeKeySettings);
-                rule.Handle(nestedDataset, context);
-            }
-
-            // Validate output dataset.
-            if (_anonymizerSettings.ValidateOutput)
-            {
-                dataset.Validate();
-            }
+            ValidateDatasetStructure(dataset);
+            AnonymizeValidatedDataset(dataset, runtimeKeySettings);
         }
 
         public DicomFile AnonymizeFile(DicomFile dicomFile)
@@ -112,7 +93,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             EnsureArg.IsNotNull(dicomFile, nameof(dicomFile));
 
-            ValidateSequenceDepth(dicomFile.Dataset);
+            ValidateDatasetStructure(dicomFile.Dataset);
             ValidateFileMetaIdentity(dicomFile);
 
             var cloneSource = new DicomFile(dicomFile.Dataset.Clone());
@@ -136,16 +117,40 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
         {
             EnsureArg.IsNotNull(dicomFile, nameof(dicomFile));
 
-            ValidateSequenceDepth(dicomFile.Dataset);
+            ValidateDatasetStructure(dicomFile.Dataset);
             ValidateFileMetaIdentity(dicomFile);
 
             var transferSyntax = dicomFile.FileMetaInfo.TransferSyntax;
-            AnonymizeDataset(dicomFile.Dataset, runtimeKeySettings);
+            ValidateRequiredRuntimeKeys(runtimeKeySettings);
+            AnonymizeValidatedDataset(dicomFile.Dataset, runtimeKeySettings);
 
             var (_, sopInstanceUid) = GetRequiredDatasetIdentity(dicomFile.Dataset);
             dicomFile.FileMetaInfo.MediaStorageSOPInstanceUID = sopInstanceUid;
             dicomFile.FileMetaInfo.TransferSyntax = transferSyntax;
             ValidateFileMetaIdentity(dicomFile);
+        }
+
+        private void AnonymizeValidatedDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
+        {
+            if (_anonymizerSettings.ValidateInput)
+            {
+                dataset.Validate();
+            }
+
+            var nestedOperations = ValidateProcessing(dataset, runtimeKeySettings);
+            ProcessDataset(dataset, runtimeKeySettings);
+            foreach (var (nestedDataset, rule) in nestedOperations)
+            {
+                DicomUtility.DisableAutoValidation(nestedDataset);
+                var context = InitContext(nestedDataset, runtimeKeySettings);
+                rule.Handle(nestedDataset, context);
+            }
+
+            ValidateDatasetStructure(dataset);
+            if (_anonymizerSettings.ValidateOutput)
+            {
+                dataset.Validate();
+            }
         }
 
         private ProcessContext InitContext(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
@@ -263,13 +268,49 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             return dataset.Contains(tag) && ReferenceEquals(dataset.GetDicomItem<DicomItem>(tag), candidate);
         }
 
-        private static void ValidateSequenceDepth(DicomDataset dataset)
+        private static void ValidateDatasetStructure(DicomDataset dataset)
         {
+            var greatestDepths = ValidateSequenceDepth(dataset);
+            var expandedCounts = new Dictionary<DicomDataset, long>(ReferenceEqualityComparer.Instance);
+            var maximumExpandedCount = (long)greatestDepths.Count + MaximumAdditionalSequenceOccurrences;
+            foreach (var current in greatestDepths.OrderByDescending(entry => entry.Value))
+            {
+                long count = 1;
+
+                // Children have a greater maximum depth, so their counts are already available.
+                foreach (var sequence in current.Key.Where(item => item.ValueRepresentation == DicomVR.SQ).OfType<DicomSequence>())
+                {
+                    foreach (var child in sequence.Items)
+                    {
+                        count += Math.Min(maximumExpandedCount + 1 - count, expandedCounts[child]);
+                    }
+                }
+
+                expandedCounts.Add(current.Key, count);
+            }
+
+            if (expandedCounts[dataset] > maximumExpandedCount)
+            {
+                throw new AnonymizerOperationException(
+                    DicomAnonymizationErrorCode.SequenceExpansionLimitExceeded,
+                    $"Additional shared sequence dataset occurrences exceed the supported limit of {MaximumAdditionalSequenceOccurrences}.");
+            }
+        }
+
+        private static Dictionary<DicomDataset, int> ValidateSequenceDepth(DicomDataset dataset)
+        {
+            var greatestDepths = new Dictionary<DicomDataset, int>(ReferenceEqualityComparer.Instance);
             var datasets = new Stack<(DicomDataset Dataset, int Depth)>();
             datasets.Push((dataset, 0));
             while (datasets.Count > 0)
             {
                 var current = datasets.Pop();
+                if (greatestDepths.TryGetValue(current.Dataset, out var previousDepth) && previousDepth >= current.Depth)
+                {
+                    continue;
+                }
+
+                greatestDepths[current.Dataset] = current.Depth;
                 foreach (var sequence in current.Dataset.Where(item => item.ValueRepresentation == DicomVR.SQ).OfType<DicomSequence>())
                 {
                     foreach (var nestedDataset in sequence.Items)
@@ -286,6 +327,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                     }
                 }
             }
+
+            return greatestDepths;
         }
 
         private static void ValidateFileMetaIdentity(DicomFile dicomFile)

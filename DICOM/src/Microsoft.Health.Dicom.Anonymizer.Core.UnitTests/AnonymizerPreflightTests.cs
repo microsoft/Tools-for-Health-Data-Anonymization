@@ -43,6 +43,58 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Theory]
+        [MemberData(nameof(GetEntryPointAndBooleanCases))]
+        public void GivenActualDicomUnknownAfterAnEarlierRootRule_WhenHashing_ProcessingCompletesWithUnknownVr(string mode, bool removeName)
+        {
+            var tag = new DicomTag(0x7776, 0x1010);
+            var sourceBytes = new byte[] { 1, 2, 3, 4 };
+            var file = CreateFile(new DicomUnknown(tag, sourceBytes));
+            file.Dataset.AddOrUpdate(DicomTag.PatientName, "SYNTHETIC^NAME");
+            var expected = new DicomDataset { new DicomUnknown(tag, sourceBytes) };
+            var processor = new CryptoHashProcessor(new JObject { ["cryptoHashKey"] = "synthetic-key" });
+            processor.Process(expected, expected.GetDicomItem<DicomUnknown>(tag));
+            var engine = CreateEngine(
+                new AnonymizerEngineOptions(false, false),
+                null,
+                Rule("PatientName", removeName ? "remove" : "cryptoHash"),
+                Rule("(7776,1010)", "cryptoHash"));
+
+            var result = AnonymizeUsingMode(engine, file, mode);
+
+            Assert.Equal(DicomVR.UN, Assert.IsType<DicomUnknown>(result.GetDicomItem<DicomItem>(tag)).ValueRepresentation);
+            Assert.Equal(expected.GetValues<byte>(tag), result.GetValues<byte>(tag));
+            Assert.Equal(!removeName, result.Contains(DicomTag.PatientName));
+            if (!removeName)
+            {
+                Assert.NotEqual("SYNTHETIC^NAME", result.GetString(DicomTag.PatientName));
+            }
+
+            if (mode == "clone")
+            {
+                Assert.Equal(sourceBytes, file.Dataset.GetValues<byte>(tag));
+                Assert.Equal("SYNTHETIC^NAME", file.Dataset.GetString(DicomTag.PatientName));
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetEntryPointAndBooleanCases))]
+        public void GivenActualDicomUnknown_WhenKeepingOrRemoving_ExistingBehaviorIsPreserved(string mode, bool remove)
+        {
+            var tag = new DicomTag(0x7776, 0x1010);
+            var sourceBytes = new byte[] { 1, 2, 3, 4 };
+            var file = CreateFile(new DicomUnknown(tag, sourceBytes));
+
+            var result = AnonymizeUsingMode(CreateEngine(Rule("(7776,1010)", remove ? "remove" : "keep")), file, mode);
+
+            Assert.Equal(!remove, result.Contains(tag));
+            if (!remove)
+            {
+                Assert.Equal(DicomVR.UN, Assert.IsType<DicomUnknown>(result.GetDicomItem<DicomItem>(tag)).ValueRepresentation);
+                Assert.Equal(sourceBytes, result.GetValues<byte>(tag));
+            }
+        }
+
+        [Theory]
         [MemberData(nameof(GetContextSelectionCases))]
         public void GivenContextualKeepBeforeUnsupportedFallback_WhenAnonymizing_ContextPreservesFirstMatch(string mode, string requirement)
         {
@@ -523,6 +575,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal(1102, (int)DicomAnonymizationErrorCode.AddCustomProcessorFailed);
             Assert.Equal(1103, (int)DicomAnonymizationErrorCode.FileMetaIdentityMismatch);
             Assert.Equal(1104, (int)DicomAnonymizationErrorCode.SequenceDepthLimitExceeded);
+            Assert.Equal(1105, (int)DicomAnonymizationErrorCode.SequenceExpansionLimitExceeded);
         }
 
         [Fact]

@@ -3,6 +3,7 @@
 // Licensed under the MIT License (MIT). See LICENSE in the repo root for license information.
 // -------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -356,6 +357,74 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
         public void GivenAnInvalidDicomRule_WhenCreateDicomRule_ExceptionWillBeThrown(string config)
         {
             Assert.Throws<AnonymizerConfigurationException>(() => _ruleFactory.CreateDicomAnonymizationRule(JsonConvert.DeserializeObject<JObject>(config)));
+        }
+
+        [Theory]
+        [InlineData("keep")]
+        [InlineData("remove")]
+        [InlineData("refreshUID")]
+        public void GivenNamedNullSettings_WhenMethodNeedsNoSettings_RuleIsCreated(string method)
+        {
+            var manager = AnonymizerConfigurationManager.CreateFromJson(
+                "{\"rules\":[{\"tag\":\"SOPInstanceUID\",\"method\":\"" + method + "\",\"setting\":\"empty\"}]," +
+                "\"defaultSettings\":{},\"customSettings\":{\"empty\":null}}");
+            var original = JObject.FromObject(manager.Configuration);
+            var factory = new AnonymizerRuleFactory(manager.Configuration, new DicomProcessorFactory());
+
+            Assert.IsType<AnonymizerTagRule>(Assert.Single(factory.CreateDicomAnonymizationRules(manager.Configuration.RuleContent)));
+            Assert.Null(manager.Configuration.CustomSettings["empty"]);
+            Assert.True(JToken.DeepEquals(original, JObject.FromObject(manager.Configuration)));
+        }
+
+        [Theory]
+        [InlineData("cryptoHash")]
+        [InlineData("redact")]
+        [InlineData("substitute")]
+        [InlineData("encrypt")]
+        [InlineData("perturb")]
+        [InlineData("dateShift")]
+        public void GivenNamedNullSettings_WhenMethodRequiresSettings_NormalMissingSettingsErrorIsThrown(string method)
+        {
+            var manager = AnonymizerConfigurationManager.CreateFromJson(
+                "{\"rules\":[{\"tag\":\"PatientName\",\"method\":\"" + method + "\",\"setting\":\"empty\"}]," +
+                "\"defaultSettings\":{},\"customSettings\":{\"empty\":null}}");
+            var original = JObject.FromObject(manager.Configuration);
+            var factory = new AnonymizerRuleFactory(manager.Configuration, new DicomProcessorFactory());
+
+            var error = Assert.Throws<ArgumentNullException>(() => factory.CreateDicomAnonymizationRules(manager.Configuration.RuleContent));
+
+            Assert.Equal("settingObject", error.ParamName);
+            Assert.True(JToken.DeepEquals(original, JObject.FromObject(manager.Configuration)));
+        }
+
+        [Theory]
+        [InlineData("keep", "{}")]
+        [InlineData("remove", "{}")]
+        [InlineData("redact", "{}")]
+        [InlineData("substitute", "{\"replaceWith\":\"ANONYMOUS\"}")]
+        [InlineData("cryptoHash", "{\"cryptoHashKey\":\"synthetic-override\"}")]
+        public void GivenNamedNullSettings_WhenParametersAreProvided_OverridesAreUsedWithoutChangingConfiguration(string method, string parameters)
+        {
+            var manager = AnonymizerConfigurationManager.CreateFromJson(
+                "{\"rules\":[{\"tag\":\"PatientName\",\"method\":\"" + method + "\",\"setting\":\"empty\",\"params\":" + parameters + "}]," +
+                "\"defaultSettings\":{\"cryptoHash\":{\"cryptoHashKey\":\"synthetic-default\"}},\"customSettings\":{\"empty\":null}}");
+            var original = JObject.FromObject(manager.Configuration);
+            var dataset = new DicomDataset { { DicomTag.PatientName, "SYNTHETIC^NAME" } };
+            var engine = new AnonymizerEngine(manager);
+            var expected = new DicomDataset { { DicomTag.PatientName, "SYNTHETIC^NAME" } };
+            var expectedProcessor = new DicomProcessorFactory().CreateProcessor(method, JObject.Parse(parameters));
+            expectedProcessor.Process(expected, expected.GetDicomItem<DicomItem>(DicomTag.PatientName), null);
+
+            engine.AnonymizeDataset(dataset);
+
+            Assert.Equal(expected.Contains(DicomTag.PatientName), dataset.Contains(DicomTag.PatientName));
+            if (expected.Contains(DicomTag.PatientName))
+            {
+                Assert.Equal(expected.GetString(DicomTag.PatientName), dataset.GetString(DicomTag.PatientName));
+            }
+
+            Assert.True(JToken.DeepEquals(original, JObject.FromObject(manager.Configuration)));
+            Assert.Null(manager.Configuration.CustomSettings["empty"]);
         }
     }
 }

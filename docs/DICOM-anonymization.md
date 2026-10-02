@@ -136,7 +136,27 @@ safeguards described below.
   job or tenant isolation.
 - Sequence nesting is limited to 64 item levels; deeper input fails before
   anonymization begins. Cyclic in-memory graphs are also rejected by this depth
-  check before recursive validation or processing.
+  check (`SequenceDepthLimitExceeded`, `1104`) before recursive validation or
+  processing. Shared datasets are tracked by reference and revisited only when
+  reached at a greater depth, so shared paths do not hide deeper nesting.
+- In-memory sequence graphs may share dataset objects. Across all three engine
+  entry points, additional dataset occurrences caused by expanding those shared
+  references are limited to 65,536. The count is the expanded number of dataset
+  occurrences minus the number of distinct reachable dataset objects; it is
+  calculated without expanding the paths or reading bulk values. Excessive
+  amplification fails with `SequenceExpansionLimitExceeded` (`1105`) before
+  mutation, recursive validation, or file cloning, even when input/output
+  validation is disabled. Ordinary aliases remain supported, and this limit
+  does not cap distinct datasets in an unaliased tree. These input-structure
+  checks do not impose a byte or memory limit, guarantee safe arbitrary payloads,
+  or make a caller's later save atomic.
+- Structure is checked again after processors run, before optional output
+  validation and return, even when output validation is disabled. A custom
+  processor that introduces a cycle, excessive depth, or excessive shared-reference
+  amplification therefore causes a late failure. Dataset and in-place callers
+  must discard the modified object; the copying API leaves its input unchanged.
+  These checks do not bound arbitrary custom-processor execution or mutations a
+  caller makes after the engine returns.
 
 Broad `UI` and `SQ` rules can be configured. Their effect depends on the actual
 input and first matching rule: a compatible UID can be refreshed, and a sequence
@@ -202,6 +222,11 @@ saves, or transactional folder output.
 
 ### How to set settings
 _defaultSettings_ and _customSettings_ are used to config anonymization method. (Detailed parameters are defined in [Anonymization algorithm](#data-anonymization-algorithms). _defaultSettings_ are used when user does not specify settings in rule. As for _customSettings_, users need to add the setting with unique name. This setting can be used in "rules" by name.
+
+An existing named custom setting whose JSON value is `null` supplies no settings;
+rule-level `params` still apply. Methods without required settings can use it,
+while methods that require settings retain their normal missing-settings errors.
+Cloning and merging settings does not change the configuration object.
 
 Here is an example, the first rule will use `perturb` setting in _defaultSettings_ and the second one will use `perturbCustomerSetting` in field _cutomSettings_.
 
@@ -324,6 +349,8 @@ are required within a batch; cross-version output equality is not guaranteed.
 CryptoHash support is checked against the actual selected item, not the
 selector's dictionary possibilities during construction. Masked and unknown
 exact selectors can therefore process supported runtime representations.
+fo-dicom `DicomUnknown` (`UN`) values use the binary hashing path and retain `UN`;
+they are not treated as string values.
 `OW` fragment sequences remain supported when encountered as fragments; ordinary
 nonfragment `OW` values are unsupported and fail processing rather than being
 silently changed. The selected nested-rule restrictions above still apply.

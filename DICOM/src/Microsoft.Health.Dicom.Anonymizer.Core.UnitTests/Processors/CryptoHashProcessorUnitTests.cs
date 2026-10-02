@@ -219,6 +219,23 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
         }
 
         [Fact]
+        public void GivenActualDicomUnknown_WhenCryptoHash_UnknownVrAndBinaryHashArePreserved()
+        {
+            var tag = new DicomTag(0x7776, 0x1010);
+            var item = new DicomUnknown(tag, Encoding.UTF8.GetBytes("test"));
+            var dataset = new DicomDataset { item };
+
+            Assert.IsAssignableFrom<DicomOtherByte>(item);
+            Assert.True(Processor.IsSupported(item));
+
+            Processor.Process(dataset, item);
+
+            var result = Assert.IsType<DicomUnknown>(dataset.GetDicomItem<DicomItem>(tag));
+            Assert.Equal(DicomVR.UN, result.ValueRepresentation);
+            Assert.Equal("a7f5c8c626f994482813230854f66700e626208f52d913b9bd6b4e039aab0f41", string.Concat(result.Get<byte[]>().Select(value => value.ToString("x2"))));
+        }
+
+        [Fact]
         public void GivenADataSetWithDicomFragmentSequence_WhenCryptoHash_FragmentsWillBeHashed()
         {
             var tag = DicomTag.PixelData;
