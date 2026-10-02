@@ -44,6 +44,105 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             }
         }
 
+        public static IEnumerable<object[]> GetAbsentPrivateRootCases()
+        {
+            foreach (var mode in new[] { "dataset", "inplace", "clone" })
+            {
+                foreach (var rootShape in new[] { "no-creator", "unrelated-creator", "missing-element", "wrong-block" })
+                {
+                    yield return new object[] { mode, rootShape, false };
+                    yield return new object[] { mode, rootShape, true };
+                }
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetAbsentPrivateRootCases))]
+        public void GivenExactPrivateRuleWithAbsentRootTarget_WhenAnonymizing_RetainedChildUsesCreatorAwareFirstMatch(string mode, string rootShape, bool keepFirst)
+        {
+            const string selector = "(0011,0001:SYNTHETIC-CREATOR)";
+            var target = DicomTag.Parse(selector);
+            var unrelated = DicomTag.Parse("(0011,0001:UNRELATED-CREATOR)");
+            var nested = new DicomDataset();
+            nested.AddOrUpdate(DicomVR.LO, unrelated, "CHILD-UNRELATED");
+            nested.AddOrUpdate(DicomVR.LO, target, "CHILD-TARGET");
+            var file = CreateFile(new DicomSequence(DicomTag.RequestAttributesSequence, nested));
+            if (rootShape == "unrelated-creator" || rootShape == "wrong-block")
+            {
+                file.Dataset.AddOrUpdate(DicomVR.LO, unrelated, "ROOT-UNRELATED");
+            }
+
+            if (rootShape == "missing-element")
+            {
+                file.Dataset.AddOrUpdate(DicomVR.LO, DicomTag.Parse("(0011,0002:SYNTHETIC-CREATOR)"), "ROOT-OTHER-ELEMENT");
+            }
+            else if (rootShape == "wrong-block")
+            {
+                file.Dataset.Add(new DicomLongString(new DicomTag(0x0011, 0x0011), "SYNTHETIC-CREATOR"));
+            }
+
+            var rootPrivateItems = file.Dataset.Where(item => item.Tag.IsPrivate).OfType<DicomElement>()
+                .Select(item => (item.Tag.Element, Values: item.Get<string[]>())).ToArray();
+            var nestedCreators = nested.Where(item => item.Tag.IsPrivate && item.Tag.Element < 0x0100)
+                .Select(item => item.Tag.Element).ToArray();
+            Assert.False(file.Dataset.Contains(target));
+            var json = keepFirst
+                ? "{\"rules\":[{\"tag\":\"" + selector + "\",\"method\":\"keep\"},{\"tag\":\"" + selector + "\",\"method\":\"remove\"}]}"
+                : "{\"rules\":[{\"tag\":\"" + selector + "\",\"method\":\"remove\"}]}";
+            var engine = new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromJson(json));
+
+            var output = AnonymizeUsingMode(engine, file, mode);
+
+            Assert.False(output.Contains(target));
+            var outputPrivateItems = output.Where(item => item.Tag.IsPrivate).OfType<DicomElement>().ToArray();
+            Assert.Equal(rootPrivateItems.Length, outputPrivateItems.Length);
+            foreach (var expected in rootPrivateItems)
+            {
+                var actual = Assert.Single(outputPrivateItems.Where(item => item.Tag.Element == expected.Element));
+                Assert.Equal(expected.Values, actual.Get<string[]>());
+            }
+
+            var outputNested = Assert.Single(output.GetSequence(DicomTag.RequestAttributesSequence).Items);
+            Assert.Equal(keepFirst, outputNested.Contains(target));
+            if (keepFirst)
+            {
+                Assert.Equal("CHILD-TARGET", outputNested.GetString(target));
+            }
+
+            Assert.Equal("CHILD-UNRELATED", outputNested.GetString(unrelated));
+            Assert.Equal(nestedCreators, outputNested.Where(item => item.Tag.IsPrivate && item.Tag.Element < 0x0100).Select(item => item.Tag.Element));
+            Assert.Equal(new byte[] { 1, 2, 3, 4 }, output.GetValues<byte>(DicomTag.PixelData));
+            Assert.Equal("2.25.100", file.FileMetaInfo.MediaStorageSOPInstanceUID.UID);
+            if (mode == "clone")
+            {
+                Assert.Equal("CHILD-TARGET", nested.GetString(target));
+            }
+        }
+
+        [Theory]
+        [InlineData("dataset")]
+        [InlineData("inplace")]
+        [InlineData("clone")]
+        public void GivenExactPublicRuleWithAbsentRootTarget_WhenAnonymizing_RetainedChildStillMatches(string mode)
+        {
+            var nested = new DicomDataset { { DicomTag.PatientID, "CHILD-TARGET" }, { DicomTag.Manufacturer, "UNCHANGED" } };
+            var file = CreateFile(new DicomSequence(DicomTag.RequestAttributesSequence, nested));
+            var engine = new AnonymizerEngine(AnonymizerConfigurationManager.CreateFromJson(
+                "{\"rules\":[{\"tag\":\"PatientID\",\"method\":\"remove\"}]}"));
+
+            var output = AnonymizeUsingMode(engine, file, mode);
+
+            Assert.False(output.Contains(DicomTag.PatientID));
+            var outputNested = Assert.Single(output.GetSequence(DicomTag.RequestAttributesSequence).Items);
+            Assert.False(outputNested.Contains(DicomTag.PatientID));
+            Assert.Equal("UNCHANGED", outputNested.GetString(DicomTag.Manufacturer));
+            Assert.DoesNotContain(output, item => item.Tag.IsPrivate);
+            if (mode == "clone")
+            {
+                Assert.Equal("CHILD-TARGET", nested.GetString(DicomTag.PatientID));
+            }
+        }
+
         public static IEnumerable<object[]> GetLongTextHashCases()
         {
             foreach (var mode in new[] { "dataset", "inplace", "clone" })
