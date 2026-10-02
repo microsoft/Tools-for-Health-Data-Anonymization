@@ -14,8 +14,8 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     /// <summary>
-    /// Replaces the content of a UID with a random one.
-    /// The processor makes sure the same original UID will be replaced with the same new UID.
+    /// Replaces a UID using optional execution-scoped deterministic settings,
+    /// or the legacy process-local random mapping when no settings are supplied.
     /// </summary>
     public class RefreshUIDProcessor : IAnonymizerProcessor
     {
@@ -37,9 +37,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                         $"RefreshUID is not supported for invariant tag {item.Tag} with VR {item.ValueRepresentation}.");
                 }
 
-                var oldUIDValues = ((DicomElement)item).Get<string[]>();
+                var mapping = context?.UidMapping;
+                var oldUIDValues = mapping == null
+                    ? ((DicomElement)item).Get<string[]>()
+                    : UidMappingSettings.GetValidatedValues((DicomElement)item);
                 var newUIDValues = oldUIDValues
-                    .Select(value => ReplacedUIDs.GetOrAdd(value, _ => DicomUIDGenerator.GenerateDerivedFromUUID()))
+                    .Select(value => mapping == null
+                        ? ReplacedUIDs.GetOrAdd(value, _ => DicomUIDGenerator.GenerateDerivedFromUUID()).UID
+                        : mapping.Map(value))
                     .ToArray();
                 var newItem = new DicomUniqueIdentifier(item.Tag, newUIDValues);
                 dicomDataset.AddOrUpdate(newItem);

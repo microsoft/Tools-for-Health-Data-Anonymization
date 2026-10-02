@@ -10,6 +10,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
 {
     public class ProcessContext
     {
+        private readonly bool _hasCapturedUidMapping;
+        private readonly UidMappingSettings? _uidMapping;
+
+        public ProcessContext()
+        {
+        }
+
+        internal ProcessContext(UidMappingSettings? uidMapping)
+        {
+            _hasCapturedUidMapping = true;
+            _uidMapping = uidMapping;
+        }
+
+        internal UidMappingSettings? UidMapping => _hasCapturedUidMapping ? _uidMapping : RuntimeKeys?.UidMapping;
+
         public HashSet<string> VisitedNodes { get; set; } = new HashSet<string>();
 
         public string StudyInstanceUID { get; set; }
