@@ -741,6 +741,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [MemberData(nameof(GetEntryPointAndBooleanCases))]
         public async Task GivenCyclicSequence_WhenAnonymizing_DepthRejectionTerminatesWithoutMutationAsync(string mode, bool indirectCycle)
         {
+            await CycleTestWorker.RunAsync("cycle", mode, indirectCycle);
+        }
+
+        internal static void AssertCyclicInputRejected(string mode, bool indirectCycle, Action started)
+        {
             var buffer = new UnreadableBuffer();
             var file = CreateFile(new DicomLongString(DicomTag.PatientID, "UNCHANGED"));
             file.Dataset.AddOrUpdate(new DicomOtherByte(DicomTag.PixelData, buffer));
@@ -753,7 +758,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             file.Dataset.Add(new DicomSequence(DicomTag.RequestAttributesSequence, child));
             var engine = CreateEngine(Rule("PatientID", "cryptoHash"));
 
-            var error = await AssertCyclicInputRejectedAsync(engine, file, mode);
+            started();
+            var error = Assert.Throws<AnonymizerOperationException>(() => AnonymizeUsingMode(engine, file, mode));
 
             Assert.Equal(DicomAnonymizationErrorCode.SequenceDepthLimitExceeded, error.DicomAnonymizerErrorCode);
             Assert.Equal("UNCHANGED", file.Dataset.GetString(DicomTag.PatientID));
@@ -1246,14 +1252,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.False(nested.Contains(upper));
             Assert.Equal("SYNTHETIC-PRIVATE-IDENTIFIER", nested.GetString(lower));
             Assert.Equal("synthetic-creator", nested.GetString(new DicomTag(0x0011, 0x0010)));
-        }
-
-        private static async Task<AnonymizerOperationException> AssertCyclicInputRejectedAsync(AnonymizerEngine engine, DicomFile file, string mode)
-        {
-            var operation = Task.Run(() => Assert.Throws<AnonymizerOperationException>(() => AnonymizeUsingMode(engine, file, mode)));
-            var completed = await Task.WhenAny(operation, Task.Delay(TimeSpan.FromSeconds(5)));
-            Assert.Same(operation, completed);
-            return await operation;
         }
 
         private static DicomDataset AnonymizeUsingMode(AnonymizerEngine engine, DicomFile file, string mode, RuntimeKeySettings? runtimeKeys = null)
