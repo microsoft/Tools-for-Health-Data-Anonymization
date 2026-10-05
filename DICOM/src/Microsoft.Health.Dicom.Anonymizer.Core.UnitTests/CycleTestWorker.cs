@@ -23,7 +23,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         private static readonly TimeSpan ShutdownTimeout = TimeSpan.FromSeconds(30);
 
         [Fact]
-        public void GivenWorkerRequest_WhenInvokedInChildTestHost_RunsIsolatedAssertions()
+        public async Task GivenWorkerRequest_WhenInvokedInChildTestHost_RunsIsolatedAssertions()
         {
             var pipeName = Environment.GetEnvironmentVariable(PipeVariable);
             if (pipeName == null)
@@ -32,19 +32,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             }
 
             using var pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.Out, PipeOptions.Asynchronous);
-            pipe.Connect((int)StartupTimeout.TotalMilliseconds);
+            using var connection = new CancellationTokenSource(StartupTimeout);
+            await pipe.ConnectAsync(connection.Token);
+            Console.WriteLine($"Cycle worker: {WorkerName}; runtime {Environment.Version}; assembly {typeof(CycleTestWorker).Assembly.Location}");
             using var writer = new StreamWriter(pipe) { AutoFlush = true };
-            void Signal(string message) => writer.WriteLineAsync(message).WaitAsync(ExecutionTimeout).GetAwaiter().GetResult();
-            Signal(WorkerName + ":" + Environment.ProcessId);
+            Task Signal(string message) => writer.WriteLineAsync(message).WaitAsync(StartupTimeout);
+            await Signal(WorkerName + ":" + Environment.ProcessId);
             var scenario = Environment.GetEnvironmentVariable(ScenarioVariable);
             if (scenario == "startup-hang")
             {
-                Thread.Sleep(Timeout.Infinite);
+                await Task.Delay(Timeout.InfiniteTimeSpan);
             }
 
             if (scenario == "delayed-start")
             {
-                Thread.Sleep(ExecutionTimeout + TimeSpan.FromSeconds(1));
+                await Task.Delay(ExecutionTimeout + TimeSpan.FromSeconds(1));
             }
 
             if (scenario == "cycle")
@@ -52,21 +54,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 var mode = Environment.GetEnvironmentVariable("DICOM_CYCLE_TEST_MODE") ?? throw new InvalidOperationException("Cycle mode is required.");
                 Assert.Contains(mode, new[] { "dataset", "inplace", "clone" });
                 bool indirect = bool.Parse(Environment.GetEnvironmentVariable("DICOM_CYCLE_TEST_INDIRECT") ?? throw new InvalidOperationException("Cycle shape is required."));
-                AnonymizerPreflightTests.AssertCyclicInputRejected(mode, indirect, () => Signal("started"));
+                await AnonymizerPreflightTests.AssertCyclicInputRejectedAsync(mode, indirect, () => Signal("started"));
             }
             else
             {
-                Signal("started");
+                await Signal("started");
                 if (scenario == "execution-hang")
                 {
-                    Thread.Sleep(Timeout.Infinite);
+                    await Task.Delay(Timeout.InfiniteTimeSpan);
                 }
 
                 Assert.Contains(scenario, new[] { "delayed-start", "assertion-failure" });
                 Assert.False(scenario == "assertion-failure", "Synthetic worker assertion failure.");
             }
 
-            Signal("completed");
+            await Signal("completed");
         }
 
         [Fact]
@@ -87,7 +89,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [Fact]
         public async Task GivenWorkerAssertionFailure_WhenRunning_FailureIsNotReportedAsSuccess()
         {
-            await Assert.ThrowsAsync<InvalidOperationException>(() => RunAsync("assertion-failure"));
+            var error = await Assert.ThrowsAsync<InvalidOperationException>(() => RunAsync("assertion-failure"));
+            Assert.Contains("Synthetic worker assertion failure.", error.Message);
+            Assert.Contains("exit 1", error.Message);
         }
 
         internal static async Task RunAsync(string scenario, string mode = "dataset", bool indirect = false)
@@ -122,7 +126,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                     if (identity == null || !identity.StartsWith(WorkerName + ":", StringComparison.Ordinal) ||
                         !int.TryParse(identity.Substring(WorkerName.Length + 1), out var workerId))
                     {
-                        throw new InvalidOperationException("The exact cycle worker case did not identify itself.");
+                        await process.WaitForExitAsync().WaitAsync(ShutdownTimeout);
+                        var output = await Task.WhenAll(stdout, stderr).WaitAsync(ShutdownTimeout);
+                        throw new InvalidOperationException($"The exact cycle worker case did not identify itself (exit {process.ExitCode}). " + string.Concat(output));
                     }
 
                     worker = Process.GetProcessById(workerId);
@@ -135,7 +141,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 
                     if (await reader.ReadLineAsync(startup.Token) != "started")
                     {
-                        throw new InvalidOperationException("Cycle test worker exited without starting the invocation.");
+                        await process.WaitForExitAsync().WaitAsync(ShutdownTimeout);
+                        var output = await Task.WhenAll(stdout, stderr).WaitAsync(ShutdownTimeout);
+                        throw new InvalidOperationException($"Cycle test worker exited without starting the invocation (exit {process.ExitCode}). " + string.Concat(output));
                     }
                 }
                 catch (OperationCanceledException) when (startup.IsCancellationRequested)
@@ -148,7 +156,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 {
                     if (await reader.ReadLineAsync(execution.Token) != "completed")
                     {
-                        throw new InvalidOperationException("Cycle test worker failed its assertions before completing.");
+                        await process.WaitForExitAsync().WaitAsync(ShutdownTimeout);
+                        var output = await Task.WhenAll(stdout, stderr).WaitAsync(ShutdownTimeout);
+                        throw new InvalidOperationException($"Cycle test worker failed its assertions before completing (exit {process.ExitCode}). " + string.Concat(output));
                     }
                 }
                 catch (OperationCanceledException) when (execution.IsCancellationRequested)
@@ -157,8 +167,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 }
 
                 await process.WaitForExitAsync().WaitAsync(ShutdownTimeout);
-                var output = await Task.WhenAll(stdout, stderr).WaitAsync(ShutdownTimeout);
-                Assert.True(process.ExitCode == 0, string.Concat(output));
+                var completedOutput = await Task.WhenAll(stdout, stderr).WaitAsync(ShutdownTimeout);
+                Assert.True(process.ExitCode == 0, string.Concat(completedOutput));
             }
             finally
             {

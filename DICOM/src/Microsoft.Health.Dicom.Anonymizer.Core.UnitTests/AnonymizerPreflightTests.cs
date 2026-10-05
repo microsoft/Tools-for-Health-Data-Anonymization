@@ -744,7 +744,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             await CycleTestWorker.RunAsync("cycle", mode, indirectCycle);
         }
 
-        internal static void AssertCyclicInputRejected(string mode, bool indirectCycle, Action started)
+        internal static async Task AssertCyclicInputRejectedAsync(string mode, bool indirectCycle, Func<Task> started)
         {
             var buffer = new UnreadableBuffer();
             var file = CreateFile(new DicomLongString(DicomTag.PatientID, "UNCHANGED"));
@@ -758,7 +758,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             file.Dataset.Add(new DicomSequence(DicomTag.RequestAttributesSequence, child));
             var engine = CreateEngine(Rule("PatientID", "cryptoHash"));
 
-            started();
+            await started();
             var error = Assert.Throws<AnonymizerOperationException>(() => AnonymizeUsingMode(engine, file, mode));
 
             Assert.Equal(DicomAnonymizationErrorCode.SequenceDepthLimitExceeded, error.DicomAnonymizerErrorCode);
