@@ -132,8 +132,9 @@ safeguards described below.
   handles compatible instance UIDs. SOP Instance and reference UIDs can still use
   `refreshUID` and retain consistent remapping.
 - Exact `refreshUID` tag rules also apply to matching nested instance/reference
-  UIDs. The existing UID map is shared in-process; these changes do not provide
-  job or tenant isolation.
+  UIDs. By default, the legacy UID map is shared in-process and provides neither
+  batch isolation nor stable results across worker processes or restarts.
+  Library callers can opt into the execution-scoped mode below.
 - Sequence nesting is limited to 64 item levels; deeper input fails before
   anonymization begins. Cyclic in-memory graphs are also rejected by this depth
   check (`SequenceDepthLimitExceeded`, `1104`) before recursive validation or
@@ -162,6 +163,93 @@ Broad `UI` and `SQ` rules can be configured. Their effect depends on the actual
 input and first matching rule: a compatible UID can be refreshed, and a sequence
 can be removed or emptied. These operations do not imply that arbitrary inputs,
 invariant UIDs, or required sequence structures can safely be transformed.
+
+### Opt-in deterministic UID mapping
+
+`RuntimeKeySettings.UidMapping` optionally selects `hmac-sha256-128-v1` for
+`refreshUID` rules. All selected occurrences of the same original UID map to
+the same replacement with the same key and scope, independent of Study, Series,
+SOP Instance or reference role, containing dataset identifiers, engine, worker,
+file order, and process lifetime. The deterministic path never reads or writes
+the public static `RefreshUIDProcessor.ReplacedUIDs` cache or retains source
+UIDs globally. Null settings preserve the legacy random process-local cache;
+the command-line tool's default behavior is unchanged.
+
+```csharp
+// Load the same protected, persisted pins for every file and retry in this batch.
+// base64UidKey encodes exactly 32 cryptographically random or securely derived bytes.
+var keys = new RuntimeKeySettings
+{
+    UidMapping = new UidMappingSettings(
+        UidMappingSettings.HmacSha256128V1,
+        base64UidKey,
+        opaqueBatchScope),
+};
+var output = engine.AnonymizeFile(inputFile, keys);
+```
+
+`UidMappingSettings` is immutable and owns its decoded key bytes. It exposes no
+key/scope properties and does not include them in ordinary JSON serialization or
+`ToString()`. Invalid mode, key or scope throws `ArgumentException` without
+including supplied values; malformed settings never fall back to legacy mode.
+Mode comparison is ordinal and case-sensitive. The scope must be nonblank,
+strict UTF-8, at most 256 encoded bytes, and contain no unpaired surrogates.
+It is not trimmed, case-folded, or Unicode-normalized. Use a durable opaque batch
+identity, not patient data. The key must decode from Base64 to exactly 32 bytes;
+longer existing application keys must not be truncated or passed directly.
+Any upstream domain-separated key derivation is a separate caller contract.
+Do not derive secrets from public UIDs or passwords.
+
+Each public dataset/file call captures the mapping reference once, including
+null, and passes it to existing nested exact-rule operations. Swapping
+`RuntimeKeySettings.UidMapping` during a call affects subsequent calls only.
+Other runtime key behavior is unchanged. This is not synchronization for caller
+mutations to datasets, policies, or other runtime keys.
+
+The versioned wire format is ASCII
+`Microsoft.Health.Dicom.Anonymizer/RefreshUID/hmac-sha256-128-v1`, one NUL byte,
+the scope byte count as unsigned 32-bit big-endian, strict UTF-8 scope bytes,
+the canonical UID byte count as unsigned 32-bit big-endian, then ASCII UID bytes.
+HMAC-SHA256 uses the supplied 32-byte key. Its first 16 bytes are interpreted as
+an unsigned big-endian integer, rendered in decimal without leading zeros and
+prefixed with `2.25.` (at most 44 characters). No UUID version/variant bits,
+tag roles, filenames or worker identifiers are added. This is a probabilistic
+128-bit mapping, **not a collision-free or injective mapping**.
+
+Selected UI values are validated from their encoded bytes during actual-item
+preflight, before earlier transformations and optional input validation.
+Nonempty values contain dot-separated decimal components without leading zeros
+and are at most 64 characters. Correct terminal NUL padding is accepted; embedded
+NULs, arbitrary whitespace, malformed components and invalid characters are not
+normalized away. Value multiplicity and empty components are preserved. Selected
+invalid UI values fail with a fixed, value-free `UnsupportedAnonymizationMethod`
+diagnostic. This does not sanitize diagnostics for unrelated, unselected invalid
+elements or arbitrary custom processors.
+
+**Policy coverage still matters.** Select all intended surviving UID roles using
+the existing supported rules. A kept or unselected reference remains unchanged
+even when its target UID changes; the mapper cannot make that graph consistent.
+Removed/emptied sequences remain removed/empty, with no descendant remapping or
+resurrection. A target absent from the output set is not created. There is no new
+universal recursion, reference repair, policy compiler restriction, or metadata
+retention rule. SOP/Referenced SOP/Media Storage SOP Class UIDs, Transfer Syntax
+UID, and SOP Classes in Study retain their invariant protections. File APIs
+synchronize Media Storage SOP Instance UID; dataset-only callers still own file
+metadata synchronization.
+
+**Adoption and migration:** opt in at a new batch boundary. Persist and pin mode,
+key version (and any derivation version), exact scope, effective policy and
+compatible library semantics across fan-out, retries and checkpoints. A caller
+requiring this mode must reject missing pins before producing outputs; the
+library's legacy-compatible null default is not such an enforcement mechanism.
+Use separate keys/scopes for batches that must not be linked. Never rotate pins
+mid-batch or remap already mapped UIDs: this mapping is not idempotent. Retry
+original inputs or a documented stage boundary. Migration may require
+reprocessing the complete related output set from original sources; no automatic
+backfill is provided. Pinning legacy mode does not make its process cache
+restart-durable. Retain protected keys for the permitted retry period. Service
+admission, durable pinning, package adoption and deployment require separate
+integration and verification; this library change does not establish them.
 
 ### Selected nested rules
 

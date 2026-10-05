@@ -39,6 +39,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Rules
 
         internal bool DiscardsSequenceItems => _processor.GetType() == typeof(RemoveProcessor) || _processor.GetType() == typeof(RedactProcessor);
 
+        internal void ValidateValues(DicomItem item, UidMappingSettings? uidMapping)
+        {
+            if (_processor.GetType() == typeof(RefreshUIDProcessor) && uidMapping != null && item is DicomElement element)
+            {
+                UidMappingSettings.GetValidatedValues(element);
+            }
+        }
+
         internal void ValidateItem(DicomItem item, bool nested)
         {
             if (!_processor.IsSupported(item) || (DicomUtility.IsInvariantUid(item.Tag) && !KeepsValue))

@@ -76,12 +76,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public void AnonymizeDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
         {
+            var uidMapping = runtimeKeySettings?.UidMapping;
             EnsureArg.IsNotNull(dataset, nameof(dataset));
 
             ValidateRequiredRuntimeKeys(runtimeKeySettings);
 
             ValidateDatasetStructure(dataset);
-            AnonymizeValidatedDataset(dataset, runtimeKeySettings);
+            AnonymizeValidatedDataset(dataset, runtimeKeySettings, uidMapping);
         }
 
         public DicomFile AnonymizeFile(DicomFile dicomFile)
@@ -91,10 +92,16 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public DicomFile AnonymizeFile(DicomFile dicomFile, RuntimeKeySettings runtimeKeySettings)
         {
+            var uidMapping = runtimeKeySettings?.UidMapping;
             EnsureArg.IsNotNull(dicomFile, nameof(dicomFile));
 
             ValidateDatasetStructure(dicomFile.Dataset);
             ValidateFileMetaIdentity(dicomFile);
+
+            if (uidMapping != null)
+            {
+                ValidateProcessing(dicomFile.Dataset, runtimeKeySettings, uidMapping);
+            }
 
             var cloneSource = new DicomFile(dicomFile.Dataset.Clone());
             cloneSource.FileMetaInfo.Clear();
@@ -104,7 +111,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             stream.Position = 0;
             var output = DicomFile.Open(stream, FileReadOption.ReadAll);
 
-            AnonymizeFileInPlace(output, runtimeKeySettings);
+            AnonymizeFileInPlace(output, runtimeKeySettings, uidMapping);
             return output;
         }
 
@@ -115,6 +122,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public void AnonymizeFileInPlace(DicomFile dicomFile, RuntimeKeySettings runtimeKeySettings)
         {
+            AnonymizeFileInPlace(dicomFile, runtimeKeySettings, runtimeKeySettings?.UidMapping);
+        }
+
+        private void AnonymizeFileInPlace(DicomFile dicomFile, RuntimeKeySettings runtimeKeySettings, UidMappingSettings? uidMapping)
+        {
             EnsureArg.IsNotNull(dicomFile, nameof(dicomFile));
 
             ValidateDatasetStructure(dicomFile.Dataset);
@@ -122,7 +134,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
             var transferSyntax = dicomFile.FileMetaInfo.TransferSyntax;
             ValidateRequiredRuntimeKeys(runtimeKeySettings);
-            AnonymizeValidatedDataset(dicomFile.Dataset, runtimeKeySettings);
+            AnonymizeValidatedDataset(dicomFile.Dataset, runtimeKeySettings, uidMapping);
 
             var (_, sopInstanceUid) = GetRequiredDatasetIdentity(dicomFile.Dataset);
             dicomFile.FileMetaInfo.MediaStorageSOPInstanceUID = sopInstanceUid;
@@ -130,19 +142,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             ValidateFileMetaIdentity(dicomFile);
         }
 
-        private void AnonymizeValidatedDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
+        private void AnonymizeValidatedDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings, UidMappingSettings? uidMapping)
         {
+            // Selected UID validation must precede fo-dicom diagnostics, which can include values.
+            var nestedOperations = uidMapping == null ? null : ValidateProcessing(dataset, runtimeKeySettings, uidMapping);
             if (_anonymizerSettings.ValidateInput)
             {
                 dataset.Validate();
             }
 
-            var nestedOperations = ValidateProcessing(dataset, runtimeKeySettings);
-            ProcessDataset(dataset, runtimeKeySettings);
+            nestedOperations ??= ValidateProcessing(dataset, runtimeKeySettings, uidMapping);
+            ProcessDataset(dataset, runtimeKeySettings, uidMapping);
             foreach (var (nestedDataset, rule) in nestedOperations)
             {
                 DicomUtility.DisableAutoValidation(nestedDataset);
-                var context = InitContext(nestedDataset, runtimeKeySettings);
+                var context = InitContext(nestedDataset, runtimeKeySettings, uidMapping);
                 rule.Handle(nestedDataset, context);
             }
 
@@ -153,9 +167,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        private ProcessContext InitContext(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
+        private ProcessContext InitContext(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings, UidMappingSettings? uidMapping)
         {
-            var context = new ProcessContext
+            var context = new ProcessContext(uidMapping)
             {
                 StudyInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.StudyInstanceUID, string.Empty),
                 SopInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.SOPInstanceUID, string.Empty),
@@ -165,11 +179,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             return context;
         }
 
-        private void ProcessDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
+        private void ProcessDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings, UidMappingSettings? uidMapping)
         {
             DicomUtility.DisableAutoValidation(dataset);
 
-            var context = InitContext(dataset, runtimeKeySettings);
+            var context = InitContext(dataset, runtimeKeySettings, uidMapping);
             for (var index = 0; index < _rules.Length; index++)
             {
                 var rule = _rules[index];
@@ -178,7 +192,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             }
         }
 
-        private List<(DicomDataset Dataset, AnonymizerRule Rule)> ValidateProcessing(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
+        private List<(DicomDataset Dataset, AnonymizerRule Rule)> ValidateProcessing(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings, UidMappingSettings? uidMapping)
         {
             var exactRules = _rules.OfType<AnonymizerTagRule>().ToArray();
             var operations = new List<(DicomDataset Dataset, AnonymizerRule Rule)>();
@@ -222,7 +236,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                         default:
                             if (context == null)
                             {
-                                context = InitContext(current.Dataset, runtimeKeySettings);
+                                context = InitContext(current.Dataset, runtimeKeySettings, uidMapping);
                                 context.VisitedNodes = visitedNodes;
                             }
 
@@ -234,6 +248,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                     foreach (var item in selectedItems)
                     {
                         rule.ValidateItem(item, !current.Root);
+                        rule.ValidateValues(item, uidMapping);
                         candidates.Remove(item);
                         visitedNodes.Add(item.ToString());
                         if (item is DicomSequence sequence && rule.DiscardsSequenceItems)
