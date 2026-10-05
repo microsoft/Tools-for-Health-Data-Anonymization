@@ -4,6 +4,9 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using FellowOakDicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
@@ -17,6 +20,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 {
     public class AnonymizerEngine
     {
+        internal const int MaximumSequenceDepth = 64;
+        internal const int MaximumAdditionalSequenceOccurrences = 65536;
+
         private readonly ILogger _logger = AnonymizerLogging.CreateLogger<AnonymizerEngine>();
         private readonly AnonymizerEngineOptions _anonymizerSettings;
         private readonly bool _requireRuntimeKeys;
@@ -70,42 +76,309 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
 
         public void AnonymizeDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings)
         {
+            var uidMapping = runtimeKeySettings?.UidMapping;
             EnsureArg.IsNotNull(dataset, nameof(dataset));
 
             ValidateRequiredRuntimeKeys(runtimeKeySettings);
 
-            // Validate input dataset.
+            ValidateDatasetStructure(dataset);
+            AnonymizeValidatedDataset(dataset, runtimeKeySettings, uidMapping);
+        }
+
+        public DicomFile AnonymizeFile(DicomFile dicomFile)
+        {
+            return AnonymizeFile(dicomFile, null);
+        }
+
+        public DicomFile AnonymizeFile(DicomFile dicomFile, RuntimeKeySettings runtimeKeySettings)
+        {
+            var uidMapping = runtimeKeySettings?.UidMapping;
+            EnsureArg.IsNotNull(dicomFile, nameof(dicomFile));
+
+            ValidateDatasetStructure(dicomFile.Dataset);
+            ValidateFileMetaIdentity(dicomFile);
+
+            if (uidMapping != null)
+            {
+                ValidateProcessing(dicomFile.Dataset, runtimeKeySettings, uidMapping);
+            }
+
+            var cloneSource = new DicomFile(dicomFile.Dataset.Clone());
+            cloneSource.FileMetaInfo.Clear();
+            cloneSource.FileMetaInfo.Add(new DicomFileMetaInformation(dicomFile.FileMetaInfo));
+            using var stream = new MemoryStream();
+            cloneSource.Save(stream);
+            stream.Position = 0;
+            var output = DicomFile.Open(stream, FileReadOption.ReadAll);
+
+            AnonymizeFileInPlace(output, runtimeKeySettings, uidMapping);
+            return output;
+        }
+
+        public void AnonymizeFileInPlace(DicomFile dicomFile)
+        {
+            AnonymizeFileInPlace(dicomFile, null);
+        }
+
+        public void AnonymizeFileInPlace(DicomFile dicomFile, RuntimeKeySettings runtimeKeySettings)
+        {
+            AnonymizeFileInPlace(dicomFile, runtimeKeySettings, runtimeKeySettings?.UidMapping);
+        }
+
+        private void AnonymizeFileInPlace(DicomFile dicomFile, RuntimeKeySettings runtimeKeySettings, UidMappingSettings? uidMapping)
+        {
+            EnsureArg.IsNotNull(dicomFile, nameof(dicomFile));
+
+            ValidateDatasetStructure(dicomFile.Dataset);
+            ValidateFileMetaIdentity(dicomFile);
+
+            var transferSyntax = dicomFile.FileMetaInfo.TransferSyntax;
+            ValidateRequiredRuntimeKeys(runtimeKeySettings);
+            AnonymizeValidatedDataset(dicomFile.Dataset, runtimeKeySettings, uidMapping);
+
+            var (_, sopInstanceUid) = GetRequiredDatasetIdentity(dicomFile.Dataset);
+            dicomFile.FileMetaInfo.MediaStorageSOPInstanceUID = sopInstanceUid;
+            dicomFile.FileMetaInfo.TransferSyntax = transferSyntax;
+            ValidateFileMetaIdentity(dicomFile);
+        }
+
+        private void AnonymizeValidatedDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings, UidMappingSettings? uidMapping)
+        {
+            // Selected UID validation must precede fo-dicom diagnostics, which can include values.
+            var nestedOperations = uidMapping == null ? null : ValidateProcessing(dataset, runtimeKeySettings, uidMapping);
             if (_anonymizerSettings.ValidateInput)
             {
                 dataset.Validate();
             }
 
-            var context = InitContext(dataset);
-            context.RuntimeKeys = runtimeKeySettings;
-            DicomUtility.DisableAutoValidation(dataset);
-
-            foreach (var rule in _rules)
+            nestedOperations ??= ValidateProcessing(dataset, runtimeKeySettings, uidMapping);
+            ProcessDataset(dataset, runtimeKeySettings, uidMapping);
+            foreach (var (nestedDataset, rule) in nestedOperations)
             {
-                rule.Handle(dataset, context);
-                _logger.LogDebug($"Successfully handled rule {rule.Description}.");
+                DicomUtility.DisableAutoValidation(nestedDataset);
+                var context = InitContext(nestedDataset, runtimeKeySettings, uidMapping);
+                rule.Handle(nestedDataset, context);
             }
 
-            // Validate output dataset.
+            ValidateDatasetStructure(dataset);
             if (_anonymizerSettings.ValidateOutput)
             {
                 dataset.Validate();
             }
         }
 
-        private ProcessContext InitContext(DicomDataset dataset)
+        private ProcessContext InitContext(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings, UidMappingSettings? uidMapping)
         {
-            var context = new ProcessContext
+            var context = new ProcessContext(uidMapping)
             {
                 StudyInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.StudyInstanceUID, string.Empty),
                 SopInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.SOPInstanceUID, string.Empty),
                 SeriesInstanceUID = dataset.GetSingleValueOrDefault(DicomTag.SeriesInstanceUID, string.Empty),
+                RuntimeKeys = runtimeKeySettings,
             };
             return context;
+        }
+
+        private void ProcessDataset(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings, UidMappingSettings? uidMapping)
+        {
+            DicomUtility.DisableAutoValidation(dataset);
+
+            var context = InitContext(dataset, runtimeKeySettings, uidMapping);
+            for (var index = 0; index < _rules.Length; index++)
+            {
+                var rule = _rules[index];
+                rule.Handle(dataset, context);
+                _logger.LogDebug("Successfully handled rule {RuleIndex} ({RuleType}).", index, rule.GetType().Name);
+            }
+        }
+
+        private List<(DicomDataset Dataset, AnonymizerRule Rule)> ValidateProcessing(DicomDataset dataset, RuntimeKeySettings runtimeKeySettings, UidMappingSettings? uidMapping)
+        {
+            var exactRules = _rules.OfType<AnonymizerTagRule>().ToArray();
+            var operations = new List<(DicomDataset Dataset, AnonymizerRule Rule)>();
+            var visited = new HashSet<DicomDataset>(ReferenceEqualityComparer.Instance);
+            var datasets = new Stack<(DicomDataset Dataset, bool Root)>();
+            datasets.Push((dataset, true));
+            while (datasets.Count > 0)
+            {
+                var current = datasets.Pop();
+                if (!visited.Add(current.Dataset))
+                {
+                    continue;
+                }
+
+                var candidates = new HashSet<DicomItem>(
+                    current.Dataset.Where(item => current.Root || exactRules.Any(exact =>
+                        MatchesExactTag(current.Dataset, exact.Tag, item))),
+                    ReferenceEqualityComparer.Instance);
+                var visitedNodes = new HashSet<string>();
+                var discardedSequences = new HashSet<DicomSequence>(ReferenceEqualityComparer.Instance);
+                ProcessContext? context = null;
+                foreach (var rule in _rules)
+                {
+                    if (candidates.Count == 0)
+                    {
+                        break;
+                    }
+
+                    IEnumerable<DicomItem> matches;
+                    switch (rule)
+                    {
+                        case AnonymizerTagRule exact when rule.GetType() == typeof(AnonymizerTagRule):
+                            matches = candidates.Where(item => MatchesExactTag(current.Dataset, exact.Tag, item));
+                            break;
+                        case AnonymizerMaskedTagRule masked when rule.GetType() == typeof(AnonymizerMaskedTagRule):
+                            matches = candidates.Where(item => masked.MaskedTag.IsMatch(item.Tag));
+                            break;
+                        case AnonymizerVRRule vr when rule.GetType() == typeof(AnonymizerVRRule):
+                            matches = candidates.Where(item => vr.VR == item.ValueRepresentation);
+                            break;
+                        default:
+                            if (context == null)
+                            {
+                                context = InitContext(current.Dataset, runtimeKeySettings, uidMapping);
+                                context.VisitedNodes = visitedNodes;
+                            }
+
+                            matches = rule.LocateDicomTag(current.Dataset, context).Where(candidates.Contains);
+                            break;
+                    }
+
+                    var selectedItems = matches.ToArray();
+                    foreach (var item in selectedItems)
+                    {
+                        rule.ValidateItem(item, !current.Root);
+                        rule.ValidateValues(item, uidMapping);
+                        candidates.Remove(item);
+                        visitedNodes.Add(item.ToString());
+                        if (item is DicomSequence sequence && rule.DiscardsSequenceItems)
+                        {
+                            discardedSequences.Add(sequence);
+                        }
+                    }
+
+                    if (!current.Root && selectedItems.Length > 0 && !rule.KeepsValue)
+                    {
+                        operations.Add((current.Dataset, rule));
+                    }
+                }
+
+                foreach (var sequence in current.Dataset.OfType<DicomSequence>())
+                {
+                    if (!discardedSequences.Contains(sequence))
+                    {
+                        foreach (var nestedDataset in sequence.Items)
+                        {
+                            datasets.Push((nestedDataset, false));
+                        }
+                    }
+                }
+            }
+
+            return operations;
+        }
+
+        private static bool MatchesExactTag(DicomDataset dataset, DicomTag tag, DicomItem candidate)
+        {
+            return dataset.Contains(tag) && ReferenceEquals(dataset.GetDicomItem<DicomItem>(tag), candidate);
+        }
+
+        private static void ValidateDatasetStructure(DicomDataset dataset)
+        {
+            var greatestDepths = ValidateSequenceDepth(dataset);
+            var expandedCounts = new Dictionary<DicomDataset, long>(ReferenceEqualityComparer.Instance);
+            var maximumExpandedCount = (long)greatestDepths.Count + MaximumAdditionalSequenceOccurrences;
+            foreach (var current in greatestDepths.OrderByDescending(entry => entry.Value))
+            {
+                long count = 1;
+
+                // Children have a greater maximum depth, so their counts are already available.
+                foreach (var sequence in current.Key.Where(item => item.ValueRepresentation == DicomVR.SQ).OfType<DicomSequence>())
+                {
+                    foreach (var child in sequence.Items)
+                    {
+                        count += Math.Min(maximumExpandedCount + 1 - count, expandedCounts[child]);
+                    }
+                }
+
+                expandedCounts.Add(current.Key, count);
+            }
+
+            if (expandedCounts[dataset] > maximumExpandedCount)
+            {
+                throw new AnonymizerOperationException(
+                    DicomAnonymizationErrorCode.SequenceExpansionLimitExceeded,
+                    $"Additional shared sequence dataset occurrences exceed the supported limit of {MaximumAdditionalSequenceOccurrences}.");
+            }
+        }
+
+        private static Dictionary<DicomDataset, int> ValidateSequenceDepth(DicomDataset dataset)
+        {
+            var greatestDepths = new Dictionary<DicomDataset, int>(ReferenceEqualityComparer.Instance);
+            var datasets = new Stack<(DicomDataset Dataset, int Depth)>();
+            datasets.Push((dataset, 0));
+            while (datasets.Count > 0)
+            {
+                var current = datasets.Pop();
+                if (greatestDepths.TryGetValue(current.Dataset, out var previousDepth) && previousDepth >= current.Depth)
+                {
+                    continue;
+                }
+
+                greatestDepths[current.Dataset] = current.Depth;
+                foreach (var sequence in current.Dataset.Where(item => item.ValueRepresentation == DicomVR.SQ).OfType<DicomSequence>())
+                {
+                    foreach (var nestedDataset in sequence.Items)
+                    {
+                        var depth = current.Depth + 1;
+                        if (depth > MaximumSequenceDepth)
+                        {
+                            throw new AnonymizerOperationException(
+                                DicomAnonymizationErrorCode.SequenceDepthLimitExceeded,
+                                $"Nested sequence depth exceeds the supported limit of {MaximumSequenceDepth}.");
+                        }
+
+                        datasets.Push((nestedDataset, depth));
+                    }
+                }
+            }
+
+            return greatestDepths;
+        }
+
+        private static void ValidateFileMetaIdentity(DicomFile dicomFile)
+        {
+            var (datasetSopClass, datasetSopInstance) = GetRequiredDatasetIdentity(dicomFile.Dataset);
+            if (dicomFile.FileMetaInfo == null ||
+                !dicomFile.FileMetaInfo.TryGetSingleValue(DicomTag.MediaStorageSOPClassUID, out DicomUID mediaStorageSopClass) ||
+                !dicomFile.FileMetaInfo.TryGetSingleValue(DicomTag.MediaStorageSOPInstanceUID, out DicomUID mediaStorageSopInstance) ||
+                mediaStorageSopClass == null ||
+                mediaStorageSopInstance == null ||
+                mediaStorageSopClass != datasetSopClass ||
+                mediaStorageSopInstance != datasetSopInstance)
+            {
+                throw CreateFileMetaIdentityMismatchException();
+            }
+        }
+
+        private static (DicomUID SopClass, DicomUID SopInstance) GetRequiredDatasetIdentity(DicomDataset dataset)
+        {
+            if (!dataset.TryGetSingleValue(DicomTag.SOPClassUID, out DicomUID sopClass) ||
+                !dataset.TryGetSingleValue(DicomTag.SOPInstanceUID, out DicomUID sopInstance) ||
+                sopClass == null ||
+                sopInstance == null)
+            {
+                throw CreateFileMetaIdentityMismatchException();
+            }
+
+            return (sopClass, sopInstance);
+        }
+
+        private static AnonymizerOperationException CreateFileMetaIdentityMismatchException()
+        {
+            return new AnonymizerOperationException(
+                DicomAnonymizationErrorCode.FileMetaIdentityMismatch,
+                "File Meta and Dataset SOP identities are missing or inconsistent.");
         }
 
         private static (bool UsesCryptoHash, bool UsesDateShift, bool UsesEncrypt) GetConfiguredKeyedMethods(JObject[] ruleContents)

@@ -4,11 +4,14 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FellowOakDicom;
 using FellowOakDicom.IO.Buffer;
+using Microsoft.Extensions.Logging;
+using Microsoft.Health.Anonymizer.Common.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Newtonsoft.Json.Linq;
@@ -16,6 +19,7 @@ using Xunit;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 {
+    [Collection("Anonymizer logging state")]
     public class CryptoHashProcessorUnitTests
     {
         public CryptoHashProcessorUnitTests()
@@ -28,6 +32,10 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 
         public static IEnumerable<object[]> GetUnsupportedVRItemForCryptoHash()
         {
+            yield return new object[] { DicomTag.PatientAge, "100Y" }; // AS
+            yield return new object[] { DicomTag.StudyDate, "20240101" }; // DA
+            yield return new object[] { DicomTag.AcquisitionDateTime, "20240101120000" }; // DT
+            yield return new object[] { DicomTag.StudyTime, "120000" }; // TM
             yield return new object[] { DicomTag.Longitudinal​Temporal​Offset​From​Event, "12345" }; // FD
             yield return new object[] { DicomTag.Examined​Body​Thickness, "12345" }; // FL
             yield return new object[] { DicomTag.Doppler​Sample​Volume​X​Position, "12345" }; // SL
@@ -50,12 +58,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
         {
             // Invalid output length limitation
             yield return new object[] { DicomTag.RetrieveAETitle, "TEST", "2e7acefff0307262cef6f503fa7019257f3f9d47fc987fb2c5a31ae4f4d3c022" }; // AE
-            yield return new object[] { DicomTag.PatientAge, "100Y", "0329e399cd57ed8b21172ede4ae295f549c3d6ece0d292c01a707531d133936e" }; // AS
             yield return new object[] { DicomTag.Query​Retrieve​Level, "0", "976feb2c9f52ff3c8114901e9913be50063f50b1683ea556f1fe47d449cc5583" }; // CS
             yield return new object[] { DicomTag.Event​Elapsed​Times, "1234.5", "92b95e021c40596706b243f79fe0f45394de785be64866f6b46fcacd0839ac43" }; // DS
             yield return new object[] { DicomTag.Stage​Number, "1234", "c1771ad95972ef1ab887140489863ede4faad7458441a3a8a4781454e368b52d" }; // IS
             yield return new object[] { DicomTag.Patient​Telephone​Numbers, "TEST", "2e7acefff0307262cef6f503fa7019257f3f9d47fc987fb2c5a31ae4f4d3c022" }; // SH
-            yield return new object[] { DicomTag.SOP​Classes​In​Study, "12345", "81c7be73b3eaeca31695a744fbc6d3abb5a37ffc10498d0fcb4111c7944b28a0" }; // UI
+            yield return new object[] { DicomTag.FailedSOPInstanceUIDList, "12345", "81c7be73b3eaeca31695a744fbc6d3abb5a37ffc10498d0fcb4111c7944b28a0" }; // UI
         }
 
         [Theory]
@@ -105,7 +112,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
                 { tag, value },
             };
 
-            Assert.Throws<DicomValidationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag)));
+            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
+            dataset.Validate();
+            Assert.True(dataset.GetString(tag).Length <= tag.DictionaryEntry.ValueRepresentations[0].MaximumLength);
             Assert.NotNull(result);
         }
 
@@ -119,7 +128,76 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             };
             DicomUtility.DisableAutoValidation(dataset);
             Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
-            Assert.Equal(result, dataset.GetDicomItem<DicomElement>(tag).Get<string>());
+            Assert.True(dataset.GetString(tag).Length <= tag.DictionaryEntry.ValueRepresentations[0].MaximumLength);
+            Assert.NotNull(result);
+        }
+
+        [Theory]
+        [InlineData("RetrieveAETitle", 16)]
+        [InlineData("PatientTelephoneNumbers", 16)]
+        [InlineData("EventTimerNames", 64)]
+        public void GivenLengthLimitedTextVR_WhenCryptoHash_OutputConformsToMaximumLength(string tagName, int maximumLength)
+        {
+            var tag = (DicomTag)typeof(DicomTag).GetField(tagName).GetValue(null);
+            var dataset = new DicomDataset { { tag, "TEST" } };
+
+            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(tag));
+
+            var output = dataset.GetString(tag);
+            Assert.Equal(maximumLength, output.Length);
+            Assert.Matches("^[0-9a-f]+$", output);
+            dataset.Validate();
+        }
+
+        [Fact]
+        public void GivenMultiValuePersonName_WhenCryptoHash_EachValueIsHashedDeterministically()
+        {
+            var dataset = new DicomDataset { { DicomTag.ConsultingPhysicianName, "First^Person", "Second^Person" } };
+
+            Processor.Process(dataset, dataset.GetDicomItem<DicomElement>(DicomTag.ConsultingPhysicianName));
+            var first = dataset.GetValues<string>(DicomTag.ConsultingPhysicianName);
+
+            var repeatedDataset = new DicomDataset { { DicomTag.ConsultingPhysicianName, "First^Person", "Second^Person" } };
+            Processor.Process(repeatedDataset, repeatedDataset.GetDicomItem<DicomElement>(DicomTag.ConsultingPhysicianName));
+
+            Assert.Equal(2, first.Length);
+            Assert.Equal(first, repeatedDataset.GetValues<string>(DicomTag.ConsultingPhysicianName));
+            Assert.All(first, value => Assert.Matches("^[0-9a-f]{64}$", value));
+        }
+
+        [Theory]
+        [InlineData("ACC-123", false, "3e8f116463b99545")]
+        [InlineData("ACC-123", true, "20236d1")]
+        [InlineData("ACCESSION-123456", false, "e8d248f617143c55")]
+        [InlineData("ACCESSION-123456", true, "0640002ecf9c6b6e")]
+        public void GivenShortStringLengthMatching_WhenHashing_PreviousOutputBytesAreUnchanged(string input, bool match, string expected)
+        {
+            var processor = new CryptoHashProcessor(new JObject { ["cryptoHashKey"] = "123", ["matchInputStringLength"] = match });
+            var dataset = new DicomDataset { { DicomTag.AccessionNumber, input } };
+
+            processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.AccessionNumber));
+
+            Assert.Equal(expected, dataset.GetString(DicomTag.AccessionNumber));
+            Assert.Equal(DicomVR.SH, dataset.GetDicomItem<DicomItem>(DicomTag.AccessionNumber).ValueRepresentation);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void GivenPublicStringOnlyHelper_WhenHashingLongInput_OnlyLengthMatchingUsesExpansionLimit(bool match)
+        {
+            var processor = new CryptoHashProcessor(new JObject { ["cryptoHashKey"] = "123", ["matchInputStringLength"] = match });
+            var input = new string('Z', 8192);
+
+            if (match)
+            {
+                var error = Assert.Throws<AnonymizerException>(() => processor.GetCryptoHashString(input));
+                Assert.Equal(AnonymizerErrorCode.CryptoHashFailed, error.AnonymizerErrorCode);
+            }
+            else
+            {
+                Assert.Equal(64, processor.GetCryptoHashString(input).Length);
+            }
         }
 
         [Theory]
@@ -177,6 +255,23 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
         }
 
         [Fact]
+        public void GivenActualDicomUnknown_WhenCryptoHash_UnknownVrAndBinaryHashArePreserved()
+        {
+            var tag = new DicomTag(0x7776, 0x1010);
+            var item = new DicomUnknown(tag, Encoding.UTF8.GetBytes("test"));
+            var dataset = new DicomDataset { item };
+
+            Assert.IsAssignableFrom<DicomOtherByte>(item);
+            Assert.True(Processor.IsSupported(item));
+
+            Processor.Process(dataset, item);
+
+            var result = Assert.IsType<DicomUnknown>(dataset.GetDicomItem<DicomItem>(tag));
+            Assert.Equal(DicomVR.UN, result.ValueRepresentation);
+            Assert.Equal("a7f5c8c626f994482813230854f66700e626208f52d913b9bd6b4e039aab0f41", string.Concat(result.Get<byte[]>().Select(value => value.ToString("x2"))));
+        }
+
+        [Fact]
         public void GivenADataSetWithDicomFragmentSequence_WhenCryptoHash_FragmentsWillBeHashed()
         {
             var tag = DicomTag.PixelData;
@@ -210,6 +305,134 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             dataset.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2));
 
             Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence)));
+        }
+
+        [Fact]
+        public void GivenPrivateItem_WhenCryptoHashCompletes_LogUsesNumericTagOnly()
+        {
+            const string creator = "SYNTHETIC-CREATOR-PRIVACY-SENTINEL";
+            var provider = new CapturingLoggerProvider();
+            using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug).AddProvider(provider));
+            var originalLoggerFactory = AnonymizerLogging.LoggerFactory;
+            AnonymizerLogging.LoggerFactory = loggerFactory;
+
+            try
+            {
+                var processor = new CryptoHashProcessor(JObject.Parse("{\"cryptoHashKey\":\"123\"}"));
+                var tag = DicomTag.Parse($"(0011,1001:{creator})");
+                var dataset = new DicomDataset();
+                dataset.AddOrUpdate(DicomVR.LO, tag, "PRIVATE");
+
+                processor.Process(dataset, dataset.GetDicomItem<DicomItem>(tag));
+
+                var entry = Assert.Single(
+                    provider.Entries.Where(
+                        entry => entry.Category.EndsWith(nameof(CryptoHashProcessor), StringComparison.Ordinal) &&
+                            entry.State.Any(pair => pair.Key == "Tag" && pair.Value?.ToString().Contains("0011,1001", StringComparison.Ordinal) == true)));
+                Assert.DoesNotContain(creator, entry.Message);
+                Assert.DoesNotContain(entry.State, pair => pair.Value?.ToString().Contains(creator, StringComparison.Ordinal) == true);
+                Assert.Contains(entry.State, pair => pair.Key == "Tag" && pair.Value?.ToString() == "(0011,1001)");
+            }
+            finally
+            {
+                AnonymizerLogging.LoggerFactory = originalLoggerFactory;
+            }
+        }
+
+        [Theory]
+        [InlineData("remove")]
+        [InlineData("redact")]
+        [InlineData("substitute")]
+        public void GivenPrivateItem_WhenScalarProcessorCompletes_LogUsesNumericTagOnly(string method)
+        {
+            const string creator = "SYNTHETIC-CREATOR-PRIVACY-SENTINEL";
+            var provider = new CapturingLoggerProvider();
+            using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug).AddProvider(provider));
+            var originalLoggerFactory = AnonymizerLogging.LoggerFactory;
+            AnonymizerLogging.LoggerFactory = loggerFactory;
+
+            try
+            {
+                var processor = new DicomProcessorFactory().CreateProcessor(method, new JObject { ["replaceWith"] = "ANONYMOUS" });
+                var tag = DicomTag.Parse($"(7777,1042:{creator})");
+                var dataset = new DicomDataset();
+                dataset.AddOrUpdate(DicomVR.LO, tag, "SYNTHETIC-VALUE");
+
+                processor.Process(dataset, dataset.GetDicomItem<DicomItem>(tag), null);
+
+                var entry = Assert.Single(provider.Entries.Where(log =>
+                    log.Category.EndsWith(processor.GetType().Name, StringComparison.Ordinal) &&
+                    log.State.Any(pair => pair.Key == "Tag" && pair.Value?.ToString() == "(7777,1042)")));
+                Assert.DoesNotContain(creator, entry.Message);
+                Assert.DoesNotContain("SYNTHETIC-VALUE", entry.Message);
+                Assert.DoesNotContain(entry.State, pair => pair.Value?.ToString().Contains(creator, StringComparison.Ordinal) == true);
+                Assert.Contains(entry.State, pair => pair.Key == "Tag" && pair.Value?.ToString() == "(7777,1042)");
+            }
+            finally
+            {
+                AnonymizerLogging.LoggerFactory = originalLoggerFactory;
+            }
+        }
+
+        private sealed class CapturingLoggerProvider : ILoggerProvider
+        {
+            public ConcurrentQueue<LogEntry> Entries { get; } = new ConcurrentQueue<LogEntry>();
+
+            public ILogger CreateLogger(string categoryName)
+            {
+                return new CapturingLogger(categoryName, Entries);
+            }
+
+            public void Dispose()
+            {
+            }
+        }
+
+        private sealed class CapturingLogger : ILogger
+        {
+            private readonly ConcurrentQueue<LogEntry> _entries;
+
+            private readonly string _category;
+
+            public CapturingLogger(string category, ConcurrentQueue<LogEntry> entries)
+            {
+                _category = category;
+                _entries = entries;
+            }
+
+            public IDisposable BeginScope<TState>(TState state)
+            {
+                return null;
+            }
+
+            public bool IsEnabled(LogLevel logLevel)
+            {
+                return true;
+            }
+
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+            {
+                var values = state is IEnumerable<KeyValuePair<string, object>> structuredState
+                    ? structuredState.ToArray()
+                    : Array.Empty<KeyValuePair<string, object>>();
+                _entries.Enqueue(new LogEntry(_category, formatter(state, exception), values));
+            }
+        }
+
+        private sealed class LogEntry
+        {
+            public LogEntry(string category, string message, IReadOnlyList<KeyValuePair<string, object>> state)
+            {
+                Category = category;
+                Message = message;
+                State = state;
+            }
+
+            public string Category { get; }
+
+            public string Message { get; }
+
+            public IReadOnlyList<KeyValuePair<string, object>> State { get; }
         }
     }
 }

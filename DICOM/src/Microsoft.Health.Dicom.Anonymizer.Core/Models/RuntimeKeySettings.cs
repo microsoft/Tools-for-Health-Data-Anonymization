@@ -12,6 +12,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Models
     public class RuntimeKeySettings
     {
         /// <summary>
+        /// Gets or sets immutable settings for deterministic RefreshUID mapping.
+        /// Null preserves the legacy process-local random UID cache.
+        /// </summary>
+        public UidMappingSettings? UidMapping { get; set; }
+
+        /// <summary>
         /// Gets or sets the runtime key for cryptographic hashing operations.
         /// If null, the processor will use the key from configuration.
         /// </summary>

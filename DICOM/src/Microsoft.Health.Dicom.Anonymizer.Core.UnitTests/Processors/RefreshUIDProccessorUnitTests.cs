@@ -4,17 +4,20 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FellowOakDicom;
 using FellowOakDicom.IO.Buffer;
+using Microsoft.Extensions.Logging;
 using Microsoft.Health.Dicom.Anonymizer.Core.Exceptions;
 using Microsoft.Health.Dicom.Anonymizer.Core.Processors;
 using Xunit;
 
 namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
 {
+    [Collection("Anonymizer logging state")]
     public class RefreshUIDProccessorUnitTests
     {
         public RefreshUIDProccessorUnitTests()
@@ -38,13 +41,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             yield return new object[] { DicomTag.Real​World​Value​First​Value​Mapped, "12345" }; // SS
             yield return new object[] { DicomTag.Referenced​Content​Item​Identifier, "12345" }; // UL
             yield return new object[] { DicomTag.Referenced​Waveform​Channels, "12345\\1234" }; // US
+            yield return new object[] { DicomTag.SOP​Class​UID, "1234567890" }; // invariant UI
+            yield return new object[] { DicomTag.ReferencedSOPClassUID, "1234567890" };
+            yield return new object[] { DicomTag.SOPClassesInStudy, "1234567890" };
         }
 
         public static IEnumerable<object[]> GetUIDItemForRefreshUID()
         {
             yield return new object[] { DicomTag.Instance​Creator​UID, "1234567890" }; // UI
-            yield return new object[] { DicomTag.SOP​Class​UID, "1234567890" }; // UI
-            yield return new object[] { DicomTag.SOP​Classes​In​Study, "1234567890" }; // UI
+            yield return new object[] { DicomTag.FailedSOPInstanceUIDList, "1234567890" }; // UI
         }
 
         [Theory]
@@ -98,7 +103,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
         public void GivenADataSetWithSameUID_WhenRefreshUID_TheSameValueWillBeReturned()
         {
             var tag1 = DicomTag.Instance​Creator​UID;
-            var tag2 = DicomTag.SOP​Class​UID;
+            var tag2 = DicomTag.Referenced​SOP​Instance​UID;
 
             var dataset = new DicomDataset()
             {
@@ -110,6 +115,67 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(tag1));
             newProcessor.Process(dataset, dataset.GetDicomItem<DicomItem>(tag2));
             Assert.Equal(dataset.GetDicomItem<DicomElement>(tag2).Get<string>(), dataset.GetDicomItem<DicomElement>(tag1).Get<string>());
+        }
+
+        [Fact]
+        public void GivenMultiValueUidElement_WhenRefreshUID_ValueMultiplicityAndMappingArePreserved()
+        {
+            var dataset = new DicomDataset
+            {
+                { DicomTag.FailedSOPInstanceUIDList, "2.25.100", "2.25.200", "2.25.100" },
+            };
+
+            Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.FailedSOPInstanceUIDList));
+
+            var refreshed = dataset.GetValues<string>(DicomTag.FailedSOPInstanceUIDList);
+            Assert.Equal(3, refreshed.Length);
+            Assert.NotEqual("2.25.100", refreshed[0]);
+            Assert.NotEqual("2.25.200", refreshed[1]);
+            Assert.Equal(refreshed[0], refreshed[2]);
+            Assert.NotEqual(refreshed[0], refreshed[1]);
+        }
+
+        [Fact]
+        public void GivenPrivateUidTag_WhenRefreshUID_LogContainsOnlyNumericTagAndVr()
+        {
+            const string privateCreatorName = "SYNTHETIC-CREATOR-PRIVACY-SENTINEL";
+            const string originalUid = "2.25.100";
+            var privateTag = new DicomTag(0x0011, 0x1010, privateCreatorName);
+            var publicTag = DicomTag.InstanceCreatorUID;
+            var dataset = new DicomDataset(
+                new DicomUniqueIdentifier(privateTag, originalUid),
+                new DicomUniqueIdentifier(publicTag, originalUid));
+            var provider = new CaptureLoggerProvider();
+            var originalLoggerFactory = AnonymizerLogging.LoggerFactory;
+            using var loggerFactory = LoggerFactory.Create(builder =>
+                builder.SetMinimumLevel(LogLevel.Debug).AddProvider(provider));
+
+            try
+            {
+                AnonymizerLogging.LoggerFactory = loggerFactory;
+                var processor = new RefreshUIDProcessor();
+                processor.Process(dataset, dataset.GetDicomItem<DicomItem>(privateTag));
+                processor.Process(dataset, dataset.GetDicomItem<DicomItem>(publicTag));
+
+                Assert.Equal(
+                    dataset.GetSingleValue<string>(privateTag),
+                    dataset.GetSingleValue<string>(publicTag));
+                var entry = Assert.Single(provider.Entries.ToArray().Where(
+                    log => log.Category.EndsWith(nameof(RefreshUIDProcessor)) &&
+                        log.State.Any(pair => pair.Key == "Group" && pair.Value is ushort group && group == 0x0011)));
+                Assert.DoesNotContain(privateCreatorName, entry.Message);
+                Assert.DoesNotContain(privateCreatorName, string.Join("|", entry.State.Select(pair => $"{pair.Key}={pair.Value}")));
+                Assert.Contains("0011", entry.Message);
+                Assert.Contains("1010", entry.Message);
+                Assert.Contains("UI", entry.Message);
+                Assert.Contains(entry.State, pair => pair.Key == "Group" && pair.Value is ushort group && group == 0x0011);
+                Assert.Contains(entry.State, pair => pair.Key == "Element" && pair.Value is ushort element && element == 0x1010);
+                Assert.Contains(entry.State, pair => pair.Key == "VR" && string.Equals(pair.Value?.ToString(), "UI", StringComparison.Ordinal));
+            }
+            finally
+            {
+                AnonymizerLogging.LoggerFactory = originalLoggerFactory;
+            }
         }
 
         [Fact]
@@ -177,6 +243,78 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Processors
             dataset.Add(new DicomSequence(DicomTag.ScheduledProcedureStepSequence, sps1, sps2));
 
             Assert.Throws<AnonymizerOperationException>(() => Processor.Process(dataset, dataset.GetDicomItem<DicomItem>(DicomTag.ScheduledProcedureStepSequence)));
+        }
+
+        private sealed class CaptureLoggerProvider : ILoggerProvider
+        {
+            public ConcurrentQueue<LogEntry> Entries { get; } = new ConcurrentQueue<LogEntry>();
+
+            public ILogger CreateLogger(string categoryName)
+            {
+                return new CaptureLogger(categoryName, Entries);
+            }
+
+            public void Dispose()
+            {
+            }
+        }
+
+        private sealed class CaptureLogger : ILogger
+        {
+            private readonly string _category;
+            private readonly ConcurrentQueue<LogEntry> _entries;
+
+            public CaptureLogger(string category, ConcurrentQueue<LogEntry> entries)
+            {
+                _category = category;
+                _entries = entries;
+            }
+
+            public IDisposable BeginScope<TState>(TState state)
+            {
+                return NullScope.Instance;
+            }
+
+            public bool IsEnabled(LogLevel logLevel)
+            {
+                return true;
+            }
+
+            public void Log<TState>(
+                LogLevel logLevel,
+                EventId eventId,
+                TState state,
+                Exception exception,
+                Func<TState, Exception, string> formatter)
+            {
+                var structuredState = state as IEnumerable<KeyValuePair<string, object>> ?? Array.Empty<KeyValuePair<string, object>>();
+                _entries.Enqueue(new LogEntry(_category, formatter(state, exception), structuredState.ToArray()));
+            }
+        }
+
+        private sealed class NullScope : IDisposable
+        {
+            public static NullScope Instance { get; } = new NullScope();
+
+            public void Dispose()
+            {
+            }
+        }
+
+        private sealed class LogEntry
+        {
+            public LogEntry(string category, string message, IReadOnlyList<KeyValuePair<string, object>> state)
+            {
+                Category = category;
+                Message = message;
+                State = state;
+            }
+
+            public string Category { get; }
+
+            public string Message { get; }
+
+            public IReadOnlyList<KeyValuePair<string, object>> State { get; }
         }
     }
 }

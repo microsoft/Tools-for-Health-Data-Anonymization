@@ -61,14 +61,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.CommandLineTool
         internal static async Task AnonymizeOneFileAsync(string inputFile, string outputFile, AnonymizerEngine engine)
         {
             DicomFile dicomFile = await DicomFile.OpenAsync(inputFile).ConfigureAwait(false);
-            engine.AnonymizeDataset(dicomFile.Dataset);
+            DicomFile anonymizedFile = engine.AnonymizeFile(dicomFile);
 
             if (!string.IsNullOrEmpty(Path.GetDirectoryName(outputFile)))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
             }
 
-            await dicomFile.SaveAsync(outputFile);
+            await anonymizedFile.SaveAsync(outputFile);
 
             Console.WriteLine($"Finished processing '{inputFile}'!");
         }

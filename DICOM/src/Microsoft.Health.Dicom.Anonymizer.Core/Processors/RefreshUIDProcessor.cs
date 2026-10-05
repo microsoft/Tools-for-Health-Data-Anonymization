@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System.Collections.Concurrent;
+using System.Linq;
 using FellowOakDicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
@@ -13,8 +14,8 @@ using Microsoft.Health.Dicom.Anonymizer.Core.Models;
 namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 {
     /// <summary>
-    /// Replaces the content of a UID with a random one.
-    /// The processor makes sure the same original UID will be replaced with the same new UID.
+    /// Replaces a UID using optional execution-scoped deterministic settings,
+    /// or the legacy process-local random mapping when no settings are supplied.
     /// </summary>
     public class RefreshUIDProcessor : IAnonymizerProcessor
     {
@@ -29,13 +30,30 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
 
             if (item.ValueRepresentation == DicomVR.UI)
             {
-                var oldUIDValue = ((DicomElement)item).Get<string>();
+                if (DicomUtility.IsInvariantUid(item.Tag))
+                {
+                    throw new AnonymizerOperationException(
+                        DicomAnonymizationErrorCode.UnsupportedAnonymizationMethod,
+                        $"RefreshUID is not supported for invariant tag {item.Tag} with VR {item.ValueRepresentation}.");
+                }
 
-                DicomUID newUID = ReplacedUIDs.GetOrAdd(oldUIDValue, DicomUIDGenerator.GenerateDerivedFromUUID());
-                var newItem = new DicomUniqueIdentifier(item.Tag, newUID);
+                var mapping = context?.UidMapping;
+                var oldUIDValues = mapping == null
+                    ? ((DicomElement)item).Get<string[]>()
+                    : UidMappingSettings.GetValidatedValues((DicomElement)item);
+                var newUIDValues = oldUIDValues
+                    .Select(value => mapping == null
+                        ? ReplacedUIDs.GetOrAdd(value, _ => DicomUIDGenerator.GenerateDerivedFromUUID()).UID
+                        : mapping.Map(value))
+                    .ToArray();
+                var newItem = new DicomUniqueIdentifier(item.Tag, newUIDValues);
                 dicomDataset.AddOrUpdate(newItem);
 
-                _logger.LogDebug($"The UID value of DICOM item '{item}' is refreshed.");
+                _logger.LogDebug(
+                    "The UID value for tag ({Group:X4},{Element:X4}) with VR {VR} is refreshed.",
+                    item.Tag.Group,
+                    item.Tag.Element,
+                    item.ValueRepresentation.Code);
             }
             else
             {
@@ -47,7 +65,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
         {
             EnsureArg.IsNotNull(item, nameof(item));
 
-            return DicomDataModel.RefreshUIDSupportedVR.Contains(item.ValueRepresentation);
+            return DicomDataModel.RefreshUIDSupportedVR.Contains(item.ValueRepresentation) && !DicomUtility.IsInvariantUid(item.Tag);
         }
     }
 }

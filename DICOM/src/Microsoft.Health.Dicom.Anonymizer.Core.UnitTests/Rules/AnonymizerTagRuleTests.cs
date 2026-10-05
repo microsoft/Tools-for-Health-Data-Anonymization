@@ -47,6 +47,22 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests.Rules
         }
 
         [Fact]
+        public void GivenUnsupportedPrivateItem_WhenHandleTheRule_ExceptionUsesNumericTagOnly()
+        {
+            const string creator = "SYNTHETIC-CREATOR-PRIVACY-SENTINEL";
+            var tag = DicomTag.Parse($"(0011,1001:{creator})");
+            var dataset = new DicomDataset();
+            dataset.AddOrUpdate(DicomVR.LO, tag, "PRIVATE");
+            var rule = new AnonymizerTagRule(tag, "perturb", "description", new DicomProcessorFactory(), JObject.Parse("{}"));
+
+            var exception = Assert.Throws<AnonymizerOperationException>(() => rule.Handle(dataset, new ProcessContext()));
+
+            Assert.Contains("(0011,1001)", exception.Message);
+            Assert.DoesNotContain(creator, exception.Message);
+            Assert.DoesNotContain(creator, exception.ToString());
+        }
+
+        [Fact]
         public void GivenAnonymizerTagRule_WhenLocateItem_AListOfResultWillBeReturned()
         {
             var context = new ProcessContext();

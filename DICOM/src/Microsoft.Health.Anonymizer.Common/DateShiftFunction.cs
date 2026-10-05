@@ -43,8 +43,7 @@ namespace Microsoft.Health.Anonymizer.Common
 
             try
             {
-                DateTimeOffset newDateTime = new DateTimeOffset(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, dateTime.Offset);
-                return newDateTime.AddDays(GetDateShiftValue());
+                return dateTime.AddDays(GetDateShiftValue());
             }
             catch (Exception ex)
             {

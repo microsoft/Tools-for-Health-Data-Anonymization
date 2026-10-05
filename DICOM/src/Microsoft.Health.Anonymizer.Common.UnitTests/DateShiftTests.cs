@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Health.Anonymizer.Common.Models;
 using Microsoft.Health.Anonymizer.Common.Settings;
 using Xunit;
@@ -31,18 +32,24 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
 
         public static IEnumerable<object[]> GetDateTimeStringForDateShift()
         {
-            yield return new object[] { "2015-02-07", DateTimeOffset.Parse("2014-12-19"), DateTimeOffset.Parse("2015-03-29") };
-            yield return new object[] { "2015-02-07T13:28:17-05:00", DateTimeOffset.Parse("2014-12-19T00:00:00-05:00"), DateTimeOffset.Parse("2015-03-29T00:00:00-05:00") };
-            yield return new object[] { "1998-10-02", DateTimeOffset.Parse("1998-08-13"), DateTimeOffset.Parse("1998-11-21") };
-            yield return new object[] { "1998-10-02T08:47:25+08:00", DateTimeOffset.Parse("1998-08-13T00:00:00+08:00"), DateTimeOffset.Parse("1998-11-21T00:00:00+08:00") };
+            foreach (var (input, value) in GetDateTimeInputs())
+            {
+                foreach (var (key, shiftDays) in GetDateShiftBoundaries())
+                {
+                    yield return new object[] { input, value.DateTime, key, shiftDays };
+                }
+            }
         }
 
         public static IEnumerable<object[]> GetDateTimeForDateShift()
         {
-            yield return new object[] { DateTimeOffset.Parse("2015-02-07"), DateTimeOffset.Parse("2014-12-19"), DateTimeOffset.Parse("2015-03-29") };
-            yield return new object[] { DateTimeOffset.Parse("2015-02-07T13:28:17-05:00"), DateTimeOffset.Parse("2014-12-19T00:00:00-05:00"), DateTimeOffset.Parse("2015-03-29T00:00:00-05:00") };
-            yield return new object[] { DateTimeOffset.Parse("1998-10-02"), DateTimeOffset.Parse("1998-08-13"), DateTimeOffset.Parse("1998-11-21") };
-            yield return new object[] { DateTimeOffset.Parse("1998-10-02T08:47:25+08:00"), DateTimeOffset.Parse("1998-08-13T00:00:00+08:00"), DateTimeOffset.Parse("1998-11-21T00:00:00+08:00") };
+            foreach (var (_, value) in GetDateTimeInputs())
+            {
+                foreach (var (key, shiftDays) in GetDateShiftBoundaries())
+                {
+                    yield return new object[] { value, key, shiftDays };
+                }
+            }
         }
 
         [Theory]
@@ -72,24 +79,44 @@ namespace Microsoft.Health.Anonymizer.Common.UnitTests
 
         [Theory]
         [MemberData(nameof(GetDateTimeStringForDateShift))]
-        public void GivenADateTimeString_WhenDateShift_ThenDateTimeShouldBeShifted(string dateTime, DateTimeOffset minExpectedDateTime, DateTimeOffset maxExpectedDateTime)
+        public void GivenADateTimeString_WhenDateShift_ThenDateTimeShouldBeShifted(string input, DateTime wallClock, string key, int shiftDays)
         {
-            var dateShiftFunction = new DateShiftFunction(new DateShiftSetting() { DateShiftKey = Guid.NewGuid().ToString("N") });
-            var processResult = dateShiftFunction.Shift(dateTime, AnonymizerValueTypes.DateTime);
+            var dateShiftFunction = new DateShiftFunction(new DateShiftSetting { DateShiftKey = key, DateShiftRange = 50 });
+            var processResult = dateShiftFunction.Shift(input, AnonymizerValueTypes.DateTime);
+            var expected = wallClock.AddDays(shiftDays).ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
 
-            Assert.True(minExpectedDateTime <= DateTimeOffset.Parse(processResult));
-            Assert.True(maxExpectedDateTime >= DateTimeOffset.Parse(processResult));
+            Assert.Equal(expected, processResult);
         }
 
         [Theory]
         [MemberData(nameof(GetDateTimeForDateShift))]
-        public void GivenADateTime_WhenDateShift_ThenDateTimeShouldBeShifted(DateTimeOffset dateTime, DateTimeOffset minExpectedDateTime, DateTimeOffset maxExpectedDateTime)
+        public void GivenADateTime_WhenDateShift_ThenDateTimeShouldBeShifted(DateTimeOffset dateTime, string key, int shiftDays)
         {
-            var dateShiftFunction = new DateShiftFunction(new DateShiftSetting() { DateShiftKey = Guid.NewGuid().ToString("N") });
+            var dateShiftFunction = new DateShiftFunction(new DateShiftSetting { DateShiftKey = key, DateShiftRange = 50 });
             var processResult = dateShiftFunction.Shift(dateTime);
 
-            Assert.True(minExpectedDateTime <= processResult);
-            Assert.True(maxExpectedDateTime >= processResult);
+            Assert.Equal(dateTime.AddDays(shiftDays), processResult);
+            Assert.Equal(dateTime.TimeOfDay, processResult.TimeOfDay);
+            Assert.Equal(dateTime.Offset, processResult.Offset);
+        }
+
+        private static IEnumerable<(string Key, int ShiftDays)> GetDateShiftBoundaries()
+        {
+            // With range 50, single-byte keys 50 and 100 select the midpoint and upper boundary.
+            yield return (string.Empty, -50);
+            yield return ("2", 0);
+            yield return ("d", 50);
+            yield return ("00000000000000000000000000000028", 50);
+        }
+
+        private static IEnumerable<(string Input, DateTimeOffset Value)> GetDateTimeInputs()
+        {
+            yield return ("2015-02-07", new DateTimeOffset(2015, 2, 7, 0, 0, 0, TimeSpan.Zero));
+            yield return ("2015-02-07T13:28:17-05:00", new DateTimeOffset(2015, 2, 7, 13, 28, 17, TimeSpan.FromHours(-5)));
+            yield return ("1998-10-02", new DateTimeOffset(1998, 10, 2, 0, 0, 0, TimeSpan.Zero));
+            yield return ("1998-10-02T08:47:25+08:00", new DateTimeOffset(1998, 10, 2, 8, 47, 25, TimeSpan.FromHours(8)));
+            yield return ("2024-03-01T23:59:59.123456+05:45", new DateTimeOffset(2024, 3, 1, 23, 59, 59, TimeSpan.FromMinutes(345)).AddTicks(1234560));
+            yield return ("2024-03-01T00:00:00.000001+00:00", new DateTimeOffset(2024, 3, 1, 0, 0, 0, TimeSpan.Zero).AddTicks(10));
         }
     }
 }

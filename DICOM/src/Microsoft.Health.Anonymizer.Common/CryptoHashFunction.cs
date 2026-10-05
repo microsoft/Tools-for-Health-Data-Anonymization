@@ -4,6 +4,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Buffers.Binary;
 using System.IO;
 using System.Linq;
 using System.Security.Authentication;
@@ -17,36 +18,63 @@ namespace Microsoft.Health.Anonymizer.Common
 {
     public class CryptoHashFunction
     {
-        private readonly HMAC _hmac;
-        private readonly CryptoHashSetting _cryptoHashSetting;
+        private const int MaximumExpandedOutputLength = 4096;
+        private const int MaximumExpansionBlocks = 1024;
+
+        private readonly byte[] _key;
+        private readonly HashAlgorithmType _hashType;
+        private readonly bool _matchInputStringLength;
 
         public CryptoHashFunction(CryptoHashSetting cryptoHashSetting)
         {
             EnsureArg.IsNotNull(cryptoHashSetting, nameof(cryptoHashSetting));
 
-            byte[] byteKey = cryptoHashSetting.GetCryptoHashByteKey();
-            _hmac = cryptoHashSetting.CryptoHashType switch
-            {
-                HashAlgorithmType.Sha256 => new HMACSHA256(byteKey),
-                HashAlgorithmType.Sha512 => new HMACSHA512(byteKey),
-                HashAlgorithmType.Sha384 => new HMACSHA384(byteKey),
-                _ => throw new AnonymizerException(AnonymizerErrorCode.CryptoHashFailed, "Hash function not supported."),
-            };
-            _cryptoHashSetting = cryptoHashSetting;
+            _key = cryptoHashSetting.GetCryptoHashByteKey();
+            _hashType = cryptoHashSetting.CryptoHashType;
+            _matchInputStringLength = cryptoHashSetting.MatchInputStringLength;
+            using var hmac = CreateHmac();
         }
+
+        public bool MatchInputStringLength => _matchInputStringLength;
 
         public byte[] Hash(byte[] input)
         {
             EnsureArg.IsNotNull(input, nameof(input));
 
-            return Hash(input, _hmac);
+            using var hmac = CreateHmac();
+            return Hash(input, hmac);
         }
 
         public byte[] Hash(Stream input)
         {
             EnsureArg.IsNotNull(input, nameof(input));
 
-            return Hash(input, _hmac);
+            using var hmac = CreateHmac();
+            return Hash(input, hmac);
+        }
+
+        public string Hash(string input, Encoding encoding = null)
+        {
+            EnsureArg.IsNotNull(input, nameof(input));
+
+            if (_matchInputStringLength)
+            {
+                return HashToAlphabet(input, "0123456789", input.Length, encoding);
+            }
+
+            using var hmac = CreateHmac();
+            return Hash(input, hmac, encoding);
+        }
+
+        public string HashToAlphabet(string input, string alphabet, int outputLength, Encoding encoding = null)
+        {
+            EnsureArg.IsNotNull(input, nameof(input));
+            EnsureArg.IsNotNullOrEmpty(alphabet, nameof(alphabet));
+            ValidateExpandedOutputLength(outputLength);
+
+            encoding ??= Encoding.UTF8;
+            using var hmac = CreateHmac();
+            return GenerateOutputFromAlphabet(encoding.GetBytes(input), alphabet, outputLength, bytes => Hash(bytes, hmac));
         }
 
         public static byte[] Hash(byte[] input, HMAC hashAlgorithm)
@@ -65,13 +93,6 @@ namespace Microsoft.Health.Anonymizer.Common
             return hashAlgorithm.ComputeHash(input);
         }
 
-        public string Hash(string input, Encoding encoding = null)
-        {
-            EnsureArg.IsNotNull(input, nameof(input));
-
-            return Hash(input, _hmac, encoding, _cryptoHashSetting.MatchInputStringLength);
-        }
-
         public static string Hash(string input, HMAC hashAlgorithm, Encoding encoding = null, bool matchInputLength = false)
         {
             EnsureArg.IsNotNull(input, nameof(input));
@@ -79,35 +100,93 @@ namespace Microsoft.Health.Anonymizer.Common
 
             encoding ??= Encoding.UTF8;
 
-            var hash = hashAlgorithm.ComputeHash(encoding.GetBytes(input));
-
             if (matchInputLength)
             {
-                return GenerateOutputOfSameLength(hash, input);
+                ValidateExpandedOutputLength(input.Length);
+                return GenerateOutputFromAlphabet(
+                    encoding.GetBytes(input),
+                    "0123456789",
+                    input.Length,
+                    hashAlgorithm.ComputeHash);
             }
             else
             {
+                var hash = hashAlgorithm.ComputeHash(encoding.GetBytes(input));
                 return string.Concat(hash.Select(b => b.ToString("x2")));
             }
         }
 
-        /// <summary>
-        /// Generates a string numeric-only output of the same length as the input string.
-        /// </summary>
-        private static string GenerateOutputOfSameLength(byte[] hash, string input)
+        private static string GenerateOutputFromAlphabet(byte[] input, string alphabet, int outputLength, Func<byte[], byte[]> hash)
         {
-            var hashFloat = BitConverter.ToUInt32(hash, 0) / (float)uint.MaxValue;
+            ValidateExpandedOutputLength(outputLength);
 
-            long orderOfMagnitude = (long)Math.Pow(10, input.Length - 1);
-            if (orderOfMagnitude == 1)
+            if (alphabet.Length == 0 || alphabet.Length > byte.MaxValue + 1)
             {
-                orderOfMagnitude = 0;
+                throw new ArgumentOutOfRangeException(nameof(alphabet));
             }
-            long maxNumberGivenDigits = long.Parse(new string('9', input.Length));
 
-            long hashLong = (long)(hashFloat * (maxNumberGivenDigits - orderOfMagnitude)) + orderOfMagnitude;
+            if (outputLength == 0)
+            {
+                return string.Empty;
+            }
 
-            return hashLong.ToString();
+            var result = new StringBuilder(outputLength);
+            var acceptanceLimit = (byte.MaxValue + 1) - ((byte.MaxValue + 1) % alphabet.Length);
+            var blockInput = new byte[input.Length + sizeof(int)];
+            Buffer.BlockCopy(input, 0, blockInput, 0, input.Length);
+            var counter = 0;
+            while (result.Length < outputLength)
+            {
+                if (counter == MaximumExpansionBlocks)
+                {
+                    throw new AnonymizerException(
+                        AnonymizerErrorCode.CryptoHashFailed,
+                        $"Hash output expansion exceeds the supported limit of {MaximumExpansionBlocks} HMAC blocks.");
+                }
+
+                BinaryPrimitives.WriteInt32LittleEndian(blockInput.AsSpan(input.Length), counter++);
+                foreach (var value in hash(blockInput))
+                {
+                    if (value >= acceptanceLimit)
+                    {
+                        continue;
+                    }
+
+                    result.Append(alphabet[value % alphabet.Length]);
+                    if (result.Length == outputLength)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return result.ToString();
+        }
+
+        private static void ValidateExpandedOutputLength(int outputLength)
+        {
+            if (outputLength < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(outputLength));
+            }
+
+            if (outputLength > MaximumExpandedOutputLength)
+            {
+                throw new AnonymizerException(
+                    AnonymizerErrorCode.CryptoHashFailed,
+                    $"Hash output length exceeds the supported limit of {MaximumExpandedOutputLength} characters.");
+            }
+        }
+
+        private HMAC CreateHmac()
+        {
+            return _hashType switch
+            {
+                HashAlgorithmType.Sha256 => new HMACSHA256(_key),
+                HashAlgorithmType.Sha512 => new HMACSHA512(_key),
+                HashAlgorithmType.Sha384 => new HMACSHA384(_key),
+                _ => throw new AnonymizerException(AnonymizerErrorCode.CryptoHashFailed, "Hash function not supported."),
+            };
         }
     }
 }

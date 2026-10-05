@@ -31,9 +31,11 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 var configuration = JsonConvert.DeserializeObject<AnonymizerConfiguration>(json);
                 return new AnonymizerConfigurationManager(configuration);
             }
-            catch (JsonException innerException)
+            catch (JsonException)
             {
-                throw new AnonymizerConfigurationException(DicomAnonymizationErrorCode.ParsingJsonConfigurationFailed, $"Failed to parse configuration file", innerException);
+                throw new AnonymizerConfigurationException(
+                    DicomAnonymizationErrorCode.ParsingJsonConfigurationFailed,
+                    "Failed to parse configuration file.");
             }
         }
 

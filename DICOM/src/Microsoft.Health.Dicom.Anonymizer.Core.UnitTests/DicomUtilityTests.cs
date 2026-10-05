@@ -40,7 +40,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             yield return new object[] { "20210613000000+0000", new DateTimeOffset(2021, 6, 13, 0, 0, 0, new TimeSpan(0, 0, 0)), true };
             yield return new object[] { "20210613121212+0800", new DateTimeOffset(2021, 6, 13, 12, 12, 12, new TimeSpan(8, 0, 0)), true };
             yield return new object[] { "19691120010101+1200", new DateTimeOffset(1969, 11, 20, 01, 01, 01, new TimeSpan(12, 0, 0)), true };
-            yield return new object[] { "19661111010203.555555+0000", new DateTimeOffset(1966, 11, 11, 1, 2, 3, 555, new TimeSpan(0, 0, 0)), true };
+            yield return new object[] { "19661111010203.555555+0000", new DateTimeOffset(1966, 11, 11, 1, 2, 3, new TimeSpan(0, 0, 0)).AddTicks(5555550), true };
         }
 
         public static IEnumerable<object[]> GetInvalidDicomDateStringForParsing()

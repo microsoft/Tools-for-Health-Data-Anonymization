@@ -16,5 +16,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Exceptions
 
         UnsupportedAnonymizationMethod = 1101,
         AddCustomProcessorFailed = 1102,
+        FileMetaIdentityMismatch = 1103,
+        SequenceDepthLimitExceeded = 1104,
+        SequenceExpansionLimitExceeded = 1105,
     }
 }
