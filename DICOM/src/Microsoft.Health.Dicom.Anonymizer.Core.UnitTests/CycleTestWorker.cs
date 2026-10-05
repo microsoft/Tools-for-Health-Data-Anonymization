@@ -157,7 +157,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 }
 
                 await process.WaitForExitAsync().WaitAsync(ShutdownTimeout);
-                Assert.True(process.ExitCode == 0, await stdout + await stderr);
+                var output = await Task.WhenAll(stdout, stderr).WaitAsync(ShutdownTimeout);
+                Assert.True(process.ExitCode == 0, string.Concat(output));
             }
             finally
             {
