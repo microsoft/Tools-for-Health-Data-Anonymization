@@ -67,7 +67,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 "{\"rules\":[{\"tag\":\"RetrieveAETitle\",\"method\":\"substitute\",\"params\":{\"replaceWith\":\"AnonymousAnonymous\"}}]}");
             var engine = new AnonymizerEngine(manager, new AnonymizerEngineOptions(validateOutput: true));
 
-            Assert.Throws<DicomValidationException>(() => engine.AnonymizeDataset(Dataset));
+            var error = Assert.Throws<AnonymizerOperationException>(() => engine.AnonymizeDataset(Dataset));
+            Assert.Equal(DicomAnonymizationErrorCode.OutputDatasetValidationFailed, error.DicomAnonymizerErrorCode);
         }
 
         [Fact]
@@ -76,7 +77,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             DicomUtility.DisableAutoValidation(Dataset);
             Dataset.AddOrUpdate(DicomTag.PatientAge, "invalid");
             var engine = new AnonymizerEngine("./TestConfigurations/configuration-test-engine.json", new AnonymizerEngineOptions(validateInput: true));
-            Assert.Throws<DicomValidationException>(() => engine.AnonymizeDataset(Dataset));
+            var error = Assert.Throws<AnonymizerOperationException>(() => engine.AnonymizeDataset(Dataset));
+            Assert.Equal(DicomAnonymizationErrorCode.InputDatasetValidationFailed, error.DicomAnonymizerErrorCode);
         }
 
         [Fact]
@@ -515,7 +517,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 new AnonymizerConfigurationManager(configuration),
                 new AnonymizerEngineOptions(true, false));
 
-            Assert.Throws<DicomValidationException>(() => engine.AnonymizeFile(file));
+            var error = Assert.Throws<AnonymizerOperationException>(() => engine.AnonymizeFile(file));
+            Assert.Equal(DicomAnonymizationErrorCode.InputDatasetValidationFailed, error.DicomAnonymizerErrorCode);
             Assert.Equal(invalidAge, file.Dataset.GetString(DicomTag.PatientAge));
         }
 

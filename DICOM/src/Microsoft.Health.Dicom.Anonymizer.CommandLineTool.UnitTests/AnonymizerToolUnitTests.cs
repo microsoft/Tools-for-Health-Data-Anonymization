@@ -223,6 +223,74 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             await Assert.ThrowsAsync<ArgumentException>(async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
         }
 
+        [Theory]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        public async Task GivenInvalidMetadata_WhenOptionalValidationFails_DiagnosticsAreValueFreeAndDestinationIsUntouchedAsync(bool validateInput, bool existingDestination)
+        {
+            const string canary = "SYNTHETIC-CLI-VALIDATION-PHI-CANARY";
+            var directory = Path.Combine(Path.GetTempPath(), "dicom-validation-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            var input = Path.Combine(directory, "input.dcm");
+            var output = Path.Combine(directory, "output.dcm");
+            var config = Path.Combine(directory, "config.json");
+            var originalOut = Console.Out;
+            var originalError = Console.Error;
+            using var stdout = new StringWriter();
+            using var stderr = new StringWriter();
+            try
+            {
+                var dataset = new DicomDataset
+                {
+                    { DicomTag.SOPClassUID, DicomUID.CTImageStorage },
+                    { DicomTag.SOPInstanceUID, "2.25.123" },
+                    { DicomTag.PatientName, "SYNTHETIC^NAME" },
+                };
+                DicomUtility.DisableAutoValidation(dataset);
+                dataset.Add(DicomTag.InstitutionName, canary + new string('Z', 65));
+                new DicomFile(dataset).Save(input);
+                var originalBytes = await File.ReadAllBytesAsync(input);
+                await File.WriteAllTextAsync(config, "{'rules':[{'tag':'PatientName','method':'remove'}]}");
+                var destinationBytes = Encoding.ASCII.GetBytes("EXISTING DESTINATION");
+                if (existingDestination)
+                {
+                    await File.WriteAllBytesAsync(output, destinationBytes);
+                }
+
+                var args = new[] { "-i", input, "-o", output, "-c", config, validateInput ? "--validateInput" : "--validateOutput" };
+                var error = await Assert.ThrowsAsync<AnonymizerOperationException>(() => AnonymizerCliTool.ExecuteCommandsAsync(args));
+                var expectedCode = validateInput ? DicomAnonymizationErrorCode.InputDatasetValidationFailed : DicomAnonymizationErrorCode.OutputDatasetValidationFailed;
+                Assert.Equal(expectedCode, error.DicomAnonymizerErrorCode);
+                Assert.Null(error.InnerException);
+                Assert.DoesNotContain(canary, error.ToString());
+
+                Console.SetOut(stdout);
+                Console.SetError(stderr);
+                Assert.Equal(-1, await AnonymizerCliTool.Main(args));
+
+                Assert.Empty(stdout.ToString());
+                Assert.Equal($"Process failed with error code {(int)expectedCode}: DICOM dataset validation failed.{Environment.NewLine}", stderr.ToString());
+                Assert.DoesNotContain(canary, stdout.ToString() + stderr.ToString());
+                Assert.Equal(originalBytes, await File.ReadAllBytesAsync(input));
+                if (existingDestination)
+                {
+                    Assert.Equal(destinationBytes, await File.ReadAllBytesAsync(output));
+                }
+                else
+                {
+                    Assert.False(File.Exists(output));
+                }
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+                Console.SetError(originalError);
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+
         [Fact]
         public async Task GivenDicomFolder_WhenAnonymize_ResultWillBeWrittenInOutputFolderAsync()
         {
@@ -235,6 +303,48 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             }
 
             Directory.Delete("Output", true);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task GivenOptionalValidationControls_WhenAnonymizing_DefaultsAndEmptyValuesRemainSupportedAsync(bool emptyValue)
+        {
+            var directory = Path.Combine(Path.GetTempPath(), "dicom-validation-control-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                var input = Path.Combine(directory, "input.dcm");
+                var output = Path.Combine(directory, "output.dcm");
+                var config = Path.Combine(directory, "config.json");
+                var value = emptyValue ? string.Empty : new string('Z', 65);
+                var dataset = new DicomDataset
+                {
+                    { DicomTag.SOPClassUID, DicomUID.CTImageStorage },
+                    { DicomTag.SOPInstanceUID, "2.25.123" },
+                    { DicomTag.PatientName, "SYNTHETIC^NAME" },
+                };
+                DicomUtility.DisableAutoValidation(dataset);
+                dataset.Add(DicomTag.InstitutionName, value);
+                new DicomFile(dataset).Save(input);
+                await File.WriteAllTextAsync(config, "{'rules':[{'tag':'PatientName','method':'remove'}]}");
+                var args = new List<string> { "-i", input, "-o", output, "-c", config };
+                if (emptyValue)
+                {
+                    args.Add("--validateInput");
+                    args.Add("--validateOutput");
+                }
+
+                Assert.Equal(0, await AnonymizerCliTool.Main(args.ToArray()));
+
+                var result = DicomFile.Open(output, FileReadOption.ReadAll);
+                Assert.False(result.Dataset.Contains(DicomTag.PatientName));
+                Assert.Equal(value, result.Dataset.GetString(DicomTag.InstitutionName) ?? string.Empty);
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
         }
 
         [Fact]
