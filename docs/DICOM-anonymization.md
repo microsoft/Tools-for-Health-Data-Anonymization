@@ -139,6 +139,14 @@ but do not include the source age value or an inner exception. This changes
 only the diagnostic: invalid ages still fail even when partial-age redaction
 is disabled, and valid-age transformation behavior is unchanged.
 
+Malformed `DA` strings rejected by `DicomUtility.ParseDicomDate`, including
+selected date-shift and redaction rules with input validation disabled, also
+retain their existing `DicomDataException` and fixed format message, but no
+longer retain the value-bearing `FormatException` as an inner exception.
+Valid and empty date processing and validation defaults are unchanged.
+These targeted fixes do not establish that every processor or diagnostic path
+is free of source values.
+
 ### UID safety and compatibility notes
 
 - The command-line tool validates File Meta SOP Class/Instance identities against

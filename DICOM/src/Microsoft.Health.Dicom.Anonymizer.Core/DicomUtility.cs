@@ -60,9 +60,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             {
                 return DateTimeOffset.ParseExact(date, "yyyyMMdd", CultureInfo.InvariantCulture);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                throw new DicomDataException("Invalid date value. The valid format is YYYYMMDD.", ex);
+                throw new DicomDataException("Invalid date value. The valid format is YYYYMMDD.");
             }
         }
 

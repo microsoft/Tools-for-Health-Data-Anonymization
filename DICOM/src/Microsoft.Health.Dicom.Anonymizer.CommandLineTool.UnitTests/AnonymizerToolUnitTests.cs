@@ -224,15 +224,23 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Theory]
-        [InlineData(true, false, false)]
-        [InlineData(true, true, false)]
-        [InlineData(false, false, false)]
-        [InlineData(false, true, false)]
-        [InlineData(true, false, true)]
-        [InlineData(true, true, true)]
-        [InlineData(false, false, true)]
-        [InlineData(false, true, true)]
-        public async Task GivenInvalidMetadata_WhenValidationOrAgeParsingFails_DiagnosticsAreValueFreeAndDestinationIsUntouchedAsync(bool validateInput, bool existingDestination, bool invalidAge)
+        [InlineData(true, false, "text")]
+        [InlineData(true, true, "text")]
+        [InlineData(false, false, "text")]
+        [InlineData(false, true, "text")]
+        [InlineData(true, false, "age")]
+        [InlineData(true, true, "age")]
+        [InlineData(false, false, "age")]
+        [InlineData(false, true, "age")]
+        [InlineData(true, false, "dateShift")]
+        [InlineData(true, true, "dateShift")]
+        [InlineData(false, false, "dateShift")]
+        [InlineData(false, true, "dateShift")]
+        [InlineData(true, false, "redact")]
+        [InlineData(true, true, "redact")]
+        [InlineData(false, false, "redact")]
+        [InlineData(false, true, "redact")]
+        public async Task GivenInvalidMetadata_WhenValidationOrParsingFails_DiagnosticsAreValueFreeAndDestinationIsUntouchedAsync(bool validateInput, bool existingDestination, string scenario)
         {
             const string canary = "SYNTHETIC-CLI-VALIDATION-PHI-CANARY";
             var directory = Path.Combine(Path.GetTempPath(), "dicom-validation-" + Guid.NewGuid().ToString("N"));
@@ -253,12 +261,19 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                     { DicomTag.PatientName, "SYNTHETIC^NAME" },
                 };
                 DicomUtility.DisableAutoValidation(dataset);
-                dataset.Add(invalidAge ? DicomTag.SelectorASValue : DicomTag.InstitutionName, canary + new string('Z', 65));
+                var tag = scenario == "age" ? DicomTag.SelectorASValue :
+                    scenario == "text" ? DicomTag.InstitutionName : DicomTag.StudyDate;
+                dataset.Add(tag, canary + new string('Z', 65));
                 new DicomFile(dataset).Save(input);
                 var originalBytes = await File.ReadAllBytesAsync(input);
-                await File.WriteAllTextAsync(config, invalidAge
-                    ? "{'rules':[{'tag':'SelectorASValue','method':'redact','params':{'enablePartialAgesForRedact':false}}]}"
-                    : "{'rules':[{'tag':'PatientName','method':'remove'}]}");
+                var policy = scenario switch
+                {
+                    "age" => "{'rules':[{'tag':'SelectorASValue','method':'redact','params':{'enablePartialAgesForRedact':false}}]}",
+                    "text" => "{'rules':[{'tag':'PatientName','method':'remove'}]}",
+                    _ => "{'rules':[{'tag':'StudyDate','method':'" + scenario +
+                        "','params':{'dateShiftKey':'synthetic-key','enablePartialDatesForRedact':false}}]}",
+                };
+                await File.WriteAllTextAsync(config, policy);
                 var destinationBytes = Encoding.ASCII.GetBytes("EXISTING DESTINATION");
                 if (existingDestination)
                 {
@@ -268,10 +283,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 var args = new[] { "-i", input, "-o", output, "-c", config, validateInput ? "--validateInput" : "--validateOutput" };
                 Exception error;
                 string expectedDiagnostic;
-                if (invalidAge && !validateInput)
+                if (scenario != "text" && !validateInput)
                 {
                     error = await Assert.ThrowsAsync<DicomDataException>(() => AnonymizerCliTool.ExecuteCommandsAsync(args));
-                    expectedDiagnostic = "Process failed: Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY.";
+                    expectedDiagnostic = scenario == "age"
+                        ? "Process failed: Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY."
+                        : "Process failed: Invalid date value. The valid format is YYYYMMDD.";
                 }
                 else
                 {

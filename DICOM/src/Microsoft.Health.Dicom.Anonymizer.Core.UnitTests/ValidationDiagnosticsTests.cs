@@ -216,6 +216,101 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                     "{'rules':[{'tag':'SelectorASValue','method':'redact','params':{'enablePartialAgesForRedact':false}}]}"),
                 new AnonymizerEngineOptions(validateInput, true));
 
+        public static IEnumerable<object[]> GetDateParsingCases()
+        {
+            foreach (var mode in new[] { "dataset", "inplace", "clone" })
+            {
+                foreach (var tagName in new[] { "StudyDate", "PatientBirthDate" })
+                {
+                    foreach (var method in new[] { "dateShift", "redact" })
+                    {
+                        yield return new object[] { mode, tagName, method, false };
+                        yield return new object[] { mode, tagName, method, true };
+                    }
+                }
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetDateParsingCases))]
+        public void GivenInvalidSelectedDate_WhenProcessing_DiagnosticsDoNotRetainSourceValues(string mode, string tagName, string method, bool validateInput)
+        {
+            using var logs = new CapturingLogger();
+            using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug).AddProvider(logs));
+            var originalFactory = AnonymizerLogging.LoggerFactory;
+            AnonymizerLogging.LoggerFactory = loggerFactory;
+            try
+            {
+                var tag = tagName == "StudyDate" ? DicomTag.StudyDate : DicomTag.PatientBirthDate;
+                var file = CreateFile(string.Empty, false);
+                file.Dataset.Add(tag, Canary);
+                var engine = CreateDateEngine(tagName, method, validateInput);
+                Exception error;
+                if (validateInput)
+                {
+                    var validationError = Assert.Throws<AnonymizerOperationException>(() => Apply(engine, file, mode));
+                    Assert.Equal(DicomAnonymizationErrorCode.InputDatasetValidationFailed, validationError.DicomAnonymizerErrorCode);
+                    error = validationError;
+                }
+                else
+                {
+                    error = Assert.Throws<DicomDataException>(() => Apply(engine, file, mode));
+                    Assert.Equal("Invalid date value. The valid format is YYYYMMDD.", error.Message);
+                }
+
+                Assert.DoesNotContain(Canary, error.Message);
+                Assert.DoesNotContain(Canary, error.ToString());
+                Assert.Null(error.InnerException);
+                Assert.All(logs.Messages, message => Assert.DoesNotContain(Canary, message));
+                Assert.Equal(Canary, file.Dataset.GetString(tag));
+                Assert.Equal("2.25.123", file.Dataset.GetString(DicomTag.SOPInstanceUID));
+                Assert.Equal("2.25.123", file.FileMetaInfo.MediaStorageSOPInstanceUID.UID);
+            }
+            finally
+            {
+                AnonymizerLogging.LoggerFactory = originalFactory;
+            }
+        }
+
+        [Theory]
+        [InlineData("dateShift", "20240301", "20240301")]
+        [InlineData("dateShift", "", "")]
+        [InlineData("redact", "20240301", "")]
+        [InlineData("redact", "", "")]
+        public void GivenValidOrEmptyDate_WhenProcessing_ExistingTransformationsArePreserved(string method, string value, string expected)
+        {
+            foreach (var mode in new[] { "dataset", "inplace", "clone" })
+            {
+                foreach (var validateInput in new[] { false, true })
+                {
+                    var file = CreateFile(string.Empty, false);
+                    file.Dataset.Add(DicomTag.StudyDate, value);
+
+                    var output = Apply(CreateDateEngine("StudyDate", method, validateInput), file, mode);
+
+                    Assert.Equal(expected, output.Dataset.GetString(DicomTag.StudyDate) ?? string.Empty);
+                    Assert.True(output.Dataset.Contains(DicomTag.StudyDate));
+                    output.Dataset.Validate();
+                }
+            }
+        }
+
+        [Fact]
+        public void GivenInvalidDate_WhenCallingParserDirectly_ErrorHasNoValueBearingInnerException()
+        {
+            var error = Assert.Throws<DicomDataException>(() => DicomUtility.ParseDicomDate(Canary));
+
+            Assert.DoesNotContain(Canary, error.ToString());
+            Assert.Null(error.InnerException);
+        }
+
+        private static AnonymizerEngine CreateDateEngine(string tagName, string method, bool validateInput) =>
+            new AnonymizerEngine(
+                AnonymizerConfigurationManager.CreateFromJson(
+                    "{'rules':[{'tag':'" + tagName + "','method':'" + method +
+                    "','params':{'dateShiftKey':'synthetic-key','dateShiftRange':0,'enablePartialDatesForRedact':false}}]}"),
+                new AnonymizerEngineOptions(validateInput, true));
+
         private static AnonymizerEngine CreateEngine(AnonymizerEngineOptions? options = null)
         {
             var configuration = AnonymizerConfigurationManager.CreateFromJson("{'rules':[{'tag':'PatientName','method':'remove'}]}");
