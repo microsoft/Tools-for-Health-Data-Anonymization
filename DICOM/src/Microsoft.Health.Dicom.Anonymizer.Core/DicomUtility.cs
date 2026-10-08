@@ -165,7 +165,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 }
             }
 
-            throw new DicomDataException($"Invalid age string [{age}]. The valid strings are nnnD, nnnW, nnnM, nnnY.");
+            throw new DicomDataException("Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY.");
         }
 
         public static string GenerateAgeString(AgeObject age)

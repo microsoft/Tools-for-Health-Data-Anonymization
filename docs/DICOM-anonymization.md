@@ -133,6 +133,12 @@ These diagnostics cover the optional dataset validation calls, including nested
 elements, not arbitrary custom processors, parsing, cloning, or persistence
 failures. Existing UID and structure guards retain their own error codes.
 
+Invalid age strings rejected by `DicomUtility.ParseAge`, including selected
+`AS` redaction when input validation is disabled, retain `DicomDataException`
+but do not include the source age value or an inner exception. This changes
+only the diagnostic: invalid ages still fail even when partial-age redaction
+is disabled, and valid-age transformation behavior is unchanged.
+
 ### UID safety and compatibility notes
 
 - The command-line tool validates File Meta SOP Class/Instance identities against

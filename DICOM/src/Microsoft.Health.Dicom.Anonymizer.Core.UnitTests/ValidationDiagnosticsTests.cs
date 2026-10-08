@@ -124,6 +124,73 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             Assert.Equal(1107, (int)DicomAnonymizationErrorCode.OutputDatasetValidationFailed);
         }
 
+        [Theory]
+        [InlineData("dataset", false)]
+        [InlineData("inplace", false)]
+        [InlineData("clone", false)]
+        [InlineData("dataset", true)]
+        [InlineData("inplace", true)]
+        [InlineData("clone", true)]
+        public void GivenInvalidSelectedAge_WhenRedacting_DiagnosticsDoNotExposeTheValue(string mode, bool validateInput)
+        {
+            var file = CreateFile(string.Empty, false);
+            file.Dataset.Add(DicomTag.SelectorASValue, Canary);
+            var engine = CreateAgeRedactionEngine(validateInput);
+
+            Exception error;
+            if (validateInput)
+            {
+                var validationError = Assert.Throws<AnonymizerOperationException>(() => Apply(engine, file, mode));
+                Assert.Equal(DicomAnonymizationErrorCode.InputDatasetValidationFailed, validationError.DicomAnonymizerErrorCode);
+                error = validationError;
+            }
+            else
+            {
+                error = Assert.Throws<DicomDataException>(() => Apply(engine, file, mode));
+                Assert.Equal("Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY.", error.Message);
+            }
+
+            Assert.DoesNotContain(Canary, error.Message);
+            Assert.DoesNotContain(Canary, error.ToString());
+            Assert.Null(error.InnerException);
+            Assert.Equal(Canary, file.Dataset.GetString(DicomTag.SelectorASValue));
+        }
+
+        [Theory]
+        [InlineData("001D")]
+        [InlineData("002W")]
+        [InlineData("003M")]
+        [InlineData("045Y")]
+        public void GivenValidSelectedAge_WhenPartialRedactionIsDisabled_ValueIsCleared(string age)
+        {
+            foreach (var mode in new[] { "dataset", "inplace", "clone" })
+            {
+                var file = CreateFile(string.Empty, false);
+                file.Dataset.Add(DicomTag.SelectorASValue, age);
+
+                var output = Apply(CreateAgeRedactionEngine(true), file, mode);
+
+                Assert.True(output.Dataset.Contains(DicomTag.SelectorASValue));
+                Assert.True(string.IsNullOrEmpty(output.Dataset.GetString(DicomTag.SelectorASValue)));
+                output.Dataset.Validate();
+            }
+        }
+
+        [Fact]
+        public void GivenInvalidAge_WhenCallingParserDirectly_ErrorRetainsItsTypeWithoutSourceValue()
+        {
+            var error = Assert.Throws<DicomDataException>(() => DicomUtility.ParseAge(Canary));
+
+            Assert.DoesNotContain(Canary, error.ToString());
+            Assert.Null(error.InnerException);
+        }
+
+        private static AnonymizerEngine CreateAgeRedactionEngine(bool validateInput) =>
+            new AnonymizerEngine(
+                AnonymizerConfigurationManager.CreateFromJson(
+                    "{'rules':[{'tag':'SelectorASValue','method':'redact','params':{'enablePartialAgesForRedact':false}}]}"),
+                new AnonymizerEngineOptions(validateInput, true));
+
         private static AnonymizerEngine CreateEngine(AnonymizerEngineOptions? options = null)
         {
             var configuration = AnonymizerConfigurationManager.CreateFromJson("{'rules':[{'tag':'PatientName','method':'remove'}]}");
