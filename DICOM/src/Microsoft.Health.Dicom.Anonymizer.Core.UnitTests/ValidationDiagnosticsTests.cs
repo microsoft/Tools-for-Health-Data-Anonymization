@@ -161,6 +161,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [InlineData("002W")]
         [InlineData("003M")]
         [InlineData("045Y")]
+        [InlineData("")]
         public void GivenValidSelectedAge_WhenPartialRedactionIsDisabled_ValueIsCleared(string age)
         {
             foreach (var mode in new[] { "dataset", "inplace", "clone" })
@@ -183,6 +184,30 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 
             Assert.DoesNotContain(Canary, error.ToString());
             Assert.Null(error.InnerException);
+        }
+
+        [Fact]
+        public void GivenInvalidAge_WhenSelectedOrUnselected_LogsAreValueFreeAndSelectionIsPreserved()
+        {
+            using var logs = new CapturingLogger();
+            using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug).AddProvider(logs));
+            var originalFactory = AnonymizerLogging.LoggerFactory;
+            AnonymizerLogging.LoggerFactory = loggerFactory;
+            try
+            {
+                var file = CreateFile(string.Empty, false);
+                file.Dataset.Add(DicomTag.SelectorASValue, Canary);
+                CreateEngine().AnonymizeDataset(file.Dataset);
+                Assert.Equal(Canary, file.Dataset.GetString(DicomTag.SelectorASValue));
+
+                Assert.Throws<DicomDataException>(() => CreateAgeRedactionEngine(false).AnonymizeDataset(file.Dataset));
+
+                Assert.All(logs.Messages, message => Assert.DoesNotContain(Canary, message));
+            }
+            finally
+            {
+                AnonymizerLogging.LoggerFactory = originalFactory;
+            }
         }
 
         private static AnonymizerEngine CreateAgeRedactionEngine(bool validateInput) =>

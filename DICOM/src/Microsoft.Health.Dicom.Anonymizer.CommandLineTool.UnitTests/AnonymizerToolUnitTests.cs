@@ -224,11 +224,15 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         }
 
         [Theory]
-        [InlineData(true, false)]
-        [InlineData(true, true)]
-        [InlineData(false, false)]
-        [InlineData(false, true)]
-        public async Task GivenInvalidMetadata_WhenOptionalValidationFails_DiagnosticsAreValueFreeAndDestinationIsUntouchedAsync(bool validateInput, bool existingDestination)
+        [InlineData(true, false, false)]
+        [InlineData(true, true, false)]
+        [InlineData(false, false, false)]
+        [InlineData(false, true, false)]
+        [InlineData(true, false, true)]
+        [InlineData(true, true, true)]
+        [InlineData(false, false, true)]
+        [InlineData(false, true, true)]
+        public async Task GivenInvalidMetadata_WhenValidationOrAgeParsingFails_DiagnosticsAreValueFreeAndDestinationIsUntouchedAsync(bool validateInput, bool existingDestination, bool invalidAge)
         {
             const string canary = "SYNTHETIC-CLI-VALIDATION-PHI-CANARY";
             var directory = Path.Combine(Path.GetTempPath(), "dicom-validation-" + Guid.NewGuid().ToString("N"));
@@ -249,10 +253,12 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                     { DicomTag.PatientName, "SYNTHETIC^NAME" },
                 };
                 DicomUtility.DisableAutoValidation(dataset);
-                dataset.Add(DicomTag.InstitutionName, canary + new string('Z', 65));
+                dataset.Add(invalidAge ? DicomTag.SelectorASValue : DicomTag.InstitutionName, canary + new string('Z', 65));
                 new DicomFile(dataset).Save(input);
                 var originalBytes = await File.ReadAllBytesAsync(input);
-                await File.WriteAllTextAsync(config, "{'rules':[{'tag':'PatientName','method':'remove'}]}");
+                await File.WriteAllTextAsync(config, invalidAge
+                    ? "{'rules':[{'tag':'SelectorASValue','method':'redact','params':{'enablePartialAgesForRedact':false}}]}"
+                    : "{'rules':[{'tag':'PatientName','method':'remove'}]}");
                 var destinationBytes = Encoding.ASCII.GetBytes("EXISTING DESTINATION");
                 if (existingDestination)
                 {
@@ -260,10 +266,24 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 }
 
                 var args = new[] { "-i", input, "-o", output, "-c", config, validateInput ? "--validateInput" : "--validateOutput" };
-                var error = await Assert.ThrowsAsync<AnonymizerOperationException>(() => AnonymizerCliTool.ExecuteCommandsAsync(args));
-                var expectedCode = validateInput ? DicomAnonymizationErrorCode.InputDatasetValidationFailed : DicomAnonymizationErrorCode.OutputDatasetValidationFailed;
-                Assert.Equal(expectedCode, error.DicomAnonymizerErrorCode);
+                Exception error;
+                string expectedDiagnostic;
+                if (invalidAge && !validateInput)
+                {
+                    error = await Assert.ThrowsAsync<DicomDataException>(() => AnonymizerCliTool.ExecuteCommandsAsync(args));
+                    expectedDiagnostic = "Process failed: Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY.";
+                }
+                else
+                {
+                    var validationError = await Assert.ThrowsAsync<AnonymizerOperationException>(() => AnonymizerCliTool.ExecuteCommandsAsync(args));
+                    var expectedCode = validateInput ? DicomAnonymizationErrorCode.InputDatasetValidationFailed : DicomAnonymizationErrorCode.OutputDatasetValidationFailed;
+                    Assert.Equal(expectedCode, validationError.DicomAnonymizerErrorCode);
+                    error = validationError;
+                    expectedDiagnostic = $"Process failed with error code {(int)expectedCode}: DICOM dataset validation failed.";
+                }
+
                 Assert.Null(error.InnerException);
+                Assert.DoesNotContain(canary, error.Message);
                 Assert.DoesNotContain(canary, error.ToString());
 
                 Console.SetOut(stdout);
@@ -271,7 +291,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 Assert.Equal(-1, await AnonymizerCliTool.Main(args));
 
                 Assert.Empty(stdout.ToString());
-                Assert.Equal($"Process failed with error code {(int)expectedCode}: DICOM dataset validation failed.{Environment.NewLine}", stderr.ToString());
+                Assert.Equal(expectedDiagnostic + Environment.NewLine, stderr.ToString());
                 Assert.DoesNotContain(canary, stdout.ToString() + stderr.ToString());
                 Assert.Equal(originalBytes, await File.ReadAllBytesAsync(input));
                 if (existingDestination)
