@@ -147,6 +147,14 @@ Valid and empty date processing and validation defaults are unchanged.
 These targeted fixes do not establish that every processor or diagnostic path
 is free of source values.
 
+For `perturb`, format and overflow failures from the numeric value getter now
+throw `AnonymizerOperationException` with `NumericValueConversionFailed` (`1108`)
+and numeric tag/VR context only. The reflective exception and its value-bearing
+inner exception are not retained. Invalid values still fail; valid and empty
+numeric processing is unchanged. Enabled input validation may reject invalid
+input earlier with `1106`. This does not wrap unrelated reflection failures or
+change numeric perturbation algorithms.
+
 ### UID safety and compatibility notes
 
 - The command-line tool validates File Meta SOP Class/Instance identities against

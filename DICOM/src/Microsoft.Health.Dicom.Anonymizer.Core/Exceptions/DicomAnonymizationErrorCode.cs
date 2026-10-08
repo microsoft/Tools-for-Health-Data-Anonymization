@@ -21,5 +21,6 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Exceptions
         SequenceExpansionLimitExceeded = 1105,
         InputDatasetValidationFailed = 1106,
         OutputDatasetValidationFailed = 1107,
+        NumericValueConversionFailed = 1108,
     }
 }

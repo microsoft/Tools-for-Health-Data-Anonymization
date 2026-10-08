@@ -311,6 +311,87 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                     "','params':{'dateShiftKey':'synthetic-key','dateShiftRange':0,'enablePartialDatesForRedact':false}}]}"),
                 new AnonymizerEngineOptions(validateInput, true));
 
+        public static IEnumerable<object[]> GetNumericConversionCases()
+        {
+            foreach (var mode in new[] { "dataset", "inplace", "clone" })
+            {
+                foreach (var tagName in new[] { "PatientWeight", "SeriesNumber" })
+                {
+                    foreach (var value in new[] { Canary, tagName == "PatientWeight" ? "1E+100" : "2147483648" })
+                    {
+                        yield return new object[] { mode, tagName, value, false };
+                        yield return new object[] { mode, tagName, value, true };
+                    }
+                }
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetNumericConversionCases))]
+        public void GivenInvalidNumericString_WhenPerturbing_DiagnosticsDoNotRetainConversionValues(string mode, string tagName, string value, bool validateInput)
+        {
+            using var logs = new CapturingLogger();
+            using var loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug).AddProvider(logs));
+            var originalFactory = AnonymizerLogging.LoggerFactory;
+            AnonymizerLogging.LoggerFactory = loggerFactory;
+            try
+            {
+                var tag = tagName == "PatientWeight" ? DicomTag.PatientWeight : DicomTag.SeriesNumber;
+                var file = CreateFile(string.Empty, false);
+                file.Dataset.Add(tag, value);
+                var engine = CreateNumericEngine(tagName, validateInput);
+
+                var error = Assert.Throws<AnonymizerOperationException>(() => Apply(engine, file, mode));
+
+                var inputValidationRejects = validateInput && value != "1E+100";
+                Assert.Equal(
+                    inputValidationRejects ? DicomAnonymizationErrorCode.InputDatasetValidationFailed : DicomAnonymizationErrorCode.NumericValueConversionFailed,
+                    error.DicomAnonymizerErrorCode);
+
+                if (error.DicomAnonymizerErrorCode == DicomAnonymizationErrorCode.NumericValueConversionFailed)
+                {
+                    Assert.Contains(tagName == "PatientWeight" ? "(0010,1030)" : "(0020,0011)", error.Message);
+                    Assert.Contains(tagName == "PatientWeight" ? "DS" : "IS", error.Message);
+                }
+
+                Assert.DoesNotContain(value, error.Message);
+                Assert.DoesNotContain(value, error.ToString());
+                Assert.Null(error.InnerException);
+                Assert.All(logs.Messages, message => Assert.DoesNotContain(value, message));
+                Assert.Equal(value, file.Dataset.GetString(tag));
+            }
+            finally
+            {
+                AnonymizerLogging.LoggerFactory = originalFactory;
+            }
+        }
+
+        [Theory]
+        [InlineData("PatientWeight", "12.5")]
+        [InlineData("PatientWeight", "")]
+        [InlineData("SeriesNumber", "12")]
+        [InlineData("SeriesNumber", "")]
+        public void GivenValidOrEmptyNumericString_WhenPerturbing_ExistingBehaviorIsPreserved(string tagName, string value)
+        {
+            var tag = tagName == "PatientWeight" ? DicomTag.PatientWeight : DicomTag.SeriesNumber;
+            foreach (var mode in new[] { "dataset", "inplace", "clone" })
+            {
+                var file = CreateFile(string.Empty, false);
+                file.Dataset.Add(tag, value);
+
+                var output = Apply(CreateNumericEngine(tagName, true), file, mode);
+
+                Assert.Equal(value, output.Dataset.GetString(tag) ?? string.Empty);
+                output.Dataset.Validate();
+            }
+        }
+
+        private static AnonymizerEngine CreateNumericEngine(string tagName, bool validateInput) =>
+            new AnonymizerEngine(
+                AnonymizerConfigurationManager.CreateFromJson(
+                    "{'rules':[{'tag':'" + tagName + "','method':'perturb','params':{'span':0,'roundTo':2}}]}"),
+                new AnonymizerEngineOptions(validateInput, true));
+
         private static AnonymizerEngine CreateEngine(AnonymizerEngineOptions? options = null)
         {
             var configuration = AnonymizerConfigurationManager.CreateFromJson("{'rules':[{'tag':'PatientName','method':'remove'}]}");

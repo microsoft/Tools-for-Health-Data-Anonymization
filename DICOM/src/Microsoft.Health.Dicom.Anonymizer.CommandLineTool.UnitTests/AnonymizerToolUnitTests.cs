@@ -240,6 +240,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [InlineData(true, true, "redact")]
         [InlineData(false, false, "redact")]
         [InlineData(false, true, "redact")]
+        [InlineData(true, false, "DS")]
+        [InlineData(true, true, "DS")]
+        [InlineData(false, false, "DS")]
+        [InlineData(false, true, "DS")]
+        [InlineData(true, false, "IS")]
+        [InlineData(true, true, "IS")]
+        [InlineData(false, false, "IS")]
+        [InlineData(false, true, "IS")]
         public async Task GivenInvalidMetadata_WhenValidationOrParsingFails_DiagnosticsAreValueFreeAndDestinationIsUntouchedAsync(bool validateInput, bool existingDestination, string scenario)
         {
             const string canary = "SYNTHETIC-CLI-VALIDATION-PHI-CANARY";
@@ -261,8 +269,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                     { DicomTag.PatientName, "SYNTHETIC^NAME" },
                 };
                 DicomUtility.DisableAutoValidation(dataset);
-                var tag = scenario == "age" ? DicomTag.SelectorASValue :
-                    scenario == "text" ? DicomTag.InstitutionName : DicomTag.StudyDate;
+                var tag = scenario switch
+                {
+                    "age" => DicomTag.SelectorASValue,
+                    "text" => DicomTag.InstitutionName,
+                    "DS" => DicomTag.PatientWeight,
+                    "IS" => DicomTag.SeriesNumber,
+                    _ => DicomTag.StudyDate,
+                };
                 dataset.Add(tag, canary + new string('Z', 65));
                 new DicomFile(dataset).Save(input);
                 var originalBytes = await File.ReadAllBytesAsync(input);
@@ -270,6 +284,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 {
                     "age" => "{'rules':[{'tag':'SelectorASValue','method':'redact','params':{'enablePartialAgesForRedact':false}}]}",
                     "text" => "{'rules':[{'tag':'PatientName','method':'remove'}]}",
+                    "DS" => "{'rules':[{'tag':'PatientWeight','method':'perturb','params':{}}]}",
+                    "IS" => "{'rules':[{'tag':'SeriesNumber','method':'perturb','params':{}}]}",
                     _ => "{'rules':[{'tag':'StudyDate','method':'" + scenario +
                         "','params':{'dateShiftKey':'synthetic-key','enablePartialDatesForRedact':false}}]}",
                 };
@@ -283,7 +299,14 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 var args = new[] { "-i", input, "-o", output, "-c", config, validateInput ? "--validateInput" : "--validateOutput" };
                 Exception error;
                 string expectedDiagnostic;
-                if (scenario != "text" && !validateInput)
+                if ((scenario == "DS" || scenario == "IS") && !validateInput)
+                {
+                    var conversionError = await Assert.ThrowsAsync<AnonymizerOperationException>(() => AnonymizerCliTool.ExecuteCommandsAsync(args));
+                    Assert.Equal(DicomAnonymizationErrorCode.NumericValueConversionFailed, conversionError.DicomAnonymizerErrorCode);
+                    error = conversionError;
+                    expectedDiagnostic = $"Process failed with error code 1108: Numeric conversion failed for tag {(scenario == "DS" ? "(0010,1030)" : "(0020,0011)")} with VR {scenario}.";
+                }
+                else if (scenario != "text" && !validateInput)
                 {
                     error = await Assert.ThrowsAsync<DicomDataException>(() => AnonymizerCliTool.ExecuteCommandsAsync(args));
                     expectedDiagnostic = scenario == "age"
