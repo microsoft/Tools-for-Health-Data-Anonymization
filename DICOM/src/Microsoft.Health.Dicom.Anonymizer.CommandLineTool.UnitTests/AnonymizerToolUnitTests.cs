@@ -250,7 +250,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         [InlineData(false, true, "IS")]
         public async Task GivenInvalidMetadata_WhenValidationOrParsingFails_DiagnosticsAreValueFreeAndDestinationIsUntouchedAsync(bool validateInput, bool existingDestination, string scenario)
         {
-            const string canary = "SYNTHETIC-CLI-VALIDATION-PHI-CANARY";
+            const string phiCanary = "SYNTHETIC-CLI-VALIDATION-PHI-CANARY";
             var directory = Path.Combine(Path.GetTempPath(), "dicom-validation-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(directory);
             var input = Path.Combine(directory, "input.dcm");
@@ -269,7 +269,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                     { DicomTag.PatientName, "SYNTHETIC^NAME" },
                 };
                 DicomUtility.DisableAutoValidation(dataset);
-                var tag = scenario switch
+                var invalidValueTag = scenario switch
                 {
                     "age" => DicomTag.SelectorASValue,
                     "text" => DicomTag.InstitutionName,
@@ -277,10 +277,13 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                     "IS" => DicomTag.SeriesNumber,
                     _ => DicomTag.StudyDate,
                 };
-                dataset.Add(tag, canary + new string('Z', 65));
+                dataset.Add(invalidValueTag, phiCanary + new string('Z', 65));
                 new DicomFile(dataset).Save(input);
                 var originalBytes = await File.ReadAllBytesAsync(input);
-                var policy = scenario switch
+
+                // Valid policies encounter malformed metadata; failure diagnostics must not expose the PHI canary.
+                // The text case leaves the invalid value unselected so optional dataset validation rejects it.
+                var policyForInvalidMetadata = scenario switch
                 {
                     "age" => "{'rules':[{'tag':'SelectorASValue','method':'redact','params':{'enablePartialAgesForRedact':false}}]}",
                     "text" => "{'rules':[{'tag':'PatientName','method':'remove'}]}",
@@ -289,7 +292,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                     _ => "{'rules':[{'tag':'StudyDate','method':'" + scenario +
                         "','params':{'dateShiftKey':'synthetic-key','enablePartialDatesForRedact':false}}]}",
                 };
-                await File.WriteAllTextAsync(config, policy);
+                await File.WriteAllTextAsync(config, policyForInvalidMetadata);
                 var destinationBytes = Encoding.ASCII.GetBytes("EXISTING DESTINATION");
                 if (existingDestination)
                 {
@@ -323,8 +326,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 }
 
                 Assert.Null(error.InnerException);
-                Assert.DoesNotContain(canary, error.Message);
-                Assert.DoesNotContain(canary, error.ToString());
+                Assert.DoesNotContain(phiCanary, error.Message);
+                Assert.DoesNotContain(phiCanary, error.ToString());
 
                 Console.SetOut(stdout);
                 Console.SetError(stderr);
@@ -332,7 +335,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
 
                 Assert.Empty(stdout.ToString());
                 Assert.Equal(expectedDiagnostic + Environment.NewLine, stderr.ToString());
-                Assert.DoesNotContain(canary, stdout.ToString() + stderr.ToString());
+                Assert.DoesNotContain(phiCanary, stdout.ToString() + stderr.ToString());
                 Assert.Equal(originalBytes, await File.ReadAllBytesAsync(input));
                 if (existingDestination)
                 {
