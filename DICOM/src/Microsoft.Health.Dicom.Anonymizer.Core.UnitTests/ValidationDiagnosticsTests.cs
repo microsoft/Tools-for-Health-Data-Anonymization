@@ -23,6 +23,21 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
         private const string Canary = "SYNTHETIC-VALIDATION-PHI-CANARY";
         private static readonly string InvalidValue = Canary + new string('Z', 65);
 
+        [Fact]
+        public void GivenGlobalLoggerMutation_WhenSchedulingTests_LoggingCollectionCannotOverlapOtherCollections()
+        {
+            var collection = Assert.Single(typeof(ValidationDiagnosticsTests).CustomAttributes
+                .Where(attribute => attribute.AttributeType == typeof(CollectionAttribute)));
+            var definition = Assert.Single(typeof(ValidationDiagnosticsTests).Assembly.GetTypes()
+                .SelectMany(type => type.CustomAttributes)
+                .Where(attribute => attribute.AttributeType == typeof(CollectionDefinitionAttribute) &&
+                    Equals(attribute.ConstructorArguments[0].Value, collection.ConstructorArguments[0].Value)));
+
+            var disableParallelization = Assert.Single(definition.NamedArguments
+                .Where(argument => argument.MemberName == nameof(CollectionDefinitionAttribute.DisableParallelization)));
+            Assert.Equal(true, disableParallelization.TypedValue.Value);
+        }
+
         public static IEnumerable<object[]> GetValidationCases()
         {
             foreach (var mode in new[] { "dataset", "inplace", "clone" })
