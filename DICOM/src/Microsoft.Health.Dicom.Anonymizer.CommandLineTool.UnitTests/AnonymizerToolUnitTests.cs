@@ -223,6 +223,137 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             await Assert.ThrowsAsync<ArgumentException>(async () => await AnonymizerCliTool.ExecuteCommandsAsync(commands.Split()));
         }
 
+        [Theory]
+        [InlineData(true, false, "text")]
+        [InlineData(true, true, "text")]
+        [InlineData(false, false, "text")]
+        [InlineData(false, true, "text")]
+        [InlineData(true, false, "age")]
+        [InlineData(true, true, "age")]
+        [InlineData(false, false, "age")]
+        [InlineData(false, true, "age")]
+        [InlineData(true, false, "dateShift")]
+        [InlineData(true, true, "dateShift")]
+        [InlineData(false, false, "dateShift")]
+        [InlineData(false, true, "dateShift")]
+        [InlineData(true, false, "redact")]
+        [InlineData(true, true, "redact")]
+        [InlineData(false, false, "redact")]
+        [InlineData(false, true, "redact")]
+        [InlineData(true, false, "DS")]
+        [InlineData(true, true, "DS")]
+        [InlineData(false, false, "DS")]
+        [InlineData(false, true, "DS")]
+        [InlineData(true, false, "IS")]
+        [InlineData(true, true, "IS")]
+        [InlineData(false, false, "IS")]
+        [InlineData(false, true, "IS")]
+        public async Task GivenInvalidMetadata_WhenValidationOrParsingFails_DiagnosticsAreValueFreeAndDestinationIsUntouchedAsync(bool validateInput, bool existingDestination, string scenario)
+        {
+            const string phiCanary = "SYNTHETIC-CLI-VALIDATION-PHI-CANARY";
+            var directory = Path.Combine(Path.GetTempPath(), "dicom-validation-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            var input = Path.Combine(directory, "input.dcm");
+            var output = Path.Combine(directory, "output.dcm");
+            var config = Path.Combine(directory, "config.json");
+            var originalOut = Console.Out;
+            var originalError = Console.Error;
+            using var stdout = new StringWriter();
+            using var stderr = new StringWriter();
+            try
+            {
+                var dataset = new DicomDataset
+                {
+                    { DicomTag.SOPClassUID, DicomUID.CTImageStorage },
+                    { DicomTag.SOPInstanceUID, "2.25.123" },
+                    { DicomTag.PatientName, "SYNTHETIC^NAME" },
+                };
+                DicomUtility.DisableAutoValidation(dataset);
+                var invalidValueTag = scenario switch
+                {
+                    "age" => DicomTag.SelectorASValue,
+                    "text" => DicomTag.InstitutionName,
+                    "DS" => DicomTag.PatientWeight,
+                    "IS" => DicomTag.SeriesNumber,
+                    _ => DicomTag.StudyDate,
+                };
+                dataset.Add(invalidValueTag, phiCanary + new string('Z', 65));
+                new DicomFile(dataset).Save(input);
+                var originalBytes = await File.ReadAllBytesAsync(input);
+
+                // Valid policies encounter malformed metadata; failure diagnostics must not expose the PHI canary.
+                // The text case leaves the invalid value unselected so optional dataset validation rejects it.
+                var policyForInvalidMetadata = scenario switch
+                {
+                    "age" => "{'rules':[{'tag':'SelectorASValue','method':'redact','params':{'enablePartialAgesForRedact':false}}]}",
+                    "text" => "{'rules':[{'tag':'PatientName','method':'remove'}]}",
+                    "DS" => "{'rules':[{'tag':'PatientWeight','method':'perturb','params':{}}]}",
+                    "IS" => "{'rules':[{'tag':'SeriesNumber','method':'perturb','params':{}}]}",
+                    _ => "{'rules':[{'tag':'StudyDate','method':'" + scenario +
+                        "','params':{'dateShiftKey':'synthetic-key','enablePartialDatesForRedact':false}}]}",
+                };
+                await File.WriteAllTextAsync(config, policyForInvalidMetadata);
+                var destinationBytes = Encoding.ASCII.GetBytes("EXISTING DESTINATION");
+                if (existingDestination)
+                {
+                    await File.WriteAllBytesAsync(output, destinationBytes);
+                }
+
+                var args = new[] { "-i", input, "-o", output, "-c", config, validateInput ? "--validateInput" : "--validateOutput" };
+                Exception error;
+                string expectedDiagnostic;
+                if ((scenario == "DS" || scenario == "IS") && !validateInput)
+                {
+                    var conversionError = await Assert.ThrowsAsync<AnonymizerOperationException>(() => AnonymizerCliTool.ExecuteCommandsAsync(args));
+                    Assert.Equal(DicomAnonymizationErrorCode.NumericValueConversionFailed, conversionError.DicomAnonymizerErrorCode);
+                    error = conversionError;
+                    expectedDiagnostic = $"Process failed with error code 1108: Numeric conversion failed for tag {(scenario == "DS" ? "(0010,1030)" : "(0020,0011)")} with VR {scenario}.";
+                }
+                else if (scenario != "text" && !validateInput)
+                {
+                    error = await Assert.ThrowsAsync<DicomDataException>(() => AnonymizerCliTool.ExecuteCommandsAsync(args));
+                    expectedDiagnostic = scenario == "age"
+                        ? "Process failed: Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY."
+                        : "Process failed: Invalid date value. The valid format is YYYYMMDD.";
+                }
+                else
+                {
+                    var validationError = await Assert.ThrowsAsync<AnonymizerOperationException>(() => AnonymizerCliTool.ExecuteCommandsAsync(args));
+                    var expectedCode = validateInput ? DicomAnonymizationErrorCode.InputDatasetValidationFailed : DicomAnonymizationErrorCode.OutputDatasetValidationFailed;
+                    Assert.Equal(expectedCode, validationError.DicomAnonymizerErrorCode);
+                    error = validationError;
+                    expectedDiagnostic = $"Process failed with error code {(int)expectedCode}: DICOM dataset validation failed.";
+                }
+
+                Assert.Null(error.InnerException);
+                Assert.DoesNotContain(phiCanary, error.Message);
+                Assert.DoesNotContain(phiCanary, error.ToString());
+
+                Console.SetOut(stdout);
+                Console.SetError(stderr);
+                Assert.Equal(-1, await AnonymizerCliTool.Main(args));
+
+                Assert.Empty(stdout.ToString());
+                Assert.Equal(expectedDiagnostic + Environment.NewLine, stderr.ToString());
+                Assert.DoesNotContain(phiCanary, stdout.ToString() + stderr.ToString());
+                Assert.Equal(originalBytes, await File.ReadAllBytesAsync(input));
+                if (existingDestination)
+                {
+                    Assert.Equal(destinationBytes, await File.ReadAllBytesAsync(output));
+                }
+                else
+                {
+                    Assert.False(File.Exists(output));
+                }
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+                Console.SetError(originalError);
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+
         [Fact]
         public async Task GivenDicomFolder_WhenAnonymize_ResultWillBeWrittenInOutputFolderAsync()
         {
@@ -235,6 +366,48 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
             }
 
             Directory.Delete("Output", true);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task GivenOptionalValidationControls_WhenAnonymizing_DefaultsAndEmptyValuesRemainSupportedAsync(bool emptyValue)
+        {
+            var directory = Path.Combine(Path.GetTempPath(), "dicom-validation-control-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                var input = Path.Combine(directory, "input.dcm");
+                var output = Path.Combine(directory, "output.dcm");
+                var config = Path.Combine(directory, "config.json");
+                var value = emptyValue ? string.Empty : new string('Z', 65);
+                var dataset = new DicomDataset
+                {
+                    { DicomTag.SOPClassUID, DicomUID.CTImageStorage },
+                    { DicomTag.SOPInstanceUID, "2.25.123" },
+                    { DicomTag.PatientName, "SYNTHETIC^NAME" },
+                };
+                DicomUtility.DisableAutoValidation(dataset);
+                dataset.Add(DicomTag.InstitutionName, value);
+                new DicomFile(dataset).Save(input);
+                await File.WriteAllTextAsync(config, "{'rules':[{'tag':'PatientName','method':'remove'}]}");
+                var args = new List<string> { "-i", input, "-o", output, "-c", config };
+                if (emptyValue)
+                {
+                    args.Add("--validateInput");
+                    args.Add("--validateOutput");
+                }
+
+                Assert.Equal(0, await AnonymizerCliTool.Main(args.ToArray()));
+
+                var result = DicomFile.Open(output, FileReadOption.ReadAll);
+                Assert.False(result.Dataset.Contains(DicomTag.PatientName));
+                Assert.Equal(value, result.Dataset.GetString(DicomTag.InstitutionName) ?? string.Empty);
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
         }
 
         [Fact]

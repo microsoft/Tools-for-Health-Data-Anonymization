@@ -60,9 +60,9 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             {
                 return DateTimeOffset.ParseExact(date, "yyyyMMdd", CultureInfo.InvariantCulture);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                throw new DicomDataException("Invalid date value. The valid format is YYYYMMDD.", ex);
+                throw new DicomDataException("Invalid date value. The valid format is YYYYMMDD.");
             }
         }
 
@@ -165,7 +165,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
                 }
             }
 
-            throw new DicomDataException($"Invalid age string [{age}]. The valid strings are nnnD, nnnW, nnnM, nnnY.");
+            throw new DicomDataException("Invalid age string. The valid strings are nnnD, nnnW, nnnM, nnnY.");
         }
 
         public static string GenerateAgeString(AgeObject age)

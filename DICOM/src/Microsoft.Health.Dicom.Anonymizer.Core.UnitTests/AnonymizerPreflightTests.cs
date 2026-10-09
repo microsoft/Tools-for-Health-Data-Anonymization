@@ -780,7 +780,8 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.UnitTests
                 null,
                 Rule("PatientID", "substitute", new JObject { ["replaceWith"] = replacement }));
 
-            Assert.Throws<DicomValidationException>(() => engine.AnonymizeFileInPlace(file));
+            var error = Assert.Throws<AnonymizerOperationException>(() => engine.AnonymizeFileInPlace(file));
+            Assert.Equal(DicomAnonymizationErrorCode.OutputDatasetValidationFailed, error.DicomAnonymizerErrorCode);
 
             Assert.Equal(replacement, file.Dataset.GetString(DicomTag.PatientID));
         }

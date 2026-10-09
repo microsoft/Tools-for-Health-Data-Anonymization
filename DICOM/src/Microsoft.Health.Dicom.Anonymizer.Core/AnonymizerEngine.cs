@@ -148,7 +148,7 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             var nestedOperations = uidMapping == null ? null : ValidateProcessing(dataset, runtimeKeySettings, uidMapping);
             if (_anonymizerSettings.ValidateInput)
             {
-                dataset.Validate();
+                ValidateDataset(dataset, DicomAnonymizationErrorCode.InputDatasetValidationFailed);
             }
 
             nestedOperations ??= ValidateProcessing(dataset, runtimeKeySettings, uidMapping);
@@ -163,7 +163,20 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core
             ValidateDatasetStructure(dataset);
             if (_anonymizerSettings.ValidateOutput)
             {
+                ValidateDataset(dataset, DicomAnonymizationErrorCode.OutputDatasetValidationFailed);
+            }
+        }
+
+        private static void ValidateDataset(DicomDataset dataset, DicomAnonymizationErrorCode errorCode)
+        {
+            try
+            {
                 dataset.Validate();
+            }
+            catch (DicomValidationException)
+            {
+                // fo-dicom validation diagnostics contain source values, including in inner exceptions.
+                throw new AnonymizerOperationException(errorCode, "DICOM dataset validation failed.");
             }
         }
 

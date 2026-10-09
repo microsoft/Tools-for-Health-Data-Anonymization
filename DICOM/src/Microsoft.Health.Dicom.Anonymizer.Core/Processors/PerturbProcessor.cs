@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using FellowOakDicom;
 using EnsureThat;
 using Microsoft.Extensions.Logging;
@@ -94,7 +95,18 @@ namespace Microsoft.Health.Dicom.Anonymizer.Core.Processors
                 var valueType = _numericValueTypeMapping[item.ValueRepresentation];
 
                 // Get numeric value using reflection.
-                var valueObj = elementType.GetMethod("Get").MakeGenericMethod(valueType).Invoke(item, new object[] { -1 });
+                object valueObj;
+                try
+                {
+                    valueObj = elementType.GetMethod("Get").MakeGenericMethod(valueType).Invoke(item, new object[] { -1 });
+                }
+                catch (TargetInvocationException ex) when (ex.InnerException is FormatException || ex.InnerException is OverflowException)
+                {
+                    throw new AnonymizerOperationException(
+                        DicomAnonymizationErrorCode.NumericValueConversionFailed,
+                        $"Numeric conversion failed for tag {DicomUtility.FormatTag(item.Tag)} with VR {item.ValueRepresentation}.");
+                }
+
                 PerturbNumericValue(dicomDataset, item, valueObj as Array);
             }
 

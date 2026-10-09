@@ -115,6 +115,46 @@ unknown to the tag dictionary, or associated with multiple possible VRs.
 Processing checks the actual selected items and retains the input/output
 safeguards described below.
 
+### Optional dataset validation diagnostics
+
+`ValidateInput` and `ValidateOutput` remain optional and default to `false`.
+When enabled, fo-dicom dataset validation failures from `AnonymizeDataset`,
+`AnonymizeFileInPlace`, and `AnonymizeFile` throw `AnonymizerOperationException`
+with `InputDatasetValidationFailed` (`1106`) or `OutputDatasetValidationFailed`
+(`1107`). These replace the previously exposed `DicomValidationException`.
+The message is `DICOM dataset validation failed.`; the original value-bearing
+exception is neither retained as an inner exception nor logged. The CLI reports
+the code and safe message and does not write output for these failures.
+
+Validation still rejects the same data. Input validation occurs before rules
+run; output validation can fail after mutation, so dataset and in-place callers
+must discard failed results. The copying API leaves its input unchanged.
+These diagnostics cover the optional dataset validation calls, including nested
+elements, not arbitrary custom processors, parsing, cloning, or persistence
+failures. Existing UID and structure guards retain their own error codes.
+
+Invalid age strings rejected by `DicomUtility.ParseAge`, including selected
+`AS` redaction when input validation is disabled, retain `DicomDataException`
+but do not include the source age value or an inner exception. This changes
+only the diagnostic: invalid ages still fail even when partial-age redaction
+is disabled, and valid-age transformation behavior is unchanged.
+
+Malformed `DA` strings rejected by `DicomUtility.ParseDicomDate`, including
+selected date-shift and redaction rules with input validation disabled, also
+retain their existing `DicomDataException` and fixed format message, but no
+longer retain the value-bearing `FormatException` as an inner exception.
+Valid and empty date processing and validation defaults are unchanged.
+These targeted fixes do not establish that every processor or diagnostic path
+is free of source values.
+
+For `perturb`, format and overflow failures from the numeric value getter now
+throw `AnonymizerOperationException` with `NumericValueConversionFailed` (`1108`)
+and numeric tag/VR context only. The reflective exception and its value-bearing
+inner exception are not retained. Invalid values still fail; valid and empty
+numeric processing is unchanged. Enabled input validation may reject invalid
+input earlier with `1106`. This does not wrap unrelated reflection failures or
+change numeric perturbation algorithms.
+
 ### UID safety and compatibility notes
 
 - The command-line tool validates File Meta SOP Class/Instance identities against
@@ -223,8 +263,9 @@ and are at most 64 characters. Correct terminal NUL padding is accepted; embedde
 NULs, arbitrary whitespace, malformed components and invalid characters are not
 normalized away. Value multiplicity and empty components are preserved. Selected
 invalid UI values fail with a fixed, value-free `UnsupportedAnonymizationMethod`
-diagnostic. This does not sanitize diagnostics for unrelated, unselected invalid
-elements or arbitrary custom processors.
+diagnostic. This UI-specific preflight does not validate unrelated elements or
+sanitize arbitrary custom processor errors. Optional dataset validation uses
+the separate value-free diagnostics described above.
 
 **Policy coverage still matters.** Select all intended surviving UID roles using
 the existing supported rules. A kept or unselected reference remains unchanged
